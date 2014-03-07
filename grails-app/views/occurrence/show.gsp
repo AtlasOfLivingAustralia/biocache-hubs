@@ -45,7 +45,7 @@
         google.load('maps','3.3',{ other_params: "sensor=false" });
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
-    <script type="text/javascript" src="${r.resource(dir:'js', file:'charts2.js', plugin:'biocache-hubs')}"/>
+    <script type="text/javascript" src="${r.resource(dir:'js', file:'charts2.js', plugin:'biocache-hubs')}"></script>
 
     <r:require module="show"/>
 
@@ -429,7 +429,7 @@
                     </g:set>
                     <div class="sidebar">
 
-                        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+                        %{--<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>--}%
                         <script type="text/javascript">
                             $(document).ready(function() {
                                 var latlng = new google.maps.LatLng(${latLngStr});
