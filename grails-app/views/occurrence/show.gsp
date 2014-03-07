@@ -41,6 +41,15 @@
             }
         }
 
+        // Google charts
+        google.load('maps','3.3',{ other_params: "sensor=false" });
+        google.load("visualization", "1", {packages:["corechart"]});
+    </script>
+    <script type="text/javascript" src="${r.resource(dir:'js', file:'charts2.js', plugin:'biocache-hubs')}"/>
+
+    <r:require module="show"/>
+
+    <r:script disposition="head">
         $(document).ready(function() {
             <g:if test="${record.processed.attribution.provenance == 'Draft'}">\
                 // draft view button\
@@ -124,11 +133,8 @@
             facetChartGroup.loadAndDrawFacetCharts(facetChartOptions);
             //console.log('Finished the drawing...' + chartName);
         }
+    </r:script>
 
-        // Google charts
-        google.load("visualization", "1", {packages:["corechart"]});
-    </script>
-    <r:require module="show"/>
 </head>
 <body>
     %{--<g:set var="json" value="${request.contextPath}/occurrences/${record?.raw?.uuid}.json" />--}%

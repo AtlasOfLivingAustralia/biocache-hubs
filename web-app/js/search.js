@@ -491,6 +491,9 @@ $(document).ready(function() {
         var name = $(this).data('name');
         $(this).find('span').toggleClass('right-caret');
         $('#group_' + name).slideToggle(600);
+        if ($('#group_' + name).is(":visible") ) {
+            $('#group_' + name).find(".nano").nanoScroller({ preventPageScrolling: true });
+        }
     });
 
     // Hide any facet groups if they don't contain any facet values
@@ -504,7 +507,7 @@ $(document).ready(function() {
     });
 
     // scroll bars on facet values
-    $(".nano").nanoScroller();
+    $(".nano").nanoScroller({ preventPageScrolling: true });
 
 }); // end JQuery document ready
 

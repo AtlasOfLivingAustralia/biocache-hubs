@@ -27,7 +27,7 @@
             </div>
         </g:if>
         <g:set var="facetCount" value="${0}"/>
-        <g:set var="facetMax" value="${10}"/>
+        <g:set var="facetMax" value="${20}"/>
         <g:each var="group" in="${groupedFacets}">
             <div class="facetGroupName" id="heading_${group.key.replaceAll(/\s+/,'')}">
                 <a href="#" class="showHideFacetGroup" data-name="${group.key.replaceAll(/\s+/,'')}"><span class="caret ${(facetCount < 6)?'':'right-caret'}" style=""></span> ${group.key}</a>
@@ -46,6 +46,7 @@
                                 <g:set var="lastElement" value="${facetResult.fieldResult.get(facetResult.fieldResult.length()-1)}"/>
                                 <g:if test="${lastElement && lastElement?.label == 'before' && lastElement?.count > 0}">
                                     <%--  Special case of date ranges, catch the last element with "before" in its label and display it first --%>
+                                    <!-- remove last item so it isn't rendered twice: ${facetResult.fieldResult.pop()} -->
                                     <alatag:facetLinkItems fieldResult="${lastElement}" facetResult="${facetResult}" queryParam="${queryParam}"/>
                                 </g:if>
                                 <g:each var="fieldResult" in="${facetResult.fieldResult}" status="vs"> <!-- ${facetResult.fieldName}:${fieldResult.label} || ${fieldResult.fq} -->
