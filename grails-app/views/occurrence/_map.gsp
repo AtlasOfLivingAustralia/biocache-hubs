@@ -130,10 +130,10 @@ a.colour-by-legend-toggle {
     </td>
     <td class="pull-right">
         <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
-        <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatialPortalUrlParams}"/>
+        <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
         <div id="downloadMaps" class="btn btn-small">
             <a id="spatialPortalLink"
-               href="${grailsApplication.config.spatialPortalUrl}${spatialPortalLink}${spatialPortalUrlParams}">View in spatial portal</a>
+               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}">View in spatial portal</a>
         </div>
         <div id="downloadMaps" class="btn btn-small">
             <a href="#downloadMap" id="downloadMapLink" title="Download a publication quality map">

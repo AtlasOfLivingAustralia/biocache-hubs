@@ -27,19 +27,14 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <meta name="section" content="yourArea"/>
     <title>Explore Your Area | Atlas of Living Australia</title>
-    %{--<link rel="stylesheet" type="text/css" media="screen" href="${request.contextPath}/css/ala/biocache.css" />--}%
-    %{--<link rel="stylesheet" href="${request.contextPath}/static/css/jquery.qtip.min.css" type="text/css" media="screen" />--}%
-    %{--<link type="text/css" rel="stylesheet" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala/css/biocache-theme/jquery-ui-1.8.custom.css" charset="utf-8">--}%
     <script type="text/javascript" src="https://www.google.com/jsapi?key=${grailsApplication.config.googleKey}"></script>
-    %{--<script type="text/javascript" src="${request.contextPath}/static/js/jquery-ui-1.8.4.custom.min.js"></script>--}%
-    %{--<script type="text/javascript" src="${request.contextPath}/static/js/jquery.qtip.min.js"></script>--}%
-    %{--<script type="text/javascript" src="${request.contextPath}/static/js/purl.js"></script>--}%
     <r:require module="exploreYourArea"/>
     <script type="text/javascript">
         // Global variables for yourAreaMap.js
         var EYA_CONF = {
             contextPath: "${request.contextPath}",
-            biocacheServiceUrl: "${biocacheServiceUrl.encodeAsHTML()}",
+            imagesUrlPrefix: "${r.resource(dir:'images',file:'', plugin:'biocache-hubs').replaceFirst(/\?.*$/, '')}",
+            biocacheServiceUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}",
             zoom: ${zoom},
             radius: ${radius},
             speciesPageUrl: "${speciesPageUrl}",
@@ -49,7 +44,6 @@
         //make the taxa and rank global variable so that they can be used in the download
         var taxa = ["*"], rank = "*";
     </script>
-    %{--<jwr:script src="/js/explore/yourAreaMap.js"/>--}%
 </head>
 <body class="nav-locations">
 <div id="header">
@@ -161,8 +155,7 @@
     </div><!-- .span5 -->
 </div><!-- .row-fluid -->
 
-%{--<div style="display:none">--}%
-    <g:render template="download"/>
-%{--</div>--}%
+<g:render template="download"/>
+
 </body>
 </html>

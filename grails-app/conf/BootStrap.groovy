@@ -4,7 +4,7 @@ class BootStrap {
         // sanity check for external properties
         log.warn "exploreYourArea.location = ${grailsApplication.config.exploreYourArea.location}"
         log.warn "servername = ${grailsApplication.config.servername}"
-        log.warn "resources.only = ${grailsApplication.config.resources.only}"
+        //log.warn "resources.only = ${grailsApplication.config.resources.only}"
         // sanity check for i18n
         log.warn "biocache-service i18n check - facet.pestStatus = ${messageSource.getMessage('facet.pestStatus', null, Locale.ENGLISH)}"
         // local i18n value override check

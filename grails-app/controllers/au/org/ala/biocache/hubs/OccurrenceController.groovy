@@ -38,7 +38,7 @@ class OccurrenceController {
      * @param requestParams
      * @return
      */
-    def search(SpatialSearchRequestParams requestParams) {
+    def list(SpatialSearchRequestParams requestParams) {
         if (!params.pageSize) {
             requestParams.pageSize = 20
         }
@@ -69,9 +69,9 @@ class OccurrenceController {
             JSONObject searchResults = webServicesService.fullTextSearch(requestParams)
             // postProcessingService.modifyQueryTitle(searchResults, taxaQueries)
             // log.info "searchResults = ${searchResults.toString(2)}"
-            log.info "userid = ${authService.getUserId()}"
+            log.warn "userid = ${authService.getUserId()}"
 
-            render view: "list", model: [
+            [
                     sr: searchResults,
                     searchRequestParams: requestParams,
                     defaultFacets: defaultFacets,
@@ -83,41 +83,15 @@ class OccurrenceController {
                     userId: authService.getUserId(),
                     userEmail: authService.getEmail()
             ]
-        } catch (Exception e) {
-            render view: "list", model: [errors: e.message, sr: [:]]
+        } catch (Exception ex) {
+            flash.message = "${ex.message}"
+            render view:'../error'
         }
     }
 
     def taxa(String id) {
         log.debug "taxa search for ${id}"
         redirect(action: "search", params: [q:"lsid:" + id])
-    }
-
-    def exploreYourArea() {
-        def radius = params.radius?:5
-        Map radiusToZoomLevelMap = [
-                1: 14,
-                5: 12,
-                10: 11,
-                50: 9
-        ]
-        render(
-                view: "exploreYourArea",
-                model: [
-                        latitude:  params.latitude?:grailsApplication.config.exploreYourArea.lat,
-                        longitude: params.longitude?:grailsApplication.config.exploreYourArea.lng,
-                        radius: radius,
-                        zoom: radiusToZoomLevelMap.get(radius),
-                        location: grailsApplication.config.exploreYourArea.location,
-                        speciesPageUrl: grailsApplication.config.bie.baseURL + "species/"
-                ]
-        )
-    }
-
-    def legend(){
-       def legend = webServicesService.getText(grailsApplication.config.biocacheServicesUrl + "/webportal/legend?" + request.queryString)
-       response.setContentType("application/json")
-       render legend
     }
 
     /**
@@ -128,36 +102,72 @@ class OccurrenceController {
      */
     def show(String id) {
 
-        JSONObject record = webServicesService.getRecord(id)
-        String userId = authService.getUserId()
+        try {
+            JSONObject record = webServicesService.getRecord(id)
+            String userId = authService.getUserId()
 
-        if (record) {
-            JSONObject compareRecord = webServicesService.getCompareRecord(id)
+            if (record) {
+                JSONObject compareRecord = webServicesService.getCompareRecord(id)
+                JSONObject collectionInfo = null
 
-            JSONObject collectionInfo = null
-            if(record.processed.attribution.collectionUid){
-                collectionInfo = webServicesService.getCollectionInfo(record.processed.attribution.collectionUid)
+                if (record.processed.attribution.collectionUid) {
+                    collectionInfo = webServicesService.getCollectionInfo(record.processed.attribution.collectionUid)
+                }
+
+                List groupedAssertions = postProcessingService.getGroupedAssertions(webServicesService.getUserAssertions(id), webServicesService.getQueryAssertions(id), userId)
+                Map layersMetaData = webServicesService.getLayersMetaData()
+
+                [
+                        record: record,
+                        uuid: id,
+                        compareRecord: compareRecord,
+                        groupedAssertions: groupedAssertions,
+                        formattedImageSizes: postProcessingService.getImageFileSizeInMb(record.images),
+                        collectionName: collectionInfo?.name,
+                        collectionLogo: collectionInfo?.institutionLogoUrl,
+                        collectionInstitution: collectionInfo?.institution,
+                        environmentalSampleInfo: postProcessingService.getLayerSampleInfo(ENVIRO_LAYER, record, layersMetaData),
+                        contextualSampleInfo: postProcessingService.getLayerSampleInfo(CONTEXT_LAYER, record, layersMetaData),
+                        skin: grailsApplication.config.ala.skin
+                ]
+            } else {
+                flash.message = "No record found for id: ${id}"
+                render view:'../error'
             }
-
-            List groupedAssertions = postProcessingService.getGroupedAssertions(webServicesService.getUserAssertions(id), webServicesService.getQueryAssertions(id), userId)
-            Map layersMetaData = webServicesService.getLayersMetaData()
-
-            [
-                    record: record,
-                    uuid: id,
-                    compareRecord: compareRecord,
-                    groupedAssertions: groupedAssertions,
-                    formattedImageSizes: postProcessingService.getImageFileSizeInMb(record.images),
-                    collectionName: collectionInfo?.name,
-                    collectionLogo: collectionInfo?.institutionLogoUrl,
-                    collectionInstitution: collectionInfo?.institution,
-                    environmentalSampleInfo: postProcessingService.getLayerSampleInfo(ENVIRO_LAYER, record, layersMetaData),
-                    contextualSampleInfo: postProcessingService.getLayerSampleInfo(CONTEXT_LAYER, record, layersMetaData),
-                    skin: grailsApplication.config.sitemesh.skin?:grailsApplication.config.ala.skin
-            ]
-        } else {
-            flash.message = "No record found for id: ${id}"
+        } catch (Exception ex) {
+            flash.message = "${ex.message}"
+            render view:'../error'
         }
+    }
+
+    /**
+     * Explore your area page
+     *
+     * @return
+     */
+    def exploreYourArea() {
+        def radius = params.radius?:5
+        Map radiusToZoomLevelMap = [ 1: 14, 5: 12, 10: 11, 50: 9 ] // zoom levels for the various radius sizes
+
+        [
+                latitude:  params.latitude?:grailsApplication.config.exploreYourArea.lat,
+                longitude: params.longitude?:grailsApplication.config.exploreYourArea.lng,
+                radius: radius,
+                zoom: radiusToZoomLevelMap.get(radius),
+                location: grailsApplication.config.exploreYourArea.location,
+                speciesPageUrl: grailsApplication.config.bie.baseURL + "species/"
+        ]
+    }
+
+    /**
+     * AJAX webservice for legend data from SP
+     *
+     * @return
+     */
+    def legend(){
+       def legend = webServicesService.getText(grailsApplication.config.biocacheServicesUrl + "/webportal/legend?" + request.queryString)
+       response.setContentType("application/json")
+       render legend
     }
 
     /**
@@ -176,13 +186,16 @@ class OccurrenceController {
         render combined as JSON
     }
 
-    /*
+    /**
      * JSON webservices for debugging/testing
      */
     def searchJson (SpatialSearchRequestParams requestParams) {
         render webServicesService.fullTextSearch(requestParams) as JSON
     }
 
+    /**
+     * JSON webservices for debugging/testing
+     */
     def showJson (String id) {
         def combined = [:]
         combined.record = webServicesService.getRecord(id)

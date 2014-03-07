@@ -61,10 +61,14 @@ grails.project.dependency.resolution = {
 
     plugins {
         // plugins for the build system only
-        build ":tomcat:7.0.50"
+        build(  ":tomcat:7.0.50",
+                ":release:3.0.1",
+                ":rest-client-builder:1.0.3") {
+            export = false
+        }
 
         // plugins for the compile step
-        compile ":scaffolding:2.0.1"
+        //compile ":scaffolding:2.0.1"
         compile ':cache:1.1.1'
         compile ":cache-ehcache:1.0.0"
 
@@ -79,6 +83,6 @@ grails.project.dependency.resolution = {
         //runtime ":cached-resources:1.1"
         //runtime ":yui-minify-resources:0.1.5"
 
-        runtime ":ala-web-theme:0.2-SNAPSHOT"
+        //runtime ":ala-web-theme:0.2-SNAPSHOT"
     }
 }

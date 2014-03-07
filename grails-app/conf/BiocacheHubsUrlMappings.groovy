@@ -1,13 +1,8 @@
-class UrlMappings {
+class BiocacheHubsUrlMappings {
 
 	static mappings = {
-        "/$controller/$action?/$id?(.$format)?"{
-            constraints {
-                // apply constraints here
-            }
-        }
-        "/occurrences/search"(controller: 'occurrence', action: 'search')
-        "/occurrence/search"(controller: 'occurrence', action: 'search')
+        "/occurrences/search"(controller: 'occurrence', action: 'list')
+        "/occurrence/search"(controller: 'occurrence', action: 'list')
         "/occurrences/taxa/$id"(controller: 'occurrence', action: 'taxa')
         "/occurrence/index"(controller: 'occurrence', action: 'index')
         "/occurrence/legend"(controller: 'occurrence', action: 'legend')
@@ -16,7 +11,5 @@ class UrlMappings {
         "/assertions/$id"(controller: 'occurrence', action: 'assertions')
         "/explore/your-area"(controller: 'occurrence', action: 'exploreYourArea')
         "/$action?"(controller:"home")
-        "500"(view:'/error')
-        "404"(view:'/error')
 	}
 }

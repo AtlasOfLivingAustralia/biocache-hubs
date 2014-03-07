@@ -27,6 +27,7 @@
             </div>
         </g:if>
         <g:set var="facetCount" value="${0}"/>
+        <g:set var="facetMax" value="${10}"/>
         <g:each var="group" in="${groupedFacets}">
             <div class="facetGroupName" id="heading_${group.key.replaceAll(/\s+/,'')}">
                 <a href="#" class="showHideFacetGroup" data-name="${group.key.replaceAll(/\s+/,'')}"><span class="caret ${(facetCount < 6)?'':'right-caret'}" style=""></span> ${group.key}</a>
@@ -48,7 +49,7 @@
                                     <alatag:facetLinkItems fieldResult="${lastElement}" facetResult="${facetResult}" queryParam="${queryParam}"/>
                                 </g:if>
                                 <g:each var="fieldResult" in="${facetResult.fieldResult}" status="vs"> <!-- ${facetResult.fieldName}:${fieldResult.label} || ${fieldResult.fq} -->
-                                    <g:if test="${fieldResult.count >= 0 && (vs + 1) < 4}">
+                                    <g:if test="${fieldResult.count >= 0 && (vs + 1) <= facetMax}">
                                         <alatag:facetLinkItems fieldResult="${fieldResult}" facetResult="${facetResult}" queryParam="${queryParam}"/>
                                     </g:if>
                                 </g:each>

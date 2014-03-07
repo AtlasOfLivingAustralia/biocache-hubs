@@ -1,0 +1,85 @@
+/*
+ * Copyright (C) 2014 Atlas of Living Australia
+ * All Rights Reserved.
+ *
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ */
+
+/*
+    Document   : autocomplete
+    Created on : Mar 3, 2011, 1:37:13 PM
+    Author     : "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.ac_results {
+    padding: 0px;
+    overflow: hidden;
+    z-index: 99999;
+    border:1px solid #ccc;
+    background:#fff;
+    -moz-border-radius:0 0 7px 7px; /* FF1+ */
+    -webkit-border-radius:0 0 7px 7px; /* Saf3+, Chrome */
+    -o-border-radius:0 0 7px 7px;
+    -icab-border-radius:0 0 7px 7px;
+    -khtml-border-radius:0 0 7px 7px;
+    border-radius:0 0 7px 7px; /* Opera 7.7, IE 9 */
+}
+
+.ac_results ul {
+    width: 100%;
+    list-style-position: outside;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ac_results li {
+    margin: 0px;
+    padding: 5px;
+    cursor: default;
+    display: block;
+    /*
+    if width will be 100% horizontal scrollbar will apear
+    when scroll mode will be used
+    */
+    /*width: 100%;font: menu;*/
+
+    font-size: 12px;
+    font-family: sans-serif;
+    /*
+    it is very important, if line-height not setted or setted
+    in relative units scroll will be broken in firefox
+    */
+    line-height: 12px;
+    overflow: hidden;
+    text-align:left;
+    color:#333;
+}
+
+.ac_loading {
+    background: white url('../images/indicator.gif') right center no-repeat;
+}
+
+li.ac_odd {
+    background-color:transparent;
+}
+.ac_results li b {
+    color: #1775BA;
+}
+
+li.ac_over, li.ac_over div, li.ac_over b {
+    background-color: #1775BA; /* #005A8E #dd3102; */
+    color: #fff !important;
+}
+.ac_results li strong { color:#005A8E;}
+.ac_results li.ac_over strong { color:#fff;}

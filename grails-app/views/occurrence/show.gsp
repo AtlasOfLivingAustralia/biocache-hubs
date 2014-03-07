@@ -8,12 +8,12 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="org.apache.commons.lang.StringUtils" contentType="text/html;charset=UTF-8" %>
 <g:set var="recordId" value="${alatag.getRecordId(record: record, skin: skin)}"/>
-<g:set var="bieWebappContext" value="${grailsApplication.config.bieWebappContext}"/>
-<g:set var="collectionsWebappContext" value="${grailsApplication.config.collectionsWebappContext}"/>
+<g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseURL}"/>
+<g:set var="collectionsWebappContext" value="${grailsApplication.config.collections.baseUrl}"/>
 <g:set var="useAla" value="${grailsApplication.config.useAla}"/>
 <g:set var="dwcExcludeFields" value="${grailsApplication.config.dwc.exclude}"/>
-<g:set var="hubDisplayName" value="${grailsApplication.config.site.displayName}"/>
-<g:set var="biocacheService" value="${grailsApplication.config.biocacheRestService.biocacheUriPrefix}"/>
+<g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
+<g:set var="biocacheService" value="${grailsApplication.config.biocacheServicesUrl}"/>
 <g:set var="spatialPortalUrl" value="${grailsApplication.config.spatial.baseURL}"/>
 <g:set var="serverName" value="${grailsApplication.config.site.serverName?:grailsApplication.config.biocacheServicesUrl}"/>
 <g:set var="scientificName" value="${alatag.getScientificName(record: record)}"/>
@@ -924,8 +924,8 @@
                         <tr>
                             <th style="width:15%;">Group</th>
                             <th style="width:15%;">Field Name</th>
-                            <th style="width:35%;">Original</th>
-                            <th style="width:35%;">Processed</th>
+                            <th style="width:35%;">Original Value</th>
+                            <th style="width:35%;">Processed Value</th>
                         </tr>
                         </thead>
                         <tbody>

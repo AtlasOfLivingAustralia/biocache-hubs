@@ -25,16 +25,16 @@
             searchString: "${searchString}", //  JSTL var can contain double quotes // .encodeAsJavaScript()
             facetQueries: "${fqParams.encodeAsURL()}",
             queryString: "${queryDisplay.encodeAsJavaScript()}",
-            bieWebappUrl: "${grailsApplication.config.bieWebappContext}",
-            biocacheServiceUrl: "${grailsApplication.config.biocacheRestService.biocacheUriPrefix?:grailsApplication.config.biocacheServicesUrl}",
-            skin: "${grailsApplication.config.sitemesh.skin}",
+            bieWebappUrl: "${grailsApplication.config.bie.baseURL}",
+            biocacheServiceUrl: "${grailsApplication.config.biocacheServicesUrl?:grailsApplication.config.biocacheServicesUrl}",
+            skin: "${grailsApplication.config.ala.skin}",
             defaultListView: "${grailsApplication.config.defaultListView}",
-            resourceName: "${grailsApplication.config.hubDisplayName}",
+            resourceName: "${grailsApplication.config.skin.orgNameLong}",
             facetLimit: "${grailsApplication.config.facetLimit?:50}",
             queryContext: "${grailsApplication.config.biocacheRestService.queryContext}",
             zoomOutsideScopedRegion: Boolean("${grailsApplication.config.zoomOutsideScopedRegion}"),
-            mapDefaultCentreCoords:"${grailsApplication.config.mapDefaultCentreCoords}",
-            mapDefaultZoom:"${grailsApplication.config.mapDefaultZoom}",
+            //mapDefaultCentreCoords:"${grailsApplication.config.mapDefaultCentreCoords}",
+            //mapDefaultZoom:"${grailsApplication.config.mapDefaultZoom}",
             hasMultimedia: ${hasImages?:'false'} // will be either true or false
         };
 

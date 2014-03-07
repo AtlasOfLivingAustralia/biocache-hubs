@@ -197,7 +197,7 @@ $(document).ready(function() {
                 text: "About the matched address",
                 button: "Close"
             },
-            text: "<img src=\"" + EYA_CONF.contextPath + "/images/spinner.gif\" alt=\"\" class=\"no-rounding\"/>",
+            text: "<img src=\"" + EYA_CONF.imagesUrlPrefix + "/spinner.gif\" alt=\"\" class=\"no-rounding\"/>",
             ajax: {
                 url: EYA_CONF.contextPath + "/proxy/wordpress",
                 data: {
@@ -444,7 +444,7 @@ function loadNewGeoJsonData(data) {
     
     $.each(data.features, function (i, n) {
         var latLng1 = new google.maps.LatLng(n.geometry.coordinates[1], n.geometry.coordinates[0]);
-        var iconUrl = EYA_CONF.contextPath+"/images/circle-"+n.properties.color.replace('#','')+".png";
+        var iconUrl = EYA_CONF.imagesUrlPrefix+"/circle-"+n.properties.color.replace('#','')+".png";
         var markerImage = new google.maps.MarkerImage(iconUrl,
             new google.maps.Size(9, 9),
             new google.maps.Point(0,0),
@@ -657,12 +657,12 @@ function processSpeciesJsonData(data, appendResults) {
             var speciesInfo = '<div class="speciesInfo">';
             if (data[i].guid) {
                 speciesInfo = speciesInfo + '<a title="'+infoTitle+'" href="'+EYA_CONF.speciesPageUrl + data[i].guid+
-                    '"><img src="'+ EYA_CONF.contextPath +'/images/page_white_go.png" alt="species page icon" style="margin-bottom:-3px;" class="no-rounding"/>'+
+                    '"><img src="'+ EYA_CONF.imagesUrlPrefix + '/page_white_go.png" alt="species page icon" style="margin-bottom:-3px;" class="no-rounding"/>'+
                     ' species profile</a> | ';
             }
             speciesInfo = speciesInfo + '<a href="'+ EYA_CONF.contextPath +'/occurrences/searchByArea?q=taxon_name:%22'+data[i].name+
                     '%22&lat='+$('input#latitude').val()+'&lon='+$('input#longitude').val()+'&radius='+$('select#radius').val()+'" title="'+
-                    recsTitle+'"><img src="'+ EYA_CONF.contextPath +'/images/database_go.png" '+
+                    recsTitle+'"><img src="'+ EYA_CONF.imagesUrlPrefix + '/database_go.png" '+
                     'alt="search list icon" style="margin-bottom:-3px;" class="no-rounding"/> list of records</a></div>';
             tr = tr + speciesInfo;
             // add number of records
