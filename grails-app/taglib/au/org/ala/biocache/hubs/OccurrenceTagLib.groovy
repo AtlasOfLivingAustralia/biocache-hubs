@@ -235,7 +235,6 @@ class OccurrenceTagLib {
         def record = attrs.record?:null
         def skin = attrs.skin?:"ala"
         def recordId = record.raw.uuid
-        log.error "record = $record"
 
         if (skin == 'avh') {
             recordId = record.raw.occurrence.catalogNumber

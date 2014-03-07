@@ -297,4 +297,22 @@ class PostProcessingService {
         return query
     }
 
+    /**
+     * Add layers metadata to outlier for layer record attributes
+     *
+     * @param record
+     * @param layersMetaData
+     * @return
+     */
+    def List getMetadataForOutlierLayers(JSONObject record, Map layersMetaData) {
+        List metdataForOutlierLayers = []
+
+        if (record.processed.occurrence.outlierForLayers) {
+            record.processed.occurrence.outlierForLayers.each {
+                metdataForOutlierLayers.add(layersMetaData.get(it))
+            }
+        }
+
+        metdataForOutlierLayers
+    }
 }

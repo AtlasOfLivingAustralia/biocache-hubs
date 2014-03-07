@@ -85,7 +85,8 @@ class WebServicesService {
         def jsonArray = getJsonElements(url)
 
         jsonArray.each {
-            def subset = [:]
+            Map subset = [:]
+            subset << it // clone the original Map
             subset.layerID = it.uid
             subset.layerName = it.name
             subset.layerDisplayName = it.displayname
