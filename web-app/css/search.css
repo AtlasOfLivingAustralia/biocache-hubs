@@ -232,19 +232,23 @@ form {
     list-style: none;
     /*list-style-image:url('images/checkbox-unchecked.png');*/
     margin-left: -4px;
-    max-height: 6.4em;
-    /*overflow-x: hidden; /*for hiding horizontal scroll bar*/
-    overflow: -moz-scrollbars-vertical;
-    overflow-y: auto; /*for vertical scroll bar*/
+    /*max-height: 6.4em;*/
+    /*overflow: -moz-scrollbars-vertical;*/
+    /*overflow-y: auto; *//*for vertical scroll bar*/
 }
 
 #content .sidebar .subnavlist > ul#refinedFacets {
     list-style: none;
-    /*list-style-image:url('images/checkbox-checked.png');*/
     margin: 5px 0 5px 0px;
 }
 
+.nano { max-height: 6.5em; }
+/*.nano .nano-content { padding: 10px; }*/
+.nano .nano-pane   { background: #AAA; }
+.nano .nano-slider { background: #333; }
+
 /* Always show scrollbar on Mac browsers */
+/*
 ::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 7px;
@@ -254,6 +258,7 @@ form {
     background-color: rgba(0,0,0,.5);
     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
+*/
 
 ul#refinedFacets li {
     text-indent: -8px;

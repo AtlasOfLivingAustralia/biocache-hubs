@@ -45,6 +45,12 @@ modules = {
         resource url:[dir:'js', file:'search.js', plugin:'biocache-hubs']
     }
 
+    nanoscroller {
+        dependsOn 'jquery'
+        resource url:[dir:'css', file:'nanoscroller.css', plugin:'biocache-hubs']
+        resource url:[dir:'js', file:'jquery.nanoscroller.min.js', plugin:'biocache-hubs']
+    }
+
     slider {
         resource url:[dir:'css', file:'slider.css', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'bootstrap-slider.js', plugin:'biocache-hubs']

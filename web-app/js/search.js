@@ -503,6 +503,9 @@ $(document).ready(function() {
         }
     });
 
+    // scroll bars on facet values
+    $(".nano").nanoScroller();
+
 }); // end JQuery document ready
 
 /**

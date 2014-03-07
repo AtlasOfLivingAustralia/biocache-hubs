@@ -41,8 +41,8 @@
                         <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
                         <g:set var="facetCount" value="${facetCount + 1}"/>
                         <h4><span class="FieldName">${fieldDisplayName}</span></h4>
-                        <div class="subnavlist" style="clear:left">
-                            <ul class="facets">
+                        <div class="subnavlist nano" style="clear:left">
+                            <ul class="facets nano-content">
                                 <g:set var="lastElement" value="${facetResult.fieldResult.get(facetResult.fieldResult.length()-1)}"/>
                                 <g:if test="${lastElement && lastElement?.label == 'before' && lastElement?.count > 0}">
                                     <%--  Special case of date ranges, catch the last element with "before" in its label and display it first --%>
