@@ -466,7 +466,7 @@ class OccurrenceTagLib {
     }
 
     def loggedInUserId = { attrs ->
-        out << authService.userId
+        out << authService?.getUserId()
     }
 
     def outageBanner = { attrs ->
