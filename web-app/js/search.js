@@ -55,7 +55,9 @@ $(document).ready(function() {
     $('a[data-toggle="tab"]').on('shown', function(e) {
         //console.log("this", $(this).attr('id'));
         var id = $(this).attr('id');
-        location.hash = 'tab_'+ $(e.target).attr('href').substr(1);
+        var tab = e.currentTarget.hash.substring(1);
+        amplify.store('search-tab-state', tab);
+        location.hash = 'tab_'+ tab;
 
         if (id == "t2" && !tabsInit.map) {
             initialiseMap();
@@ -73,10 +75,15 @@ $(document).ready(function() {
         }
     });
 
+    var storedSearchTab = amplify.store('search-tab-state');
+
     // catch hash URIs and trigger tabs
     if (location.hash !== '') {
         $('.nav-tabs a[href="' + location.hash.replace('tab_','') + '"]').tab('show');
         //$('.nav-tabs li a[href="' + location.hash.replace('tab_','') + '"]').click();
+    } else if (storedSearchTab) {
+        //console.log("stored value", storedSearchTab);
+        $('.nav-tabs a[href="#' + storedSearchTab+ '"]').tab('show');
     } else {
         $('.nav-tabs a:first').tab('show');
     }
@@ -485,29 +492,54 @@ $(document).ready(function() {
     });
     //alert( "default.paginate.prev = " + jQuery.i18n.prop('default.paginate.prev'));
 
+    // remember state of admin nav (vertical tabs)
+//    $('#adminNav a[data-toggle="tab"]').on('shown', function (e) {
+//        var tab = e.currentTarget.hash;
+//        amplify.store('project-admin-tab-state', tab);
+//    });
+//    var storedAdminTab = amplify.store('project-admin-tab-state');
+//    // restore state if saved
+//    if (storedAdminTab === '') {
+//        $('#permissions-tab').tab('show');
+//    } else {
+//        $(storedAdminTab + "-tab").tab('show');
+//    }
+
     // Show/hide the facet groups
     $('.showHideFacetGroup').click(function(e) {
         e.preventDefault();
         var name = $(this).data('name');
         $(this).find('span').toggleClass('right-caret');
-        $('#group_' + name).slideToggle(600);
-        if ($('#group_' + name).is(":visible") ) {
-            $('#group_' + name).find(".nano").nanoScroller({ preventPageScrolling: true });
-        }
+        $('#group_' + name).slideToggle(600, function() {
+            //console.log('showHideFacetGroup',name);
+            if ($('#group_' + name).is(":visible") ) {
+                $('#group_' + name).find(".nano").nanoScroller({ preventPageScrolling: true });
+                amplify.store('search-facets-state-' + name, true);
+            } else {
+                amplify.store('search-facets-state-' + name, null);
+            }
+        });
     });
 
     // Hide any facet groups if they don't contain any facet values
     $('.facetsGroup').each(function(i, el) {
         var name = $(el).attr('id').replace(/^group_/, '');
-        //console.log("name", name);
+        var wasShown = amplify.store('search-facets-state-' + name);
+        //console.log('facetsGroup',name, wasShown);
         if ($.trim($(el).html()) == '') {
             //console.log("is empty", name);
             $('#heading_' + name).hide();
+        } else if (wasShown) {
+            //console.log("wasShown", $(el).prev());
+            $(el).prev().find('a').click();
         }
     });
 
     // scroll bars on facet values
     $(".nano").nanoScroller({ preventPageScrolling: true });
+
+    // store last search in local storage for a "back button" on record pages
+    amplify.store('lastSearch', $.url().attr('relative'));
 
 }); // end JQuery document ready
 

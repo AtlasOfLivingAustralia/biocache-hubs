@@ -47,7 +47,7 @@
     </script>
     <script type="text/javascript" src="${r.resource(dir:'js', file:'charts2.js', plugin:'biocache-hubs')}"></script>
 
-    <r:require module="show"/>
+    <r:require modules="show, amplify"/>
 
     <r:script disposition="head">
         $(document).ready(function() {
@@ -156,11 +156,11 @@
                         <!-- <a href="${json}">JSON</a> -->
                     </div>
                 </g:if>
-                <g:if test="${lastSearchUri}">
-                    <div id="backBtn" class="pull-right">
+                %{--<g:if test="${lastSearchUri}">--}%
+                    <div id="backBtn" class="hide pull-right">
                         <a href="${lastSearchUri}" title="Return to search results" class="btn">Back to search results</a>
                     </div>
-                </g:if>
+                %{--</g:if>--}%
                 <g:if test="${record.raw.classification}">
                     <h2 id="headingSciName">
                         <g:if test="${record.processed.classification.scientificName}">

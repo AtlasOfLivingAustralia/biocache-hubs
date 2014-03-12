@@ -219,6 +219,14 @@ $(document).ready(function() {
         }
     }).click('click', function(e) { e.preventDefault(); });
 
+    // Activate the "back to search results" button at top of page
+    var lastSearch = amplify.store('lastSearch');
+    //console.log('lastSearch', lastSearch);
+    if (lastSearch) {
+        $('#backBtn > a').attr('href', lastSearch);
+        $('#backBtn').show();
+    }
+
 }); // end JQuery document ready
 
 /**

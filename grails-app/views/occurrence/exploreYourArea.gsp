@@ -28,7 +28,7 @@
     <meta name="section" content="yourArea"/>
     <title>Explore Your Area | Atlas of Living Australia</title>
     <script type="text/javascript" src="https://www.google.com/jsapi?key=${grailsApplication.config.googleKey}"></script>
-    <r:require module="exploreYourArea"/>
+    <r:require modules="exploreYourArea, qtip"/>
     <script type="text/javascript">
         // Global variables for yourAreaMap.js
         var EYA_CONF = {

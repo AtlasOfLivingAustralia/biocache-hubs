@@ -14,7 +14,7 @@
     <title><g:message code="search.title" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
     %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-    <r:require modules="search, leaflet, slider, nanoscroller"/>
+    <r:require modules="search, leaflet, slider, qtip, nanoscroller, amplify"/>
     <r:script type="text/javascript">
         // single global var for app conf settings
         <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
@@ -26,7 +26,7 @@
             facetQueries: "${fqParams.encodeAsURL()}",
             queryString: "${queryDisplay.encodeAsJavaScript()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseURL}",
-            biocacheServiceUrl: "${grailsApplication.config.biocacheServicesUrl?:grailsApplication.config.biocacheServicesUrl}",
+            biocacheServiceUrl: "${grailsApplication.config.biocacheServicesUrl}",
             skin: "${grailsApplication.config.ala.skin}",
             defaultListView: "${grailsApplication.config.defaultListView}",
             resourceName: "${grailsApplication.config.skin.orgNameLong}",
