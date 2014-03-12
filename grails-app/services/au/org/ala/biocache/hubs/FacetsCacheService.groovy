@@ -17,13 +17,15 @@ package au.org.ala.biocache.hubs
 
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.web.json.JSONObject
+import org.springframework.context.support.AbstractMessageSource
+import org.springframework.context.support.StaticMessageSource
 
 /**
  * Service to cache the facet values available from a given data hub.
  * Used to populate the values in select drop-down lists in advanced search page.
  */
 class FacetsCacheService {
-    def webServicesService
+    def webServicesService, messageSource
     Map facetsMap = [:]
 
     def Map getFacetNamesFor(FacetsName facet) {

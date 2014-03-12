@@ -14,6 +14,7 @@
  */
 package au.org.ala.biocache.hubs
 
+import grails.validation.Validateable
 import org.apache.commons.httpclient.URIException
 import org.apache.commons.httpclient.util.URIUtil
 import org.apache.commons.lang.StringUtils
@@ -24,6 +25,7 @@ import org.apache.log4j.Logger
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
+@Validateable
 class AdvancedSearchParams {
     String text = ""
     String taxa = ""
