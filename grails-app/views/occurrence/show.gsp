@@ -23,7 +23,7 @@
 <html>
 <head>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title>${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
+    <title>Record: ${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
         // Global var OCC_REC to pass GSP data to external JS file

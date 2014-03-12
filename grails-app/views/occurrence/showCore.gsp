@@ -16,10 +16,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <meta name="layout" content="ajax"/>
+    <title>${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
+    <script type="text/javascript">
+        // Global var OCC_REC to pass GSP data to external JS file
+        var OCC_REC = {
+            userId: "${userId}",
+            userDisplayName: "${userDisplayName}",
+            contextPath: "${request.contextPath}",
+            recordUuid: "${record.raw.uuid}",
+            taxonRank: "${record.processed.classification.taxonRank}",
+            taxonConceptID: "${record.processed.classification.taxonConceptID}",
+            sensitiveDatasets: {
+                <g:each var="sds" in="${sensitiveDatasets}"
+                   status="s">'${sds}': '${grailsApplication.config.sensitiveDatasets[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
+                </g:each>
+            }
+        }
+    </script>
+
+    <r:require modules="show"/>
 </head>
 
 <body>
-
+<g:render template="recordCore" />
 </body>
 </html>

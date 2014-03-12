@@ -11,7 +11,7 @@
 <html>
 <head>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title><g:message code="search.title" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
+    <title>Search: ${sr.queryTitle.replaceAll("<(.|\n)*?>", '')} | <g:message code="heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
     %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <r:require modules="search, leaflet, slider, qtip, nanoscroller, amplify"/>

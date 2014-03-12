@@ -142,6 +142,33 @@ class OccurrenceController {
     }
 
     /**
+     * Display just the "core" section of an occurrence record.
+     * I.e. the basic DwC values in a table
+     *
+     * @param id
+     * @return
+     */
+    def showCore(String id) {
+        try {
+            JSONObject record = webServicesService.getRecord(id)
+            JSONObject compareRecord = webServicesService.getCompareRecord(id)
+
+            if (record) {
+                [       record: record,
+                        uuid: id,
+                        compareRecord: compareRecord
+                ]
+            } else {
+                flash.message = "No record found for id: ${id}"
+                render view:'../error'
+            }
+        } catch (Exception ex) {
+            flash.message = "${ex.message}"
+            render view:'../error'
+        }
+    }
+
+    /**
      * Explore your area page
      *
      * @return
