@@ -318,22 +318,25 @@ div#download {
     font-size: 13px;
     line-height: 1.4em;
 }
-#downloadForm {
+#downloadForm, #downloadMapForm {
     text-align: left;
 }
-#downloadForm label {
+#downloadForm label, #downloadMapForm label {
     width: 35%;
     display: inline-block;
     text-align: right;
     padding-right: 10px;
     color: #444;
 }
-#download p {
+#download p, #downloadMapForm p {
     margin: 0;
 }
-#downloadForm input {
+#downloadForm input, #downloadMapForm input, #downloadMapForm select {
     float: none;
     margin: 0;
+}
+#downloadMapForm p {
+    padding: 4px 6px;
 }
 #termsOfUseDownload {
     text-align:left; padding-bottom:15px;
