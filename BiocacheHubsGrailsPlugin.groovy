@@ -86,6 +86,10 @@ the ALA biocache-service app (no local DB is required for this app).
                     name 'longTermCache'
                     timeToLiveSeconds (3600 * 12)
                 }
+                cache {
+                    name 'outageCache'
+                    timeToLiveSeconds (3600 * 24 * 7)
+                }
             }
         }
 

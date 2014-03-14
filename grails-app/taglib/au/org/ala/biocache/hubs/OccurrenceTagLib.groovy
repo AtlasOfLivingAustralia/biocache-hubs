@@ -17,13 +17,15 @@ package au.org.ala.biocache.hubs
 
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringUtils
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.apache.commons.lang.time.DateUtils
+
+import java.text.SimpleDateFormat
 
 class OccurrenceTagLib {
     //static defaultEncodeAs = 'html'
     //static encodeAsForTags = [tagName: 'raw']
     static returnObjectForTags = ['getLoggerReasons']
-    def webServicesService, authService
+    def webServicesService, authService, outageService
     static namespace = 'alatag'     // namespace for headers and footers
 
     /**
@@ -501,10 +503,6 @@ class OccurrenceTagLib {
         out << authService?.getUserId()
     }
 
-    def outageBanner = { attrs ->
-        out << "TODO "
-    }
-
     /**
      * Get the list of available reason codes and labels from the Logger app
      *
@@ -531,4 +529,32 @@ class OccurrenceTagLib {
         }
     }
 
+    /**
+     * Display an outage banner
+     */
+    def outageBanner = { attrs ->
+        OutageBanner ob = outageService.getOutageBanner()
+
+        if (ob.message) {
+            String message = ob.getMessage()
+            Date now = new Date()
+            Date start = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(ob.startDate);
+            Date end = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(ob.endDate);
+
+            if (ob.getShowMessage() != null && ob.getShowMessage()) {
+                // showMessage is checked
+                // Do a date comparison to see if today is between the startDate and endDate (inclusive)
+                if (DateUtils.isSameDay(now, start) || now.after(start)) {
+                    if (DateUtils.isSameDay(now, end) || now.before(end)) {
+                        // output the banner message
+                        out << "<div id='outageMessage'>" + message + "</div>"
+                    } else {
+                        log.debug("now is not on or before endDate")
+                    }
+                } else {
+                    log.debug("now is not on or after startDate")
+                }
+            }
+        }
+    }
 }
