@@ -819,3 +819,20 @@ span.red {
 .dropdown-menu {
     z-index: 2000;
 }
+
+.activeFilters {
+    margin-top: 5px;
+    font-size: 14px;
+    line-height: 2.0em;
+}
+
+.activeFilters .btn {
+    font-size: 13px;
+}
+
+.closeX {
+    font-size: 15px;
+    font-weight: bold;
+    display: inline-block;
+    padding: 0 2px;
+}

@@ -143,6 +143,12 @@ $(document).ready(function() {
         $(":input#solrQuery").val("");
     }
 
+    // active facets/filters
+    $('.activeFilter').click(function(e) {
+        e.preventDefault();
+        removeFilter(this);
+    });
+
     // bootstrap dropdowns - allow clicking inside dropdown div
     $('#facetCheckboxes').children().not('#updateFacetOptions').click(function(e) {
         //console.log("detected a Click");
@@ -648,6 +654,60 @@ function removeFacet(el) {
     if (fqList != null) {
         paramList.push("fq=" + fqList.join("&fq="));
     }
+
+    window.location.href = window.location.pathname + '?' + paramList.join('&') + window.location.hash +"";
+}
+
+function removeFilter(el) {
+    var facet = $(el).data("facet").replace(/^\-/g,''); // remove leading "-" for exclude searches
+    var q = $.url().param('q'); //$.query.get('q')[0];
+    var fqList = $.url().param('fq'); //$.query.get('fq');
+    var lat = $.url().param('lat');
+    var lon = $.url().param('lon');
+    var rad = $.url().param('radius');
+    var taxa = $.url().param('taxa');
+    var paramList = [];
+    if (q != null) {
+        paramList.push("q=" + q);
+    }
+    console.log("0. fqList", fqList);
+    // add filter query param
+    if (fqList && typeof fqList === "string") {
+        fqList = [ fqList ];
+    }
+
+    //console.log("1. fqList", fqList);
+
+    if (lat && lon && rad) {
+        paramList.push("lat=" + lat);
+        paramList.push("lon=" + lon);
+        paramList.push("radius=" + rad);
+    }
+
+    if (taxa) {
+        paramList.push("taxa=" + taxa);
+    }
+
+    for (var i in fqList) {
+        var fqParts = fqList[i].split(':');
+        var fqField = fqParts[0].replace(/[\(\)\-]/g,"");
+        //alert("fqField = " + fqField + " vs " + facet);
+
+        if (fqField.indexOf(facet) != -1) {  // if(str1.indexOf(str2) != -1){
+            //alert("removing fq: "+fqList[i]);
+            fqList.splice($.inArray(fqList[i], fqList), 1);
+        }
+    }
+
+    if (facet == "all") {
+        fqList = [];
+    }
+
+    if (fqList != null) {
+        paramList.push("fq=" + fqList.join("&fq="));
+    }
+
+    //alert("paramList = " + paramList.join('&'));
 
     window.location.href = window.location.pathname + '?' + paramList.join('&') + window.location.hash +"";
 }

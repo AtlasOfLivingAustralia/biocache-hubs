@@ -17,6 +17,7 @@ package au.org.ala.biocache.hubs
 
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringUtils
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 class OccurrenceTagLib {
     //static defaultEncodeAs = 'html'
@@ -40,6 +41,7 @@ class OccurrenceTagLib {
         } else {
             output = "${g:message(code:"facet.${fieldName}", default: fieldName)}"
         }
+
         out << output
     }
 
@@ -105,25 +107,42 @@ class OccurrenceTagLib {
      * Generate HTML for current filters
      *
      * @attr item REQUIRED
+     * @attr addCheckBox Boolean
+     * @attr cssClass String
+     * @attr addCloseBtn Boolean
      */
     def currentFilterItem = { attrs ->
         def item = attrs.item
-        def filterLabel = alatag.formatDynamicFacetName(fieldName: item.value.displayName)
-        def fqLabel = (filterLabel.startsWith('-')) ? "<span class=\"red\">[exclude]</span> ${filterLabel.substring(1, filterLabel.size())}" : filterLabel
+        def filterLabel = item.value.displayName.replaceFirst(/^\-/, "") // remove leading "-" for exclude searches
+        def preFix = (item.value.displayName.startsWith('-')) ? "<span class='red'>[exclude]</span> " : ""
+        def fqLabel = preFix + filterLabel
 
         def mb = new MarkupBuilder(out)
-        mb.li() {
-            a(      href:"#",
-                    class: "tooltips",
-                    title: "remove filter",
-                    "data-facet":"${item.key}:${item.value.value.encodeAsURL()}",
-                    onClick:"removeFacet(this); return false;"
+        mb.a(   href:"#",
+                class: "${attrs.cssClass} tooltips activeFilter",
+                    title: message(code:"title.filter.remove", default:"Click to remove this filter"),
+                    "data-facet": item.key
+                    //"data-facet":"${item.key}:${item.value.value.encodeAsURL()}",
+                    //onClick:"removeFacet(this); return false;"
             ) {
+            if (attrs.addCheckBox) {
                 span(class:'checkbox-checked') {
                     mkp.yieldUnescaped("&nbsp;")
                 }
-                span(class:'activeFq') {
-                    mkp.yieldUnescaped(message(code: fqLabel, default: fqLabel).replaceFirst(':',': '))
+            }
+            if (item.key.contains("occurrence_year")) {
+                fqLabel = fqLabel.replaceAll(':',': ').replaceAll('occurrence_year', message(code: 'facet.occurrence_year', default:'occurrence_year'))
+                mkp.yieldUnescaped( fqLabel.replaceAll(/(\d{4})\-.*?Z/) { all, year ->
+                    def year10 = year.toInteger() + 10
+                    "${year} - ${year10}"
+                })
+            } else {
+                mkp.yieldUnescaped(message(code: fqLabel, default: fqLabel).replaceAll(':',': '))
+            }
+            if (attrs.addCloseBtn) {
+                mkp.yieldUnescaped("&nbsp;")
+                span(class:'closeX') {
+                    mkp.yieldUnescaped("&times;")
                 }
             }
         }
@@ -172,26 +191,11 @@ class OccurrenceTagLib {
 
             }
         } else if (StringUtils.startsWith(facetResult.fieldName, "occurrence_")) {
-            // decade year ranges
-            def startDate = ""
-            def startYear = ""
-            def endDate = ""
-            def endYear = ""
 
-            if (fieldResult.label.toLowerCase() == "before") {
-                startDate = "*"
-                startYear = "Before "
-                endDate = facetResult.fieldResult?.get(0)?.label
-                endYear = endDate?.substring(0, 4)
-            } else {
-                startDate = fieldResult.label
-                startYear = fieldResult.label.substring(0, 4)
-                endDate = fieldResult.label.replace('0-01-01T00:00:00Z','9-12-31T11:59:59Z')
-                endYear = " - " + endDate.substring(0, 4)
-            }
+            def decade = processDecadeLabel(facetResult.fieldName, facetResult.fieldResult?.get(0)?.label, fieldResult.label)
 
             mb.li {
-                a(      href:"?${queryParam}&fq=${facetResult.fieldName}:[${startDate} TO ${endDate}]",
+                a(      href:"?${queryParam}&fq=${decade.fq}",
                         class: "tooltips",
                         title: linkTitle
                 ) {
@@ -199,7 +203,7 @@ class OccurrenceTagLib {
                         mkp.yieldUnescaped("&nbsp;")
                     }
                     span(class:"facet-item") {
-                        mkp.yieldUnescaped("${startYear} ${endYear}")
+                        mkp.yieldUnescaped("${decade.label}")
                         addCounts(fieldResult.count)
                     }
                 }
@@ -223,6 +227,34 @@ class OccurrenceTagLib {
                 }
             }
         }
+    }
+
+    /**
+     * Process decade labels
+     *
+     * @param fieldName
+     * @param firstLabel
+     * @param fqLabel
+     * @return
+     */
+    private Map processDecadeLabel(String fieldName, String firstLabel, String fqLabel) {
+        Map output = [:]
+
+        if (fqLabel.toLowerCase() == "before") {
+            output.startDate = "*"
+            output.startYear = "Before "
+            output.endDate = firstLabel
+            output.endYear = output.endDate?.substring(0, 4)
+        } else {
+            output.startDate = fqLabel
+            output.startYear = fqLabel.substring(0, 4)
+            output.endDate = fqLabel.replace('0-01-01T00:00:00Z','9-12-31T11:59:59Z')
+            output.endYear = " - " + output.endDate.substring(0, 4)
+        }
+        output.fq = "${fieldName}:[${output.startDate} TO ${output.endDate}]"
+        output.label = "${output.startYear} ${output.endYear}"
+
+        output
     }
 
     /**

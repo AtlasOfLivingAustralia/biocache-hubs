@@ -125,8 +125,27 @@
             <div class="span9 offset3">
                 <a name="map" class="jumpTo"></a><a name="list" class="jumpTo"></a>
                 <div id="resultsReturned">
-                    <span id="returnedText"><strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong> results for</span>
-                    <span class="queryDisplay"><strong>${raw(queryDisplay)}</strong></span>
+                    %{--<div class="alert alert-info ">--}%
+                        <span id="returnedText"><strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong> results for</span>
+                        <span class="queryDisplay"><strong>${raw(queryDisplay)}</strong></span>&nbsp;&nbsp;
+                    %{--</div>--}%
+                    %{--<g:set var="hasFq" value="${false}"/>--}%
+                    <g:if test="${sr.activeFacetMap?.size() > 0}">
+                        <div class="activeFilters">
+                            <b><g:message code="search.filters.heading" default="Current filters"/></b>:&nbsp;
+                            <g:each var="fq" in="${sr.activeFacetMap}">
+                                <g:if test="${fq.key}">
+                                    <g:set var="hasFq" value="${true}"/>
+                                    <alatag:currentFilterItem item="${fq}" cssClass="btn btn-mini" addCloseBtn="${true}"/>
+                                </g:if>
+                            </g:each>
+                            <g:if test="${sr.activeFacetMap?.size() > 1}">
+                                <button class="btn btn-primary btn-mini activeFilter" data-facet="all"
+                                        title="Click to clear all filters"><span
+                                        class="closeX">&gt;&nbsp;</span>Clear all</button>
+                            </g:if>
+                        </div>
+                    </g:if>
                     <%-- jQuery template used for taxon drop-downs --%>
                     <div class="btn-group hide" id="template">
                         <a class="btn btn-small" href="" id="taxa_" title="view species page" target="BIE">placeholder</a>

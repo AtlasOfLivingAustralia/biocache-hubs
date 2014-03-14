@@ -20,8 +20,13 @@
                 <div class="subnavlist">
                     <ul id="refinedFacets">
                         <g:each var="item" in="${sr.activeFacetMap}">
-                            <alatag:currentFilterItem item="${item}"/>
+                            <li><alatag:currentFilterItem item="${item}" addCheckBox="${true}"/></li>
                         </g:each>
+                        <g:if test="${sr.activeFacetMap?.size() > 1}">
+                            <li><a href="#" class="activeFilter" data-facet="all" title="Click to clear all filters">
+                                <span class="closeX" style="margin-left:7px;">&gt;&nbsp;</span>Clear all</a>
+                            </li>
+                        </g:if>
                     </ul>
                 </div>
             </div>
