@@ -14,6 +14,13 @@
     <title>Admin - Outage banner</title>
 </head>
 <body>
+<div id="breadcrumb">
+    <ol class="breadcrumb">
+        <li><a href="${g.createLink(uri:"/")}">Home</a> <span class=" icon icon-arrow-right"></span></li>
+        <li><a href="${g.createLink(controller: 'admin')}">Admin</a> <span class=" icon icon-arrow-right"></span></li>
+        <li class="active">Outage banner</li>
+    </ol>
+</div>
 <div class="row-fluid">
     <h1>Admin - Outage Message</h1>
 </div>
@@ -42,10 +49,10 @@
             <span class="help-inline"><code>yyyy-mm-dd</code> format</span>
         </div>
     </div>
-    <div class="control-group">
+    <div class="hide control-group">
         <label class="control-label" for="endDate">Display message</label>
         <div class="controls">
-            <input type="checkbox"name="showMessage" id="showMessage" class="span2" ${(outageBanner.showMessage)?'checked="checked"':''}/>
+            <input type="checkbox"name="showMessage" id="showMessage" class="span2" ${(true && outageBanner.showMessage)?'checked="checked"':''}/>
             <span class="help-inline">check this to show the message (dates are still required to be valid)</span>
         </div>
     </div>
