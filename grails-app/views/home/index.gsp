@@ -15,6 +15,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <meta name="section" content="search"/>
     <title>Search for records | ${hubDisplayName}</title>
+    <r:require modules="jquery"/>
     <r:script>
         $(document).ready(function() {
 
@@ -38,6 +39,12 @@
     <div id="headingBar">
         <h1 style="width:100%;" id="searchHeader">Search for records in ${hubDisplayName}</h1>
     </div>
+    <g:if test="${flash.message}">
+        <div class="message alert alert-info">
+            <button type="button" class="close" onclick="$(this).parent().hide()">×</button>
+            <b>Alert:</b> ${raw(flash.message)}
+        </div>
+    </g:if>
     <div class="row-fluid" id="content">
         <div class="span12">
             <div class="tabbable">
@@ -56,7 +63,7 @@
                         <div class="controls">
                             <div class="input-append">
                                 <input type="text" name="taxa" id="taxa" class="input-xxlarge">
-                                <input id="locationSearch" type="submit" class="btn" value="Search">
+                                <button id="locationSearch" type="submit" class="btn"><g:message code="search.simple.button.label" default="Search"/></button>
                             </div>
                         </div>
                         <div>
