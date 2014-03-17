@@ -300,7 +300,7 @@ abbr {
     padding: 15px;
 }
 
-.nav-tabs li a {
+#content .nav-tabs li:not(.active)  a {
     background-color: #f0f0e8;
     border: 1px solid #ddd;
     margin-right: 4px;
@@ -340,4 +340,7 @@ div#download {
 }
 #termsOfUseDownload {
     text-align:left; padding-bottom:15px;
+}
+#breadcrumb ul, #breadcrumb ol  {
+    margin-bottom: 2px;
 }

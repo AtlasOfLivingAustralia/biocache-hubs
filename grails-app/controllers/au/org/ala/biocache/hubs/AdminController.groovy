@@ -22,32 +22,87 @@ import org.springframework.web.bind.annotation.InitBinder
 
 import java.text.SimpleDateFormat
 
+/**
+ * Admin functions - should be protected by login and ROLE_ADMIN or equil.
+ */
 class AdminController {
     def scaffold = true
-    def facetsCacheService, outageService
+    def facetsCacheService, outageService, authService
+    def beforeInterceptor = [action:this.&auth]
+
+    /**
+     * Before interceptor to check for roles
+     *
+     * @return
+     */
+    private auth() {
+        if (!authService.userInRole('ROLE_ADMIN')) {
+            log.debug "redirecting to index..."
+            flash.message = "You are not authorised to access the page: ${params.controller}/${params.action?:''}."
+            redirect(controller: "home", action: "index")
+            false
+        } else {
+            true
+        }
+    }
 
     def index() {
-        render "Not available to the public"
+        // [ message: "not used" ]
     }
 
-    @CacheEvict(value='biocacheCache', allEntries=true)
+    def clearAllCaches() {
+        def message = "Clearing all caches...\n"
+        message += doClearBiocacheCache()
+        message += doClearCollectoryCache()
+        message += doClearLongTermCache()
+        message += doClearFacetsCache()
+        flash.message = message.replaceAll("\n","<br/>")
+        redirect(action:'index')
+    }
+
     def clearBiocacheCache() {
-        render(text:"biocacheCache cache cleared")
+        flash.message = doClearBiocacheCache()
+        redirect(action:'index')
     }
 
-    @CacheEvict(value='collectoryCache', allEntries=true)
     def clearCollectoryCache() {
-        render(text:"collectoryCache cache cleared")
+        flash.message = doClearCollectoryCache()
+        redirect(action:'index')
     }
 
-    @CacheEvict(value='longTermCache', allEntries=true)
     def clearLongTermCache() {
-        render(text:"longTermCache cache cleared")
+        flash.message = doClearLongTermCache()
+        redirect(action:'index')
     }
 
     def clearFacetsCache() {
+        flash.message = doClearFacetsCache()
+        redirect(action:'index')
+    }
+
+    @CacheEvict(value='biocacheCache', allEntries=true)
+    def doClearBiocacheCache() {
+        "biocacheCache cache cleared\n"
+    }
+
+    @CacheEvict(value='collectoryCache', allEntries=true)
+    def doClearCollectoryCache() {
+        "collectoryCache cache cleared\n"
+    }
+
+    @CacheEvict(value='longTermCache', allEntries=true)
+    def doClearLongTermCache() {
+        "longTermCache cache cleared\n"
+    }
+
+    @CacheEvict(value='fooCache', allEntries=true)
+    def doClearFooCache() {
+        "longTermCache cache cleared\n"
+    }
+
+    def doClearFacetsCache() {
         facetsCacheService.clearCache()
-        redirect(action: "clearLongTermCache") // clear webservice cache as well
+        "facetsCache cache cleared\n"
     }
 
     /**
