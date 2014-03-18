@@ -517,7 +517,6 @@
                 </g:if>
                 </div><!-- end div#SidebarBox -->
                 <div id="content2Z" class="span8">
-                    %{--<jsp:include page="recordCoreDiv.jsp"/>--}%
                     <g:render template="recordCore" />
                 </div><!-- end of div#content2 -->
             </div>
