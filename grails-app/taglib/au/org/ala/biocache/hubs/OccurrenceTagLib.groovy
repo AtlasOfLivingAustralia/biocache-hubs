@@ -18,6 +18,7 @@ package au.org.ala.biocache.hubs
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.time.DateUtils
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 import java.text.SimpleDateFormat
 
@@ -309,30 +310,6 @@ class OccurrenceTagLib {
      */
     def groupedAssertions = { attrs ->
         List groupedAssertions = attrs.groupedAssertions
-//        <c:forEach items="${groupedAssertions}" var="assertion">
-//            <li id="${assertion.usersAssertionUuid}">
-//                <fmt:message key="${assertion.name}"/>
-//                <c:choose>
-//                    <c:when test="${assertion.assertionByUser}">
-//                        <br/>
-//                        <strong>
-//                            ( added by you
-//                            <c:choose>
-//                                <c:when test="${fn:length(assertion.users)>1}">
-//                                    and ${fn:length(assertion.users) - 1} ${fn:length(assertion.users)>2 ? 'other users' : 'other user'})
-//                                </c:when>
-//                                <c:otherwise>
-//                                 )
-//                                </c:otherwise>
-//                            </c:choose>
-//                        </strong>
-//                    </c:when>
-//                    <c:otherwise>
-//                        (added by ${fn:length(assertion.users)} ${fn:length(assertion.users)>1 ? 'users' : 'user'})
-//                    </c:otherwise>
-//                </c:choose>
-//            </li>
-//        </c:forEach>
         def mb = new MarkupBuilder(out)
 
         groupedAssertions.each { assertion ->
@@ -499,8 +476,75 @@ class OccurrenceTagLib {
         out << output
     }
 
+    /**
+     * Output a row (occurrence record) in the search results "Records" tab
+     *
+     * @attr occurrence REQUIRED
+     */
+    def formatListRecordRow = { attrs ->
+        def JSONObject occurrence = attrs.occurrence
+        def mb = new MarkupBuilder(out)
+
+        def outputResultsLabel = { label, value, test ->
+            if (test) {
+                mb.span(style:'text-transform: capitalize;') {
+                    strong(class:'resultsLabel') {
+                        mkp.yieldUnescaped(label)
+                    }
+                    mkp.yieldUnescaped(value)
+                }
+            }
+        }
+
+        mb.div(class:'recordRow', id:occurrence.uuid ) {
+            p(class:'rowA') {
+                if (occurrence.taxonRank && occurrence.scientificName) {
+                    span(style:'text-transform: capitalize', occurrence.taxonRank)
+                    mkp.yieldUnescaped(":&nbsp;")
+                    span(class:'occurrenceNames') {
+                        mkp.yieldUnescaped(alatag.formatSciName(rankId:occurrence.taxonRankID?:'6000', name:"${occurrence.scientificName}"))
+                    }
+                } else {
+                    span(class:'occurrenceNames', occurrence.raw_scientificName)
+                }
+                if (occurrence.vernacularName || occurrence.raw_vernacularName) {
+                    mkp.yieldUnescaped(":&nbsp;|&nbsp;")
+                    span(class:'occurrenceNames', occurrence.vernacularName?:occurrence.raw_vernacularName)
+                }
+                span(style:'margin-left: 8px;') {
+                    if (occurrence.eventDate) {
+                        outputResultsLabel("Date: ", g.formatDate(number:"${occurrence.eventDate}", format:"yyyy-MM-dd"), true)
+                    } else if (occurrence.occurrenceYear) {
+                        outputResultsLabel("Year: ", g.formatDate(number:"${occurrence.occurrenceYear}", format:"yyyy"), true)
+                    }
+                    if (occurrence.stateProvince) {
+                        outputResultsLabel("State: ", message(code:occurrence.stateProvince), true)
+                    } else if (occurrence.country) {
+                        outputResultsLabel("Country: ", message(code:occurrence.country), true)
+                    }
+                }
+            }
+            p(class:'rowB') {
+                outputResultsLabel("Institution: ", message(code: occurrence.institutionName), occurrence.institutionName)
+                outputResultsLabel("Collection: ", message(code: occurrence.collectionName), occurrence.collectionName)
+                outputResultsLabel("Data&nbsp;Resource: ", message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
+                outputResultsLabel("Basis&nbsp;of&nbsp;record: ", message(code: occurrence.basisOfRecord), occurrence.basisOfRecord)
+                outputResultsLabel("Catalog&nbsp;number: ", "${occurrence.raw_collectionCode}:${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber!= null && occurrence.raw_catalogNumber)
+                a(
+                        href: g.createLink(url:"${request.contextPath}/occurrences/${occurrence.uuid}"),
+                        class:"occurrenceLink",
+                        style:"margin-left: 15px;",
+                        "View record"
+                )
+            }
+        }
+    }
+
+    /**
+     * Display the logged in user (display name)
+     */
     def loggedInUserId = { attrs ->
-        out << authService?.getUserId()
+        out << authService?.displayName?:authService.email
     }
 
     /**

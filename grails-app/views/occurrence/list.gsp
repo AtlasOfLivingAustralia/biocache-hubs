@@ -262,117 +262,118 @@
                         </div><!-- searchControls -->
                         <div id="results">
                             <g:each var="occurrence" in="${sr.occurrences}">
-                                <div class="recordRow" id="${occurrence.uuid}">
-                                    <g:set var="rawScientificName" value="${alatag.rawScientificName(occurrence: occurrence)}"/>
-                                    <g:if test="${skin == 'avh'}"><%-- AVH hubs --%>
-                                        <p class="rowA">
-                                            <span class="occurrenceNames">${rawScientificName}</span>
-                                            <g:if test="${occurrence.raw_catalogNumber!= null && occurrence.raw_catalogNumber}">
-                                                <span style="display:inline-block;float:right;">
-                                                    <strong class="resultsLabel">Catalogue&nbsp;number:</strong>&nbsp;${occurrence.raw_catalogNumber}
-                                                </span>
-                                            </g:if>
-                                        </p>
-                                        <table class="avhRowB">
-                                            <tr>
-                                                <g:if test="${occurrence.stateProvince}">
-                                                    <td><strong class="resultsLabel">State:</strong>&nbsp;${occurrence.stateProvince}</td>
-                                                </g:if>
-                                                <g:if test="${occurrence.lga}">
-                                                    <td colspan="2"><strong class="resultsLabel">Locality:</strong>&nbsp;<g:message key="${occurrence.lga}"/></td>
-                                                </g:if>
-                                            </tr>
-                                            <tr>
-                                                <td><strong class="resultsLabel">Collector:</strong>&nbsp;${occurrence.collector}&nbsp;&nbsp;${occurrence.recordNumber}</td>
-                                                <g:if test="${!occurrence.collectionName && occurrence.dataResourceName}">
-                                                    <td><strong class="resultsLabel">Data&nbsp;Resource:</strong>&nbsp;${occurrence.dataResourceName}</td>
-                                                </g:if>
-                                                <g:if test="${occurrence.eventDate}">
-                                                    <td><strong class="resultsLabel">Date:</strong>&nbsp;<g:formatDate value="${occurrence.eventDate}" pattern="yyyy-MM-dd"/></td>
-                                                </g:if>
-                                                <g:elseif test="${!occurrence.eventDate && occurrence.year}">
-                                                    <td><strong class="resultsLabel">Date:</strong>&nbsp;${occurrence.year}</td>
-                                                </g:elseif>
-                                            </tr>
-                                            <tr>
-                                                <g:if test="${occurrence.collectionName}">
-                                                    <td><strong class="resultsLabel">Herbarium:</strong>&nbsp;${occurrence.collectionName}</td>
-                                                </g:if>
-                                                <td class="viewRecord"><a href="<g:createLink url="${request.contextPath}/occurrences/${occurrence.uuid}"/>" class="occurrenceLink" style="margin-left: 15px;">View record</a></td>
-                                            </tr>
-                                        </table>
-                                        <p class="rowB" style="display:none">
-                                            <g:if test="${occurrence.stateProvince}">
-                                                <span class="resultListItem"><strong class="resultsLabel">State:</strong>&nbsp;${occurrence.stateProvince}</span>
-                                            </g:if>
-                                            <g:if test="${occurrence.lga}">
-                                                <span class="resultListItem"><strong class="resultsLabel">Locality:</strong>&nbsp;<g:message code="${occurrence.lga}"/></span>
-                                            </g:if>
-                                            <br/>
-                                            <g:if test="${occurrence.collectionName}">
-                                                <span class="resultListItem"><strong class="resultsLabel">Collection:</strong>&nbsp;${occurrence.collectionName}</span>
-                                            </g:if>
-                                            <g:if test="${!occurrence.collectionName && occurrence.dataResourceName}">
-                                                <span class="resultListItem"><strong class="resultsLabel">Data&nbsp;Resource:</strong>&nbsp;${occurrence.dataResourceName}</span>
-                                            </g:if>
-                                            <g:if test="${occurrence.eventDate}">
-                                                <span class="resultListItem"><strong class="resultsLabel">Date:</strong>&nbsp;<g:formatDate value="${occurrence.eventDate}" pattern="yyyy-MM-dd"/></span>
-                                            </g:if>
-                                            <g:elseif test="${occurrence.year}">
-                                                <span class="resultListItem"><strong class="resultsLabel">Date:</strong>&nbsp;${occurrence.year}</span>
-                                            </g:elseif>
+                                <alatag:formatListRecordRow occurrence="${occurrence}" />
+                                %{--<div class="recordRow" id="${occurrence.uuid}">--}%
+                                    %{--<g:set var="rawScientificName" value="${alatag.rawScientificName(occurrence: occurrence)}"/>--}%
+                                    %{--<g:if test="${skin == 'avh'}"><%-- AVH hubs --%>--}%
+                                        %{--<p class="rowA">--}%
+                                            %{--<span class="occurrenceNames">${rawScientificName}</span>--}%
+                                            %{--<g:if test="${occurrence.raw_catalogNumber!= null && occurrence.raw_catalogNumber}">--}%
+                                                %{--<span style="display:inline-block;float:right;">--}%
+                                                    %{--<strong class="resultsLabel">Catalogue&nbsp;number:</strong>&nbsp;${occurrence.raw_catalogNumber}--}%
+                                                %{--</span>--}%
+                                            %{--</g:if>--}%
+                                        %{--</p>--}%
+                                        %{--<table class="avhRowB">--}%
+                                            %{--<tr>--}%
+                                                %{--<g:if test="${occurrence.stateProvince}">--}%
+                                                    %{--<td><strong class="resultsLabel">State:</strong>&nbsp;${occurrence.stateProvince}</td>--}%
+                                                %{--</g:if>--}%
+                                                %{--<g:if test="${occurrence.lga}">--}%
+                                                    %{--<td colspan="2"><strong class="resultsLabel">Locality:</strong>&nbsp;<g:message key="${occurrence.lga}"/></td>--}%
+                                                %{--</g:if>--}%
+                                            %{--</tr>--}%
+                                            %{--<tr>--}%
+                                                %{--<td><strong class="resultsLabel">Collector:</strong>&nbsp;${occurrence.collector}&nbsp;&nbsp;${occurrence.recordNumber}</td>--}%
+                                                %{--<g:if test="${!occurrence.collectionName && occurrence.dataResourceName}">--}%
+                                                    %{--<td><strong class="resultsLabel">Data&nbsp;Resource:</strong>&nbsp;${occurrence.dataResourceName}</td>--}%
+                                                %{--</g:if>--}%
+                                                %{--<g:if test="${occurrence.eventDate}">--}%
+                                                    %{--<td><strong class="resultsLabel">Date:</strong>&nbsp;<g:formatDate value="${occurrence.eventDate}" pattern="yyyy-MM-dd"/></td>--}%
+                                                %{--</g:if>--}%
+                                                %{--<g:elseif test="${!occurrence.eventDate && occurrence.year}">--}%
+                                                    %{--<td><strong class="resultsLabel">Date:</strong>&nbsp;${occurrence.year}</td>--}%
+                                                %{--</g:elseif>--}%
+                                            %{--</tr>--}%
+                                            %{--<tr>--}%
+                                                %{--<g:if test="${occurrence.collectionName}">--}%
+                                                    %{--<td><strong class="resultsLabel">Herbarium:</strong>&nbsp;${occurrence.collectionName}</td>--}%
+                                                %{--</g:if>--}%
+                                                %{--<td class="viewRecord"><a href="<g:createLink url="${request.contextPath}/occurrences/${occurrence.uuid}"/>" class="occurrenceLink" style="margin-left: 15px;">View record</a></td>--}%
+                                            %{--</tr>--}%
+                                        %{--</table>--}%
+                                        %{--<p class="rowB" style="display:none">--}%
+                                            %{--<g:if test="${occurrence.stateProvince}">--}%
+                                                %{--<span class="resultListItem"><strong class="resultsLabel">State:</strong>&nbsp;${occurrence.stateProvince}</span>--}%
+                                            %{--</g:if>--}%
+                                            %{--<g:if test="${occurrence.lga}">--}%
+                                                %{--<span class="resultListItem"><strong class="resultsLabel">Locality:</strong>&nbsp;<g:message code="${occurrence.lga}"/></span>--}%
+                                            %{--</g:if>--}%
+                                            %{--<br/>--}%
+                                            %{--<g:if test="${occurrence.collectionName}">--}%
+                                                %{--<span class="resultListItem"><strong class="resultsLabel">Collection:</strong>&nbsp;${occurrence.collectionName}</span>--}%
+                                            %{--</g:if>--}%
+                                            %{--<g:if test="${!occurrence.collectionName && occurrence.dataResourceName}">--}%
+                                                %{--<span class="resultListItem"><strong class="resultsLabel">Data&nbsp;Resource:</strong>&nbsp;${occurrence.dataResourceName}</span>--}%
+                                            %{--</g:if>--}%
+                                            %{--<g:if test="${occurrence.eventDate}">--}%
+                                                %{--<span class="resultListItem"><strong class="resultsLabel">Date:</strong>&nbsp;<g:formatDate value="${occurrence.eventDate}" pattern="yyyy-MM-dd"/></span>--}%
+                                            %{--</g:if>--}%
+                                            %{--<g:elseif test="${occurrence.year}">--}%
+                                                %{--<span class="resultListItem"><strong class="resultsLabel">Date:</strong>&nbsp;${occurrence.year}</span>--}%
+                                            %{--</g:elseif>--}%
 
-                                            <span style="display:inline-block;float:right;">
-                                                <a href="<g:createLink url="${request.contextPath}/occurrences/${occurrence.uuid}"/>" class="occurrenceLink" style="margin-left: 15px;">View record</a>
-                                            </span>
-                                        </p>
-                                    </g:if>
-                                    <g:else><%-- All other hubs --%>
-                                        <p class="rowA">
-                                            <g:if test="${occurrence.taxonRank && occurrence.scientificName}">
-                                                <span style="text-transform: capitalize">${occurrence.taxonRank}</span>:&nbsp;<span class="occurrenceNames"><alatag:formatSciName rankId="6000" name="${occurrence.scientificName}"/></span>
-                                            </g:if>
-                                            <g:else>
-                                                <span class="occurrenceNames">${occurrence.raw_scientificName}</span>
-                                            </g:else>
-                                            <g:if test="${occurrence.vernacularName}">&nbsp;|&nbsp;<span class="occurrenceNames">${occurrence.vernacularName}</span></g:if>
-                                            <g:elseif test="${occurrence.raw_vernacularName}">&nbsp;|&nbsp;<span class="occurrenceNames">${occurrence.raw_vernacularName}</span></g:elseif>
-                                            <span style="margin-left: 8px;">
-                                                <g:if test="${occurrence.eventDate}">
-                                                    <span style="text-transform: capitalize;"><strong class="resultsLabel">Date:</strong>&nbsp;<g:formatDate number="${occurrence.eventDate}" format="yyyy-MM-dd"/></span>
-                                                </g:if>
-                                                <g:elseif test="${occurrence.occurrenceYear}">
-                                                    <span style="text-transform: capitalize;"><strong class="resultsLabel">Year:</strong>&nbsp;<g:formatDate number="${occurrence.occurrenceYear}" format="yyyy"/></span>
-                                                </g:elseif>
+                                            %{--<span style="display:inline-block;float:right;">--}%
+                                                %{--<a href="<g:createLink url="${request.contextPath}/occurrences/${occurrence.uuid}"/>" class="occurrenceLink" style="margin-left: 15px;">View record</a>--}%
+                                            %{--</span>--}%
+                                        %{--</p>--}%
+                                    %{--</g:if>--}%
+                                    %{--<g:else><%-- All other hubs --%>--}%
+                                        %{--<p class="rowA">--}%
+                                            %{--<g:if test="${occurrence.taxonRank && occurrence.scientificName}">--}%
+                                                %{--<span style="text-transform: capitalize">${occurrence.taxonRank}</span>:&nbsp;<span class="occurrenceNames"><alatag:formatSciName rankId="6000" name="${occurrence.scientificName}"/></span>--}%
+                                            %{--</g:if>--}%
+                                            %{--<g:else>--}%
+                                                %{--<span class="occurrenceNames">${occurrence.raw_scientificName}</span>--}%
+                                            %{--</g:else>--}%
+                                            %{--<g:if test="${occurrence.vernacularName}">&nbsp;|&nbsp;<span class="occurrenceNames">${occurrence.vernacularName}</span></g:if>--}%
+                                            %{--<g:elseif test="${occurrence.raw_vernacularName}">&nbsp;|&nbsp;<span class="occurrenceNames">${occurrence.raw_vernacularName}</span></g:elseif>--}%
+                                            %{--<span style="margin-left: 8px;">--}%
+                                                %{--<g:if test="${occurrence.eventDate}">--}%
+                                                    %{--<span style="text-transform: capitalize;"><strong class="resultsLabel">Date:</strong>&nbsp;<g:formatDate number="${occurrence.eventDate}" format="yyyy-MM-dd"/></span>--}%
+                                                %{--</g:if>--}%
+                                                %{--<g:elseif test="${occurrence.occurrenceYear}">--}%
+                                                    %{--<span style="text-transform: capitalize;"><strong class="resultsLabel">Year:</strong>&nbsp;<g:formatDate number="${occurrence.occurrenceYear}" format="yyyy"/></span>--}%
+                                                %{--</g:elseif>--}%
 
-                                                <g:if test="${occurrence.stateProvince}">
-                                                    <span style="text-transform: capitalize;"><strong class="resultsLabel">State:</strong>&nbsp;<g:message code="region.${occurrence.stateProvince}"/></span>
-                                                </g:if>
-                                                <g:elseif test="${occurrence.country}">
-                                                    <span style="text-transform: capitalize;"><strong class="resultsLabel">Country:</strong>&nbsp;<g:message code="${occurrence.country}"/></span>
-                                                </g:elseif>
-                                            </span>
-                                        </p>
-                                        <p class="rowB">
-                                            <g:if test="${occurrence.institutionName}">
-                                                <span style="text-transform: capitalize;"><strong class="resultsLabel">Institution:</strong>&nbsp;${occurrence.institutionName}</span>
-                                            </g:if>
-                                            <g:if test="${occurrence.collectionName}">
-                                                <span style="text-transform: capitalize;"><strong class="resultsLabel">Collection:</strong>&nbsp;${occurrence.collectionName}</span>
-                                            </g:if>
-                                            <g:if test="${!occurrence.collectionName && occurrence.dataResourceName}">
-                                                <span style="text-transform: capitalize;"><strong class="resultsLabel">Data&nbsp;Resource:</strong>&nbsp;${occurrence.dataResourceName}</span>
-                                            </g:if>
-                                            <g:if test="${occurrence.basisOfRecord}">
-                                                <span style="text-transform: capitalize;"><strong class="resultsLabel">Basis&nbsp;of&nbsp;record:</strong>&nbsp;${occurrence.basisOfRecord}</span>
-                                            </g:if>
-                                            <g:if test="${occurrence.raw_catalogNumber!= null && occurrence.raw_catalogNumber}">
-                                                <strong class="resultsLabel">Catalog&nbsp;number:</strong>&nbsp;${occurrence.raw_collectionCode}:${occurrence.raw_catalogNumber}
-                                            </g:if>
-                                            <a href="<g:createLink url="${request.contextPath}/occurrences/${occurrence.uuid}"/>" class="occurrenceLink" style="margin-left: 15px;">View record</a>
-                                        </p>
-                                    </g:else>
-                                </div>
+                                                %{--<g:if test="${occurrence.stateProvince}">--}%
+                                                    %{--<span style="text-transform: capitalize;"><strong class="resultsLabel">State:</strong>&nbsp;<g:message code="region.${occurrence.stateProvince}"/></span>--}%
+                                                %{--</g:if>--}%
+                                                %{--<g:elseif test="${occurrence.country}">--}%
+                                                    %{--<span style="text-transform: capitalize;"><strong class="resultsLabel">Country:</strong>&nbsp;<g:message code="${occurrence.country}"/></span>--}%
+                                                %{--</g:elseif>--}%
+                                            %{--</span>--}%
+                                        %{--</p>--}%
+                                        %{--<p class="rowB">--}%
+                                            %{--<g:if test="${occurrence.institutionName}">--}%
+                                                %{--<span style="text-transform: capitalize;"><strong class="resultsLabel">Institution:</strong>&nbsp;${occurrence.institutionName}</span>--}%
+                                            %{--</g:if>--}%
+                                            %{--<g:if test="${occurrence.collectionName}">--}%
+                                                %{--<span style="text-transform: capitalize;"><strong class="resultsLabel">Collection:</strong>&nbsp;${occurrence.collectionName}</span>--}%
+                                            %{--</g:if>--}%
+                                            %{--<g:if test="${!occurrence.collectionName && occurrence.dataResourceName}">--}%
+                                                %{--<span style="text-transform: capitalize;"><strong class="resultsLabel">Data&nbsp;Resource:</strong>&nbsp;${occurrence.dataResourceName}</span>--}%
+                                            %{--</g:if>--}%
+                                            %{--<g:if test="${occurrence.basisOfRecord}">--}%
+                                                %{--<span style="text-transform: capitalize;"><strong class="resultsLabel">Basis&nbsp;of&nbsp;record:</strong>&nbsp;${occurrence.basisOfRecord}</span>--}%
+                                            %{--</g:if>--}%
+                                            %{--<g:if test="${occurrence.raw_catalogNumber!= null && occurrence.raw_catalogNumber}">--}%
+                                                %{--<strong class="resultsLabel">Catalog&nbsp;number:</strong>&nbsp;${occurrence.raw_collectionCode}:${occurrence.raw_catalogNumber}--}%
+                                            %{--</g:if>--}%
+                                            %{--<a href="<g:createLink url="${request.contextPath}/occurrences/${occurrence.uuid}"/>" class="occurrenceLink" style="margin-left: 15px;">View record</a>--}%
+                                        %{--</p>--}%
+                                    %{--</g:else>--}%
+                                %{--</div>--}%
                             </g:each>
                         </div><!--close results-->
                         <div id="searchNavBar" class="pagination">
