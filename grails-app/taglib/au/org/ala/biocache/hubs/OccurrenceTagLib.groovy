@@ -541,10 +541,24 @@ class OccurrenceTagLib {
     }
 
     /**
-     * Display the logged in user (display name)
+     * Display the logged in user (user id)
      */
     def loggedInUserId = { attrs ->
+        out << authService?.userId
+    }
+
+    /**
+     * Display the logged in user (display name)
+     */
+    def loggedInUserDisplayname = { attrs ->
         out << authService?.displayName?:authService.email
+    }
+
+    /**
+     * Display the logged in user (email)
+     */
+    def loggedInUserEmail = { attrs ->
+        out << authService.email
     }
 
     /**

@@ -19,6 +19,8 @@
 <g:set var="scientificName" value="${alatag.getScientificName(record: record)}"/>
 <g:set var="sensitiveDatasetRaw" value="${grailsApplication.config.sensitiveDataset?.list?:''}"/>
 <g:set var="sensitiveDatasets" value="${sensitiveDatasetRaw?.split(',')}"/>
+<g:set var="userDisplayName" value="${alatag.loggedInUserDisplayname()}"/>
+<g:set var="userId" value="${alatag.loggedInUserId()}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -146,8 +148,8 @@
                     <g:if test="${isCollectionAdmin}">
                         <g:set var="admin" value=" - admin"/>
                     </g:if>
-                    <g:if test="${alatag.loggedInUserId()}">
-                        Logged in as: ${alatag.loggedInUserId()}
+                    <g:if test="${alatag.loggedInUserDisplayname()}">
+                        Logged in as: ${alatag.loggedInUserDisplayname()}
                     </g:if>
                     <g:if test="${clubView}">
                         <div id="clubView">Showing &quot;Club View&quot;</div>
@@ -351,7 +353,7 @@
                                 </g:if>
                                 <g:else>
                                     <div>
-                                        You are logged in as  <strong>${userDisplayName} (${userEmail})</strong>.
+                                        You are logged in as  <strong>${userDisplayName} (${alatag.loggedInUserEmail()})</strong>.
                                         <form id="issueForm">
                                             <p style="margin-top:20px;">
                                                 <label for="issue">Issue type:</label>
@@ -367,7 +369,7 @@
                                             </p>
                                             <p style="margin-top:20px;">
                                                 <input id="issueFormSubmit" type="submit" value="Submit" class="btn" />
-                                                <input type="reset" value="Cancel" class="btn" onClick="$.fancybox.close();"/>
+                                                <input type="reset" value="Cancel" class="btn" onClick="$('#loginOrFlag').modal('hide');"/>
                                                 <input type="button" id="close" value="Close" class="btn" style="display:none;"/>
                                                 <span id="submitSuccess"></span>
                                             </p>
@@ -379,7 +381,7 @@
                                     </div>
                                 </g:else>
                             </div>
-                            <div class="modal-footer">
+                            <div class="hide modal-footer">
                                 <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;">Close</button>
                             </div>
                         </div>

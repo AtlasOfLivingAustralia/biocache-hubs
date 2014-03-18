@@ -62,6 +62,12 @@ class WebServicesService {
     }
 
     @Cacheable('longTermCache')
+    def JSONArray getErrorCodes() {
+        def url = "${grailsApplication.config.biocacheServicesUrl}/assertions/user/codes"
+        getJsonElements(url)
+    }
+
+    @Cacheable('longTermCache')
     def Map getGroupedFacets() {
         def url = "${grailsApplication.config.biocacheServicesUrl}/search/grouped/facets"
         JSONArray groupedArray = getJsonElements(url)

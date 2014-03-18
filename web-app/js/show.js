@@ -63,6 +63,7 @@ $(document).ready(function() {
         $("#issueFormSubmit").show("slow");
         $("input:reset").show("slow");
         $("input#close").hide("slow");
+        $('#loginOrFlag').modal('hide');
     });
 
     // convert camel case field names to "normal"
