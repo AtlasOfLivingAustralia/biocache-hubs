@@ -103,8 +103,9 @@ class OccurrenceController {
     def show(String id) {
 
         try {
-            JSONObject record = webServicesService.getRecord(id)
             String userId = authService.getUserId()
+            Boolean hasClubView = request.isUserInRole(grailsApplication.config.clubRoleForHub)
+            JSONObject record = webServicesService.getRecord(id, hasClubView)
 
             if (record) {
                 JSONObject compareRecord = webServicesService.getCompareRecord(id)
@@ -126,6 +127,9 @@ class OccurrenceController {
                         collectionName: collectionInfo?.name,
                         collectionLogo: collectionInfo?.institutionLogoUrl,
                         collectionInstitution: collectionInfo?.institution,
+                        isCollectionAdmin: false, // TODO implement this
+                        queryAssertions: null, // TODO implement this
+                        clubView: hasClubView,
                         metadataForOutlierLayers: postProcessingService.getMetadataForOutlierLayers(record, layersMetaData),
                         environmentalSampleInfo: postProcessingService.getLayerSampleInfo(ENVIRO_LAYER, record, layersMetaData),
                         contextualSampleInfo: postProcessingService.getLayerSampleInfo(CONTEXT_LAYER, record, layersMetaData),

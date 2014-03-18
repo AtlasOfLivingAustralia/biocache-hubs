@@ -142,25 +142,21 @@
         <g:if test="${record.raw}">
             <div id="headingBar" class="recordHeader">
                 <h1><g:message code="show.occurrenceRecord" default="Occurrence record"/>: <span id="recordId">${recordId}</span></h1>
-                <g:if test="${skin != 'avh'}">
-                    <div id="jsonLink">
-                        <g:if test="${isCollectionAdmin}">
-                            <g:set var="admin" value=" - admin"/>
-                        </g:if>
-                        <g:if test="${userDisplayName}">
-                            Logged in as: ${userDisplayName}
-                        </g:if>
-                        <g:if test="${clubView}">
-                            <div id="clubView">Showing &quot;Club View&quot;</div>
-                        </g:if>
-                        <!-- <a href="${json}">JSON</a> -->
-                    </div>
-                </g:if>
-                %{--<g:if test="${lastSearchUri}">--}%
-                    <div id="backBtn" class="hide pull-right">
-                        <a href="${lastSearchUri}" title="Return to search results" class="btn">Back to search results</a>
-                    </div>
-                %{--</g:if>--}%
+                <div id="jsonLink">
+                    <g:if test="${isCollectionAdmin}">
+                        <g:set var="admin" value=" - admin"/>
+                    </g:if>
+                    <g:if test="${alatag.loggedInUserId()}">
+                        Logged in as: ${alatag.loggedInUserId()}
+                    </g:if>
+                    <g:if test="${clubView}">
+                        <div id="clubView">Showing &quot;Club View&quot;</div>
+                    </g:if>
+                    <!-- <a href="${json}">JSON</a> -->
+                </div>
+                <div id="backBtn" class="hide pull-right">
+                    <a href="#" title="Return to search results" class="btn">Back to search results</a>
+                </div>
                 <g:if test="${record.raw.classification}">
                     <h2 id="headingSciName">
                         <g:if test="${record.processed.classification.scientificName}">
