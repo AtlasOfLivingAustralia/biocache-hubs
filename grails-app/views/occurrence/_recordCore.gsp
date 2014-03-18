@@ -874,6 +874,7 @@
     </g:if>
     <g:elseif test="${record.processed.occurrence.dataGeneralizations}">
         Due to sensitivity concerns, the coordinates of this record have been generalised: &quot;<span class="dataGeneralizations">${record.processed.occurrence.dataGeneralizations}</span>&quot;.
+        ${(clubView) ? 'NOTE: current user has "club view" and thus coordinates are not generalise.' : ''}
     </g:elseif>
 </alatag:occurrenceTableRow>
 <!-- Information Withheld -->
