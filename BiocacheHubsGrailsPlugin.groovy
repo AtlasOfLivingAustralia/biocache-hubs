@@ -93,6 +93,7 @@ the ALA biocache-service app (no local DB is required for this app).
             }
         }
 
+        // These config vars must be set (some can be empty)
         if (!config.ala.skin){
             config.ala.skin = 'generic'
         }
@@ -107,6 +108,12 @@ the ALA biocache-service app (no local DB is required for this app).
         }
         if(!config.facets.customOrder){
             config.facets.customOrder = ""
+        }
+        if(!config.dwc.exclude){
+            config.dwc.exclude = "dataHubUid,dataProviderUid,institutionUid,dataResourceUid,year,month,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds"
+        }
+        if(!config.auth.admin_role){
+            config.auth.admin_role = "ROLE_ADMIN"
         }
 
         if (!config.default_config) {

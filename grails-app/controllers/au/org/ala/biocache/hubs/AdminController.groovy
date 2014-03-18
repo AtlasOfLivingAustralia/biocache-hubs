@@ -36,7 +36,7 @@ class AdminController {
      * @return
      */
     private auth() {
-        if (!authService.userInRole('ROLE_ADMIN')) {
+        if (!authService.userInRole(grailsApplication.config.auth.admin_role)) {
             log.debug "redirecting to index..."
             flash.message = "You are not authorised to access the page: ${params.controller}/${params.action?:''}."
             redirect(controller: "home", action: "index")
