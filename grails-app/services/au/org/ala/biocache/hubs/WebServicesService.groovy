@@ -29,8 +29,11 @@ class WebServicesService {
     }
 
     @Cacheable('biocacheCache')
-    def JSONObject getRecord(String id) {
+    def JSONObject getRecord(String id, Boolean hasClubView) {
         def url = "${grailsApplication.config.biocacheServicesUrl}/occurrence/${id.encodeAsURL()}"
+        if (hasClubView) {
+            url += "?apiKey=${grailsApplication.config.apiKey?:''}"
+        }
         getJsonElements(url)
     }
 
@@ -154,7 +157,11 @@ class WebServicesService {
     @Cacheable('longTermCache')
     def JSONArray getLoggerSources() {
         def url = "http://logger.ala.org.au/service/logger/sources"
-        getJsonElements(url)
+        try {
+            getJsonElements(url)
+        } catch (Exception ex) {
+            log.error "Error calling logger service: ${ex.message}", ex
+        }
     }
 
     /**
