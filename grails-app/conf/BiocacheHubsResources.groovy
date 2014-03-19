@@ -11,7 +11,7 @@ modules = {
     }
 
     core {
-        //dependsOn 'bootstrap2'
+        dependsOn 'bootstrap2'
         defaultBundle 'main-core'
         resource url: [dir:'css', file:'autocomplete.css', plugin:'biocache-hubs']
         resource url: [dir:'css', file:'base.css', plugin: 'biocache-hubs']
@@ -40,8 +40,8 @@ modules = {
         resource url:[dir:'js', file:'jquery.cookie.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.inview.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.jsonp-2.4.0.min.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'jquery.i18n.properties-1.0.9.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs', disposition: 'head']\
+        resource url:[dir:'js', file:'jquery.i18n.properties-1.0.9.min.js', plugin:'biocache-hubs']
+        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs', disposition: 'head']
     }
 
     search {

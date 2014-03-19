@@ -306,6 +306,10 @@ abbr {
     margin-right: 4px;
 }
 
+#content .nav-tabs li.active a {
+    margin-right: 4px;
+}
+
 #content ul.nav-tabs {
     list-style: none;
     margin-left: 0;
