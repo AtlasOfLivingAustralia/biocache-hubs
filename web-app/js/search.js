@@ -718,7 +718,7 @@ function removeFilter(el) {
 function loadAllCharts() {
 
     //console.log("Loading charts.....");
-    var bgcolour = "#fffef7"; // was "#F0F0E8"
+    var bgcolour = BC_CONF.chartsBgColour; //"#fffef7"; // was "#F0F0E8"
 
     var queryString = BC_CONF.searchString.replace("?q=","");
     var biocacheServiceUrl = BC_CONF.biocacheServiceUrl; //BC_CONF.biocacheServiceUrl, // "http://ala-macropus.it.csiro.au/biocache-service";

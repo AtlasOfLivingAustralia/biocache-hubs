@@ -22,6 +22,7 @@ package au.org.ala.biocache.hubs
 enum FacetsName {
     COLLECTION("collection_uid"),
     INSTITUTION("institution_uid"),
+    DATA_RESOURCE("data_resource_uid"),
     TYPE_STATUS("type_status"),
     BASIS_OF_RECORD("basis_of_record"),
     SPECIES_GROUP("species_group"),

@@ -97,7 +97,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="brand" href="#">${orgNameLong}</a>
+            <a class="brand" href="#">${raw(orgNameLong)}</a>
             <div class="nav-collapse collapse">
                 <p class="navbar-text pull-right">
                     Logged in as <a href="#" class="navbar-link">${username}</a>

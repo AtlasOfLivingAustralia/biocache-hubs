@@ -83,7 +83,7 @@
                         return false;
                     }
                     // send assertion via AJAX... TODO catch errors
-                    $.post("${pageContext.request.contextPath}/occurrences/assertions/add",
+                    $.post("${request.contextPath}/occurrences/assertions/add",
                             { recordUuid: recordUuid, code: code, comment: comment, userId: OCC_REC.userId, userDisplayName: userDisplayName},
                             function(data) {
                                 // service simply returns status or OK or FORBIDDEN, so assume it worked...

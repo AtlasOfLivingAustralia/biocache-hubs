@@ -71,35 +71,6 @@
                 </g:each>
             </div>
         </g:each>
-<%--    <g:each var="facetResult" in="${sr.facetResults}">
-            <g:if test="${facetResult.fieldResult.length() >= 1 && ! sr.activeFacetMap?.containsKey(facetResult.fieldName) }">
-                <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
-                <h4><span class="FieldName">${fieldDisplayName}</span>
-                </h4>
-                <div class="subnavlist" style="clear:left">
-                    <ul class="facets">
-                        <g:set var="lastElement" value="${facetResult.fieldResult.get(facetResult.fieldResult.length()-1)}"/>
-                        <g:if test="${lastElement && lastElement?.label == 'before' && lastElement?.count > 0}">
-                            <li><g:set var="firstYear" value="${facetResult.fieldResult?.get(0)?.label?.substring(0, 4)}"/>
-                                <a href="?${queryParam}&fq=${facetResult.fieldName}:[* TO ${facetResult.fieldResult?.get(0)?.label}]">Before ${firstYear}</a>
-                                (<g:formatNumber number="${lastElement.count}" format="#,###,###"/>)
-                            </li>
-                        </g:if>
-                        <g:each var="fieldResult" in="${facetResult.fieldResult}" status="vs"> <!-- ${facetResult.fieldName}:${fieldResult.label} || ${fieldResult.fq} -->
-                            <g:if test="${fieldResult.count >= 0 && (vs + 1) < 4}">
-                                <alatag:facetLinkItems fieldResult="${fieldResult}" facetResult="${facetResult}" queryParam="${queryParam}"/>
-                            </g:if>
-                        </g:each>
-                    </ul>
-                </div>
-                <g:if test="${facetResult.fieldResult.length() > 1}">
-                    <div class="showHide">
-                        <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-displayname="${fieldDisplayName}"
-                           title="See more options or refine with multiple values"><i class="icon-hand-right"></i> choose more...</a>
-                    </div>
-                </g:if>
-            </g:if>
-        </g:each> --%>
     </div>
 </div><!--end facets-->
 <!-- modal popup for "choose more" link -->

@@ -24,7 +24,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
  */
 class OccurrenceController {
 
-    def webServicesService, postProcessingService, authService
+    def webServicesService, facetsCacheService, postProcessingService, authService
     def ENVIRO_LAYER = "el"
     def CONTEXT_LAYER = "cl"
 
@@ -76,6 +76,7 @@ class OccurrenceController {
                     searchRequestParams: requestParams,
                     defaultFacets: defaultFacets,
                     groupedFacets: webServicesService.getGroupedFacets(),
+                    dynamicFacets: null, // TODO
                     hasImages: postProcessingService.resultsHaveImages(searchResults),
                     showSpeciesImages: false,
                     sort: requestParams.sort,
@@ -129,6 +130,8 @@ class OccurrenceController {
                         collectionInstitution: collectionInfo?.institution,
                         isCollectionAdmin: false, // TODO implement this
                         queryAssertions: null, // TODO implement this
+                        duplicateRecordDetails: null, // TODO implement
+                        dataResourceCodes: facetsCacheService.getFacetNamesFor(FacetsName.DATA_RESOURCE), // TODO test
                         clubView: hasClubView,
                         errorCodes: webServicesService.getErrorCodes(),
                         metadataForOutlierLayers: postProcessingService.getMetadataForOutlierLayers(record, layersMetaData),
