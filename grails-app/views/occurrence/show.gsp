@@ -47,6 +47,7 @@
         google.load('maps','3.3',{ other_params: "sensor=false" });
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
+
     <script type="text/javascript" src="${r.resource(dir:'js', file:'charts2.js', plugin:'biocache-hubs')}"></script>
 
     <r:require modules="show, amplify"/>
@@ -121,7 +122,7 @@
             var facetChartOptions = { error: "badQuery", legend: 'right'}
             facetChartOptions.query = biocacheQuery;
             facetChartOptions.charts = [chartName];
-            facetChartOptions.backgroundColor = '#FFFEF7';
+            facetChartOptions.backgroundColor = '${grailsApplication.config.chartsBgColour?:'#fffef7'}';
             facetChartOptions.width = "75%";
             facetChartOptions[facetName] = {chartType: 'scatter'};
 
@@ -374,7 +375,7 @@
                                                 <span id="submitSuccess"></span>
                                             </p>
                                             <p id="assertionSubmitProgress" style="display:none;">
-                                                <img src="${serverName}${request.contextPath}/images/indicator.gif"/>
+                                                <img src="${request.contextPath}/images/indicator.gif"/>
                                             </p>
 
                                         </form>
