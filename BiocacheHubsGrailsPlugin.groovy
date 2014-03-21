@@ -15,6 +15,9 @@
 
 import au.org.ala.biocache.hubs.ExtendedPluginAwareResourceBundleMessageSource
 import grails.util.Environment
+import grails.util.Holders
+import org.codehaus.groovy.grails.plugins.GrailsPlugin
+import org.codehaus.groovy.grails.plugins.GrailsPluginUtils
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
@@ -55,6 +58,8 @@ the ALA biocache-service app (no local DB is required for this app).
 
     // Online location of the plugin's browseable source code.
     def scm = [ url: "http://ala-hubs.googlecode.com/svn/trunk/biocache-hubs" ]
+
+    def loadBefore = ['alaWebTheme']
 
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before
@@ -116,15 +121,37 @@ the ALA biocache-service app (no local DB is required for this app).
             config.auth.admin_role = "ROLE_ADMIN"
         }
 
-        if (!config.default_config) {
+        println "name = ${Holders.config.grails.plugin.myplugin.name}"
+        println "applcation name = ${application.metadata.getApplicationName()}"
+
+        if (false && !config.default_config) {
             def appName = application.metadata.getApplicationName()
-            config.default_config = "/data/${appName}/config/${appName}-config.properties"
+            def default_config = "/data/${appName}/config/${appName}-config.properties"
+            println "default_config = ${default_config}"
+            File defConf = new File(default_config)
+            def props = new Properties()
+
+            if (defConf.exists()) {
+                println "default_config exists"
+                defConf.withInputStream {
+                     props.load(it)
+                }
+            } else {
+                println "loading hubs.proper‌​ties"
+                props.load(getClass().getClassLoader().getResourceAsStream("hubs.proper‌​ties"))
+            }
+
+            println "props = ${props}"
+
+            def loadConfig = new ConfigSlurper(Environment.current.name).parse(props)
+            println "loadConfig = ${loadConfig}"
+            //config = loadConfig.merge(config)
+            config = config.merge(loadConfig)
+            println "config = ${loadConfig}"
         }
 
         // Load the
-        def loadConfig = new ConfigSlurper(Environment.current.name).parse(application.classLoader.loadClass("defaultConfig"))
-        //application.config.merge(loadConfig) // wrong way
-        config = loadConfig.merge(config) // client app will now override the defaultConfig version
+
 
 
         // Custom message source

@@ -69,7 +69,8 @@ class OccurrenceController {
             JSONObject searchResults = webServicesService.fullTextSearch(requestParams)
             // postProcessingService.modifyQueryTitle(searchResults, taxaQueries)
             // log.info "searchResults = ${searchResults.toString(2)}"
-            log.debug "userid = ${authService.getUserId()}"
+            session['hit'] = 0
+            log.debug "userid = ${authService.getUserId()} - ${session['hit']++}"
 
             [
                     sr: searchResults,

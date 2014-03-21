@@ -10,8 +10,8 @@ modules = {
         resource url:[dir:'bootstrap/css', file:'bootstrap-responsive.css', plugin:'biocache-hubs'], attrs:[media:'screen', id:'responsiveCss']
     }
 
-    core {
-        dependsOn 'bootstrap2'
+    hubCore {
+        dependsOn 'bootstrap'
         defaultBundle 'main-core'
         resource url: [dir:'css', file:'autocomplete.css', plugin:'biocache-hubs']
         resource url: [dir:'css', file:'base.css', plugin: 'biocache-hubs']

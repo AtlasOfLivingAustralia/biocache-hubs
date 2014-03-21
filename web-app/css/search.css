@@ -836,3 +836,7 @@ span.red {
     display: inline-block;
     padding: 0 2px;
 }
+
+.excludeFq {
+    font-weight: bold;
+}

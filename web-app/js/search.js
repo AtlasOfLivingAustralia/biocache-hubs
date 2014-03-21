@@ -60,6 +60,7 @@ $(document).ready(function() {
         location.hash = 'tab_'+ tab;
 
         if (id == "t2" && !tabsInit.map) {
+            //console.log("tab2 FIRST");
             initialiseMap();
             tabsInit.map = true; // only initialise once!
         } else if (id == "t3" && !tabsInit.charts) {

@@ -171,6 +171,7 @@ a.colour-by-legend-toggle {
             cmUrl = 'http://{s}.tile.cloudmade.com/${grailsApplication.config.map.cloudmade.key}/{styleId}/256/{z}/{x}/{y}.png';
 
     var minimal = L.tileLayer(cmUrl, {styleId: 22677, attribution: cmAttr});
+    var defaultBaseLayer = new L.Google('ROADMAP');
 
     var MAP_VAR = {
         map : null,
@@ -179,9 +180,9 @@ a.colour-by-legend-toggle {
         queryDisplayString : "${queryDisplayString}",
         overlays : {},
         baseLayers : {
-            "Minimal" : minimal,
-            "Night view" : L.tileLayer(cmUrl, {styleId: 999,   attribution: cmAttr}),
-            "Road" : new L.Google('ROADMAP'),
+            //"Minimal" : minimal,
+            //"Night view" : L.tileLayer(cmUrl, {styleId: 999,   attribution: cmAttr}),
+            "Road" : defaultBaseLayer,
             "Terrain" : new L.Google('TERRAIN'),
             "Satellite" : new L.Google('HYBRID')
         },
@@ -208,7 +209,7 @@ a.colour-by-legend-toggle {
     });
 
     function initialiseMap(){
-        //console.log("initialiseMap", MAP_VAR.map );
+        console.log("initialiseMap", MAP_VAR.map);
         if(MAP_VAR.map != null){
             return;
         }
@@ -221,7 +222,7 @@ a.colour-by-legend-toggle {
         });
 
         //add the default base layer
-        MAP_VAR.map.addLayer(minimal);
+        MAP_VAR.map.addLayer(defaultBaseLayer);
 
         MAP_VAR.layerControl = L.control.layers(MAP_VAR.baseLayers, MAP_VAR.overlays, {collapsed:true, position:'topleft'});
         MAP_VAR.layerControl.addTo(MAP_VAR.map);
@@ -588,6 +589,7 @@ a.colour-by-legend-toggle {
                             MAP_VAR.map.setZoom(2);
                         }
                     }
+                    MAP_VAR.map.invalidateSize();
                 }
             });
         }
@@ -620,6 +622,7 @@ a.colour-by-legend-toggle {
             circle.addTo(MAP_VAR.map);
             MAP_VAR.map.fitBounds(circle.getBounds()); // make circle the centre of the map, not the points
             L.marker(latLng, {title: popupText}).bindPopup(popupText).addTo(MAP_VAR.map);
+            MAP_VAR.map.invalidateSize();
             //L.circleMarker(latLng, {radius: 6, opacity: 0.8, fillOpacity: 1.0}).bindPopup(popupText).addTo(MAP_VAR.map);
         }
     }

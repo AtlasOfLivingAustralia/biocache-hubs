@@ -35,6 +35,7 @@ class OccurrenceTagLib {
      * @attr fieldName REQUIRED the field name
      */
     def formatDynamicFacetName = { attrs ->
+        log.debug "formatDynamicFacetName - ${session['hit']++}"
         def fieldName = attrs.fieldName
         def output
         if (fieldName.endsWith('_s') || fieldName.endsWith('_i') || fieldName.endsWith('_d')) {
@@ -117,7 +118,7 @@ class OccurrenceTagLib {
     def currentFilterItem = { attrs ->
         def item = attrs.item
         def filterLabel = item.value.displayName.replaceFirst(/^\-/, "") // remove leading "-" for exclude searches
-        def preFix = (item.value.displayName.startsWith('-')) ? "<span class='red'>[exclude]</span> " : ""
+        def preFix = (item.value.displayName.startsWith('-')) ? "<span class='excludeFq'>[exclude]</span> " : ""
         def fqLabel = preFix + filterLabel
 
         def mb = new MarkupBuilder(out)
@@ -482,6 +483,7 @@ class OccurrenceTagLib {
      * @attr occurrence REQUIRED
      */
     def formatListRecordRow = { attrs ->
+        log.debug "formatListRecordRow - ${session['hit']++}"
         def JSONObject occurrence = attrs.occurrence
         def mb = new MarkupBuilder(out)
 
