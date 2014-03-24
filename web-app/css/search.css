@@ -768,7 +768,7 @@ img.optionsIcon {
     margin-right: 0px;
 }
 
-.right-caret {
+.right-caret, .facetGroupName .right-caret {
     border-bottom: 4px solid transparent;
     border-top: 4px solid transparent;
     border-left: 4px solid #000000;
@@ -781,6 +781,32 @@ img.optionsIcon {
 
 .facetGroupName > .showHideFacetGroup, .facetGroupName > .showHideFacetGroup:hover {
     text-decoration: none;
+}
+
+.fadeout {
+    position: relative;
+    bottom: 1em;
+    height: 1em;
+    background: -webkit-linear-gradient(
+        rgba(236, 237, 226, 0) 0%,
+        rgba(236, 237, 226, 1) 100%
+    );
+    background-image: -moz-linear-gradient(
+        rgba(236, 237, 226, 0) 0%,
+        rgba(236, 237, 226, 1) 100%
+    );
+    background-image: -o-linear-gradient(
+        rgba(236, 237, 226, 0) 0%,
+        rgba(236, 237, 226, 1) 100%
+    );
+    background-image: linear-gradient(
+        rgba(236, 237, 226, 0) 0%,
+        rgba(236, 237, 226, 1) 100%
+    );
+    background-image: -ms-linear-gradient(
+        rgba(236, 237, 226, 0) 0%,
+        rgba(236, 237, 226, 1) 100%
+    );
 }
 
 table#fullFacets thead th {

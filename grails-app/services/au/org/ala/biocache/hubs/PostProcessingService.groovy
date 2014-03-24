@@ -315,4 +315,26 @@ class PostProcessingService {
 
         metdataForOutlierLayers
     }
+
+    /**
+     * Create a Map of facet fields for a "lookup" in _facets.gsp
+     *
+     * @param facetResults
+     * @return
+     */
+    def Map getMapOfGroupedFacets(JSONArray facetResults) {
+        Map facetMap = [:]
+
+        facetResults.each { fr ->
+            def facet = fr.fieldName
+
+            if (facet == "occurrence_year") {
+                facet = "decade"
+            }
+
+            facetMap.put(facet, fr)
+        }
+
+        facetMap
+    }
 }

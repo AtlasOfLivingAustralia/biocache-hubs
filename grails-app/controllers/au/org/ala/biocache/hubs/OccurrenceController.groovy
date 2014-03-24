@@ -77,9 +77,10 @@ class OccurrenceController {
                     searchRequestParams: requestParams,
                     defaultFacets: defaultFacets,
                     groupedFacets: webServicesService.getGroupedFacets(),
+                    groupedFacetsMap: postProcessingService.getMapOfGroupedFacets(searchResults.facetResults),
                     dynamicFacets: null, // TODO
                     hasImages: postProcessingService.resultsHaveImages(searchResults),
-                    showSpeciesImages: false,
+                    showSpeciesImages: false, // TODO
                     sort: requestParams.sort,
                     dir: requestParams.dir,
                     userId: authService.getUserId(),
@@ -87,7 +88,7 @@ class OccurrenceController {
             ]
         } catch (Exception ex) {
             flash.message = "${ex.message}"
-            render view:'../error'
+            respond view:'../error'
         }
     }
 

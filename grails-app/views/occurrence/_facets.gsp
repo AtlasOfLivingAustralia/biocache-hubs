@@ -31,20 +31,20 @@
                 </div>
             </div>
         </g:if>
-        <g:set var="facetCount" value="${0}"/>
-        <g:set var="facetMax" value="${20}"/>
+
+        <g:set var="facetMax" value="${50}"/>
         <g:each var="group" in="${groupedFacets}">
             <div class="facetGroupName" id="heading_${group.key.replaceAll(/\s+/,'')}">
-                <a href="#" class="showHideFacetGroup" data-name="${group.key.replaceAll(/\s+/,'')}"><span class="caret ${(false && facetCount < 6)?'':'right-caret'}" style=""></span> ${group.key}</a>
+                <a href="#" class="showHideFacetGroup" data-name="${group.key.replaceAll(/\s+/,'')}"><span class="caret"></span> ${group.key}</a>
             </div>
-            <div class="facetsGroup ${(false && facetCount < 6) ? '': 'hide'}" id="group_${group.key.replaceAll(/\s+/,'')}">
+            <div class="facetsGroup" id="group_${group.key.replaceAll(/\s+/,'')}">
                 <g:set var="firstGroup" value="${false}"/>
                 <g:each in="${group.value}" var="facetFromGroup">
                     <%--  facetFromGroup = ${facetFromGroup} --%>
-                    <g:set var="facetResult" value="${sr.facetResults.find{ it.fieldName == g.message(code:'facet.synonym.'+facetFromGroup, default:facetFromGroup) }}"/>
+                    <g:set var="facetResult" value="${groupedFacetsMap.get(facetFromGroup)}"/>
                     <g:if test="${facetResult && facetResult.fieldResult.length() >= 1 && facetResult.fieldResult[0].count != sr.totalRecords && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
                         <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
-                        <g:set var="facetCount" value="${facetCount + 1}"/>
+
                         <h4><span class="FieldName">${fieldDisplayName}</span></h4>
                         <div class="subnavlist nano" style="clear:left">
                             <ul class="facets nano-content">
@@ -54,13 +54,14 @@
                                     <!-- remove last item so it isn't rendered twice: ${facetResult.fieldResult.pop()} -->
                                     <alatag:facetLinkItems fieldResult="${lastElement}" facetResult="${facetResult}" queryParam="${queryParam}"/>
                                 </g:if>
-                                <g:each var="fieldResult" in="${facetResult.fieldResult}" status="vs"> <!-- ${facetResult.fieldName}:${fieldResult.label} || ${fieldResult.fq} -->
-                                    <g:if test="${fieldResult.count >= 0 && (vs + 1) <= facetMax}">
+                                <g:each var="fieldResult" in="${facetResult.fieldResult}" status="st"> <!-- ${facetResult.fieldName}:${fieldResult.label} || ${fieldResult.fq} -->
+                                    <g:if test="${fieldResult.count >= 0 && (st + 1) <= facetMax}">
                                         <alatag:facetLinkItems fieldResult="${fieldResult}" facetResult="${facetResult}" queryParam="${queryParam}"/>
                                     </g:if>
                                 </g:each>
                             </ul>
                         </div>
+                        %{--<div class="fadeout"></div>--}%
                         <g:if test="${facetResult.fieldResult.length() > 1}">
                             <div class="showHide">
                                 <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-displayname="${fieldDisplayName}"
@@ -112,10 +113,6 @@
         <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;">Close</button>
     </div>
 </div>
-
-<!--
-${false && collectionCodes}
--->
 
 <script type="text/javascript">
     
