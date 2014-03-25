@@ -124,7 +124,7 @@ class WebServicesService {
         List guids = []
 
         if (taxaQueries.size() == 1) {
-            String taxaQ = taxaQueries[0]
+            String taxaQ = taxaQueries[0]?:'*:*' // empty taxa search returns all records
             taxaQueries.addAll(taxaQ.split(" OR ") as List)
             taxaQueries.remove(0) // remove first entry
         }
