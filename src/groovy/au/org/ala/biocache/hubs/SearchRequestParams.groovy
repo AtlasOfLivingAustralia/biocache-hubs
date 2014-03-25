@@ -21,7 +21,7 @@ public class SearchRequestParams {
     /** The facets to be included by the search Initialised with the default facets to use */
     String[] facets = [] // get from http://biocache.ala.org.au/ws/search/facets (and cache) // FacetThemes.allFacets;
     /** The limit for the number of facets to return */
-    Integer flimit = 30
+    Integer flimit = 15
     /** The sort order in which to return the facets.  Either count or index.  When empty string the default values are used as defined in the Theme based facets */
     String fsort = ""
     /** The offset of facets to return.  Used in conjunction to flimit */

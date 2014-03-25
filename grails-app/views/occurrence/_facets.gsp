@@ -1,6 +1,5 @@
-<%@ page import="org.apache.commons.lang.StringUtils" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <div id="facetWell" class="well well-small">
+    ${alatag.logMsg(msg:"Start of facets.gsp")}
     <h3 class="visible-phone">
         <a href="#" id="toggleFacetDisplay"><i class="icon-chevron-down" id="facetIcon"></i>
             Refine results</a>
@@ -31,35 +30,24 @@
                 </div>
             </div>
         </g:if>
-
-        <g:set var="facetMax" value="${50}"/>
+        ${alatag.logMsg(msg:"Before grouped facets facets.gsp")}
+        <g:set var="facetMax" value="${20}"/><g:set var="i" value="${1}"/>
         <g:each var="group" in="${groupedFacets}">
-            <div class="facetGroupName" id="heading_${group.key.replaceAll(/\s+/,'')}">
-                <a href="#" class="showHideFacetGroup" data-name="${group.key.replaceAll(/\s+/,'')}"><span class="caret"></span> ${group.key}</a>
+            <g:set var="keyCamelCase" value="${group.key.replaceAll(/\s+/,'')}"/>
+            <div class="facetGroupName" id="heading_${keyCamelCase}">
+                <a href="#" class="showHideFacetGroup" data-name="${keyCamelCase}"><span class="caret"></span> ${group.key}</a>
             </div>
-            <div class="facetsGroup" id="group_${group.key.replaceAll(/\s+/,'')}">
+            <div class="facetsGroup" id="group_${keyCamelCase}">
                 <g:set var="firstGroup" value="${false}"/>
                 <g:each in="${group.value}" var="facetFromGroup">
-                    <%--  facetFromGroup = ${facetFromGroup} --%>
+                    <%--  Do a lookup on groupedFacetsMap for the current facet --%>
                     <g:set var="facetResult" value="${groupedFacetsMap.get(facetFromGroup)}"/>
+                   <%--  Tests for when to display a facet --%>
                     <g:if test="${facetResult && facetResult.fieldResult.length() >= 1 && facetResult.fieldResult[0].count != sr.totalRecords && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
                         <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
-
-                        <h4><span class="FieldName">${fieldDisplayName}</span></h4>
+                        <h4><span class="FieldName">${fieldDisplayName?:facetResult.fieldName}</span></h4>
                         <div class="subnavlist nano" style="clear:left">
-                            <ul class="facets nano-content">
-                                <g:set var="lastElement" value="${facetResult.fieldResult.get(facetResult.fieldResult.length()-1)}"/>
-                                <g:if test="${lastElement && lastElement?.label == 'before' && lastElement?.count > 0}">
-                                    <%--  Special case of date ranges, catch the last element with "before" in its label and display it first --%>
-                                    <!-- remove last item so it isn't rendered twice: ${facetResult.fieldResult.pop()} -->
-                                    <alatag:facetLinkItems fieldResult="${lastElement}" facetResult="${facetResult}" queryParam="${queryParam}"/>
-                                </g:if>
-                                <g:each var="fieldResult" in="${facetResult.fieldResult}" status="st"> <!-- ${facetResult.fieldName}:${fieldResult.label} || ${fieldResult.fq} -->
-                                    <g:if test="${fieldResult.count >= 0 && (st + 1) <= facetMax}">
-                                        <alatag:facetLinkItems fieldResult="${fieldResult}" facetResult="${facetResult}" queryParam="${queryParam}"/>
-                                    </g:if>
-                                </g:each>
-                            </ul>
+                            <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}"/>
                         </div>
                         %{--<div class="fadeout"></div>--}%
                         <g:if test="${facetResult.fieldResult.length() > 1}">
@@ -72,6 +60,7 @@
                 </g:each>
             </div>
         </g:each>
+        ${alatag.logMsg(msg:"After grouped facets facets.gsp")}
     </div>
 </div><!--end facets-->
 <!-- modal popup for "choose more" link -->
@@ -113,108 +102,4 @@
         <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;">Close</button>
     </div>
 </div>
-
-<script type="text/javascript">
-    
-    String.prototype.hashCode = function(){
-        var hash = 0;
-        if (this.length == 0) return code;
-        for (i = 0; i < this.length; i++) {
-            var thisChar = this.charCodeAt(i);
-            hash = 31*hash+thisChar;
-            hash = hash & hash; // Convert to 32bit integer
-        }
-        return hash;
-    }
-
-    var facetNames = new Array();
-    var facetLabels = new Array();
-    var facetValues = new Array();
-    var facetValueCounts = new Array();
-    var dynamicFacets = new Array();
-    <g:each in="${dynamicFacets}" var="dynamicFacet">
-        dynamicFacets.push('${dynamicFacet.name}');
-    </g:each>
-
-    <g:each var="facetResult" in="${sr.facetResults}">
-        /* JSTL vars setup
-        <g:set var="frlabels" value="0"/>
-        <g:set var="frlabelcount" value="${0}"/>
-        <g:set var="ffl" value="" />
-        <g:set var="ffv" value="" />
-        <g:set var="ffc" value="" />
-
-        <g:set var="lastElement" value="${facetResult.fieldResult.get(facetResult.fieldResult.length() - 1)}"/>
-        <g:if test="${lastElement.label == 'before' && lastElement?.count > 0}">
-            <g:set var="firstYear" value="${StringUtils.substring(facetResult.fieldResult[0].label, 0, 4)}"/>
-            <g:set var="ffl">Before ${firstYear}</g:set>
-            <g:set var="ffv">[* TO  ${facetResult.fieldResult[0].label}]</g:set>
-            <g:set var="ffc" value="${lastElement?.count}" />
-        </g:if>
-
-        <g:each var="fieldResult" in="${facetResult.fieldResult}" status="vs">
-            <g:set var="frlabels" value="${vs + 1}"/>
-            <g:set var="frlabelcount" value="${fieldResult.count + frlabelcount}"/>
-            <g:if test="${ffv && ! StringUtils.endsWith(fieldResult.label, 'before')}">
-                <g:set var="ffl" value="${ffl}|" />
-                <g:set var="ffv" value="${ffv}|" />
-                <g:set var="ffc" value="${ffc}|" />
-            </g:if>
-
-            <g:set var="dateRangeTo"><g:if test="${vs == (facetResult.fieldResult.length() - 1 )|| facetResult.fieldResult[(vs + 1)].label=='before'}">*</g:if><g:else>${facetResult.fieldResult[vs + 1].label}</g:else></g:set>
-            <g:set var="cffv" value="" />
-            <g:set var="cffl" value="" />
-
-            <g:if test="${StringUtils.containsIgnoreCase(facetResult.fieldName, 'occurrence_year') && StringUtils.endsWith(fieldResult.label, 'Z')}">
-                <g:set var="startYear" value="${StringUtils.substring(fieldResult.label, 0, 4)}"/>
-                <g:set var="cffv">[${fieldResult.label} TO ${dateRangeTo}]</g:set>
-                <g:set var="cffl">${startYear} - ${startYear + 10}</g:set>
-            </g:if>
-            <g:elseif test="${StringUtils.containsIgnoreCase(facetResult.fieldName, 'data_resource_uid')}">
-                <g:set var="cffv" value="${fieldResult.label}" />
-                <g:set var="cffl" value="${dataResourceCodes?.get(fieldResult.label)}" />
-            </g:elseif>
-            <g:elseif test="${StringUtils.containsIgnoreCase(facetResult.fieldName, 'data_resource')}">
-                <g:set var="cffv" value="${fieldResult.label}" />
-                <g:set var="cffl"><g:message code="${StringUtils.replace(fieldResult.label, ' provider for OZCAM', '')}"/></g:set>
-            </g:elseif>
-            <g:elseif test="${StringUtils.containsIgnoreCase(facetResult.fieldName, 'institution_uid')}">
-                <g:set var="cffv" value="${fieldResult.label}" />
-                <g:set var="cffl" value="${institutionCodes?.get(fieldResult.label)}" />
-            </g:elseif>
-            <g:elseif test="${StringUtils.containsIgnoreCase(facetResult.fieldName, 'collection_uid')}">
-                <g:set var="cffv" value="${fieldResult.label}" />
-                <g:set var="cffl" value="${collectionCodes?.get(fieldResult.label)}" />
-            </g:elseif>
-            <g:elseif test="${StringUtils.endsWith(fieldResult.label, 'before')}"></g:elseif>
-            <g:elseif test="${StringUtils.containsIgnoreCase(facetResult.fieldName, 'month')}">
-                <g:set var="cffv" value="${fieldResult.label}" />
-                <g:set var="cffl"><g:message code="month.${fieldResult.label ? fieldResult.label : 'unknown'}"/></g:set>
-            </g:elseif>
-            <g:elseif test="${StringUtils.endsWith(facetResult.fieldName, '_s')}">
-                <g:set var="cffv">${fieldResult.label}</g:set>
-                <g:set var="cffl">${StringUtils.replace(fieldResult.label, '_', ' ')}</g:set>
-            </g:elseif>
-            <g:else>
-                <g:set var="cffv" value="${fieldResult.label}" />
-                <g:set var="cffl"><g:message code="${fieldResult.label ? fieldResult.label : 'unknown'}"/></g:set>
-            </g:else>
-
-            <g:set var="ffl" value="${ffl}${cffl}" />
-            <g:set var="ffv" value="${ffv}${cffv}" />
-            <g:set var="ffc" value="${ffc}${fieldResult?.count}" />
-        </g:each>
-        <g:if test="${frlabelcount < sr.totalRecords && frlabels >= searchRequestParams.flimit}">
-            <g:set var="ffl" value="${ffl}|Other" />
-            <g:set var="ffv" value="${ffv}|" />
-            <g:set var="ffc" value="${ffc}|${sr.totalRecords - frlabelcount}" />
-        </g:if>
-        */
-            // add filter queries
-            facetNames.push("${facetResult.fieldName}");
-            facetLabels.push("${ffl.encodeAsHTML()}");
-            facetValues.push("${ffv.encodeAsHTML()}");
-            facetValueCounts.push("${ffc}");
-            // console.log("facet labels", "${facetResult.fieldName}", "${frlabels}", "${searchRequestParams.flimit}");
-    </g:each>
-</script>
+${alatag.logMsg(msg:"End of facets.gsp")}

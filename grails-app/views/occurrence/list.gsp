@@ -267,7 +267,7 @@
                             </g:each>
                         </div><!--close results-->
                         <div id="searchNavBar" class="pagination">
-                            <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}" params="${[q:params.q, fq:params.fq]}"/>
+                            <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}" params="${[taxa:params.taxa, q:params.q, fq:params.fq]}"/>
                         </div>
                     </div><!--end solrResults-->
                     <div id="mapView" class="tab-pane">

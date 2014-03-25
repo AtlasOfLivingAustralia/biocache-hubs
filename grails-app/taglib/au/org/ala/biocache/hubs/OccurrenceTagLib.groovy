@@ -141,7 +141,7 @@ class OccurrenceTagLib {
                     "${year} - ${year10}"
                 })
             } else {
-                mkp.yieldUnescaped(message(code: fqLabel, default: fqLabel).replaceAll(':',': '))
+                mkp.yieldUnescaped(message(code: fqLabel, default: fqLabel).replaceFirst(':',': '))
             }
             if (attrs.addCloseBtn) {
                 mkp.yieldUnescaped("&nbsp;")
@@ -153,18 +153,14 @@ class OccurrenceTagLib {
     }
 
     /**
-     * Generate facet links in the left hand column
+     *  Generate facet links in the left hand column
      *
-     * @attr fieldResult REQUIRED
-     * @attr facetResult REQUIRED
-     * @attr queryParam REQUIRED
      */
-    def facetLinkItems = { attrs ->
-        def fieldResult = attrs.fieldResult
+    def facetLinkList = { attrs ->
         def facetResult = attrs.facetResult
         def queryParam = attrs.queryParam
         def mb = new MarkupBuilder(out)
-        def fqValue = fieldResult.label?.encodeAsURL()
+        //def fqValue = fieldResult.label?.encodeAsURL()
         def linkTitle = "Filter results by ${alatag.formatDynamicFacetName(fieldName:facetResult.fieldName)}"
 
         def addCounts = { count ->
@@ -175,58 +171,70 @@ class OccurrenceTagLib {
             }
         }
 
-        // Catch specific facets fields
-        if (fieldResult.fq) {
-            // biocache-service has provided a fq field in the fieldResults list
-            mb.li {
-                a(      href:"?${queryParam}&fq=${fieldResult.fq?.encodeAsURL()}",
-                        class: "tooltips",
-                        title: linkTitle
-                ) {
-                    span(class:"checkbox-unchecked"){
-                        mkp.yieldUnescaped("&nbsp;")
-                    }
-                    span(class:"facet-item") {
-                        mkp.yield(message(code:"${fieldResult.label?:'unknown'}", default:"${fieldResult.label}"))
-                        addCounts(fieldResult.count)
-                    }
+        def lastEl = facetResult.fieldResult.last()
 
-                }
+        if (lastEl.label == 'before') {
+            // range facets have the "before" special fq element at end - move it to the front of array
+            facetResult.fieldResult.pop()
+            facetResult.fieldResult.putAt(0, lastEl)
+        }
 
-            }
-        } else if (StringUtils.startsWith(facetResult.fieldName, "occurrence_")) {
+        mb.ul(class:'facets nano-content') {
+            facetResult.fieldResult.each { fieldResult ->
+                // Catch specific facets fields
+                if (fieldResult.fq) {
+                    // biocache-service has provided a fq field in the fieldResults list
+                    li {
+                        a(      href:"?${queryParam}&fq=${fieldResult.fq?.encodeAsURL()}",
+                                class: "tooltips",
+                                title: linkTitle
+                        ) {
+                            span(class:"checkbox-unchecked"){
+                                mkp.yieldUnescaped("&nbsp;")
+                            }
+                            span(class:"facet-item") {
+                                mkp.yield(message(code:"${fieldResult.label?:'unknown'}", default:"${fieldResult.label}"))
+                                addCounts(fieldResult.count)
+                            }
 
-            def decade = processDecadeLabel(facetResult.fieldName, facetResult.fieldResult?.get(0)?.label, fieldResult.label)
+                        }
 
-            mb.li {
-                a(      href:"?${queryParam}&fq=${decade.fq}",
-                        class: "tooltips",
-                        title: linkTitle
-                ) {
-                    span(class:"checkbox-unchecked"){
-                        mkp.yieldUnescaped("&nbsp;")
                     }
-                    span(class:"facet-item") {
-                        mkp.yieldUnescaped("${decade.label}")
-                        addCounts(fieldResult.count)
-                    }
-                }
+                } else if (facetResult.fieldName.startsWith("occurrence_")) {
+                    // decade date range a special case
+                    def decade = processDecadeLabel(facetResult.fieldName, facetResult.fieldResult?.get(1)?.label, fieldResult.label)
 
-            }
-        } else {
-            def label = g.message(code:"${facetResult.fieldName}.${fieldResult.label}", default:"")?:
-                    g.message(code:"${fieldResult.label?:'unknown'}", default:"${fieldResult.label}")
-            mb.li {
-                a(      href:"?${queryParam}&fq=${facetResult.fieldName}:%22${fqValue}%22",
-                        class: "tooltips",
-                        title: linkTitle
-                ) {
-                    span(class:"checkbox-unchecked"){
-                        mkp.yieldUnescaped("&nbsp;")
+                    li {
+                        a(      href:"?${queryParam}&fq=${decade.fq}",
+                                class: "tooltips",
+                                title: linkTitle
+                        ) {
+                            span(class:"checkbox-unchecked"){
+                                mkp.yieldUnescaped("&nbsp;")
+                            }
+                            span(class:"facet-item") {
+                                mkp.yieldUnescaped("${decade.label}")
+                                addCounts(fieldResult.count)
+                            }
+                        }
+
                     }
-                    span(class:"facet-item") {
-                        mkp.yield(label)
-                        addCounts(fieldResult.count)
+                } else {
+                    def label = g.message(code:"${facetResult.fieldName}.${fieldResult.label}", default:"")?:
+                            g.message(code:"${fieldResult.label?:'unknown'}", default:"${fieldResult.label}")
+                    li {
+                        a(      href:"?${queryParam}&fq=${facetResult.fieldName}:%22${fieldResult.label?.encodeAsURL()}%22",
+                                class: "tooltips",
+                                title: linkTitle
+                        ) {
+                            span(class:"checkbox-unchecked"){
+                                mkp.yieldUnescaped("&nbsp;")
+                            }
+                            span(class:"facet-item") {
+                                mkp.yield(label)
+                                addCounts(fieldResult.count)
+                            }
+                        }
                     }
                 }
             }
@@ -616,5 +624,14 @@ class OccurrenceTagLib {
                 }
             }
         }
+    }
+
+    /**
+     *
+     * @attr msg REQUIRED
+     * @attr level
+     */
+    def logMsg = { attrs ->
+        log."${attrs.level?:'error'}" attrs.msg
     }
 }
