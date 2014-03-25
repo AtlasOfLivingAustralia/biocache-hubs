@@ -516,14 +516,17 @@ $(document).ready(function() {
     $('.showHideFacetGroup').click(function(e) {
         e.preventDefault();
         var name = $(this).data('name');
+        //console.log('search-facets-state-' + name + '=')
         $(this).find('span').toggleClass('right-caret');
         $('#group_' + name).slideToggle(600, function() {
             //console.log('showHideFacetGroup',name);
             if ($('#group_' + name).is(":visible") ) {
                 $('#group_' + name).find(".nano").nanoScroller({ preventPageScrolling: true });
                 amplify.store('search-facets-state-' + name, true);
+                //console.log("storing facet state", name, amplify.store('search-facets-state-' + name));
             } else {
                 amplify.store('search-facets-state-' + name, null);
+                //console.log("un-storing facet state", name, amplify.store('search-facets-state-' + name));
             }
         });
     });
@@ -532,7 +535,7 @@ $(document).ready(function() {
     $('.facetsGroup').each(function(i, el) {
         var name = $(el).attr('id').replace(/^group_/, '');
         var wasShown = amplify.store('search-facets-state-' + name);
-        //console.log('facetsGroup',name, wasShown);
+        //console.log('facetsGroup','search-facets-state-' + name + '=', wasShown);
         if ($.trim($(el).html()) == '') {
             //console.log("is empty", name);
             $('#heading_' + name).hide();

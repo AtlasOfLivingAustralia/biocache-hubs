@@ -35,9 +35,9 @@
         <g:each var="group" in="${groupedFacets}">
             <g:set var="keyCamelCase" value="${group.key.replaceAll(/\s+/,'')}"/>
             <div class="facetGroupName" id="heading_${keyCamelCase}">
-                <a href="#" class="showHideFacetGroup" data-name="${keyCamelCase}"><span class="caret"></span> ${group.key}</a>
+                <a href="#" class="showHideFacetGroup" data-name="${keyCamelCase}"><span class="caret right-caret"></span> ${group.key}</a>
             </div>
-            <div class="facetsGroup" id="group_${keyCamelCase}">
+            <div class="facetsGroup hide" id="group_${keyCamelCase}">
                 <g:set var="firstGroup" value="${false}"/>
                 <g:each in="${group.value}" var="facetFromGroup">
                     <%--  Do a lookup on groupedFacetsMap for the current facet --%>
