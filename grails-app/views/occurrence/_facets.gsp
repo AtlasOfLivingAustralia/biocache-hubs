@@ -102,4 +102,10 @@
         <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;">Close</button>
     </div>
 </div>
+<script type="text/javascript">
+    var dynamicFacets = new Array();
+    <g:each in="${dynamicFacets}" var="dynamicFacet">
+        dynamicFacets.push('${dynamicFacet.name}');
+    </g:each>
+</script>
 ${alatag.logMsg(msg:"End of facets.gsp")}
