@@ -3,7 +3,7 @@
     Created on : Feb 25, 2011, 4:20:32 PM
     Author     : "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
 --%>
-<g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocacheServicesUrl}"/>
+<g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocache.baseUrl}"/>
 <div id="download" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="downloadsLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -30,7 +30,7 @@
 
             <input type="hidden" name="url" id="downloadChecklistUrl" value="${biocacheServiceUrl}/occurrences/facets/download"/>
             <input type="hidden" name="url" id="downloadFieldGuideUrl" value="${request.contextPath}/occurrences/fieldguide/download"/>
-            <input type="hidden" name="extra" id="extraFields" value="${grailsApplication.config.downloads.extra}"/>
+            <input type="hidden" name="extra" id="extraFields" value="${grailsApplication.config.biocache.downloads.extra}"/>
             <input type="hidden" name="sourceTypeId" id="sourceTypeId" value="${alatag.getSourceId()}"/>
 
             <fieldset>

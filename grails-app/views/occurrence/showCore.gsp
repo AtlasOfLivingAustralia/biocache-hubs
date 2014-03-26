@@ -7,11 +7,11 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <g:set var="recordId" value="${alatag.getRecordId(record: record)}"/>
-<g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseURL}"/>
+<g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseUrl}"/>
 <g:set var="collectionsWebappContext" value="${grailsApplication.config.collections.baseUrl}"/>
-<g:set var="useAla" value="${grailsApplication.config.useAla}"/>
+<g:set var="useAla" value="${grailsApplication.config.skin.name == 'ala' ? true : false}"/>
 <g:set var="hubDisplayName" value="${grailsApplication.config.site.displayName}"/>
-<g:set var="biocacheService" value="${grailsApplication.config.biocacheServicesUrl}"/>
+<g:set var="biocacheService" value="${grailsApplication.config.biocache.baseUrl}"/>
 <g:set var="scientificName" value="${alatag.getScientificName(record: record)}"/>
 <!DOCTYPE html>
 <html>

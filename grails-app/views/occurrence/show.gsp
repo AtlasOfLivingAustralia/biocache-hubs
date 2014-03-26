@@ -8,14 +8,14 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="org.apache.commons.lang.StringUtils" contentType="text/html;charset=UTF-8" %>
 <g:set var="recordId" value="${alatag.getRecordId(record: record, skin: skin)}"/>
-<g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseURL}"/>
+<g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseUrl}"/>
 <g:set var="collectionsWebappContext" value="${grailsApplication.config.collections.baseUrl}"/>
-<g:set var="useAla" value="${grailsApplication.config.useAla}"/>
+<g:set var="useAla" value="${grailsApplication.config.skin.name == 'ala' ? 'true' : 'false'}"/>
 <g:set var="dwcExcludeFields" value="${grailsApplication.config.dwc.exclude}"/>
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
-<g:set var="biocacheService" value="${grailsApplication.config.biocacheServicesUrl}"/>
-<g:set var="spatialPortalUrl" value="${grailsApplication.config.spatial.baseURL}"/>
-<g:set var="serverName" value="${grailsApplication.config.site.serverName?:grailsApplication.config.biocacheServicesUrl}"/>
+<g:set var="biocacheService" value="${grailsApplication.config.biocache.baseUrl}"/>
+<g:set var="spatialPortalUrl" value="${grailsApplication.config.spatial.baseUrl}"/>
+<g:set var="serverName" value="${grailsApplication.config.site.serverName?:grailsApplication.config.biocache.baseUrl}"/>
 <g:set var="scientificName" value="${alatag.getScientificName(record: record)}"/>
 <g:set var="sensitiveDatasetRaw" value="${grailsApplication.config.sensitiveDataset?.list?:''}"/>
 <g:set var="sensitiveDatasets" value="${sensitiveDatasetRaw?.split(',')}"/>
@@ -24,7 +24,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.skin.name}"/>
     <title>Record: ${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">

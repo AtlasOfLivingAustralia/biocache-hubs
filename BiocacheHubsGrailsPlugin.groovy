@@ -15,13 +15,10 @@
 
 import au.org.ala.biocache.hubs.ExtendedPluginAwareResourceBundleMessageSource
 import grails.util.Environment
-import grails.util.Holders
-import org.codehaus.groovy.grails.plugins.GrailsPlugin
-import org.codehaus.groovy.grails.plugins.GrailsPluginUtils
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "1.0-SNAPHOT"
+    def version = "1.0-SNAPSHOT"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging
@@ -59,7 +56,7 @@ the ALA biocache-service app (no local DB is required for this app).
     // Online location of the plugin's browseable source code.
     def scm = [ url: "http://ala-hubs.googlecode.com/svn/trunk/biocache-hubs" ]
 
-    def loadBefore = ['alaWebTheme']
+    def loadBefore = ['alaWebTheme', 'ala-web-theme']
 
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before
@@ -99,8 +96,8 @@ the ALA biocache-service app (no local DB is required for this app).
         }
 
         // These config vars must be set (some can be empty)
-        if (!config.ala.skin){
-            config.ala.skin = 'generic'
+        if (!config.skin.name){
+            config.skin.name = 'generic'
         }
         if(!config.facets.include){
             config.facets.include = ""
@@ -121,42 +118,15 @@ the ALA biocache-service app (no local DB is required for this app).
             config.auth.admin_role = "ROLE_ADMIN"
         }
 
-        println "name = ${Holders.config.grails.plugin.myplugin.name}"
-        println "applcation name = ${application.metadata.getApplicationName()}"
-
-        if (false && !config.default_config) {
-            def appName = application.metadata.getApplicationName()
-            def default_config = "/data/${appName}/config/${appName}-config.properties"
-            println "default_config = ${default_config}"
-            File defConf = new File(default_config)
-            def props = new Properties()
-
-            if (defConf.exists()) {
-                println "default_config exists"
-                defConf.withInputStream {
-                     props.load(it)
-                }
-            } else {
-                println "loading hubs.proper‌​ties"
-                props.load(getClass().getClassLoader().getResourceAsStream("hubs.proper‌​ties"))
-            }
-
-            println "props = ${props}"
-
-            def loadConfig = new ConfigSlurper(Environment.current.name).parse(props)
-            println "loadConfig = ${loadConfig}"
-            //config = loadConfig.merge(config)
-            config = config.merge(loadConfig)
-            println "config = ${loadConfig}"
-        }
-
-        // Load the
-
-
+        // Load the "sensible defaults"
+        def loadConfig = new ConfigSlurper(Environment.current.name).parse(application.classLoader.loadClass("defaultConfig"))
+        application.config.merge(loadConfig) // wrong way
+        //config = loadConfig.merge(config) // client app will now override the defaultConfig version
+        println "config.security = ${config.security}"
 
         // Custom message source
         messageSource(ExtendedPluginAwareResourceBundleMessageSource) {
-            basenames = ["classpath:grails-app/i18n/messages","${config.biocacheServicesUrl}/facets/i18n"] as String[]
+            basenames = ["classpath:grails-app/i18n/messages","${config.biocache.baseUrl}/facets/i18n"] as String[]
             cacheSeconds = 300
             useCodeAsDefaultMessage = true
         }
@@ -177,7 +147,7 @@ the ALA biocache-service app (no local DB is required for this app).
     }
 
     def onConfigChange = { event ->
-        //this.mergeConfig(application)
+        this.mergeConfig(application)
         // TODO Implement code that is executed when the project configuration changes.
         // The event is the same as for 'onChange'.
     }

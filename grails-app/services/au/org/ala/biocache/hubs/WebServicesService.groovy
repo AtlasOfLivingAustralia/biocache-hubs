@@ -18,58 +18,58 @@ class WebServicesService {
 
     @Cacheable('biocacheCache')
     def JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
-        def url = "${grailsApplication.config.biocacheServicesUrl}/occurrences/search?${requestParams.getEncodedParams()}"
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
         getJsonElements(url)
     }
 
     @Cacheable('longTermCache')
     def JSONObject cachedFullTextSearch(SpatialSearchRequestParams requestParams) {
-        def url = "${grailsApplication.config.biocacheServicesUrl}/occurrences/search?${requestParams.getEncodedParams()}"
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
         getJsonElements(url)
     }
 
     @Cacheable('biocacheCache')
     def JSONObject getRecord(String id, Boolean hasClubView) {
-        def url = "${grailsApplication.config.biocacheServicesUrl}/occurrence/${id.encodeAsURL()}"
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrence/${id.encodeAsURL()}"
         if (hasClubView) {
-            url += "?apiKey=${grailsApplication.config.apiKey?:''}"
+            url += "?apiKey=${grailsApplication.config.biocache.apiKey?:''}"
         }
         getJsonElements(url)
     }
 
     @Cacheable('biocacheCache')
     def JSONObject getCompareRecord(String id) {
-        def url = "${grailsApplication.config.biocacheServicesUrl}/occurrence/compare?uuid=${id.encodeAsURL()}"
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrence/compare?uuid=${id.encodeAsURL()}"
         getJsonElements(url)
     }
 
     @Cacheable('biocacheCache')
     def JSONArray getUserAssertions(String id) {
-        def url = "${grailsApplication.config.biocacheServicesUrl}/occurrences/${id.encodeAsURL()}/assertions"
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/${id.encodeAsURL()}/assertions"
         getJsonElements(url)
     }
 
     @Cacheable('biocacheCache')
     def JSONArray getQueryAssertions(String id) {
-        def url = "${grailsApplication.config.biocacheServicesUrl}/occurrences/${id.encodeAsURL()}/assertionQueries"
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/${id.encodeAsURL()}/assertionQueries"
         getJsonElements(url)
     }
 
     @Cacheable('longTermCache')
     def JSONArray getDefaultFacets() {
-        def url = "${grailsApplication.config.biocacheServicesUrl}/search/facets"
+        def url = "${grailsApplication.config.biocache.baseUrl}/search/facets"
         getJsonElements(url)
     }
 
     @Cacheable('longTermCache')
     def JSONArray getErrorCodes() {
-        def url = "${grailsApplication.config.biocacheServicesUrl}/assertions/user/codes"
+        def url = "${grailsApplication.config.biocache.baseUrl}/assertions/user/codes"
         getJsonElements(url)
     }
 
     @Cacheable('longTermCache')
     def Map getGroupedFacets() {
-        def url = "${grailsApplication.config.biocacheServicesUrl}/search/grouped/facets"
+        def url = "${grailsApplication.config.biocache.baseUrl}/search/grouped/facets"
         JSONArray groupedArray = getJsonElements(url)
         Map groupedMap = [:] // LinkedHashMap by default so ordering is maintained
 
@@ -90,7 +90,7 @@ class WebServicesService {
     @Cacheable('longTermCache')
     def Map getLayersMetaData() {
         Map layersMetaMap = [:]
-        def url = "${grailsApplication.config.spatial.baseURL}/layers.json"
+        def url = "${grailsApplication.config.spatial.baseUrl}/layers.json"
         def jsonArray = getJsonElements(url)
 
         jsonArray.each {
@@ -131,7 +131,7 @@ class WebServicesService {
 
         List encodedQueries = taxaQueries.collect { it.encodeAsURL() } // URL encode params
 
-        def url = grailsApplication.config.bie.baseURL + "/ws/guid/batch?q=" + encodedQueries.join("&q=")
+        def url = grailsApplication.config.bie.baseUrl + "/ws/guid/batch?q=" + encodedQueries.join("&q=")
         JSONObject guidsJson = getJsonElements(url)
 
         taxaQueries.each { key ->

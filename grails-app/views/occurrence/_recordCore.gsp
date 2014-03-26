@@ -384,10 +384,7 @@
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="scientificName" fieldName="Scientific name">
     ${fieldsMap.put("taxonConceptID", true)}
     ${fieldsMap.put("scientificName", true)}
-    <g:set var="baseTaxonUrl">
-        <g:if test="${useAla == 'true'}">${bieWebappContext}/species/</g:if>
-        <g:else>${request.contextPath}/taxa/</g:else>
-    </g:set>
+    <g:set var="baseTaxonUrl"><g:if test="${useAla == 'true'}">${bieWebappContext}/species/</g:if><g:else>${request.contextPath}/taxa/</g:else></g:set>
     <g:if test="${record.processed.classification.taxonConceptID}">
         <a href="${baseTaxonUrl}${record.processed.classification.taxonConceptID}">
     </g:if>

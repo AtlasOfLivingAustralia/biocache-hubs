@@ -19,15 +19,15 @@
   Time: 4:39 PM
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocacheServicesUrl}"/>
-<g:set var="queryContext" value="${grailsApplication.config.biocacheRestService.queryContext}"/>
+<g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocache.baseUrl}"/>
+<g:set var="queryContext" value="${grailsApplication.config.biocache.queryContext}"/>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.skin.name}"/>
     <meta name="section" content="yourArea"/>
     <title>Explore Your Area | Atlas of Living Australia</title>
-    <script type="text/javascript" src="https://www.google.com/jsapi?key=${grailsApplication.config.googleKey}"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <r:require modules="exploreYourArea, qtip"/>
     <script type="text/javascript">
         // Global variables for yourAreaMap.js
@@ -47,11 +47,11 @@
 </head>
 <body class="nav-locations">
 <div id="header">
-    <g:if test="${grailsApplication.config.ala.skin == 'ala'}">
+    <g:if test="${grailsApplication.config.skin.name == 'ala'}">
         <div id="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="${grailsApplication.config.ala.baseURL}">Home</a> <span class=" icon icon-arrow-right"></span></li>
-                <li><a href="${grailsApplication.config.ala.baseURL}/species-by-location/">Locations</a> <span class=" icon icon-arrow-right"></span></li>
+                <li><a href="${grailsApplication.config.organisation.baseUrl}">Home</a> <span class=" icon icon-arrow-right"></span></li>
+                <li><a href="${grailsApplication.config.organisation.baseUrl}/species-by-location/">Locations</a> <span class=" icon icon-arrow-right"></span></li>
                 <li class="active">Your Area</li>
             </ol>
         </div>

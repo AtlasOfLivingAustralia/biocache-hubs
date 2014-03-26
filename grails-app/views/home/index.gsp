@@ -7,12 +7,12 @@
 --%>
 <%@ page import="au.org.ala.biocache.hubs.FacetsName; org.apache.commons.lang.StringUtils" contentType="text/html;charset=UTF-8" %>
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
-<g:set var="biocacheServiceUrl" value="${grailsApplication.config.site.biocacheServicesUrl}"/>
-<g:set var="serverName" value="${grailsApplication.config.site.serverName?:grailsApplication.config.biocacheServicesUrl}"/>
+<g:set var="biocacheServiceUrl" value="${grailsApplication.config.site.biocache.baseUrl}"/>
+<g:set var="serverName" value="${grailsApplication.config.site.serverName?:grailsApplication.config.biocache.baseUrl}"/>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.skin.name}"/>
     <meta name="section" content="search"/>
     <title>Search for records | ${hubDisplayName}</title>
     <r:require modules="jquery"/>

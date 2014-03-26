@@ -139,7 +139,7 @@ class OccurrenceController {
                         metadataForOutlierLayers: postProcessingService.getMetadataForOutlierLayers(record, layersMetaData),
                         environmentalSampleInfo: postProcessingService.getLayerSampleInfo(ENVIRO_LAYER, record, layersMetaData),
                         contextualSampleInfo: postProcessingService.getLayerSampleInfo(CONTEXT_LAYER, record, layersMetaData),
-                        skin: grailsApplication.config.ala.skin
+                        skin: grailsApplication.config.skin.name
                 ]
             } else {
                 flash.message = "No record found for id: ${id}"
@@ -193,7 +193,7 @@ class OccurrenceController {
                 radius: radius,
                 zoom: radiusToZoomLevelMap.get(radius),
                 location: grailsApplication.config.exploreYourArea.location,
-                speciesPageUrl: grailsApplication.config.bie.baseURL + "species/"
+                speciesPageUrl: grailsApplication.config.bie.baseUrl + "species/"
         ]
     }
 
@@ -203,7 +203,7 @@ class OccurrenceController {
      * @return
      */
     def legend(){
-       def legend = webServicesService.getText(grailsApplication.config.biocacheServicesUrl + "/webportal/legend?" + request.queryString)
+       def legend = webServicesService.getText(grailsApplication.config.biocache.baseUrl + "/webportal/legend?" + request.queryString)
        response.setContentType("application/json")
        render legend
     }

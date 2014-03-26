@@ -392,7 +392,7 @@ $(document).ready(function() {
 
         if (checkedFound && selectedCount > maxSelected) {
             alert("Too many options selected - maximum is " + maxSelected + ", you have selected " + selectedCount + ", please de-select " +
-                (selectedCount - maxSelected) + " options");
+                (selectedCount - maxSelected) + " options. \n\nNote: if you want to include/exclude all possible values (wildcard filter), use the drop-down option on the buttons below.");
         } else if (checkedFound) {
             //$("form#facetRefineForm").submit();
             var hash = window.location.hash;
@@ -401,6 +401,17 @@ $(document).ready(function() {
         } else {
             alert("Please select at least one checkbox.");
         }
+    });
+
+    // Drop-down option on facet popup div - for wildcard fq searches
+    $('#submitFacets a.wildcard').live('click', function(e) {
+        e.preventDefault();
+        var link = this;
+        var inverseModifier = ($(link).attr('id').indexOf('exclude') != -1) ? "-" : "";
+        var facetName = $("table#fullFacets").data("facet");
+        var fqString = "&fq=" + inverseModifier + facetName + ":*";
+        //console.log("fqString",fqString);
+        window.location.href = window.location.pathname + BC_CONF.searchString + fqString
     });
 
     // QTip generated tooltips

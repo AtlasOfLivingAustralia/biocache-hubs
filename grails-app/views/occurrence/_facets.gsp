@@ -95,9 +95,31 @@
         </div>
     </div>
     <div id='submitFacets' class="modal-footer" style="text-align: left;">
-        <input type='submit' class='submit btn btn-small' id="include" value="INCLUDE selected items"/>
+        <div class="btn-group">
+            <input type='submit' class='submit btn btn-small' id="include" value="INCLUDE selected items"/>
+            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <!-- dropdown menu links -->
+                <li>
+                    <a href="#" class="wildcard" id="includeAll">INCLUDE all values (wildcard include)</a>
+                </li>
+            </ul>
+        </div>
         &nbsp;
-        <input type='submit' class='submit btn btn-small' id="exclude" value="EXCLUDE selected items"/>
+        <div class="btn-group">
+            <input type='submit' class='submit btn btn-small' id="exclude" value="EXCLUDE selected items"/>
+            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <!-- dropdown menu links -->
+                <li>
+                    <a href="#" class="wildcard" id="excludeAll">EXCLUDE all values (wildcard exclude)</a>
+                </li>
+            </ul>
+        </div>
         &nbsp;
         <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;">Close</button>
     </div>

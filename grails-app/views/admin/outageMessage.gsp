@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.skin.name}"/>
     <title>Admin - Outage banner</title>
 </head>
 <body>

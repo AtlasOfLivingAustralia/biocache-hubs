@@ -37,7 +37,7 @@ public class SearchRequestParams {
     String dir = "asc"
     String displayString
     /**  The query context to be used for the search.  This will be used to generate extra query filters based on the search technology */
-    String qc = Holders.config.biocacheRestService.queryContext?:""
+    String qc = Holders.config.biocache.queryContext?:""
     /** To disable facets */
     Boolean facet = true
 

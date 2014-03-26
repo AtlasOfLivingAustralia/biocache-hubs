@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+		<meta name="layout" content="${grailsApplication.config.skin.name}"/>
 		<title>Welcome to Grails</title>
 		<style type="text/css" media="screen">
 			#status {

@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.skin.name}"/>
     <title>Search: ${sr.queryTitle.replaceAll("<(.|\n)*?>", '')} | <g:message code="heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
     %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
@@ -25,14 +25,14 @@
             searchString: "${searchString}", //  JSTL var can contain double quotes // .encodeAsJavaScript()
             facetQueries: "${fqParams.encodeAsURL()}",
             queryString: "${queryDisplay.encodeAsJavaScript()}",
-            bieWebappUrl: "${grailsApplication.config.bie.baseURL}",
-            biocacheServiceUrl: "${grailsApplication.config.biocacheServicesUrl}",
-            skin: "${grailsApplication.config.ala.skin}",
+            bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
+            biocacheServiceUrl: "${grailsApplication.config.biocache.baseUrl}",
+            skin: "${grailsApplication.config.skin.name}",
             defaultListView: "${grailsApplication.config.defaultListView}",
             resourceName: "${grailsApplication.config.skin.orgNameLong}",
-            facetLimit: "${grailsApplication.config.facetLimit?:50}",
-            queryContext: "${grailsApplication.config.biocacheRestService.queryContext}",
-            zoomOutsideScopedRegion: Boolean("${grailsApplication.config.zoomOutsideScopedRegion}"),
+            facetLimit: "${grailsApplication.config.facets.limit?:50}",
+            queryContext: "${grailsApplication.config.biocache.queryContext}",
+            zoomOutsideScopedRegion: Boolean("${grailsApplication.config.map.zoomOutsideScopedRegion}"),
             //mapDefaultCentreCoords:"${grailsApplication.config.mapDefaultCentreCoords}",
             //mapDefaultZoom:"${grailsApplication.config.mapDefaultZoom}",
             hasMultimedia: ${hasImages?:'false'}, // will be either true or false
@@ -273,11 +273,11 @@
                     <div id="mapView" class="tab-pane">
 
                         <g:render template="map"
-                                  model="[mappingUrl:grailsApplication.config.biocacheServicesUrl,
+                                  model="[mappingUrl:grailsApplication.config.biocache.baseUrl,
                                           searchString: searchString,
                                           queryDisplayString:queryDisplay,
                                           facets:sr.facetResults,
-                                          defaultColourBy:grailsApplication.config.defaultFacetMapColourBy
+                                          defaultColourBy:grailsApplication.config.map.defaultFacetMapColourBy
                                   ]"
                         />
                         <div id='envLegend'></div>
