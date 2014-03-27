@@ -14,7 +14,6 @@
 //
 // CAS properties - may be omitted for non-ALA deployments
 //
-serverName = 'http://dev.ala.org.au:8080'
 security.cas.appServerName = "http://dev.ala.org.au:8080"
 security.cas.casServerName = 'https://auth.ala.org.au'
 security.cas.uriFilterPattern = '/admin, /admin/.*'
@@ -28,6 +27,7 @@ security.cas.contextPath = "/generic-biocache-hub" //"/${appName}"
 security.cas.debugWebXml = true
 auth.admin_role = "ROLE_ADMIN"
 
+
 // skin settings
 organisation.baseUrl = "http://www.ala.org.au"
 skin.layout = "generic"
@@ -37,6 +37,7 @@ skin.orgNameShort = "Generic"
 skin.attribution = ""
 
 // web services
+serverName = 'http://dev.ala.org.au:8080'
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.apiKey = "api-key-to-use"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
