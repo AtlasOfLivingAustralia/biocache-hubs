@@ -11,7 +11,7 @@ modules = {
     }
 
     hubCore {
-        dependsOn 'bootstrap'
+        //dependsOn 'bootstrap'
         defaultBundle 'main-core'
         resource url: [dir:'css', file:'autocomplete.css', plugin:'biocache-hubs']
         resource url: [dir:'css', file:'base.css', plugin: 'biocache-hubs']
@@ -36,6 +36,7 @@ modules = {
         dependsOn 'jquery'
         defaultBundle 'main-core'
         resource url:[dir:'css', file:'search.css', plugin:'biocache-hubs']
+        resource url:[dir:'css', file:'pagination.css', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'purl.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.cookie.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.inview.min.js', plugin:'biocache-hubs']

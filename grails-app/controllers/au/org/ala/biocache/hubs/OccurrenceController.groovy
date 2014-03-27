@@ -70,7 +70,7 @@ class OccurrenceController {
             // postProcessingService.modifyQueryTitle(searchResults, taxaQueries)
             // log.info "searchResults = ${searchResults.toString(2)}"
             session['hit'] = 0
-            log.debug "userid = ${authService.getUserId()} - ${session['hit']++}"
+            //log.debug "userid = ${authService.getUserId()} - ${session['hit']++}"
 
             [
                     sr: searchResults,
@@ -83,12 +83,14 @@ class OccurrenceController {
                     showSpeciesImages: false, // TODO
                     sort: requestParams.sort,
                     dir: requestParams.dir,
-                    userId: authService.getUserId(),
-                    userEmail: authService.getEmail()
+                    userId: authService?.getUserId(),
+                    userEmail: authService?.getEmail()
             ]
         } catch (Exception ex) {
+            log.error "config check - skin.layout = ${grailsApplication.config.skin.layout}"
+            log.error "Error getting search results: $ex.message", ex
             flash.message = "${ex.message}"
-            respond view:'../error'
+            render view:'../error'
         }
     }
 
@@ -106,7 +108,7 @@ class OccurrenceController {
     def show(String id) {
 
         try {
-            String userId = authService.getUserId()
+            String userId = authService?.getUserId()
             Boolean hasClubView = request.isUserInRole(grailsApplication.config.clubRoleForHub)
             JSONObject record = webServicesService.getRecord(id, hasClubView)
 
@@ -139,15 +141,15 @@ class OccurrenceController {
                         metadataForOutlierLayers: postProcessingService.getMetadataForOutlierLayers(record, layersMetaData),
                         environmentalSampleInfo: postProcessingService.getLayerSampleInfo(ENVIRO_LAYER, record, layersMetaData),
                         contextualSampleInfo: postProcessingService.getLayerSampleInfo(CONTEXT_LAYER, record, layersMetaData),
-                        skin: grailsApplication.config.skin.name
+                        skin: grailsApplication.config.skin.layout
                 ]
             } else {
-                flash.message = "No record found for id: ${id}"
-                render view:'../error'
+                flash.message = "No record found with id: ${id}"
+                render (view:'../error', model:[layout: grailsApplication.config.skin.layout])
             }
         } catch (Exception ex) {
             flash.message = "${ex.message}"
-            render view:'../error'
+            render (view:'../error', model:[layout: grailsApplication.config.skin.layout])
         }
     }
 

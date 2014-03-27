@@ -12,7 +12,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.skin.name}"/>
+    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="search"/>
     <title>Search for records | ${hubDisplayName}</title>
     <r:require modules="jquery"/>

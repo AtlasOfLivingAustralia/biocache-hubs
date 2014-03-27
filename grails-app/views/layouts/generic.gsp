@@ -10,13 +10,16 @@
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 
     <title><g:layoutTitle /></title>
-    <r:require modules="bootstrap, core" />
+    <r:require modules="bootstrap2, hubCore" />
     <style type="text/css">
     body {
         background-color: #ffffff !important;
     }
     #breadcrumb {
         margin-top: 10px;
+    }
+    #main-content #searchInfoRow #customiseFacetsButton > .dropdown-menu {
+        background-color: #ffffff;
     }
     #footer {
         margin: 20px;

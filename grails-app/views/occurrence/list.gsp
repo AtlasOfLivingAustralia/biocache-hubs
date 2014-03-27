@@ -10,8 +10,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.skin.name}"/>
-    <title>Search: ${sr.queryTitle.replaceAll("<(.|\n)*?>", '')} | <g:message code="heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
+    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+    <title>Search: ${sr?.queryTitle.replaceAll("<(.|\n)*?>", '')} | <g:message code="heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
     %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <r:require modules="search, leaflet, slider, qtip, nanoscroller, amplify"/>
@@ -27,7 +27,7 @@
             queryString: "${queryDisplay.encodeAsJavaScript()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
             biocacheServiceUrl: "${grailsApplication.config.biocache.baseUrl}",
-            skin: "${grailsApplication.config.skin.name}",
+            skin: "${grailsApplication.config.skin.layout}",
             defaultListView: "${grailsApplication.config.defaultListView}",
             resourceName: "${grailsApplication.config.skin.orgNameLong}",
             facetLimit: "${grailsApplication.config.facets.limit?:50}",

@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.skin.name}"/>
+    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <title>Admin Functions | ${grailsApplication.config.skin.orgNameLong}</title>
     <r:require modules="jquery"/>
 </head>

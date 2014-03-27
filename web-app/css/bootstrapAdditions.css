@@ -284,10 +284,10 @@ h2#headingSciName {
 
 .searchPage select,
 .searchPage input {
-    height: 18px;
-    line-height: 18px;
-    padding: 2px 4px;
-    margin-bottom: 10px;
+    /*height: 18px;*/
+    /*line-height: 18px;*/
+    /*padding: 2px 4px;*/
+    /*margin-bottom: 10px;*/
 }
 
 .searchPage textarea {

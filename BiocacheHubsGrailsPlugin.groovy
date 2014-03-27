@@ -96,32 +96,33 @@ the ALA biocache-service app (no local DB is required for this app).
         }
 
         // These config vars must be set (some can be empty)
-        if (!config.skin.name){
-            config.skin.name = 'generic'
-        }
-        if(!config.facets.include){
-            config.facets.include = ""
-        }
-        if(!config.facets.exclude){
-            config.facets.exclude = ""
-        }
-        if(!config.facets.hide){
-            config.facets.hide = ""
-        }
-        if(!config.facets.customOrder){
-            config.facets.customOrder = ""
-        }
-        if(!config.dwc.exclude){
-            config.dwc.exclude = "dataHubUid,dataProviderUid,institutionUid,dataResourceUid,year,month,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds"
-        }
-        if(!config.auth.admin_role){
-            config.auth.admin_role = "ROLE_ADMIN"
-        }
+//        if (!config.skin.layout){
+//            config.skin.layout = 'generic'
+//        }
+//        if(!config.facets.include){
+//            config.facets.include = ""
+//        }
+//        if(!config.facets.exclude){
+//            config.facets.exclude = ""
+//        }
+//        if(!config.facets.hide){
+//            config.facets.hide = ""
+//        }
+//        if(!config.facets.customOrder){
+//            config.facets.customOrder = ""
+//        }
+//        if(!config.dwc.exclude){
+//            config.dwc.exclude = "dataHubUid,dataProviderUid,institutionUid,dataResourceUid,year,month,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds"
+//        }
+//        if(!config.auth.admin_role){
+//            config.auth.admin_role = "ROLE_ADMIN"
+//        }
 
         // Load the "sensible defaults"
         def loadConfig = new ConfigSlurper(Environment.current.name).parse(application.classLoader.loadClass("defaultConfig"))
-        application.config.merge(loadConfig) // wrong way
-        //config = loadConfig.merge(config) // client app will now override the defaultConfig version
+        println "loadConfig.skin = ${loadConfig.skin} || loadConfig.skin.layout = ${loadConfig.skin.layout}"
+        application.config.merge(loadConfig) //
+        //application.config = loadConfig.merge(config) // client app will now override the defaultConfig version
         println "config.security = ${config.security}"
 
         // Custom message source
@@ -147,7 +148,7 @@ the ALA biocache-service app (no local DB is required for this app).
     }
 
     def onConfigChange = { event ->
-        this.mergeConfig(application)
+        //this.mergeConfig(application)
         // TODO Implement code that is executed when the project configuration changes.
         // The event is the same as for 'onChange'.
     }

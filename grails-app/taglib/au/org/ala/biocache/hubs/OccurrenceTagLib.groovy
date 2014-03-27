@@ -588,7 +588,7 @@ class OccurrenceTagLib {
      * Get the appropriate sourceId for the current hub
      */
     def getSourceId = { attrs ->
-        def skin = grailsApplication.config.skin.name?.toUpperCase()
+        def skin = grailsApplication.config.skin.layout?.toUpperCase()
         def sources = webServicesService.getLoggerSources()
         sources.each {
             if (it.name == skin) {

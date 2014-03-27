@@ -24,7 +24,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.skin.name}"/>
+    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="yourArea"/>
     <title>Explore Your Area | Atlas of Living Australia</title>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -47,7 +47,7 @@
 </head>
 <body class="nav-locations">
 <div id="header">
-    <g:if test="${grailsApplication.config.skin.name == 'ala'}">
+    <g:if test="${grailsApplication.config.skin.layout == 'ala'}">
         <div id="breadcrumb">
             <ol class="breadcrumb">
                 <li><a href="${grailsApplication.config.organisation.baseUrl}">Home</a> <span class=" icon icon-arrow-right"></span></li>

@@ -30,7 +30,7 @@ auth.admin_role = "ROLE_ADMIN"
 
 // skin settings
 organisation.baseUrl = "http://www.ala.org.au"
-skin.name = "generic"
+skin.layout = "generic"
 skin.fluidLayout = "true"
 skin.orgNameLong = "Generic Portal"
 skin.orgNameShort = "Generic"
@@ -39,7 +39,7 @@ skin.attribution = ""
 // web services
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.apiKey = "api-key-to-use"
-biocache.baseUrl = "http://biocache.ala.org.au/ws"
+biocache.baseUrl = "http://biocache-test.ala.org.au/ws"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
 biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 collections.baseUrl = "http://collections.ala.org.au"
