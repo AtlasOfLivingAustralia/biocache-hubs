@@ -11,5 +11,10 @@ class BiocacheHubsUrlMappings {
         "/assertions/$id"(controller: 'occurrence', action: 'assertions')
         "/explore/your-area"(controller: 'occurrence', action: 'exploreYourArea')
         "/$action?"(controller:"home")
+        "/$controller/$action?/$id?"{
+            constraints {
+                // apply constraints here
+            }
+        }
 	}
 }
