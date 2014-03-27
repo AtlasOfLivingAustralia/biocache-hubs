@@ -87,8 +87,7 @@ class OccurrenceController {
                     userEmail: authService?.getEmail()
             ]
         } catch (Exception ex) {
-            log.error "config check - skin.layout = ${grailsApplication.config.skin.layout}"
-            log.error "Error getting search results: $ex.message", ex
+            log.warn "Error getting search results: $ex.message", ex
             flash.message = "${ex.message}"
             render view:'../error'
         }
@@ -145,11 +144,12 @@ class OccurrenceController {
                 ]
             } else {
                 flash.message = "No record found with id: ${id}"
-                render (view:'../error', model:[layout: grailsApplication.config.skin.layout])
+                render view:'../error'
             }
         } catch (Exception ex) {
+            log.warn "Error getting record details: $ex.message", ex
             flash.message = "${ex.message}"
-            render (view:'../error', model:[layout: grailsApplication.config.skin.layout])
+            render view:'../error'
         }
     }
 
