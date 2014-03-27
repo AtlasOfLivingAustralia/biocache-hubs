@@ -129,14 +129,16 @@ a.colour-by-legend-toggle {
         <div id="sizeslider" style="width:100px;"></div>
     </td>
     <td class="pull-right">
-        <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
-        <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
+        <g:if test="${grailsApplication.config.useAlaSpatialPortal}">
+            <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
+            <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
+            <div id="downloadMaps" class="btn btn-small">
+                <a id="spatialPortalLink"
+                   href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}">View in spatial portal</a>
+            </div>
+        </g:if>
         <div id="downloadMaps" class="btn btn-small">
-            <a id="spatialPortalLink"
-               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}">View in spatial portal</a>
-        </div>
-        <div id="downloadMaps" class="btn btn-small">
-            <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="">
+            <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
                 <i class="hide icon-download"></i> Download map</a>
         </div>
     </td>
@@ -706,10 +708,10 @@ a.colour-by-legend-toggle {
                         <option>0.4</option>
                         <option>0.5</option>
                         <option>0.6</option>
-                        <option>0.7</option>
+                        <option selected="true">0.7</option>
                         <option>0.8</option>
                         <option>0.9</option>
-                        <option selected="true">1</option>
+                        <option>1</option>
                         <option>2</option>
                         <option>3</option>
                         <option>4</option>
@@ -727,7 +729,7 @@ a.colour-by-legend-toggle {
                         <option>1</option>
                         <option>0.9</option>
                         <option>0.8</option>
-                        <option>0.7</option>
+                        <option selected="true">0.7</option>
                         <option>0.6</option>
                         <option>0.5</option>
                         <option>0.4</option>
@@ -823,7 +825,7 @@ a.colour-by-legend-toggle {
                     <label for="baselayer">Base layer</label>
                     <select name="baselayer" id="baselayer">
                         <option value="world">World outline</option>
-                        <option value="aus1">States & Territories</option>
+                        <option value="aus1" selected="true">States & Territories</option>
                         <option value="aus2">Local government areas</option>
                         <option value="ibra_merged">IBRA</option>
                         <option value="ibra_sub_merged">IBRA sub regions</option>

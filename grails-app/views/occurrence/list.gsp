@@ -178,31 +178,34 @@
                 <g:render template="facets" />
             </div>
             <div id="content2" class="span9">
-                <div id="alert" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="alertLabel" aria-hidden="true">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h3 id="myModalLabel">Email alerts</h3>
-                    </div>
-                    <div class="modal-body">
-                        <div class="">
-                            <a href="#alertNewRecords" id="alertNewRecords" class="btn tooltips" data-method="createBiocacheNewRecordsAlert"
-                               title="Notify me when new records come online for this search">Get
-                            email alerts for new <u>records</u> </a>
+                <g:if test="${grailsApplication.config.skin.useAlaBie}">
+                    <div id="alert" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="alertLabel" aria-hidden="true">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h3 id="myModalLabel">Email alerts</h3>
                         </div>
-                        <br/>
-                        <div class="">
-                            <a href="#alertNewAnnotations" id="alertNewAnnotations" data-method="createBiocacheNewAnnotationsAlert"
-                               class="btn tooltips" title="Notify me when new annotations (corrections, comments, etc) come online for this search">Get
-                            email alerts for new <u>annotations</u></a>
+                        <div class="modal-body">
+                            <div class="">
+                                <a href="#alertNewRecords" id="alertNewRecords" class="btn tooltips" data-method="createBiocacheNewRecordsAlert"
+                                   title="Notify me when new records come online for this search">Get
+                                email alerts for new <u>records</u> </a>
+                            </div>
+                            <br/>
+                            <div class="">
+                                <a href="#alertNewAnnotations" id="alertNewAnnotations" data-method="createBiocacheNewAnnotationsAlert"
+                                   class="btn tooltips" title="Notify me when new annotations (corrections, comments, etc) come online for this search">Get
+                                email alerts for new <u>annotations</u></a>
+                            </div>
+                            <p>&nbsp;</p>
+                            <p><a href="http://alerts.ala.org.au/notification/myAlerts">View your current alerts</a></p>
                         </div>
-                        <p>&nbsp;</p>
-                        <p><a href="http://alerts.ala.org.au/notification/myAlerts">View your current alerts</a></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                        %{--<button class="btn btn-primary">Save changes</button>--}%
-                    </div>
-                </div><!-- /#alerts -->
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                            %{--<button class="btn btn-primary">Save changes</button>--}%
+                        </div>
+                    </div><!-- /#alerts -->
+                </g:if>
+
                 <g:render template="download"/>
                 <div style="display:none">
 
@@ -227,9 +230,11 @@
                                 <div id="downloads" class="btn btn-small">
                                     <a href="#download" role="button" data-toggle="modal" class="tooltips" title="Download all ${g.formatNumber(number:sr.totalRecords, format:"#,###,###")} records OR species checklist"><i class="icon-download"></i> Downloads</a>
                                 </div>
-                                <div id="alerts" class="btn btn-small">
-                                    <a href="#alert" role="button" data-toggle="modal" class="tooltips" title="Get email alerts for this search"><i class="icon-bell"></i> Alerts</a>
-                                </div>
+                                <g:if test="${grailsApplication.config.skin.useAlaBie}">
+                                    <div id="alerts" class="btn btn-small">
+                                        <a href="#alert" role="button" data-toggle="modal" class="tooltips" title="Get email alerts for this search"><i class="icon-bell"></i> Alerts</a>
+                                    </div>
+                                </g:if>
                             </div>
 
                             <div id="sortWidgets" class="span8">
