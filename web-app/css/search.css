@@ -53,6 +53,10 @@ form {
     padding-top: 2px;
 }
 
+#customiseFacetsButton h4 {
+    font-size: 16px;
+}
+
 #customiseFacetsButton .dropdown-menu {
     padding: 5px 10px 10px 15px;
 }

@@ -119,15 +119,16 @@ the ALA biocache-service app (no local DB is required for this app).
 //        }
 
         // Load the "sensible defaults"
+        println "config.skin = ${config.skin}"
         def loadConfig = new ConfigSlurper(Environment.current.name).parse(application.classLoader.loadClass("defaultConfig"))
         println "loadConfig.skin = ${loadConfig.skin} || loadConfig.skin.layout = ${loadConfig.skin.layout}"
-        application.config.merge(loadConfig) //
-        //application.config = loadConfig.merge(config) // client app will now override the defaultConfig version
+        //application.config.merge(loadConfig) //
+        application.config = loadConfig.merge(config) // client app will now override the defaultConfig version
         println "config.security = ${config.security}"
 
         // Custom message source
         messageSource(ExtendedPluginAwareResourceBundleMessageSource) {
-            basenames = ["classpath:grails-app/i18n/messages","${config.biocache.baseUrl}/facets/i18n"] as String[]
+            basenames = ["classpath:grails-app/i18n/messages","${application.config.biocache.baseUrl}/facets/i18n"] as String[]
             cacheSeconds = 300
             useCodeAsDefaultMessage = true
         }
