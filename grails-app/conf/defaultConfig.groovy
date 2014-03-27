@@ -14,17 +14,17 @@
 //
 // CAS properties - may be omitted for non-ALA deployments
 //
-security.cas.appServerName = "http://dev.ala.org.au:8080"
-security.cas.casServerName = 'https://auth.ala.org.au'
-security.cas.uriFilterPattern = '/admin, /admin/.*'
-security.cas.authenticateOnlyIfLoggedInPattern = "/occurrences/(?!.+userAssertions|facet.+).+,/explore/your-area"
-ssecurity.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
-security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
-security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
-security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
-security.cas.bypass = false // set to true for non-ALA deployment
-security.cas.contextPath = "/generic-biocache-hub" //"/${appName}"
-security.cas.debugWebXml = true
+//security.cas.appServerName = "http://dev.ala.org.au:8080"
+//security.cas.casServerName = 'https://auth.ala.org.au'
+//security.cas.uriFilterPattern = '/admin, /admin/.*'
+//security.cas.authenticateOnlyIfLoggedInPattern = "/occurrences/(?!.+userAssertions|facet.+).+,/explore/your-area"
+//ssecurity.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
+//security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
+//security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
+//security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
+//security.cas.bypass = false // set to true for non-ALA deployment
+//security.cas.contextPath = "/generic-biocache-hub" //"/${appName}"
+//security.cas.debugWebXml = true
 auth.admin_role = "ROLE_ADMIN"
 
 
@@ -35,6 +35,8 @@ skin.fluidLayout = "true"
 skin.orgNameLong = "Generic Portal"
 skin.orgNameShort = "Generic"
 skin.attribution = ""
+skin.useAlaBie = true
+skin.useAlaSpatialPortal = true
 
 // web services
 serverName = 'http://dev.ala.org.au:8080'

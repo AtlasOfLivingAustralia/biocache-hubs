@@ -335,7 +335,7 @@ var dataQualityItems = {};
 function getDataQualityItem(code) {
 
     if (!dataQualityDataIsLoaded) {
-        var url = OCC_REC.contextPath + "/dataQuality/allCodes.json";
+        var url = OCC_REC.contextPath + "/dataQuality/allCodes";
         $.ajax({
             type: 'GET',
             url: url,

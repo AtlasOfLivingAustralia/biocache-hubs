@@ -10,7 +10,7 @@
 <g:set var="recordId" value="${alatag.getRecordId(record: record, skin: skin)}"/>
 <g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseUrl}"/>
 <g:set var="collectionsWebappContext" value="${grailsApplication.config.collections.baseUrl}"/>
-<g:set var="useAla" value="${grailsApplication.config.skin.layout == 'ala' ? 'true' : 'false'}"/>
+<g:set var="useAla" value="${grailsApplication.config.skin.useAlaBie ? 'true' : 'false'}"/>
 <g:set var="dwcExcludeFields" value="${grailsApplication.config.dwc.exclude}"/>
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
 <g:set var="biocacheService" value="${grailsApplication.config.biocache.baseUrl}"/>
@@ -21,6 +21,7 @@
 <g:set var="sensitiveDatasets" value="${sensitiveDatasetRaw?.split(',')}"/>
 <g:set var="userDisplayName" value="${alatag.loggedInUserDisplayname()}"/>
 <g:set var="userId" value="${alatag.loggedInUserId()}"/>
+<g:set var="isUnderCas" value="${(grailsApplication.config.security.cas.casServerName || grailsApplication.config.casServerName) ? true : false}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,6 +37,7 @@
             recordUuid: "${record.raw.uuid}",
             taxonRank: "${record.processed.classification.taxonRank}",
             taxonConceptID: "${record.processed.classification.taxonConceptID}",
+            isUnderCas: ${isUnderCas},
             sensitiveDatasets: {
                 <g:each var="sds" in="${sensitiveDatasets}"
                    status="s">'${sds}': '${grailsApplication.config.sensitiveDatasets[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
@@ -336,7 +338,7 @@
                         </button>
                     </div>
                 </g:if>
-                <g:if test="${!isReadOnly && record.processed.attribution.provenance != 'Draft'}">
+                <g:if test="${isUnderCas && !isReadOnly && record.processed.attribution.provenance != 'Draft'}">
                     <div class="sidebar">
                         <button class="btn" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="report a problem or suggest a correction for this record">
                             <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="icon-flag"></i> Flag an issue</span>
