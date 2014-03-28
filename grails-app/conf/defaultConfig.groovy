@@ -36,7 +36,7 @@ skin.orgNameLong = "Generic Portal"
 skin.orgNameShort = "Generic"
 skin.attribution = ""
 skin.useAlaBie = true
-skin.useAlaSpatialPortal = true
+skin.useAlaSpatialPortal = false
 
 // web services
 serverName = 'http://dev.ala.org.au:8080'

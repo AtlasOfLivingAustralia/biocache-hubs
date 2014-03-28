@@ -129,7 +129,7 @@ a.colour-by-legend-toggle {
         <div id="sizeslider" style="width:100px;"></div>
     </td>
     <td class="pull-right">
-        <g:if test="${grailsApplication.config.useAlaSpatialPortal}">
+        <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal}">
             <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
             <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
             <div id="downloadMaps" class="btn btn-small">
