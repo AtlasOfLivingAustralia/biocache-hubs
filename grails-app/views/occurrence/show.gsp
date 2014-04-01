@@ -401,20 +401,22 @@
                         <h3>Images</h3>
                         <div id="occurrenceImages" style="margin-top:5px;">
                             <g:each in="${record.images}" var="image">
-                                <a href="${image.alternativeFormats.largeImageUrl}" target="_blank">
-                                    <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;"/>
-                                </a>
-                                <br/>
-                                <g:if test="${record.raw.occurrence.photographer}">
-                                    <cite>Photographer: ${record.raw.occurrence.photographer}</cite>
-                                </g:if>
-                                <g:if test="${record.raw.occurrence.rights}">
-                                    <cite>Rights: ${record.raw.occurrence.rights}</cite>
-                                </g:if>
-                                <g:if test="${record.raw.occurrence.rightsholder}">
-                                    <cite>Rights holder: ${record.raw.occurrence.rightsholder}</cite>
-                                </g:if>
-                                <a href="${image.alternativeFormats.imageUrl}" target="_blank">Original image (${formattedImageSizes?.get(image.alternativeFormats?.imageUrl)?:'file size not known'})</a>
+                                <div style="margin-bottom:10px;">
+                                    <a href="${image.alternativeFormats.largeImageUrl}" target="_blank">
+                                        <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;"/>
+                                    </a>
+                                    <br/>
+                                    <g:if test="${record.raw.occurrence.photographer}">
+                                        <cite>Photographer: ${record.raw.occurrence.photographer}</cite><br/>
+                                    </g:if>
+                                    <g:if test="${record.raw.occurrence.rights}">
+                                        <cite>Rights: ${record.raw.occurrence.rights}</cite><br/>
+                                    </g:if>
+                                    <g:if test="${record.raw.occurrence.rightsholder}">
+                                        <cite>Rights holder: ${record.raw.occurrence.rightsholder}</cite><br/>
+                                    </g:if>
+                                    <a href="${image.alternativeFormats.imageUrl}" target="_blank">Original image (${formattedImageSizes?.get(image.alternativeFormats?.imageUrl)?:'file size not known'})</a>
+                                </div>
                             </g:each>
                         </div>
                     </div>
