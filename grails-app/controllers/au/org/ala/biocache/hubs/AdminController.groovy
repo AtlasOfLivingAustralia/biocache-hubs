@@ -36,7 +36,13 @@ class AdminController {
      * @return
      */
     private auth() {
-        if (!authService.userInRole(grailsApplication.config.auth.admin_role)) {
+        if (!grailsApplication.config.security.cas.casServerName && grailsApplication.config.security.cas.bypass) {
+            // Standard Grails config - bypass
+            true
+        } else if (!grailsApplication.config.casServerName && grailsApplication.config.disableCAS) {
+            // External config - bypass
+            true
+        } else if (!authService?.userInRole(grailsApplication.config.auth.admin_role)) {
             log.debug "redirecting to index..."
             flash.message = "You are not authorised to access the page: ${params.controller}/${params.action?:''}."
             redirect(controller: "home", action: "index")
