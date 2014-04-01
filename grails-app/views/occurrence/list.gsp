@@ -178,7 +178,7 @@
                 <g:render template="facets" />
             </div>
             <div id="content2" class="span9">
-                <g:if test="${grailsApplication.config.skin.useAlaBie}">
+                <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal}">
                     <div id="alert" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="alertLabel" aria-hidden="true">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -230,7 +230,7 @@
                                 <div id="downloads" class="btn btn-small">
                                     <a href="#download" role="button" data-toggle="modal" class="tooltips" title="Download all ${g.formatNumber(number:sr.totalRecords, format:"#,###,###")} records OR species checklist"><i class="icon-download"></i> Downloads</a>
                                 </div>
-                                <g:if test="${grailsApplication.config.skin.useAlaBie}">
+                                <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal}">
                                     <div id="alerts" class="btn btn-small">
                                         <a href="#alert" role="button" data-toggle="modal" class="tooltips" title="Get email alerts for this search"><i class="icon-bell"></i> Alerts</a>
                                     </div>
