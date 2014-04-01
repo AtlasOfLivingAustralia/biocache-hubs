@@ -127,7 +127,7 @@ class OccurrenceController {
                         uuid: id,
                         compareRecord: compareRecord,
                         groupedAssertions: groupedAssertions,
-                        formattedImageSizes: postProcessingService.getImageFileSizeInMb(record.images),
+                        formattedImageSizes: webServicesService.getImageFileSizeInMb(record.images),
                         collectionName: collectionInfo?.name,
                         collectionLogo: collectionInfo?.institutionLogoUrl,
                         collectionInstitution: collectionInfo?.institution,

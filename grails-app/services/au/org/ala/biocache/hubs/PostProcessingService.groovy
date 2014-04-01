@@ -121,44 +121,7 @@ class PostProcessingService {
         return sampleInfo.sort{a,b -> (a.classification1 <=> b.classification1 ?: a.layerDisplayName <=> b.layerDisplayName)}
     }
 
-    /**
-     * Generate a Map of image url (key) with image file size (like ls -h) (value)
-     *
-     * @param images
-     * @return
-     */
-    def Map getImageFileSizeInMb(JSONArray images) {
-        Map imageSizes = [:]
-
-        images.each { image ->
-            //log.debug "image = ${image}"
-            String originalImageUrl = image.alternativeFormats?.imageUrl
-            if (originalImageUrl) {
-                Long imageSizeInBytes = getImageSizeInBytes(originalImageUrl)
-                String formattedImageSize = FileUtils.byteCountToDisplaySize(imageSizeInBytes)
-                imageSizes.put(originalImageUrl, formattedImageSize)
-            }
-        }
-
-        imageSizes
-    }
-
-    /**
-     * Use HTTP HEAD to determine the file size of a URL (image)
-     *
-     * @param imageURL
-     * @return
-     * @throws Exception
-     */
-    private Long getImageSizeInBytes(String imageURL) throws Exception {
-        HttpClient httpClient = new HttpClient()
-        HeadMethod headMethod = new HeadMethod(imageURL)
-        httpClient.executeMethod(headMethod)
-        String lengthString = headMethod.getResponseHeader("Content-Length").getValue()
-        return Long.parseLong(lengthString)
-    }
-
-    /**
+   /**
      * Build a LinkedHashMap form of the facets to display in the cutomise drop down div
      *
      * @param defaultFacets

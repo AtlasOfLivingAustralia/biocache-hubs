@@ -2,6 +2,9 @@ package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
 import grails.plugin.cache.Cacheable
+import org.apache.commons.httpclient.HttpClient
+import org.apache.commons.httpclient.methods.HeadMethod
+import org.apache.commons.io.FileUtils
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -168,6 +171,44 @@ class WebServicesService {
         } catch (Exception ex) {
             log.error "Error calling logger service: ${ex.message}", ex
         }
+    }
+
+    /**
+     * Generate a Map of image url (key) with image file size (like ls -h) (value)
+     *
+     * @param images
+     * @return
+     */
+    def Map getImageFileSizeInMb(JSONArray images) {
+        Map imageSizes = [:]
+
+        images.each { image ->
+            //log.debug "image = ${image}"
+            String originalImageUrl = image.alternativeFormats?.imageUrl
+            if (originalImageUrl) {
+                Long imageSizeInBytes = getImageSizeInBytes(originalImageUrl)
+                String formattedImageSize = FileUtils.byteCountToDisplaySize(imageSizeInBytes) // human readable value
+                imageSizes.put(originalImageUrl, formattedImageSize)
+            }
+        }
+
+        imageSizes
+    }
+
+    /**
+     * Use HTTP HEAD to determine the file size of a URL (image)
+     *
+     * @param imageURL
+     * @return
+     * @throws Exception
+     */
+    @Cacheable('longTermCache')
+    private Long getImageSizeInBytes(String imageURL) throws Exception {
+        HttpClient httpClient = new HttpClient()
+        HeadMethod headMethod = new HeadMethod(imageURL)
+        httpClient.executeMethod(headMethod)
+        String lengthString = headMethod.getResponseHeader("Content-Length").getValue()
+        return Long.parseLong(lengthString)
     }
 
     /**
