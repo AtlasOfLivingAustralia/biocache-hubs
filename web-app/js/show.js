@@ -238,16 +238,16 @@ function deleteAssertion(recordUuid, assertionUuid){
         { recordUuid: recordUuid, assertionUuid: assertionUuid },
         function(data) {
             //retrieve all asssertions
-            $.get(OCC_REC.contextPath + '/occurrences/groupedAssertions?recordUuid=' + OCC_REC.recordUuid, function(data) {
-                $('#'+assertionUuid).fadeOut('slow', function() {
-                    $('#userAssertions').html(data);
-                    //if theres no child elements to the list, hide the heading
-                    //alert("Number of user assertions : " +  $('#userAssertions').children().size()   )
-                    if($('#userAssertions').children().size() < 1){
-                        $('#userAssertionsContainer').hide("slow");
-                    }
-                });
-            });
+//            $.get(OCC_REC.contextPath + '/occurrences/groupedAssertions?recordUuid=' + OCC_REC.recordUuid, function(data) {
+//                $('#'+assertionUuid).fadeOut('slow', function() {
+//                    $('#userAssertions').html(data);
+//                    //if theres no child elements to the list, hide the heading
+//                    //alert("Number of user assertions : " +  $('#userAssertions').children().size()   )
+//                    if($('#userAssertions').children().size() < 1){
+//                        $('#userAssertionsContainer').hide("slow");
+//                    }
+//                });
+//            });
             refreshUserAnnotations();
         }
     );
@@ -266,8 +266,10 @@ function refreshUserAnnotations(){
 
         if (data.assertionQueries.length == 0 && data.userAssertions.length == 0) {
             $('#userAnnotationsDiv').hide('slow');
+            $('#userAssertionsContainer').hide("slow");
         } else {
             $('#userAnnotationsDiv').show('slow');
+            $('#userAssertionsContainer').show("slow");
         }
         $('#userAnnotationsList').empty();
 
@@ -279,9 +281,10 @@ function refreshUserAnnotations(){
             $clone.find('.created').text('Date created: ' + (moment(data.assertionQueries[i].createdDate).format('YYYY-MM-DD')));
             if(data.assertionQueries[i].recordCount > 1){
                 $clone.find('.viewMore').css({display:'block'});
-                $clone.find('.viewMoreLink').attr('href', OCC_REC.contextPath + '}/occurrences/search?q=query_assertion_uuid:' + data.assertionQueries[i].uuid);
+                $clone.find('.viewMoreLink').attr('href', OCC_REC.contextPath + '/occurrences/search?q=query_assertion_uuid:' + data.assertionQueries[i].uuid);
             }
             $('#userAnnotationsList').append($clone);
+            $('#userAssertionsContainer').show("slow");
         }
         for(var i = 0; i < data.userAssertions.length; i++){
             var $clone = $('#userAnnotationTemplate').clone();

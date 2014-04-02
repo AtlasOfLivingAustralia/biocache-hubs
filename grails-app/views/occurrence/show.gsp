@@ -15,7 +15,7 @@
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
 <g:set var="biocacheService" value="${grailsApplication.config.biocache.baseUrl}"/>
 <g:set var="spatialPortalUrl" value="${grailsApplication.config.spatial.baseUrl}"/>
-<g:set var="serverName" value="${grailsApplication.config.site.serverName?:grailsApplication.config.biocache.baseUrl}"/>
+<g:set var="serverName" value="${grailsApplication.config.serverName}"/>
 <g:set var="scientificName" value="${alatag.getScientificName(record: record)}"/>
 <g:set var="sensitiveDatasetRaw" value="${grailsApplication.config.sensitiveDataset?.list?:''}"/>
 <g:set var="sensitiveDatasets" value="${sensitiveDatasetRaw?.split(',')}"/>
@@ -202,19 +202,19 @@
 
                                 <ul id="systemAssertions">
                                     <li class="failedTestCount">
-                                        <g:message code="failed" default="failed"/>: ${record.systemAssertions.failed?.size()?:0}
+                                        <g:message code="assertions.failed" default="failed"/>: ${record.systemAssertions.failed?.size()?:0}
                                     </li>
                                     <li class="warningsTestCount">
-                                        <g:message code="warnings" default="warnings"/>: ${record.systemAssertions.warning?.size()?:0}
+                                        <g:message code="assertions.warnings" default="warnings"/>: ${record.systemAssertions.warning?.size()?:0}
                                     </li>
                                     <li class="passedTestCount">
-                                        <g:message code="passed" default="passed"/>: ${record.systemAssertions.passed?.size()?:0}
+                                        <g:message code="assertions.passed" default="passed"/>: ${record.systemAssertions.passed?.size()?:0}
                                     </li>
                                     <li class="missingTestCount">
-                                        <g:message code="missing" default="missing"/>: ${record.systemAssertions.missing?.size()?:0}
+                                        <g:message code="assertions.missing" default="missing"/>: ${record.systemAssertions.missing?.size()?:0}
                                     </li>
                                     <li class="uncheckedTestCount">
-                                        <g:message code="unchecked" default="unchecked"/>: ${record.systemAssertions.unchecked?.size()?:0}
+                                        <g:message code="assertions.unchecked" default="unchecked"/>: ${record.systemAssertions.unchecked?.size()?:0}
                                     </li>
 
                                     <li id="dataQualityFurtherDetails">

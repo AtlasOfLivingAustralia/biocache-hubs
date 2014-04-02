@@ -332,6 +332,8 @@ class OccurrenceTagLib {
                         mkp.yield(" (added by you")
                         if (assertion.users?.size() > 1) {
                             mkp.yield(" and ${assertion.users.size() - 1} other user${(assertion.users.size() > 2) ? 's':''})")
+                        } else {
+                            mkp.yield(")")
                         }
                     }
                 } else {

@@ -2,6 +2,10 @@ package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
 import grails.plugin.cache.Cacheable
+
+import groovyx.net.http.ContentType
+import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.Method
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.io.FileUtils
@@ -46,13 +50,13 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    @Cacheable('biocacheCache')
+    //@Cacheable('biocacheCache')
     def JSONArray getUserAssertions(String id) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/${id.encodeAsURL()}/assertions"
         getJsonElements(url)
     }
 
-    @Cacheable('biocacheCache')
+    //@Cacheable('biocacheCache')
     def JSONArray getQueryAssertions(String id) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/${id.encodeAsURL()}/assertionQueries"
         getJsonElements(url)
@@ -82,6 +86,46 @@ class WebServicesService {
         }
 
         groupedMap
+    }
+
+    /**
+     * Perform POST for new assertion to biocache-service
+     *
+     * @param recordUuid
+     * @param code
+     * @param comment
+     * @param userId
+     * @param userDisplayName
+     * @return Map postResponse
+     */
+    def Map addAssertion(String recordUuid, String code, String comment, String userId, String userDisplayName) {
+        Map postBody =  [
+                recordUuid: recordUuid,
+                code: code,
+                comment: comment,
+                userId: userId,
+                userDisplayName: userDisplayName,
+                apiKey: grailsApplication.config.biocache.apiKey
+        ]
+
+        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/add", postBody)
+    }
+
+    /**
+     * Perform POST to delete an assertion on biocache-service
+     *
+     * @param recordUuid
+     * @param assertionUuid
+     * @return
+     */
+    def Map deleteAssertion(String recordUuid, String assertionUuid) {
+        Map postBody =  [
+                recordUuid: recordUuid,
+                assertionUuid: assertionUuid,
+                apiKey: grailsApplication.config.biocache.apiKey
+        ]
+
+        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/delete", postBody)
     }
 
     @Cacheable('collectoryCache')
@@ -256,5 +300,39 @@ class WebServicesService {
             //return null
             throw new RestClientException(error) // exception will result in no caching as opposed to returning null
         }
+    }
+
+    /**
+     * Perform a POST with URL encoded params as POST body
+     *
+     * @param uri
+     * @param postParams
+     * @return postResponse (Map with keys: statusCode (int) and statusMsg (String)
+     */
+    def Map postFormData(String uri, Map postParams) {
+        HTTPBuilder http = new HTTPBuilder(uri)
+        log.debug "POST (form encoded) to ${http.uri}"
+        Map postResponse = [:]
+
+        http.request( Method.POST ) {
+
+            send ContentType.URLENC, postParams
+
+            response.success = { resp ->
+                log.debug "POST - response status: ${resp.statusLine}"
+                postResponse.statusCode = resp.statusLine.statusCode
+                postResponse.statusMsg = resp.statusLine.reasonPhrase
+                //assert resp.statusLine.statusCode == 201
+            }
+
+            response.failure = { resp ->
+                //def error = [error: "Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}"]
+                postResponse.statusCode = resp.statusLine.statusCode
+                postResponse.statusMsg = resp.statusLine.reasonPhrase
+                log.error "POST - Unexpected error: ${postResponse.statusCode} : ${postResponse.statusMsg}"
+            }
+        }
+
+        postResponse
     }
 }
