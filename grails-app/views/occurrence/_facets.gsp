@@ -50,7 +50,7 @@
                             <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}"/>
                         </div>
                         %{--<div class="fadeout"></div>--}%
-                        <g:if test="${facetResult.fieldResult.length() > 1}">
+                        <g:if test="${facetResult.fieldResult.length() > 0}">
                             <div class="showHide">
                                 <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-displayname="${fieldDisplayName}"
                                    title="See more options or refine with multiple values"><i class="icon-hand-right"></i> choose more...</a>

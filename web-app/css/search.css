@@ -871,3 +871,27 @@ span.red {
 .excludeFq {
     font-weight: bold;
 }
+
+.multiRecordHeader {
+    font-weight: bold;
+    min-width: 260px;
+}
+
+.recordSummary {
+    min-width: 260px;
+}
+
+.recordLink, .multiRecordFooter {
+    width: 50%;
+    margin-top: 5px;
+}
+
+.multiRecordFooter {
+    float: right;
+    text-align: right;
+}
+
+.leaflet-popup-content .btn-mini {
+    font-size: 12px;
+    font-weight: bold;
+}

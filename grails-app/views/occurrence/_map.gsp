@@ -286,6 +286,8 @@ a.colour-by-legend-toggle {
 
         //enable the point lookup - but still allow double clicks to propagate
         var clickCount = 0;
+        MAP_VAR.recordList = new Array(); // store list of records for popup
+
         MAP_VAR.map.on('click', function(e) {
             clickCount += 1;
             if (clickCount <= 1) {
@@ -426,7 +428,7 @@ a.colour-by-legend-toggle {
      */
     function pointLookup(e) {
 
-        var popup = L.popup().setLatLng(e.latlng);
+        MAP_VAR.popup = L.popup().setLatLng(e.latlng);
         var radius = 0;
         var size = $('sizeslider-val').html();
         var zoomLevel = MAP_VAR.map.getZoom();
@@ -503,8 +505,10 @@ a.colour-by-legend-toggle {
             radius = radius * 3;
         }
 
+        MAP_VAR.popupRadius = radius;
+
         $.ajax({
-            url: MAP_VAR.mappingUrl + "/occurrences/info",
+            url: MAP_VAR.mappingUrl + "/occurrences/info" + MAP_VAR.query,
             jsonp: "callback",
             dataType: "jsonp",
             data: {
@@ -515,35 +519,121 @@ a.colour-by-legend-toggle {
                 format: "json"
             },
             success: function(response) {
-
                 console.log(response);
 
-                var $popupClone = null;
+                if (response.occurrences && response.occurrences.length > 0) {
+                    //var occLookup = "&radius=" + radius + "&lat=" + e.latlng.lat + "&lon=" + e.latlng.lng;
 
-                var occLookup = "&radius=" + radius + "&lat=" + e.latlng.lat + "&lon=" + e.latlng.lng;
+                    MAP_VAR.recordList = response.occurrences; // store the list of record uuids
+                    MAP_VAR.popupLatlng = e.latlng; // store the coordinates of the mouse click for the popup
 
-                if(response.count == 1){
-                    var popupClone = $('.popupSingleRecordTemplate').clone();
-                    $popupClone = $(popupClone);
-                    $popupClone.find('.viewRecord').attr('href', "${grailsApplication.config.biocache.baseURL }/occurrences/" + response.occurrences[0]);
-                    popup.setContent($popupClone.html());
-                    popup.openOn(MAP_VAR.map);
-                }
-                if(response.count > 1){
-                    var popupClone = $('.popupMultiRecordTemplate').clone();
-                    $popupClone = $(popupClone);
-                    $popupClone.find('.viewRecord').attr('href', "${grailsApplication.config.biocache.baseURL }/occurrences/" + response.occurrences[0]);
-                    $popupClone.find('.viewAllRecords').attr('href', "${grailsApplication.config.biocache.baseURL }/occurrences/search" + MAP_VAR.query + occLookup);
-                    $popupClone.find('.recordCount').html(response.count);
-                    popup.setContent($popupClone.html());
-                    popup.openOn(MAP_VAR.map);
+                    // Load the first record details into popup
+                    insertRecordInfo(0);
+
                 }
             }
         });
     }
 
+    /**
+    * Populate the map popup with record details
+    *
+    * @param recordIndex
+    */
+    function insertRecordInfo(recordIndex) {
+        // (popup, $popupClone, recordUuid, recordList)
+        var recordUuid = MAP_VAR.recordList[recordIndex];
+        var $popupClone = $('.popupRecordTemplate').clone();
+
+        if (MAP_VAR.recordList.length > 1) {
+            // populate popup header
+            $popupClone.find('.multiRecordHeader').show();
+            $popupClone.find('.currentRecord').html(recordIndex + 1);
+            $popupClone.find('.totalrecords').html(MAP_VAR.recordList.length);
+            var occLookup = "&radius=" + MAP_VAR.popupRadius + "&lat=" + MAP_VAR.popupLatlng.lat + "&lon=" + MAP_VAR.popupLatlng.lng;
+            $popupClone.find('a.viewAllRecords').attr('href', "${request.contextPath}/occurrences/search" + MAP_VAR.query + occLookup);
+            // populate popup footer
+            $popupClone.find('.multiRecordFooter').show();
+            if (recordIndex < MAP_VAR.recordList.length - 1) {
+                $popupClone.find('.nextRecord a').attr('onClick', 'insertRecordInfo('+(recordIndex + 1)+'); return false;');
+                $popupClone.find('.nextRecord').show();
+            }
+            if (recordIndex > 0) {
+                $popupClone.find('.previousRecord a').attr('onClick', 'insertRecordInfo('+(recordIndex - 1)+'); return false;');
+                $popupClone.find('.previousRecord').show();
+            }
+        }
+
+        $popupClone.find('.recordLink a').attr('href', "${request.contextPath}/occurrences/" + recordUuid);
+
+        // Get the current record details
+        $.ajax({
+            url: MAP_VAR.mappingUrl + "/occurrences/" + recordUuid + ".json",
+            jsonp: "callback",
+            dataType: "jsonp",
+            success: function(record) {
+                if (record.raw) {
+                    var displayHtml = "";
+
+                    // catalogNumber
+                    if(record.raw.occurrence.catalogNumber != null){
+                        displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.raw.occurrence.catalogNumber + '<br />';
+                    } else if(record.processed.occurrence.catalogNumber != null){
+                        displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.processed.occurrence.catalogNumber + '<br />';
+                    }
+
+                    if(record.raw.classification.vernacularName!=null ){
+                        displayHtml += record.raw.classification.vernacularName + '<br />';
+                    } else if(record.processed.classification.vernacularName!=null){
+                        displayHtml += record.processed.classification.vernacularName + '<br />';
+                    }
+
+                    if (record.processed.classification.scientificName) {
+                        displayHtml += formatSciName(record.processed.classification.scientificName, record.processed.classification.taxonRankID)  + '<br />';
+                    } else {
+                        displayHtml += record.raw.classification.scientificName  + '<br />';
+                    }
+
+                    if(record.processed.attribution.collectionName != null){
+                        displayHtml += "${g.message(code:'record.collectionName.label', default: 'Collection')}: " + record.processed.attribution.collectionName  + '<br />';;
+                    }
+
+                    if(record.processed.attribution.institutionName != null){
+                        displayHtml += "${g.message(code:'record.institutionName.label', default: 'Institution')}: " + record.processed.attribution.institutionName;
+                    } else if(record.processed.attribution.dataResourceName != null){
+                        displayHtml += record.processed.attribution.dataResourceName;
+                    }
+
+                    if(record.raw.occurrence.recordedBy != null){
+                        displayHtml += "<br/>${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.raw.occurrence.recordedBy;
+                    } else if(record.processed.occurrence.recordedBy != null){
+                        displayHtml += "<br/>${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.processed.occurrence.recordedBy;
+
+                    }
+
+                    if(record.processed.event.eventDate != null){
+                        displayHtml += "<br/>";
+                        var label = "${g.message(code:'record.eventDate.label', default: 'Event date')}:";
+                        displayHtml += label + record.processed.event.eventDate;
+                    }
+
+                    displayHtml += '</div>';
+
+
+                    $popupClone.find('.recordSummary').html( displayHtml ); // insert into clone
+                    MAP_VAR.popup.setContent($popupClone.html()); // push HTML into popup content
+                    MAP_VAR.popup.openOn(MAP_VAR.map);
+                } else {
+                    // TODO
+                }
+            }
+        });
+
+    }
+
     function getRecordInfo(){
         http://biocache.ala.org.au/ws/occurrences/c00c2f6a-3ae8-4e82-ade4-fc0220529032
+        console.log("MAP_VAR.query", MAP_VAR.query);
         $.ajax({
             url: "${grailsApplication.config.biocache.baseUrl}/occurrences/info" + MAP_VAR.query,
             jsonp: "callback",
@@ -552,6 +642,21 @@ a.colour-by-legend-toggle {
 
             }
         });
+    }
+
+    /**
+     * Format the display of a scientific name.
+     * E.g. genus and below should be italicised
+     */
+    function formatSciName(name, rankId) {
+        var output = "";
+        if (rankId && rankId >= 6000) {
+            output = "<i>" + name + "</i>";
+        } else {
+            output = name;
+        }
+
+        return output;
     }
 
     /**
@@ -648,26 +753,44 @@ a.colour-by-legend-toggle {
     }
 
 </r:script>
+<div class="hide">
+    <div class="popupRecordTemplate">
+        <div class="multiRecordHeader hide">
+            <g:message code="search.map.viewing" default="Viewing"/> <span class="currentRecord"></span> <g:message code="search.map.of" default="of"/>
+            <span class="totalrecords"></span> <g:message code="search.map.occurrences" default="occurrence records"/>
+            <span class="hide">(<a href="#" class="viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>)</span>
+        </div>
+        <div class="recordSummary">
 
-<div style="display:none;">
-    <div class="popupSingleRecordTemplate">
-        <span class="dataResource">Dummy resource</span><br/>
-        <span class="institution">Dummy institution</span><br/>
-        <span class="collection">Dummy collection</span><br/>
-        <span class="catalogueNumber">Dummy catalogue number</span><br/>
-        <a href="" class="viewRecord">View this record</a>
-    </div>
-
-    <div class="popupMultiRecordTemplate">
-        <span>Records: </span><a href="" class="viewAllRecords"><span class="recordCount">1,321</span></a><br/>
-        <span class="dataResource">Dummy resource</span><br/>
-        <span class="institution">Dummy institution</span><br/>
-        <span class="collection">Dummy collection</span><br/>
-        <span class="catalogueNumber">Dummy catalogue number</span><br/>
-        <a href="" class="viewRecord" >View this record</a><br/>
-        <a href="" class="viewAllRecords">View <span class="recordCount">1,321</span> records at this point</a>
+        </div>
+        <div class="hide multiRecordFooter">
+            <span class="previousRecord hide"><a href="#" class="btn btn-mini" onClick=""><g:message code="search.map.popup.prev" default="&lt; Prev"/></a></span>
+            <span class="nextRecord hide"><a href="#" class="btn btn-mini" onClick=""><g:message code="search.map.popup.next" default="Next &gt;"/></a></span>
+        </div>
+        <div class="recordLink">
+            <a href="#" class="btn btn-mini"><g:message code="search.map.popup.viewRecord" default="View record"/></a>
+        </div>
     </div>
 </div>
+%{--<div style="display:none;">--}%
+    %{--<div class="popupSingleRecordTemplate">--}%
+        %{--<span class="dataResource">Dummy resource</span><br/>--}%
+        %{--<span class="institution">Dummy institution</span><br/>--}%
+        %{--<span class="collection">Dummy collection</span><br/>--}%
+        %{--<span class="catalogueNumber">Dummy catalogue number</span><br/>--}%
+        %{--<a href="" class="viewRecord">View this record</a>--}%
+    %{--</div>--}%
+
+    %{--<div class="popupMultiRecordTemplate">--}%
+        %{--<span>Records: </span><a href="" class="viewAllRecords"><span class="recordCount">1,321</span></a><br/>--}%
+        %{--<span class="dataResource">Dummy resource</span><br/>--}%
+        %{--<span class="institution">Dummy institution</span><br/>--}%
+        %{--<span class="collection">Dummy collection</span><br/>--}%
+        %{--<span class="catalogueNumber">Dummy catalogue number</span><br/>--}%
+        %{--<a href="" class="viewRecord" >View this record</a><br/>--}%
+        %{--<a href="" class="viewAllRecords">View <span class="recordCount">1,321</span> records at this point</a>--}%
+    %{--</div>--}%
+%{--</div>--}%
 
 <style type="text/css">
     /*#downloadMapForm { text-align:left; padding:0px; }*/
