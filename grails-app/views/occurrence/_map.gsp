@@ -506,9 +506,10 @@ a.colour-by-legend-toggle {
         }
 
         MAP_VAR.popupRadius = radius;
+        var mapQuery = MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, ''); // remove existing lat/lon/radius params
 
         $.ajax({
-            url: MAP_VAR.mappingUrl + "/occurrences/info" + MAP_VAR.query,
+            url: MAP_VAR.mappingUrl + "/occurrences/info" + mapQuery,
             jsonp: "callback",
             dataType: "jsonp",
             data: {
@@ -519,10 +520,9 @@ a.colour-by-legend-toggle {
                 format: "json"
             },
             success: function(response) {
-                console.log(response);
+                //console.log(response);
 
                 if (response.occurrences && response.occurrences.length > 0) {
-                    //var occLookup = "&radius=" + radius + "&lat=" + e.latlng.lat + "&lon=" + e.latlng.lng;
 
                     MAP_VAR.recordList = response.occurrences; // store the list of record uuids
                     MAP_VAR.popupLatlng = e.latlng; // store the coordinates of the mouse click for the popup
@@ -549,18 +549,18 @@ a.colour-by-legend-toggle {
             // populate popup header
             $popupClone.find('.multiRecordHeader').show();
             $popupClone.find('.currentRecord').html(recordIndex + 1);
-            $popupClone.find('.totalrecords').html(MAP_VAR.recordList.length);
+            $popupClone.find('.totalrecords').html(MAP_VAR.recordList.length.toString().replace(/100/, '100+'));
             var occLookup = "&radius=" + MAP_VAR.popupRadius + "&lat=" + MAP_VAR.popupLatlng.lat + "&lon=" + MAP_VAR.popupLatlng.lng;
-            $popupClone.find('a.viewAllRecords').attr('href', "${request.contextPath}/occurrences/search" + MAP_VAR.query + occLookup);
+            $popupClone.find('a.viewAllRecords').attr('href', "${request.contextPath}/occurrences/search" + MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + occLookup);
             // populate popup footer
             $popupClone.find('.multiRecordFooter').show();
             if (recordIndex < MAP_VAR.recordList.length - 1) {
                 $popupClone.find('.nextRecord a').attr('onClick', 'insertRecordInfo('+(recordIndex + 1)+'); return false;');
-                $popupClone.find('.nextRecord').show();
+                $popupClone.find('.nextRecord a').removeClass('disabled');
             }
             if (recordIndex > 0) {
                 $popupClone.find('.previousRecord a').attr('onClick', 'insertRecordInfo('+(recordIndex - 1)+'); return false;');
-                $popupClone.find('.previousRecord').show();
+                $popupClone.find('.previousRecord a').removeClass('disabled');
             }
         }
 
@@ -613,12 +613,9 @@ a.colour-by-legend-toggle {
 
                     if(record.processed.event.eventDate != null){
                         displayHtml += "<br/>";
-                        var label = "${g.message(code:'record.eventDate.label', default: 'Event date')}:";
+                        var label = "${g.message(code:'record.eventDate.label', default: 'Event date')}: ";
                         displayHtml += label + record.processed.event.eventDate;
                     }
-
-                    displayHtml += '</div>';
-
 
                     $popupClone.find('.recordSummary').html( displayHtml ); // insert into clone
                     MAP_VAR.popup.setContent($popupClone.html()); // push HTML into popup content
@@ -632,8 +629,8 @@ a.colour-by-legend-toggle {
     }
 
     function getRecordInfo(){
-        http://biocache.ala.org.au/ws/occurrences/c00c2f6a-3ae8-4e82-ade4-fc0220529032
-        console.log("MAP_VAR.query", MAP_VAR.query);
+        // http://biocache.ala.org.au/ws/occurrences/c00c2f6a-3ae8-4e82-ade4-fc0220529032
+        //console.log("MAP_VAR.query", MAP_VAR.query);
         $.ajax({
             url: "${grailsApplication.config.biocache.baseUrl}/occurrences/info" + MAP_VAR.query,
             jsonp: "callback",
@@ -724,6 +721,7 @@ a.colour-by-legend-toggle {
                 fillOpacity: 0.2
             }
 
+            L.Icon.Default.imagePath = "${request.contextPath}/js/leaflet-0.7.2/images";
             var popupText = "Centre of spatial search with radius of " + radius + " km";
             var circle = L.circle(latLng, radius * 1030, circleOpts);
             circle.addTo(MAP_VAR.map);
@@ -758,14 +756,14 @@ a.colour-by-legend-toggle {
         <div class="multiRecordHeader hide">
             <g:message code="search.map.viewing" default="Viewing"/> <span class="currentRecord"></span> <g:message code="search.map.of" default="of"/>
             <span class="totalrecords"></span> <g:message code="search.map.occurrences" default="occurrence records"/>
-            <span class="hide">(<a href="#" class="viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>)</span>
+            <span class="">(<a href="#" class="viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>)</span>
         </div>
         <div class="recordSummary">
 
         </div>
         <div class="hide multiRecordFooter">
-            <span class="previousRecord hide"><a href="#" class="btn btn-mini" onClick=""><g:message code="search.map.popup.prev" default="&lt; Prev"/></a></span>
-            <span class="nextRecord hide"><a href="#" class="btn btn-mini" onClick=""><g:message code="search.map.popup.next" default="Next &gt;"/></a></span>
+            <span class="previousRecord "><a href="#" class="btn btn-mini disabled" onClick="return false;"><g:message code="search.map.popup.prev" default="&lt; Prev"/></a></span>
+            <span class="nextRecord "><a href="#" class="btn btn-mini disabled" onClick="return false;"><g:message code="search.map.popup.next" default="Next &gt;"/></a></span>
         </div>
         <div class="recordLink">
             <a href="#" class="btn btn-mini"><g:message code="search.map.popup.viewRecord" default="View record"/></a>
