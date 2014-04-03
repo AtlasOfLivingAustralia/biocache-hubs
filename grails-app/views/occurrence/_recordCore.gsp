@@ -348,7 +348,7 @@
     <!-- Now handle the associatedOccurrences -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="associatedOccurrences" fieldName="Inferred Associated Occurrences">
         <g:if test="${record.processed.occurrence.duplicationStatus == 'R'}">
-            This record has ${record.processed.occurrence.associatedOccurrences.split('|').length() } inferred associated occurrences
+            This record has ${record.processed.occurrence.associatedOccurrences.split('|').size() } inferred associated occurrences
         </g:if>
         <g:else>The occurrence is associated with a representative record.
         </g:else>
