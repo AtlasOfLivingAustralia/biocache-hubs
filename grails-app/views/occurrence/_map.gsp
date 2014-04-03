@@ -541,7 +541,7 @@ a.colour-by-legend-toggle {
     * @param recordIndex
     */
     function insertRecordInfo(recordIndex) {
-        // (popup, $popupClone, recordUuid, recordList)
+        //console.log("insertRecordInfo", recordIndex, MAP_VAR.recordList);
         var recordUuid = MAP_VAR.recordList[recordIndex];
         var $popupClone = $('.popupRecordTemplate').clone();
 
@@ -572,6 +572,7 @@ a.colour-by-legend-toggle {
             jsonp: "callback",
             dataType: "jsonp",
             success: function(record) {
+
                 if (record.raw) {
                     var displayHtml = "";
 
@@ -594,14 +595,14 @@ a.colour-by-legend-toggle {
                         displayHtml += record.raw.classification.scientificName  + '<br />';
                     }
 
-                    if(record.processed.attribution.collectionName != null){
-                        displayHtml += "${g.message(code:'record.collectionName.label', default: 'Collection')}: " + record.processed.attribution.collectionName  + '<br />';;
-                    }
-
                     if(record.processed.attribution.institutionName != null){
                         displayHtml += "${g.message(code:'record.institutionName.label', default: 'Institution')}: " + record.processed.attribution.institutionName;
                     } else if(record.processed.attribution.dataResourceName != null){
                         displayHtml += record.processed.attribution.dataResourceName;
+                    }
+
+                    if(record.processed.attribution.collectionName != null){
+                        displayHtml += "${g.message(code:'record.collectionName.label', default: 'Collection')}: " + record.processed.attribution.collectionName  + '<br />';;
                     }
 
                     if(record.raw.occurrence.recordedBy != null){
@@ -618,11 +619,13 @@ a.colour-by-legend-toggle {
                     }
 
                     $popupClone.find('.recordSummary').html( displayHtml ); // insert into clone
-                    MAP_VAR.popup.setContent($popupClone.html()); // push HTML into popup content
-                    MAP_VAR.popup.openOn(MAP_VAR.map);
                 } else {
-                    // TODO
+                    //
+                    $popupClone.find('.recordSummary').html( '<br>[Record not found]<br><br>' ); // insert into clone
                 }
+
+                MAP_VAR.popup.setContent($popupClone.html()); // push HTML into popup content
+                MAP_VAR.popup.openOn(MAP_VAR.map);
             }
         });
 
@@ -756,7 +759,7 @@ a.colour-by-legend-toggle {
         <div class="multiRecordHeader hide">
             <g:message code="search.map.viewing" default="Viewing"/> <span class="currentRecord"></span> <g:message code="search.map.of" default="of"/>
             <span class="totalrecords"></span> <g:message code="search.map.occurrences" default="occurrence records"/>
-            <span class="">(<a href="#" class="viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>)</span>
+            <a href="#" class="btn btn-mini viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>
         </div>
         <div class="recordSummary">
 
