@@ -226,6 +226,8 @@ a.colour-by-legend-toggle {
         //add the default base layer
         MAP_VAR.map.addLayer(defaultBaseLayer);
 
+        L.control.coordinates({position:"bottomleft", useLatLngOrder: true}).addTo(MAP_VAR.map); // coordinate plugin
+
         MAP_VAR.layerControl = L.control.layers(MAP_VAR.baseLayers, MAP_VAR.overlays, {collapsed:true, position:'topleft'});
         MAP_VAR.layerControl.addTo(MAP_VAR.map);
 
@@ -507,6 +509,7 @@ a.colour-by-legend-toggle {
 
         MAP_VAR.popupRadius = radius;
         var mapQuery = MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, ''); // remove existing lat/lon/radius params
+        MAP_VAR.map.spin(true);
 
         $.ajax({
             url: MAP_VAR.mappingUrl + "/occurrences/info" + mapQuery,
@@ -521,6 +524,7 @@ a.colour-by-legend-toggle {
             },
             success: function(response) {
                 //console.log(response);
+                MAP_VAR.map.spin(false);
 
                 if (response.occurrences && response.occurrences.length > 0) {
 
@@ -531,6 +535,9 @@ a.colour-by-legend-toggle {
                     insertRecordInfo(0);
 
                 }
+            },
+            error: function() {
+                MAP_VAR.map.spin(false);
             }
         });
     }
@@ -544,6 +551,7 @@ a.colour-by-legend-toggle {
         //console.log("insertRecordInfo", recordIndex, MAP_VAR.recordList);
         var recordUuid = MAP_VAR.recordList[recordIndex];
         var $popupClone = $('.popupRecordTemplate').clone();
+        MAP_VAR.map.spin(true);
 
         if (MAP_VAR.recordList.length > 1) {
             // populate popup header
@@ -572,6 +580,7 @@ a.colour-by-legend-toggle {
             jsonp: "callback",
             dataType: "jsonp",
             success: function(record) {
+                MAP_VAR.map.spin(false);
 
                 if (record.raw) {
                     var displayHtml = "";
@@ -596,24 +605,24 @@ a.colour-by-legend-toggle {
                     }
 
                     if(record.processed.attribution.institutionName != null){
-                        displayHtml += "${g.message(code:'record.institutionName.label', default: 'Institution')}: " + record.processed.attribution.institutionName;
+                        displayHtml += "${g.message(code:'record.institutionName.label', default: 'Institution')}: " + record.processed.attribution.institutionName + '<br />';
                     } else if(record.processed.attribution.dataResourceName != null){
                         displayHtml += record.processed.attribution.dataResourceName;
                     }
 
                     if(record.processed.attribution.collectionName != null){
-                        displayHtml += "${g.message(code:'record.collectionName.label', default: 'Collection')}: " + record.processed.attribution.collectionName  + '<br />';;
+                        displayHtml += "${g.message(code:'record.collectionName.label', default: 'Collection')}: " + record.processed.attribution.collectionName  + '<br />';
                     }
 
                     if(record.raw.occurrence.recordedBy != null){
-                        displayHtml += "<br/>${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.raw.occurrence.recordedBy;
+                        displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.raw.occurrence.recordedBy + '<br />';
                     } else if(record.processed.occurrence.recordedBy != null){
-                        displayHtml += "<br/>${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.processed.occurrence.recordedBy;
+                        displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.processed.occurrence.recordedBy + '<br />';
 
                     }
 
                     if(record.processed.event.eventDate != null){
-                        displayHtml += "<br/>";
+                        //displayHtml += "<br/>";
                         var label = "${g.message(code:'record.eventDate.label', default: 'Event date')}: ";
                         displayHtml += label + record.processed.event.eventDate;
                     }
@@ -621,11 +630,14 @@ a.colour-by-legend-toggle {
                     $popupClone.find('.recordSummary').html( displayHtml ); // insert into clone
                 } else {
                     //
-                    $popupClone.find('.recordSummary').html( '<br>[Record not found]<br><br>' ); // insert into clone
+                    $popupClone.find('.recordSummary').html( "<br><g:message code="search.recordNotFoundForId" default="Error: record not found for ID:"/>: <span style='white-space:nowrap;'>" + recordUuid + '</span><br><br>' ); // insert into clone
                 }
 
                 MAP_VAR.popup.setContent($popupClone.html()); // push HTML into popup content
                 MAP_VAR.popup.openOn(MAP_VAR.map);
+            },
+            error: function() {
+                MAP_VAR.map.spin(false);
             }
         });
 
@@ -759,7 +771,7 @@ a.colour-by-legend-toggle {
         <div class="multiRecordHeader hide">
             <g:message code="search.map.viewing" default="Viewing"/> <span class="currentRecord"></span> <g:message code="search.map.of" default="of"/>
             <span class="totalrecords"></span> <g:message code="search.map.occurrences" default="occurrence records"/>
-            <a href="#" class="btn btn-mini viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>
+            &nbsp;&nbsp;<i class="icon-share-alt"></i> <a href="#" class="btn+btn-mini viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>
         </div>
         <div class="recordSummary">
 

@@ -895,3 +895,14 @@ span.red {
     font-size: 12px;
     font-weight: bold;
 }
+
+.leaflet-bottom.leaflet-left .leaflet-control-coordinates {
+    margin-bottom: 5px;
+    margin-left: 70px; /* to avoid Google logo */
+}
+
+#leafletMap .leaflet-control > div.uiElement.label {
+    font-size: 12px;
+    font-weight: normal;
+    margin: 0;
+}
