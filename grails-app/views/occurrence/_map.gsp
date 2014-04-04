@@ -629,7 +629,8 @@ a.colour-by-legend-toggle {
 
                     $popupClone.find('.recordSummary').html( displayHtml ); // insert into clone
                 } else {
-                    //
+                    // missing record - disable "view record" button and display message
+                    $popupClone.find('.recordLink a').attr('disabled', true).attr('href','javascript: void(0)');
                     $popupClone.find('.recordSummary').html( "<br><g:message code="search.recordNotFoundForId" default="Error: record not found for ID:"/>: <span style='white-space:nowrap;'>" + recordUuid + '</span><br><br>' ); // insert into clone
                 }
 
