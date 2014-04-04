@@ -388,9 +388,9 @@
     <g:if test="${record.processed.classification.taxonConceptID}">
         <a href="${baseTaxonUrl}${record.processed.classification.taxonConceptID}">
     </g:if>
-    <g:if test="${record.processed.classification.taxonRankID.toInteger() > 5000}"><i></g:if>
-    ${record.processed.classification.scientificName}
-    <g:if test="${record.processed.classification.taxonRankID.toInteger() > 5000}"></i></g:if>
+    <g:if test="${record.processed.classification.taxonRankID?.toInteger() > 5000}"><i></g:if>
+    ${record.processed.classification.scientificName?:''}
+    <g:if test="${record.processed.classification.taxonRankID?.toInteger() > 5000}"></i></g:if>
     <g:if test="${record.processed.classification.taxonConceptID}">
         </a>
     </g:if>

@@ -59,9 +59,8 @@ class OccurrenceTagLib {
     def formatSciName = { attrs ->
         def name = attrs.name
         def acceptedName = attrs.acceptedName
-        def rankId = attrs.rankId.toInteger()
+        def rankId = attrs.rankId?.toInteger()
         def acceptedNameOutput = ""
-        def nameOutput = ""
         def ital = ["",""]
 
         if (!rankId || rankId >= 6000) {
@@ -72,7 +71,7 @@ class OccurrenceTagLib {
             acceptedNameOutput = " (accepted name: ${ital[0]}${acceptedName}${ital[1]})"
         }
 
-        nameOutput = "${ital[0]}${name}${ital[1]}${acceptedNameOutput}"
+        def nameOutput = "${ital[0]}${name}${ital[1]}${acceptedNameOutput}"
 
         out << nameOutput.trim()
     }
@@ -137,7 +136,7 @@ class OccurrenceTagLib {
             if (item.key.contains("occurrence_year")) {
                 fqLabel = fqLabel.replaceAll(':',': ').replaceAll('occurrence_year', message(code: 'facet.occurrence_year', default:'occurrence_year'))
                 mkp.yieldUnescaped( fqLabel.replaceAll(/(\d{4})\-.*?Z/) { all, year ->
-                    def year10 = year.toInteger() + 10
+                    def year10 = year?.toInteger() + 10
                     "${year} - ${year10}"
                 })
             } else {
