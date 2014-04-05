@@ -117,10 +117,10 @@
             </td>
         </tr>
         <g:set var="autoPlaceholder" value="start typing and select from the autocomplete drop-down list"/>
+        <g:if test="${request.getAttribute(FacetsName.IBRA.fieldname) && request.getAttribute(FacetsName.IBRA.fieldname).size() > 1}">
         <tr>
             <td class="labels"><abbr title="Interim Biogeographic Regionalisation of Australia">IBRA</abbr> region</td>
             <td>
-                <%-- <input type="text" name="ibra" id="ibra" class="region_autocomplete" value="" placeholder="${autoPlaceholder}"/> --%>
                 <select class="biogeographic_region" name="ibra" id="ibra">
                     <option value="">-- select an IBRA region --</option>
                     <g:each var="region" in="${request.getAttribute(FacetsName.IBRA.fieldname)}">
@@ -129,10 +129,11 @@
                 </select>
             </td>
         </tr>
+        </g:if>
+        <g:if test="${request.getAttribute(FacetsName.IMCRA.fieldname) && request.getAttribute(FacetsName.IMCRA.fieldname).size() > 1}">
         <tr>
             <td class="labels"><abbr title="Integrated Marine and Coastal Regionalisation of Australia">IMCRA</abbr> region</td>
             <td>
-                <%-- <input type="text" name="imcra" id="imcra" class="region_autocomplete" value="" placeholder="${autoPlaceholder}"/> --%>
                 <select class="biogeographic_region" name="imcra" id="imcra">
                     <option value="">-- select an IMCRA region --</option>
                     <g:each var="region" in="${request.getAttribute(FacetsName.IMCRA.fieldname)}">
@@ -141,6 +142,8 @@
                 </select>
             </td>
         </tr>
+        </g:if>
+        <g:if test="${request.getAttribute(FacetsName.LGA.fieldname) && request.getAttribute(FacetsName.LGA.fieldname).size() > 1}">
         <tr>
             <td class="labels">Local Govt. Area</td>
             <td>
@@ -152,9 +155,10 @@
                 </select>
             </td>
         </tr>
+        </g:if>
         </tbody>
     </table>
-    <g:if test="${request.getAttribute(FacetsName.TYPE_STATUS.fieldname).size() > 1}">
+    <g:if test="${request.getAttribute(FacetsName.TYPE_STATUS.fieldname) && request.getAttribute(FacetsName.TYPE_STATUS.fieldname).size() > 1}">
         <b>Find records from the following type status</b>
         <table border="0" width="100" cellspacing="2" class="compact">
             <thead/>
@@ -164,16 +168,16 @@
                 <td>
                     <select class="type_status" name="type_status" id="type_status">
                         <option value="">-- select a type status --</option>
-                        <g:each var="type" in="${request.getAttribute(FacetsName.TYPE_STATUS.fieldname)}">
-                            <option value="${type.key}">${type.value}</option>
-                        </g:each>
+                        %{--<g:each var="type" in="${request.getAttribute(FacetsName.TYPE_STATUS.fieldname)}">--}%
+                            %{--<option value="${type.key}">${type.value}</option>--}%
+                        %{--</g:each>--}%
                     </select>
                 </td>
             </tr>
             </tbody>
         </table>
     </g:if>
-    <g:if test="${request.getAttribute(FacetsName.BASIS_OF_RECORD.fieldname).size() > 1}">
+    <g:if test="${request.getAttribute(FacetsName.BASIS_OF_RECORD.fieldname) && request.getAttribute(FacetsName.BASIS_OF_RECORD.fieldname).size() > 1}">
         <b>Find records from the following basis of record (record type)</b>
         <table border="0" width="100" cellspacing="2" class="compact">
             <thead/>
