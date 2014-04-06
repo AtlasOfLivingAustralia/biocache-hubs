@@ -83,7 +83,7 @@ grails.project.dependency.resolution = {
         //runtime ":zipped-resources:1.0.1"
         //runtime ":cached-resources:1.1"
         //runtime ":yui-minify-resources:0.1.5"
-
+	runtime ":release:3.0.1"	
         //compile ":ala-web-theme:0.2-SNAPSHOT"
     }
 }

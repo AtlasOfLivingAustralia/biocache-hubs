@@ -21,17 +21,6 @@ modules = {
         resource url: [dir:'js', file:'html5.js', plugin:'biocache-hubs'], wrapper: { s -> "<!--[if lt IE 9]>$s<![endif]-->" }, disposition: 'head'
     }
 
-//    ala {
-//        dependsOn 'bootstrap'
-//        resource url:[dir:'css', file:'base.css', plugin:'biocache-hubs']
-//        resource url:[dir:'css', file:'bootstrapAdditions.css', plugin:'biocache-hubs']
-//    }
-
-//    avh {
-//        dependsOn 'bootstrap','ala'
-//        resource url:[dir:'css', file:'avh/style.css', plugin:'biocache-hubs']
-//    }
-
     'search-core' {
         dependsOn 'jquery'
         defaultBundle 'main-core'
@@ -101,7 +90,6 @@ modules = {
         resource url:[dir:'css', file:'record.css', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'audiojs/audio.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'moment.min.js', plugin:'biocache-hubs']
-        //resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs', disposition: 'head']
         resource url:[dir:'js', file:'show.js', plugin:'biocache-hubs']
     }
 
