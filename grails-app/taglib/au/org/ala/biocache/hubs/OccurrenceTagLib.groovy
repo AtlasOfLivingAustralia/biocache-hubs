@@ -199,7 +199,7 @@ class OccurrenceTagLib {
                         }
 
                     }
-                } else if (facetResult.fieldName.startsWith("occurrence_")) {
+                } else if (facetResult.fieldName.startsWith("occurrence_") && facetResult.fieldResult && facetResult.fieldResult.size() > 1 ) {
                     // decade date range a special case
                     def decade = processDecadeLabel(facetResult.fieldName, facetResult.fieldResult?.get(1)?.label, fieldResult.label)
 
