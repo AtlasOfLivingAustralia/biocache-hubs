@@ -190,7 +190,8 @@ a.colour-by-legend-toggle {
         },
         layerControl : null,
         currentLayers : [],
-        additionalFqs : ''
+        additionalFqs : '',
+        zoomOutsideScopedRegion: "${grailsApplication.config.map.zoomOutsideScopedRegion}"
     };
 
     var ColourByControl = L.Control.extend({
@@ -699,7 +700,7 @@ a.colour-by-legend-toggle {
                         if (MAP_VAR.map.getZoom() > 15) {
                             MAP_VAR.map.setZoom(15);
                         }
-                    } else if (BC_CONF.zoomOutsideAustralia) {
+                    } else if (MAP_VAR.zoomOutsideScopedRegion) {
                         //map.fitBounds(dataBounds);
                         //console.log("zoom", map.getZoom())
                         MAP_VAR.map.fitBounds(dataBounds);
