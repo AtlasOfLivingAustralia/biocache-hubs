@@ -191,7 +191,7 @@ a.colour-by-legend-toggle {
         layerControl : null,
         currentLayers : [],
         additionalFqs : '',
-        zoomOutsideScopedRegion: "${grailsApplication.config.map.zoomOutsideScopedRegion}"
+        zoomOutsideScopedRegion: "${grailsApplication.config.map.zoomOutsideScopedRegion?:true}"
     };
 
     var ColourByControl = L.Control.extend({
