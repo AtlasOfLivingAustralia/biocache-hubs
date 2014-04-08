@@ -56,7 +56,7 @@ the ALA biocache-service app (no local DB is required for this app).
     // Online location of the plugin's browseable source code.
     def scm = [ url: "http://ala-hubs.googlecode.com/svn/trunk/biocache-hubs" ]
 
-    def loadBefore = ['alaWebTheme', 'ala-web-theme']
+    def loadBefore = ['alaWebTheme']
 
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before
@@ -92,6 +92,19 @@ the ALA biocache-service app (no local DB is required for this app).
                     name 'outageCache'
                     timeToLiveSeconds (3600 * 24 * 7)
                 }
+            }
+        }
+
+        if (false && !config.plugins.proxy) {
+            def biocacheUrl = config.biocache.baseUrl?:'http://biocache.ala.org.au/ws'
+            def host = (biocacheUrl =~ /:\/\/(.*?)\//)[0][1]
+            def path = (biocacheUrl =~ /:\/\/.*?(\/.*)$/)[0][1]
+            println "host = ${host} || path = ${path}"
+            config.plugins.proxy = {
+                proxyScheme = 'http://'
+                proxyHost = host
+                proxyPort = '443'
+                //proxyPath = path
             }
         }
 

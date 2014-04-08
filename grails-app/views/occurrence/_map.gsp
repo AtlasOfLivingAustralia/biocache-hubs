@@ -649,7 +649,7 @@ a.colour-by-legend-toggle {
         // http://biocache.ala.org.au/ws/occurrences/c00c2f6a-3ae8-4e82-ade4-fc0220529032
         //console.log("MAP_VAR.query", MAP_VAR.query);
         $.ajax({
-            url: "${grailsApplication.config.biocache.baseUrl}/occurrences/info" + MAP_VAR.query,
+            url: "${g.createLink(uri: '/proxy')}/occurrences/info" + MAP_VAR.query,
             jsonp: "callback",
             dataType: "jsonp",
             success: function(response) {
@@ -681,7 +681,7 @@ a.colour-by-legend-toggle {
         if (!isSpatialRadiusSearch()) {
             // all other searches (non-spatial)
             // do webservice call to get max extent of WMS data
-            var jsonUrl = "${grailsApplication.config.biocache.baseUrl}/webportal/bounds.json" + MAP_VAR.query + "&callback=?";
+            var jsonUrl = "${g.createLink(uri: '/proxy')}/webportal/bounds.json" + MAP_VAR.query + "&callback=?";
             $.getJSON(jsonUrl, function(data) {
                 if (data.length == 4) {
                     //console.log("data", data);
@@ -821,7 +821,7 @@ a.colour-by-legend-toggle {
             <h3 id="downloadsMapLabel">Download publication map</h3>
         </div>
         <div class="modal-body">
-            <input id="mapDownloadUrl" type="hidden" value="${grailsApplication.config.biocache.baseUrl}/webportal/wms/image"/>
+            <input id="mapDownloadUrl" type="hidden" value="${g.createLink(uri: '/proxy')}/webportal/wms/image"/>
             <fieldset>
                 <p><label for="format">Format</label>
                     <select name="format" id="format">

@@ -26,7 +26,7 @@
             facetQueries: "${fqParams.encodeAsURL()}",
             queryString: "${queryDisplay.encodeAsJavaScript()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
-            biocacheServiceUrl: "${grailsApplication.config.biocache.baseUrl}",
+            biocacheServiceUrl: "${g.createLink(uri: '/proxy')}",
             skin: "${grailsApplication.config.skin.layout}",
             defaultListView: "${grailsApplication.config.defaultListView}",
             resourceName: "${grailsApplication.config.skin.orgNameLong}",
@@ -278,7 +278,7 @@
                     <div id="mapView" class="tab-pane">
 
                         <g:render template="map"
-                                  model="[mappingUrl:grailsApplication.config.biocache.baseUrl,
+                                  model="[mappingUrl:g.createLink(uri:'/proxy'),
                                           searchString: searchString,
                                           queryDisplayString:queryDisplay,
                                           facets:sr.facetResults,

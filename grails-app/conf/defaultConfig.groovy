@@ -51,6 +51,18 @@ collections.baseUrl = "http://collections.ala.org.au"
 spatial.baseUrl = "http://spatial.ala.org.au/"
 spatial.params = ""
 
+// AjaxProxy plugin settings - should be same as biocache.baseUrl
+def biocacheUrl = biocache.baseUrl?:'http://biocache.ala.org.au/ws'
+def host = (biocacheUrl =~ /:\/\/(.*?)\//)[0][1]
+def path = (biocacheUrl =~ /:\/\/.*?(\/.*)$/)[0][1]
+//println "host = ${host} || path = ${path}"
+plugins.proxy = {
+    proxyScheme = 'http://'
+    proxyHost = host
+    proxyPort = '80'
+    proxyPath = path
+}
+
 chartsBgColour = "#fffef7"
 clubRoleForHub = "ROLE_ADMIN"
 dataQualityChecksUrl = "https://docs.google.com/spreadsheet/pub?key=0AjNtzhUIIHeNdHJOYk1SYWE4dU1BMWZmb2hiTjlYQlE&single=true&gid=0&output=csv"
