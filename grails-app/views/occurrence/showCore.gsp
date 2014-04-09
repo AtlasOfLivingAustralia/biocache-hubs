@@ -9,7 +9,7 @@
 <g:set var="recordId" value="${alatag.getRecordId(record: record)}"/>
 <g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseUrl}"/>
 <g:set var="collectionsWebappContext" value="${grailsApplication.config.collections.baseUrl}"/>
-<g:set var="useAla" value="${grailsApplication.config.skin.useAlaBie ? 'true' : 'false'}"/>
+<g:set var="useAla" value="${grailsApplication.config.skin.useAlaBie?.toBoolean() ? 'true' : 'false'}"/>
 <g:set var="hubDisplayName" value="${grailsApplication.config.site.displayName}"/>
 <g:set var="biocacheService" value="${g.createLink(uri: '/proxy')}"/>
 <g:set var="scientificName" value="${alatag.getScientificName(record: record)}"/>

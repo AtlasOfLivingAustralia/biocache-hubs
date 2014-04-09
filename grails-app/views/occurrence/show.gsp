@@ -10,7 +10,7 @@
 <g:set var="recordId" value="${alatag.getRecordId(record: record, skin: skin)}"/>
 <g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseUrl}"/>
 <g:set var="collectionsWebappContext" value="${grailsApplication.config.collections.baseUrl}"/>
-<g:set var="useAla" value="${grailsApplication.config.skin.useAlaBie ? 'true' : 'false'}"/>
+<g:set var="useAla" value="${grailsApplication.config.skin.useAlaBie?.toBoolean() ? 'true' : 'false'}"/>
 <g:set var="dwcExcludeFields" value="${grailsApplication.config.dwc.exclude}"/>
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
 <g:set var="biocacheService" value="${g.createLink(uri: '/proxy')}"/>

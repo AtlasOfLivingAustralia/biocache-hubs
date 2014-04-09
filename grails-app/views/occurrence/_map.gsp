@@ -129,7 +129,7 @@ a.colour-by-legend-toggle {
         <div id="sizeslider" style="width:100px;"></div>
     </td>
     <td class="pull-right">
-        <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal}">
+        <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
             <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
             <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
             <div id="downloadMaps" class="btn btn-small">
@@ -191,7 +191,7 @@ a.colour-by-legend-toggle {
         layerControl : null,
         currentLayers : [],
         additionalFqs : '',
-        zoomOutsideScopedRegion: "${grailsApplication.config.map.zoomOutsideScopedRegion?:true}"
+        zoomOutsideScopedRegion: ${(grailsApplication.config.map.zoomOutsideScopedRegion == false || grailsApplication.config.map.zoomOutsideScopedRegion == "false") ? false : true}
     };
 
     var ColourByControl = L.Control.extend({
@@ -608,7 +608,7 @@ a.colour-by-legend-toggle {
                     if(record.processed.attribution.institutionName != null){
                         displayHtml += "${g.message(code:'record.institutionName.label', default: 'Institution')}: " + record.processed.attribution.institutionName + '<br />';
                     } else if(record.processed.attribution.dataResourceName != null){
-                        displayHtml += record.processed.attribution.dataResourceName;
+                        displayHtml += "${g.message(code:'record.dataResourceName.label', default: 'Data Resource')}: " + record.processed.attribution.dataResourceName + '<br />';
                     }
 
                     if(record.processed.attribution.collectionName != null){

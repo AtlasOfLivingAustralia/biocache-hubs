@@ -83,7 +83,7 @@ facets.include = "establishment_means,user_assertions,assertion_user_id,name_mat
 map.cloudmade.key = "BC9A493B41014CAABB98F0471D759707"
 map.defaultFacetMapColourBy = "basis_of_record"
 map.pointColour = "df4a21"
-map.zoomOutsideScopedRegion = ""
+map.zoomOutsideScopedRegion = true
 
 sensitiveDataset.list = "NSW_DECCW,NSW_OEH,NT_DNRETA,QLD_DERM,TAS_DPIPWE,VIC_DSE,WA_DEC,BIRDS_AUSTRALIA"
 sensitiveDatasets.NSW_DECCW = "http://collections.ala.org.au/public/show/dr487"
