@@ -62,7 +62,8 @@ modules = {
         resource url:[dir:'js', file:'leaflet-plugins/spin/spin.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'leaflet-plugins/spin/leaflet.spin.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'leaflet-plugins/coordinates/Leaflet.Coordinates-0.1.4.min.js', plugin:'biocache-hubs']
-
+        resource url:[dir:'js', file:'leaflet-plugins/fullscreen/Control.FullScreen.css', plugin:'biocache-hubs']
+        resource url:[dir:'js', file:'leaflet-plugins/fullscreen/Control.FullScreen.js', plugin:'biocache-hubs']
     }
 
     qtip {

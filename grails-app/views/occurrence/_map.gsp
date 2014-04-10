@@ -221,7 +221,11 @@ a.colour-by-legend-toggle {
         MAP_VAR.map = L.map('leafletMap', {
             center: [-23.6,133.6],
             zoom: 4,
-            scrollWheelZoom: false
+            scrollWheelZoom: false,
+            fullscreenControl: true,
+            fullscreenControlOptions: {
+                position: 'topleft'
+            }
         });
 
         //add the default base layer
