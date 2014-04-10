@@ -50,17 +50,16 @@ collections.baseUrl = "http://collections.ala.org.au"
 //spatial.params = "&dynamic=true&ws=http%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=http%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"
 spatial.baseUrl = "http://spatial.ala.org.au/"
 spatial.params = ""
+test.var="sugar"
 
 // AjaxProxy plugin settings - should be same as biocache.baseUrl
-def biocacheUrl = biocache.baseUrl?:'http://biocache.ala.org.au/ws'
-def host = (biocacheUrl =~ /:\/\/(.*?)\//)[0][1]
-def path = (biocacheUrl =~ /:\/\/.*?(\/.*)$/)[0][1]
-//println "host = ${host} || path = ${path}"
-plugins.proxy = {
-    proxyScheme = 'http://'
-    proxyHost = host
-    proxyPort = '80'
-    proxyPath = path
+plugins {
+    proxy {
+        proxyScheme = 'http://'
+        proxyHost = 'biocache.ala.org.au'
+        proxyPort = '80'
+        proxyPath = '/ws'
+    }
 }
 
 chartsBgColour = "#fffef7"
@@ -85,15 +84,6 @@ map.defaultFacetMapColourBy = "basis_of_record"
 map.pointColour = "df4a21"
 map.zoomOutsideScopedRegion = true
 
-sensitiveDataset.list = "NSW_DECCW,NSW_OEH,NT_DNRETA,QLD_DERM,TAS_DPIPWE,VIC_DSE,WA_DEC,BIRDS_AUSTRALIA"
-sensitiveDatasets.NSW_DECCW = "http://collections.ala.org.au/public/show/dr487"
-sensitiveDatasets.NSW_OEH = "http://collections.ala.org.au/public/show/dr487"
-sensitiveDatasets.NT_DNRETA = "http://collections.ala.org.au/public/show/dr492"
-sensitiveDatasets.QLD_DERM = "http://collections.ala.org.au/public/show/dr493"
-sensitiveDatasets.TAS_DPIPWE = "http://collections.ala.org.au/public/show/dr491"
-sensitiveDatasets.VIC_DSE = "http://collections.ala.org.au/public/show/dr490"
-sensitiveDatasets.WA_DEC = "http://collections.ala.org.au/public/show/dr467"
-sensitiveDatasets.BIRDS_AUSTRALIA = "http://collections.ala.org.au/public/show/dr494"
-
+sensitiveDataset.list = ""
 
 

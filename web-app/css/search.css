@@ -847,7 +847,7 @@ span.red {
     color:red;
 }
 
-.dropdown-menu {
+.row-fluid .dropdown-menu {
     z-index: 2000;
 }
 

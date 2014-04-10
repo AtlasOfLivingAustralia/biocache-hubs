@@ -95,19 +95,6 @@ the ALA biocache-service app (no local DB is required for this app).
             }
         }
 
-        if (false && !config.plugins.proxy) {
-            def biocacheUrl = config.biocache.baseUrl?:'http://biocache.ala.org.au/ws'
-            def host = (biocacheUrl =~ /:\/\/(.*?)\//)[0][1]
-            def path = (biocacheUrl =~ /:\/\/.*?(\/.*)$/)[0][1]
-            println "host = ${host} || path = ${path}"
-            config.plugins.proxy = {
-                proxyScheme = 'http://'
-                proxyHost = host
-                proxyPort = '443'
-                //proxyPath = path
-            }
-        }
-
         // Load the "sensible defaults"
         //println "config.skin = ${config.skin}"
         def loadConfig = new ConfigSlurper(Environment.current.name).parse(application.classLoader.loadClass("defaultConfig"))
