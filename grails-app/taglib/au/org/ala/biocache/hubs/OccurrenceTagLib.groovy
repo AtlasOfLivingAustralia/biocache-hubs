@@ -633,6 +633,6 @@ class OccurrenceTagLib {
      * @attr level
      */
     def logMsg = { attrs ->
-        log."${attrs.level?:'error'}" attrs.msg
+        log."${attrs.level?:'info'}" attrs.msg
     }
 }
