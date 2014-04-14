@@ -18,7 +18,7 @@ import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "0.1"
+    def version = "0.2"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging
@@ -59,7 +59,51 @@ the ALA biocache-service app (no local DB is required for this app).
     def loadBefore = ['alaWebTheme']
 
     def doWithWebDescriptor = { xml ->
-        // TODO Implement additions to web.xml (optional), this event occurs before
+        // Proxy servet filter, taken from ajax-proxy plugin
+        def config = application.config.plugins.proxy
+
+        String proxyScheme = config.proxyScheme ?: 'https://'
+        String proxyHost = config.proxyHost ?: 'www.msgilligan.com'
+        String proxyPort = config.proxyPort ?: '80'
+        String proxyPath = config.proxyPath ?: ''
+
+        println "Proxy settings => ${proxyHost}:${proxyPort}${proxyPath}"
+
+        def servlets = xml.'servlet'
+        servlets[servlets.size()-1] + {
+            servlet{
+                'servlet-name'('ProxyServlet')
+                'servlet-class'('net.edwardstx.ProxyServlet')
+                'init-param' {
+                    'param-name'('proxyScheme')
+                    'param-value'(proxyScheme)
+                }
+                'init-param' {
+                    'param-name'('proxyHost')
+                    'param-value'(proxyHost)
+                }
+                'init-param' {
+                    'param-name'('proxyPort')
+                    'param-value'(proxyPort)
+                }
+                'init-param' {
+                    'param-name'('proxyPath')
+                    'param-value'(proxyPath)
+                }
+                'init-param' {
+                    'param-name'('maxFileUploadSize')
+                    'param-value'('')
+                }
+            }
+        }
+
+        def servletMappings = xml.'servlet-mapping'
+        servletMappings[servletMappings.size()-1] + {
+            'servlet-mapping'{
+                'servlet-name'('ProxyServlet')
+                'url-pattern'('/proxy/*')
+            }
+        }
     }
 
     def doWithSpring = {

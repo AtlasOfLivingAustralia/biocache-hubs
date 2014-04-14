@@ -711,13 +711,11 @@ a.colour-by-legend-toggle {
                     } else if (MAP_VAR.zoomOutsideScopedRegion) {
                         //map.fitBounds(dataBounds);
                         //console.log("zoom", map.getZoom())
-                        if(dataBounds !=null && !(dataBounds.getWest() == 0.0 && dataBounds.getEast() == 0.0 && dataBounds.getSouth() ==0.0 && dataBounds.getNorth() == 0.0) ){
-                            MAP_VAR.map.fitBounds(dataBounds);
+                        MAP_VAR.map.fitBounds(dataBounds);
 
-                            if (MAP_VAR.map.getZoom() == 0) {
-                                //MAP_VAR.map.setCenter(centre);
-                                MAP_VAR.map.setZoom(2);
-                            }
+                        if (MAP_VAR.map.getZoom() == 0) {
+                            //MAP_VAR.map.setCenter(centre);
+                            MAP_VAR.map.setZoom(2);
                         }
                     }
                     MAP_VAR.map.invalidateSize();
