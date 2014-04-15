@@ -52,14 +52,12 @@ spatial.baseUrl = "http://spatial.ala.org.au/"
 spatial.params = ""
 test.var="sugar"
 
-//// AjaxProxy plugin settings - should be same as biocache.baseUrl
-plugins {
-    proxy {
-        proxyScheme = 'http://'
-        proxyHost = 'biocache.ala.org.au'
-        proxyPort = '80'
-        proxyPath = '/ws'
-    }
+// AjaxProxy plugin settings - should be same as biocache.baseUrl
+proxy {
+    proxyScheme = 'http://'
+    proxyHost = 'biocache.ala.org.au'
+    proxyPort = '80'
+    proxyPath = '/ws'
 }
 
 chartsBgColour = "#fffef7"

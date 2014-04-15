@@ -1,44 +1,48 @@
-package net.edwardstx;
+/*
+ * Copyright (C) 2014 Atlas of Living Australia
+ * All Rights Reserved.
+ *
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ */
 
+package au.org.ala.biocache.hubs
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.fileupload.FileItem
+import org.apache.commons.fileupload.FileUploadException
+import org.apache.commons.fileupload.disk.DiskFileItemFactory
+import org.apache.commons.fileupload.servlet.ServletFileUpload
+import org.apache.commons.httpclient.Header
+import org.apache.commons.httpclient.HttpClient
+import org.apache.commons.httpclient.NameValuePair
+import org.apache.commons.httpclient.methods.GetMethod
+import org.apache.commons.httpclient.HttpMethod
+import org.apache.commons.httpclient.methods.PostMethod
+import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource
+import org.apache.commons.httpclient.methods.multipart.FilePart
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
+import org.apache.commons.httpclient.methods.multipart.Part
+import org.apache.commons.httpclient.methods.multipart.StringPart
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
+/**
+ * Proxy Controller for AJAX requests to biocache-service
+ * Config var required: grailsApplication.config.proxy.*
+ *
+ * Taken from http://edwardstx.net/2010/06/http-proxy-servlet/ (Apache 2.0 license)
+ */
+class ProxyController {
 
-
-public class ProxyServlet extends HttpServlet {
-    /**
-     * Serialization UID.
-     */
-    private static final long serialVersionUID = 1L;
     /**
      * Key for redirect location header.
      */
@@ -47,7 +51,6 @@ public class ProxyServlet extends HttpServlet {
      * Key for content type header.
      */
     private static final String STRING_CONTENT_TYPE_HEADER_NAME = "Content-Type";
-
     /**
      * Key for content length header.
      */
@@ -62,61 +65,11 @@ public class ProxyServlet extends HttpServlet {
     private static final File FILE_UPLOAD_TEMP_DIRECTORY = new File(System.getProperty("java.io.tmpdir"));
 
     // Proxy host params
-    /**
-     * The scheme to which we are proxying requests "http://" or "https://"
-     */
-    private String stringProxyScheme;
-    /**
-     * The host to which we are proxying requests
-     */
-    private String stringProxyHost;
-    /**
-     * The port on the proxy host to wihch we are proxying requests. Default value is 80.
-     */
-    private int intProxyPort = 80;
-    /**
-     * The (optional) path on the proxy host to wihch we are proxying requests. Default value is "".
-     */
-    private String stringProxyPath = "";
+
     /**
      * The maximum size for uploaded files in bytes. Default value is 5MB.
      */
     private int intMaxFileUploadSize = 5 * 1024 * 1024;
-
-    /**
-     * Initialize the <code>ProxyServlet</code>
-     * @param servletConfig The Servlet configuration passed in by the servlet conatiner
-     */
-    public void init(ServletConfig servletConfig) {
-        // Get the proxy scheme (http:// or https://)
-        String stringProxySchemeNew = servletConfig.getInitParameter("proxyScheme");
-        if(stringProxySchemeNew == null || stringProxySchemeNew.length() == 0 ||
-                !(stringProxySchemeNew.equals("http://") ||  stringProxySchemeNew.equals("https://"))) {
-            stringProxySchemeNew = "http://";       // Default to http if blank or invalid
-        }
-        this.setProxyScheme(stringProxySchemeNew);
-        // Get the proxy host
-        String stringProxyHostNew = servletConfig.getInitParameter("proxyHost");
-        if(stringProxyHostNew == null || stringProxyHostNew.length() == 0) {
-            throw new IllegalArgumentException("Proxy host not set, please set init-param 'proxyHost' in web.xml");
-        }
-        this.setProxyHost(stringProxyHostNew);
-        // Get the proxy port if specified
-        String stringProxyPortNew = servletConfig.getInitParameter("proxyPort");
-        if(stringProxyPortNew != null && stringProxyPortNew.length() > 0) {
-            this.setProxyPort(Integer.parseInt(stringProxyPortNew));
-        }
-        // Get the proxy path if specified
-        String stringProxyPathNew = servletConfig.getInitParameter("proxyPath");
-        if(stringProxyPathNew != null && stringProxyPathNew.length() > 0) {
-            this.setProxyPath(stringProxyPathNew);
-        }
-        // Get the maximum file upload size if specified
-        String stringMaxFileUploadSize = servletConfig.getInitParameter("maxFileUploadSize");
-        if(stringMaxFileUploadSize != null && stringMaxFileUploadSize.length() > 0) {
-            this.setMaxFileUploadSize(Integer.parseInt(stringMaxFileUploadSize));
-        }
-    }
 
     /**
      * Performs an HTTP GET request
@@ -126,14 +79,13 @@ public class ProxyServlet extends HttpServlet {
      * @param httpServletResponse The {@link HttpServletResponse} object by which
      *                             we can send a proxied response to the client
      */
-    public void doGet (HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-            throws IOException, ServletException {
+    def doGet(String path) {
         // Create a GET request
-        GetMethod getMethodProxyRequest = new GetMethod(this.getProxyURL(httpServletRequest));
+        GetMethod getMethodProxyRequest = new GetMethod(getProxyURL(request, "/${path}"))
         // Forward the request headers
-        setProxyRequestHeaders(httpServletRequest, getMethodProxyRequest);
+        setProxyRequestHeaders(request, getMethodProxyRequest);
         // Execute the proxy request
-        this.executeProxyRequest(getMethodProxyRequest, httpServletRequest, httpServletResponse);
+        executeProxyRequest(getMethodProxyRequest, request, response);
     }
 
     /**
@@ -144,21 +96,92 @@ public class ProxyServlet extends HttpServlet {
      * @param httpServletResponse The {@link HttpServletResponse} object by which
      *                             we can send a proxied response to the client
      */
-    public void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-            throws IOException, ServletException {
+    def doPost(String path) {
         // Create a standard POST request
-        PostMethod postMethodProxyRequest = new PostMethod(this.getProxyURL(httpServletRequest));
+        PostMethod postMethodProxyRequest = new PostMethod(this.getProxyURL(request, "/${path}"));
         // Forward the request headers
-        setProxyRequestHeaders(httpServletRequest, postMethodProxyRequest);
+        setProxyRequestHeaders(request, postMethodProxyRequest);
         // Check if this is a mulitpart (file upload) POST
-        if(ServletFileUpload.isMultipartContent(httpServletRequest)) {
-            this.handleMultipartPost(postMethodProxyRequest, httpServletRequest);
+        if(ServletFileUpload.isMultipartContent(request)) {
+            this.handleMultipartPost(postMethodProxyRequest, request);
         } else {
-            this.handleStandardPost(postMethodProxyRequest, httpServletRequest);
+            this.handleStandardPost(postMethodProxyRequest, request);
         }
         // Execute the proxy request
-        this.executeProxyRequest(postMethodProxyRequest, httpServletRequest, httpServletResponse);
+        this.executeProxyRequest(postMethodProxyRequest, request, response);
     }
+
+    /**
+     * Retreives all of the headers from the servlet request and sets them on
+     * the proxy request
+     *
+     * @param httpServletRequest The request object representing the client's
+     *                            request to the servlet engine
+     * @param httpMethodProxyRequest The request that we are about to send to
+     *                                the proxy host
+     */
+    private void setProxyRequestHeaders(HttpServletRequest httpServletRequest, HttpMethod httpMethodProxyRequest) {
+        // Get an Enumeration of all of the header names sent by the client
+        Enumeration enumerationOfHeaderNames = httpServletRequest.getHeaderNames();
+        while(enumerationOfHeaderNames.hasMoreElements()) {
+            String stringHeaderName = (String) enumerationOfHeaderNames.nextElement();
+            if(stringHeaderName.equalsIgnoreCase(STRING_CONTENT_LENGTH_HEADER_NAME))
+                continue;
+            // As per the Java Servlet API 2.5 documentation:
+            //		Some headers, such as Accept-Language can be sent by clients
+            //		as several headers each with a different value rather than
+            //		sending the header as a comma separated list.
+            // Thus, we get an Enumeration of the header values sent by the client
+            Enumeration enumerationOfHeaderValues = httpServletRequest.getHeaders(stringHeaderName);
+            while(enumerationOfHeaderValues.hasMoreElements()) {
+                String stringHeaderValue = (String) enumerationOfHeaderValues.nextElement();
+                // In case the proxy host is running multiple virtual servers,
+                // rewrite the Host header to ensure that we get content from
+                // the correct virtual server
+                if(stringHeaderName.equalsIgnoreCase(STRING_HOST_HEADER_NAME)){
+                    stringHeaderValue = getProxyHostAndPort();
+                }
+                Header header = new Header(stringHeaderName, stringHeaderValue);
+                // Set the same header on the proxy request
+                httpMethodProxyRequest.setRequestHeader(header);
+            }
+        }
+    }
+
+//    /**
+//     * Initialize the <code>ProxyServlet</code>
+//     * @param servletConfig The Servlet configuration passed in by the servlet conatiner
+//     */
+//    def executeProxyRequest(ServletConfig servletConfig) {
+//        // Get the proxy scheme (http:// or https://)
+//        String stringProxySchemeNew = servletConfig.getInitParameter("proxyScheme");
+//        if(stringProxySchemeNew == null || stringProxySchemeNew.length() == 0 ||
+//                !(stringProxySchemeNew.equals("http://") ||  stringProxySchemeNew.equals("https://"))) {
+//            stringProxySchemeNew = "http://";       // Default to http if blank or invalid
+//        }
+//        this.stringProxyScheme = stringProxySchemeNew
+//        // Get the proxy host
+//        String stringProxyHostNew = servletConfig.getInitParameter("proxyHost");
+//        if(stringProxyHostNew == null || stringProxyHostNew.length() == 0) {
+//            throw new IllegalArgumentException("Proxy host not set, please set init-param 'proxyHost' in web.xml");
+//        }
+//        this.stringProxyHost = stringProxyHostNew
+//        // Get the proxy port if specified
+//        String stringProxyPortNew = servletConfig.getInitParameter("proxyPort");
+//        if(stringProxyPortNew != null && stringProxyPortNew.length() > 0) {
+//            this.intProxyPort = Integer.parseInt(stringProxyPortNew)
+//        }
+//        // Get the proxy path if specified
+//        String stringProxyPathNew = servletConfig.getInitParameter("proxyPath");
+//        if(stringProxyPathNew != null && stringProxyPathNew.length() > 0) {
+//            this.stringProxyPath = stringProxyPathNew
+//        }
+//        // Get the maximum file upload size if specified
+//        String stringMaxFileUploadSize = servletConfig.getInitParameter("maxFileUploadSize");
+//        if(stringMaxFileUploadSize != null && stringMaxFileUploadSize.length() > 0) {
+//            this.intMaxFileUploadSize = Integer.parseInt(stringMaxFileUploadSize)
+//        }
+//    }
 
     /**
      * Sets up the given {@link PostMethod} to send the same multipart POST
@@ -208,7 +231,7 @@ public class ProxyServlet extends HttpServlet {
                 }
             }
             MultipartRequestEntity multipartRequestEntity = new MultipartRequestEntity(
-                    listParts.toArray(new Part[] {}),
+                    listParts.toArray([] as Part[]),
                     postMethodProxyRequest.getParams()
             );
             postMethodProxyRequest.setRequestEntity(multipartRequestEntity);
@@ -251,7 +274,7 @@ public class ProxyServlet extends HttpServlet {
             }
         }
         // Set the proxy request POST data
-        postMethodProxyRequest.setRequestBody(listNameValuePairs.toArray(new NameValuePair[] { }));
+        postMethodProxyRequest.setRequestBody(listNameValuePairs.toArray([] as NameValuePair[]));
     }
 
     /**
@@ -260,7 +283,7 @@ public class ProxyServlet extends HttpServlet {
      * @param httpMethodProxyRequest An object representing the proxy request to be made
      * @param httpServletResponse An object by which we can send the proxied
      *                             response back to the client
-     * @throws IOException Can be thrown by the {@link HttpClient}.executeMethod
+     * @throws IOException Can be thrown by the {@link org.apache.commons.httpclient.HttpClient}.executeMethod
      * @throws ServletException Can be thrown to indicate that another error has occurred
      */
     private void executeProxyRequest(
@@ -291,7 +314,7 @@ public class ProxyServlet extends HttpServlet {
                 stringMyHostName += ":" + httpServletRequest.getServerPort();
             }
             stringMyHostName += httpServletRequest.getContextPath();
-            httpServletResponse.sendRedirect(stringLocation.replace(getProxyHostAndPort() + this.getProxyPath(), stringMyHostName));
+            httpServletResponse.sendRedirect(stringLocation.replace(getProxyHostAndPort() + (grailsApplication.config.proxy.proxyPath?:''), stringMyHostName));
             return;
         } else if(intProxyResponseCode == HttpServletResponse.SC_NOT_MODIFIED) {
             // 304 needs special handling.  See:
@@ -326,101 +349,38 @@ public class ProxyServlet extends HttpServlet {
         }
     }
 
-    public String getServletInfo() {
-        return "Jason's Proxy Servlet";
-    }
-
-    /**
-     * Retreives all of the headers from the servlet request and sets them on
-     * the proxy request
-     *
-     * @param httpServletRequest The request object representing the client's
-     *                            request to the servlet engine
-     * @param httpMethodProxyRequest The request that we are about to send to
-     *                                the proxy host
-     */
-    @SuppressWarnings("unchecked")
-    private void setProxyRequestHeaders(HttpServletRequest httpServletRequest, HttpMethod httpMethodProxyRequest) {
-        // Get an Enumeration of all of the header names sent by the client
-        Enumeration enumerationOfHeaderNames = httpServletRequest.getHeaderNames();
-        while(enumerationOfHeaderNames.hasMoreElements()) {
-            String stringHeaderName = (String) enumerationOfHeaderNames.nextElement();
-            if(stringHeaderName.equalsIgnoreCase(STRING_CONTENT_LENGTH_HEADER_NAME))
-                continue;
-            // As per the Java Servlet API 2.5 documentation:
-            //		Some headers, such as Accept-Language can be sent by clients
-            //		as several headers each with a different value rather than
-            //		sending the header as a comma separated list.
-            // Thus, we get an Enumeration of the header values sent by the client
-            Enumeration enumerationOfHeaderValues = httpServletRequest.getHeaders(stringHeaderName);
-            while(enumerationOfHeaderValues.hasMoreElements()) {
-                String stringHeaderValue = (String) enumerationOfHeaderValues.nextElement();
-                // In case the proxy host is running multiple virtual servers,
-                // rewrite the Host header to ensure that we get content from
-                // the correct virtual server
-                if(stringHeaderName.equalsIgnoreCase(STRING_HOST_HEADER_NAME)){
-                    stringHeaderValue = getProxyHostAndPort();
-                }
-                Header header = new Header(stringHeaderName, stringHeaderValue);
-                // Set the same header on the proxy request
-                httpMethodProxyRequest.setRequestHeader(header);
-            }
-        }
-    }
-
     // Accessors
-    private String getProxyURL(HttpServletRequest httpServletRequest) {
+
+    private String getProxyURL(HttpServletRequest httpServletRequest, String pathInfo) {
         // Set the protocol to HTTP
-        String stringProxyURL = this.getProxyScheme() + this.getProxyHostAndPort();
+        String stringProxyURL = (grailsApplication.config.proxy.proxyScheme?:'http://') + getProxyHostAndPort()
+        String proxyPath = grailsApplication.config.proxy.proxyPath
         // Check if we are proxying to a path other that the document root
-        if(!this.getProxyPath().equalsIgnoreCase("")){
-            stringProxyURL += this.getProxyPath();
+        if (proxyPath) {
+            stringProxyURL += proxyPath
         }
         // Handle the path given to the servlet
-        stringProxyURL += httpServletRequest.getPathInfo();
+        stringProxyURL += pathInfo
         // Handle the query string
         if(httpServletRequest.getQueryString() != null) {
-            stringProxyURL += "?" + httpServletRequest.getQueryString();
+            stringProxyURL += "?" + httpServletRequest.getQueryString()
         }
-        return stringProxyURL;
+
+        return stringProxyURL
     }
 
     private String getProxyHostAndPort() {
-        if(this.getProxyPort() == 80) {
-            return this.getProxyHost();
-        } else {
-            return this.getProxyHost() + ":" + this.getProxyPort();
+        def proxyPort = grailsApplication.config.proxy.proxyPort?:80
+        String hostAndPort = "${grailsApplication.config.proxy.proxyHost}"
+
+        if(proxyPort != 80) {
+            hostAndPort += ":${proxyPort}"
         }
+
+        return hostAndPort
     }
 
-    private String getProxyScheme() {
-        return this.stringProxyScheme;
-    }
-    private void setProxyScheme(String stringProxySchemeNew) {
-        this.stringProxyScheme = stringProxySchemeNew;
-    }
-    private String getProxyHost() {
-        return this.stringProxyHost;
-    }
-    private void setProxyHost(String stringProxyHostNew) {
-        this.stringProxyHost = stringProxyHostNew;
-    }
-    private int getProxyPort() {
-        return this.intProxyPort;
-    }
-    private void setProxyPort(int intProxyPortNew) {
-        this.intProxyPort = intProxyPortNew;
-    }
-    private String getProxyPath() {
-        return this.stringProxyPath;
-    }
-    private void setProxyPath(String stringProxyPathNew) {
-        this.stringProxyPath = stringProxyPathNew;
-    }
     private int getMaxFileUploadSize() {
         return this.intMaxFileUploadSize;
-    }
-    private void setMaxFileUploadSize(int intMaxFileUploadSizeNew) {
-        this.intMaxFileUploadSize = intMaxFileUploadSizeNew;
     }
 }
