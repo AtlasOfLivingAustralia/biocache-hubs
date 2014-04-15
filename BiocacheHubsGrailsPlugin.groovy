@@ -18,7 +18,7 @@ import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "0.2"
+    def version = "0.3"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging
@@ -42,7 +42,7 @@ the ALA biocache-service app (no local DB is required for this app).
     // Extra (optional) plugin metadata
 
     // License: one of 'APACHE', 'GPL2', 'GPL3'
-    def license = "MOZILLA"
+    def license = "MPL2"
 
     // Details of company behind the plugin (if there is one)
     def organization = [ name: "Atlas of Living Australia", url: "http://www.ala.org.au/" ]
