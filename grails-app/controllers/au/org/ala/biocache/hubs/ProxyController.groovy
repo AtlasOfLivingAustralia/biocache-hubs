@@ -349,16 +349,15 @@ class ProxyController {
         }
     }
 
-    // Accessors
-
     private String getProxyURL(HttpServletRequest httpServletRequest, String pathInfo) {
         // Set the protocol to HTTP
-        String stringProxyURL = (grailsApplication.config.proxy.proxyScheme?:'http://') + getProxyHostAndPort()
-        String proxyPath = grailsApplication.config.proxy.proxyPath
-        // Check if we are proxying to a path other that the document root
-        if (proxyPath) {
-            stringProxyURL += proxyPath
-        }
+        String stringProxyURL = grailsApplication.config.biocache.baseUrl
+//        String stringProxyURL = (grailsApplication.config.proxy.proxyScheme?:'http://') + getProxyHostAndPort()
+//        String proxyPath = grailsApplication.config.proxy.proxyPath
+//        // Check if we are proxying to a path other that the document root
+//        if (proxyPath) {
+//            stringProxyURL += proxyPath
+//        }
         // Handle the path given to the servlet
         stringProxyURL += pathInfo
         // Handle the query string
@@ -370,12 +369,14 @@ class ProxyController {
     }
 
     private String getProxyHostAndPort() {
-        def proxyPort = grailsApplication.config.proxy.proxyPort?:80
-        String hostAndPort = "${grailsApplication.config.proxy.proxyHost}"
-
-        if(proxyPort != 80) {
-            hostAndPort += ":${proxyPort}"
-        }
+        String biocacheServiceUrl = grailsApplication.config.biocache.baseUrl
+        def hostAndPort = (biocacheServiceUrl =~ /:\/\/(.*?)\//)[0][1]
+//        def proxyPort = grailsApplication.config.proxy.proxyPort?:80
+//        String hostAndPort = "${grailsApplication.config.proxy.proxyHost}"
+//
+//        if(proxyPort != 80) {
+//            hostAndPort += ":${proxyPort}"
+//        }
 
         return hostAndPort
     }
