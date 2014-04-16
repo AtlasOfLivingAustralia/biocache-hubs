@@ -37,9 +37,8 @@ import javax.servlet.http.HttpServletResponse
 
 /**
  * Proxy Controller for AJAX requests to biocache-service
- * Config var required: grailsApplication.config.proxy.*
  *
- * Taken from http://edwardstx.net/2010/06/http-proxy-servlet/ (Apache 2.0 license)
+ * Code borrowed from http://edwardstx.net/2010/06/http-proxy-servlet/ (Apache 2.0 license)
  */
 class ProxyController {
 
@@ -63,9 +62,6 @@ class ProxyController {
      * The directory to use to temporarily store uploaded files
      */
     private static final File FILE_UPLOAD_TEMP_DIRECTORY = new File(System.getProperty("java.io.tmpdir"));
-
-    // Proxy host params
-
     /**
      * The maximum size for uploaded files in bytes. Default value is 5MB.
      */
@@ -147,41 +143,6 @@ class ProxyController {
             }
         }
     }
-
-//    /**
-//     * Initialize the <code>ProxyServlet</code>
-//     * @param servletConfig The Servlet configuration passed in by the servlet conatiner
-//     */
-//    def executeProxyRequest(ServletConfig servletConfig) {
-//        // Get the proxy scheme (http:// or https://)
-//        String stringProxySchemeNew = servletConfig.getInitParameter("proxyScheme");
-//        if(stringProxySchemeNew == null || stringProxySchemeNew.length() == 0 ||
-//                !(stringProxySchemeNew.equals("http://") ||  stringProxySchemeNew.equals("https://"))) {
-//            stringProxySchemeNew = "http://";       // Default to http if blank or invalid
-//        }
-//        this.stringProxyScheme = stringProxySchemeNew
-//        // Get the proxy host
-//        String stringProxyHostNew = servletConfig.getInitParameter("proxyHost");
-//        if(stringProxyHostNew == null || stringProxyHostNew.length() == 0) {
-//            throw new IllegalArgumentException("Proxy host not set, please set init-param 'proxyHost' in web.xml");
-//        }
-//        this.stringProxyHost = stringProxyHostNew
-//        // Get the proxy port if specified
-//        String stringProxyPortNew = servletConfig.getInitParameter("proxyPort");
-//        if(stringProxyPortNew != null && stringProxyPortNew.length() > 0) {
-//            this.intProxyPort = Integer.parseInt(stringProxyPortNew)
-//        }
-//        // Get the proxy path if specified
-//        String stringProxyPathNew = servletConfig.getInitParameter("proxyPath");
-//        if(stringProxyPathNew != null && stringProxyPathNew.length() > 0) {
-//            this.stringProxyPath = stringProxyPathNew
-//        }
-//        // Get the maximum file upload size if specified
-//        String stringMaxFileUploadSize = servletConfig.getInitParameter("maxFileUploadSize");
-//        if(stringMaxFileUploadSize != null && stringMaxFileUploadSize.length() > 0) {
-//            this.intMaxFileUploadSize = Integer.parseInt(stringMaxFileUploadSize)
-//        }
-//    }
 
     /**
      * Sets up the given {@link PostMethod} to send the same multipart POST
@@ -315,6 +276,7 @@ class ProxyController {
             }
             stringMyHostName += httpServletRequest.getContextPath();
             httpServletResponse.sendRedirect(stringLocation.replace(getProxyHostAndPort() + (grailsApplication.config.proxy.proxyPath?:''), stringMyHostName));
+            log.debug "SC_MULTIPLE_CHOICES && SC_NOT_MODIFIED"
             return;
         } else if(intProxyResponseCode == HttpServletResponse.SC_NOT_MODIFIED) {
             // 304 needs special handling.  See:
@@ -325,9 +287,11 @@ class ProxyController {
             // body because the file has not changed.
             httpServletResponse.setIntHeader(STRING_CONTENT_LENGTH_HEADER_NAME, 0);
             httpServletResponse.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            log.debug "SC_NOT_MODIFIED"
             return;
         }
 
+        log.debug "NO 30X responses"
         // Pass the response code back to the client
         httpServletResponse.setStatus(intProxyResponseCode);
 
@@ -347,6 +311,7 @@ class ProxyController {
         while ( ( intNextByte = bufferedInputStream.read() ) != -1 ) {
             outputStreamClientResponse.write(intNextByte);
         }
+        outputStreamClientResponse.flush()
     }
 
     private String getProxyURL(HttpServletRequest httpServletRequest, String pathInfo) {

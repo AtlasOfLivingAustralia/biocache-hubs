@@ -636,10 +636,14 @@ class OccurrenceTagLib {
         log."${attrs.level?:'info'}" attrs.msg
     }
 
+    /**
+     * Determine the URL prefix for biocache-service AJAX calls. Looks at the
+     * biocache.ajax.useProxy config var to see whether or not to use the proxy
+     */
     def getBiocacheAjaxUrl = { attrs ->
         String url = grailsApplication.config.biocache.baseUrl
-        Boolean useProxy = grailsApplication.config.biocache.ajax.useProxy.toBoolean()
-        log.info "useProxy = ${useProxy}"
+        Boolean useProxy = grailsApplication.config.biocache.ajax.useProxy.toBoolean() // will convert String 'true' to boolean true
+        log.debug "useProxy = ${useProxy}"
 
         if (useProxy) {
             url = g.createLink(uri: '/proxy')
