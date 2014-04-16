@@ -45,20 +45,13 @@ biocache.apiKey = "api-key-to-use"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
 biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
+biocache.ajax.useProxy = false
 collections.baseUrl = "http://collections.ala.org.au"
 // For sandbox environment
 //spatial.params = "&dynamic=true&ws=http%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=http%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"
 spatial.baseUrl = "http://spatial.ala.org.au/"
 spatial.params = ""
 test.var="sugar"
-
-// AjaxProxy plugin settings - should be same as biocache.baseUrl
-proxy {
-    proxyScheme = 'http://'
-    proxyHost = 'biocache.ala.org.au'
-    proxyPort = '80'
-    proxyPath = '/ws'
-}
 
 chartsBgColour = "#fffef7"
 clubRoleForHub = "ROLE_ADMIN"

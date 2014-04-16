@@ -11,7 +11,7 @@
 <g:set var="collectionsWebappContext" value="${grailsApplication.config.collections.baseUrl}"/>
 <g:set var="useAla" value="${grailsApplication.config.skin.useAlaBie?.toBoolean() ? 'true' : 'false'}"/>
 <g:set var="hubDisplayName" value="${grailsApplication.config.site.displayName}"/>
-<g:set var="biocacheService" value="${g.createLink(uri: '/proxy')}"/>
+<g:set var="biocacheService" value="${alatag.getBiocacheAjaxUrl()}"/>
 <g:set var="scientificName" value="${alatag.getScientificName(record: record)}"/>
 <!DOCTYPE html>
 <html>

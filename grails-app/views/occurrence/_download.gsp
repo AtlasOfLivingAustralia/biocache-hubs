@@ -3,7 +3,7 @@
     Created on : Feb 25, 2011, 4:20:32 PM
     Author     : "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
 --%>
-<g:set var="biocacheServiceUrl" value="${g.createLink(uri: '/proxy')}"/>
+<g:set var="biocacheServiceUrl" value="${alatag.getBiocacheAjaxUrl()}"/>
 <div id="download" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="downloadsLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>

@@ -635,4 +635,16 @@ class OccurrenceTagLib {
     def logMsg = { attrs ->
         log."${attrs.level?:'info'}" attrs.msg
     }
+
+    def getBiocacheAjaxUrl = { attrs ->
+        String url = grailsApplication.config.biocache.baseUrl
+        Boolean useProxy = grailsApplication.config.biocache.ajax.useProxy.toBoolean()
+        log.info "useProxy = ${useProxy}"
+
+        if (useProxy) {
+            url = g.createLink(uri: '/proxy')
+        }
+
+        out << url
+    }
 }

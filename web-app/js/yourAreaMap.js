@@ -199,7 +199,7 @@ $(document).ready(function() {
             },
             text: "<img src=\"" + EYA_CONF.imagesUrlPrefix + "/spinner.gif\" alt=\"\" class=\"no-rounding\"/>",
             ajax: {
-                url: EYA_CONF.contextPath + "/proxy/wordpress",
+                url: EYA_CONF.contextPath + "/proxy/wordpress", // TODO fix proxy
                 data: {
                     page_id: 27726,
                     "content-only": 1

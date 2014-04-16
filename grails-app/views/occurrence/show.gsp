@@ -13,7 +13,7 @@
 <g:set var="useAla" value="${grailsApplication.config.skin.useAlaBie?.toBoolean() ? 'true' : 'false'}"/>
 <g:set var="dwcExcludeFields" value="${grailsApplication.config.dwc.exclude}"/>
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
-<g:set var="biocacheService" value="${g.createLink(uri: '/proxy')}"/>
+<g:set var="biocacheService" value="${alatag.getBiocacheAjaxUrl()}"/>
 <g:set var="spatialPortalUrl" value="${grailsApplication.config.spatial.baseUrl}"/>
 <g:set var="serverName" value="${grailsApplication.config.serverName}"/>
 <g:set var="scientificName" value="${alatag.getScientificName(record: record)}"/>

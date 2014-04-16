@@ -893,7 +893,7 @@ function loadSpeciesInTab(start, sortField, group) {
         $("#loadMoreSpecies img").show();
     }
 
-    var speciesJsonUrl = BC_CONF.contextPath + "/proxy/exploreGroupWithGallery" + BC_CONF.searchString +
+    var speciesJsonUrl = BC_CONF.contextPath + "/proxy/exploreGroupWithGallery" + BC_CONF.searchString + // TODO fix proxy
             "&group=" + group + "&pageSize=" + pageSize + "&start=" + start + sortExtras;
 
     $.getJSON(speciesJsonUrl, function(data) {
