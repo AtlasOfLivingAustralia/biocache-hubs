@@ -225,6 +225,7 @@ a.colour-by-legend-toggle {
         MAP_VAR.map = L.map('leafletMap', {
             center: [MAP_VAR.defaultLatitude, MAP_VAR.defaultLongitude],
             zoom: MAP_VAR.defaultZoom,
+            minZoom: 1,
             scrollWheelZoom: false,
             fullscreenControl: true,
             fullscreenControlOptions: {
@@ -709,14 +710,14 @@ a.colour-by-legend-toggle {
                             MAP_VAR.map.setZoom(15);
                         }
                     } else if (MAP_VAR.zoomOutsideScopedRegion) {
-                        //map.fitBounds(dataBounds);
-                        //console.log("zoom", map.getZoom())
+                        // fitBounds is async so we set a one time only listener to detect change
+                        MAP_VAR.map.once('zoomend', function() {
+                            //console.log("zoomend", MAP_VAR.map.getZoom());
+                            if (MAP_VAR.map.getZoom() < 2) {
+                                MAP_VAR.map.setView(L.latLng(0, 24), 2); // zoom level 2 and centered over africa
+                            }
+                        });
                         MAP_VAR.map.fitBounds(dataBounds);
-
-                        if (MAP_VAR.map.getZoom() == 0) {
-                            //MAP_VAR.map.setCenter(centre);
-                            MAP_VAR.map.setZoom(2);
-                        }
                     }
                     MAP_VAR.map.invalidateSize();
                 }
