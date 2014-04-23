@@ -57,7 +57,7 @@
 
 <body>
     <div id="headingBar">
-        <h1 style="width:100%;" id="searchHeader">Search for records in ${hubDisplayName}</h1>
+        <h1 style="width:100%;" id="searchHeader"><g:message code="home.searchForRecordsIn" deafault="Search for records in"/> ${raw(hubDisplayName)}</h1>
     </div>
     <g:if test="${flash.message}">
         <div class="message alert alert-info">

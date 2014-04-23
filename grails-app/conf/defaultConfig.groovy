@@ -18,7 +18,7 @@
 //security.cas.casServerName = 'https://auth.ala.org.au'
 //security.cas.uriFilterPattern = '/admin, /admin/.*'
 //security.cas.authenticateOnlyIfLoggedInPattern = "/occurrences/(?!.+userAssertions|facet.+).+,/explore/your-area"
-//ssecurity.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
+//security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
 //security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
 //security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
 //security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
@@ -26,7 +26,7 @@
 //security.cas.contextPath = "/generic-biocache-hub" //"/${appName}"
 //security.cas.debugWebXml = true
 auth.admin_role = "ROLE_ADMIN"
-
+serverName = 'http://dev.ala.org.au:8080'
 
 // skin settings
 organisation.baseUrl = "http://www.ala.org.au"
@@ -39,7 +39,6 @@ skin.useAlaBie = true
 skin.useAlaSpatialPortal = false
 
 // web services
-serverName = 'http://dev.ala.org.au:8080'
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.apiKey = "api-key-to-use"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
@@ -51,10 +50,11 @@ collections.baseUrl = "http://collections.ala.org.au"
 //spatial.params = "&dynamic=true&ws=http%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=http%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"
 spatial.baseUrl = "http://spatial.ala.org.au/"
 spatial.params = ""
-test.var="sugar"
+test.var = "test"
 
 chartsBgColour = "#fffef7"
 clubRoleForHub = "ROLE_ADMIN"
+defaultListView = "" //  'mapView' or 'listView'
 dataQualityChecksUrl = "https://docs.google.com/spreadsheet/pub?key=0AjNtzhUIIHeNdHJOYk1SYWE4dU1BMWZmb2hiTjlYQlE&single=true&gid=0&output=csv"
 // whether map or list is the default tab to show - empty for list and "mapView" for map
 dwc.exclude = "dataHubUid,dataProviderUid,institutionUid,year,month,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds"
