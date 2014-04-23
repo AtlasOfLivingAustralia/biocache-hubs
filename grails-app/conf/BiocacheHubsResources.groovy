@@ -100,4 +100,9 @@ modules = {
         resource url:[dir:'js', file:'purl.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'yourAreaMap.js', plugin:'biocache-hubs']
     }
+
+    help {
+        resource url:[dir:'css', file:'help.css', plugin:'biocache-hubs']
+        resource url:[dir:'js', file:'toc.js', plugin:'biocache-hubs']
+    }
 }
