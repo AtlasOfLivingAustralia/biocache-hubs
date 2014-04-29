@@ -27,7 +27,7 @@ class HomeController {
     def advancedSearch(AdvancedSearchParams requestParams) {
         log.debug "Home controller advancedSearch page"
         //redirect(controller: "occurrence", action:"search", params: requestParams.toParamMap())
-        redirect(url: "/occurrences/search?${requestParams.toString()}")
+        redirect(uri: "/occurrences/search?${requestParams.toString()}")
     }
     
     private Map addCommonModel() {
