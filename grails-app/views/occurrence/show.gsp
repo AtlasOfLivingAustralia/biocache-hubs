@@ -504,16 +504,8 @@
                 </g:if>
                 <g:if test="${record.raw.lastModifiedTime && record.processed.lastModifiedTime}">
                     <div class="sidebar" style="margin-top: 10px;font-size: 12px; color: #555;">
-                        %{--<g:catch var="parseError">--}%
-                            %{--<fmt:parseDate var="rawLastModified" value="${record.raw.lastModifiedTime}" pattern="yyyy-MM-dd'T'HH:mm:ss'Z'"/>--}%
-                            %{--<fmt:formatDate var="rawLastModifiedString" value="${rawLastModified}" pattern="yyyy-MM-dd"/>--}%
-                            %{--<fmt:parseDate var="processedLastModified" value="${record.processed.lastModifiedTime}" pattern="yyyy-MM-dd'T'HH:mm:ss'Z'"/>--}%
-                            %{--<fmt:formatDate var="processedLastModifiedString" value="${processedLastModified}" pattern="yyyy-MM-dd"/>--}%
-                        %{--</g:catch>--}%
-                        %{--<g:if test="${parseError}">--}%
-                            %{--<g:set var="rawLastModifiedString" value="${record.raw.lastModifiedTime}"/>--}%
-                            %{--<g:set var="processedLastModifiedString" value="${record.processed.lastModifiedTime}"/>--}%
-                        %{--</g:if>--}%
+                        <g:set var="rawLastModifiedString" value="${record.raw.lastModifiedTime.substring(0,10)}"/>
+                        <g:set var="processedLastModifiedString" value="${record.processed.lastModifiedTime.substring(0,10)}"/>
                         <p style="margin-bottom:20px;">
                             Date loaded: ${rawLastModifiedString}<br/>
                             Date last processed: ${processedLastModifiedString}<br/>

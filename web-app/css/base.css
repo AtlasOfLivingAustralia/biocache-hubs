@@ -108,16 +108,8 @@ td.labels {
     margin: 10px 0 20px 0;
 }
 #headingBar h1 {
-/*    font-family: 'Rockwell', arial, helvetica, sans-serif;*/
-/*    color: #1775BA;*/
     font-size: 200%;
-    /*text-shadow: 1px 1px 1px #bbbaba;*/
     margin-bottom: 10px;
-    font-weight: lighter;
-/*    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    border-bottom-color: #CCC;*/
-    /*padding: 5px 0; */
     margin-top: 0px;
 }
 .sidebar h2 {
