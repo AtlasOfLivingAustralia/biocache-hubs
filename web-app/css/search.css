@@ -570,6 +570,10 @@ span.queryDisplay a:hover {
     text-decoration: none;
 }
 
+.searchError .queryDisplay {
+    font-weight: bold;
+}
+
 .dropDown {
     display: inline-block;
 /*    float: left;*/

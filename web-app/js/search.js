@@ -213,7 +213,7 @@ $(document).ready(function() {
     });
 
     // taxa search - show included synonyms with popup to allow user to refine to a single name
-    $("span.lsid").each(function(i, el) {
+    $("span.lsid").not('.searchError .lsid').each(function(i, el) {
         var lsid = $(this).attr("id");
         var nameString = $(this).html();
         var maxFacets = 20;

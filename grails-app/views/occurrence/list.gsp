@@ -63,14 +63,14 @@
         <input type="hidden" id="lsid" value="${params.lsid}"/>
     </div>
     <g:if test="${errors}">
-        <div class="searchInfo">
+        <div class="searchInfo searchError">
             <h2 style="padding-left: 10px;">Error</h2>
             <h4>${errors}</h4>
         </div>
     </g:if>
     <g:elseif test="${!sr || sr.totalRecords == 0}">
-        <div class="searchInfo">
-            <p>No records found for <span class="queryDisplay">${queryDisplay?:params.q}</span></p>
+        <div class="searchInfo searchError">
+            <p>No records found for <span class="queryDisplay">${raw(queryDisplay)?:params.q}</span></p>
         </div>
     </g:elseif>
     <g:else>
