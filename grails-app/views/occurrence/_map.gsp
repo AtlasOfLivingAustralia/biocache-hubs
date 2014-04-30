@@ -169,11 +169,16 @@ a.colour-by-legend-toggle {
 
 <r:script>
 
-    var cmAttr = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
-            cmUrl = 'http://{s}.tile.cloudmade.com/${grailsApplication.config.map.cloudmade.key}/{styleId}/256/{z}/{x}/{y}.png';
+//    var cmAttr = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+//            cmUrl = 'http://{s}.tile.cloudmade.com/${grailsApplication.config.map.cloudmade.key}/{styleId}/256/{z}/{x}/{y}.png';
+    var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>';
+	var mbUrl = 'https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png';
 
-    var minimal = L.tileLayer(cmUrl, {styleId: 22677, attribution: cmAttr});
-    var defaultBaseLayer = new L.Google('ROADMAP');
+    //var minimal = L.tileLayer(cmUrl, {styleId: 22677, attribution: cmAttr});
+    var defaultBaseLayer = L.tileLayer(mbUrl, {id: 'examples.map-20v6611k', attribution: mbAttr});
+    //var defaultBaseLayer = new L.Google('ROADMAP');
 
     var MAP_VAR = {
         map : null,
@@ -186,9 +191,9 @@ a.colour-by-legend-toggle {
         defaultZoom : "${grailsApplication.config.map.defaultZoom?:'4'}",
         overlays : {},
         baseLayers : {
-            //"Minimal" : minimal,
+            "Minimal" : defaultBaseLayer,
             //"Night view" : L.tileLayer(cmUrl, {styleId: 999,   attribution: cmAttr}),
-            "Road" : defaultBaseLayer,
+            "Road" :  new L.Google('ROADMAP'),
             "Terrain" : new L.Google('TERRAIN'),
             "Satellite" : new L.Google('HYBRID')
         },
