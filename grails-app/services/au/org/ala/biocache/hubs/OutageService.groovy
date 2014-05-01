@@ -11,7 +11,7 @@ import groovy.json.JsonSlurper
  */
 class OutageService {
 
-    private final static String FILE_NAME = "hubsWebappOutage.json"
+    private final static String FILE_NAME = "biocacheHubsOutage.json"
     private final static String TMP_PATH = System.getProperty("java.io.tmpdir")
     private final static String FILE_PATH = TMP_PATH + File.separator + FILE_NAME
 
