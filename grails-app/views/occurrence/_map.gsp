@@ -357,7 +357,7 @@ a.colour-by-legend-toggle {
                 //update the legend
                 $('.legendTable').html('<tr><td>Loading legend....</td></tr>');
                 $.ajax({
-                    url: "${grailsApplication.config.security.cas.contextPath}/occurrence/legend" + MAP_VAR.query + "&cm=" + colourByFacet + "&type=application/json",
+                    url: "${request.contextPath}/occurrence/legend" + MAP_VAR.query + "&cm=" + colourByFacet + "&type=application/json",
                     success: function(data) {
                         $('.legendTable').html('');
 
