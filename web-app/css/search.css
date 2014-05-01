@@ -39,7 +39,7 @@ form {
 }
 
 #searchInfoRow .span3 {
-    position:absolute;
+    /*position:absolute;*/
     bottom:0;
     left:0;
 }
@@ -353,7 +353,7 @@ div#currentFilter {
 /*}*/
 
 #resultsReturned {
-    margin-left: -30px; /* Fix for absolutely positioned customise button to the left */
+    /*margin-left: -30px; */ /* Fix for absolutely positioned customise button to the left */
     font-size: 16px;
 }
 

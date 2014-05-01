@@ -26,6 +26,7 @@ class HomeController {
 
     def advancedSearch(AdvancedSearchParams requestParams) {
         log.debug "Home controller advancedSearch page"
+        //flash.message = "Advanced search for: ${requestParams.toString()}"
         redirect(controller: "occurrences", action:"search", params: requestParams.toParamMap())
     }
     

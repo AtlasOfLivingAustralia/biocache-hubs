@@ -119,12 +119,18 @@
                                 </div>
                             </g:if>
                         </div>
-                        <div class="clearfix"></div>
+                        %{--<div class="clearfix"></div>--}%
                     </div>
                 </div>
-            </div>
-            <div class="span9 offset3">
+            </div><!-- /.span3 -->
+            <div class="span9">
                 <a name="map" class="jumpTo"></a><a name="list" class="jumpTo"></a>
+                <g:if test="${flash.message}">
+                    <div class="alert alert-info" style="margin-left: -30px;">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        ${flash.message}
+                    </div>
+                </g:if>
                 <div id="resultsReturned">
                     %{--<div class="alert alert-info ">--}%
                         <span id="returnedText"><strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong> results for</span>
@@ -170,7 +176,7 @@
                         </div>
                     </div>
                 </div>
-            </div><!-- /.span3 -->
+            </div><!-- /.span9 -->
         </div><!-- /#searchInfoRow -->
         <!--  Second row - facet column and results column -->
         <div class="row-fluid" id="content">
