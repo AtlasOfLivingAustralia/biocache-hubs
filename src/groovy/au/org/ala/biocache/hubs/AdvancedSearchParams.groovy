@@ -18,7 +18,7 @@ import grails.validation.Validateable
 import org.apache.commons.httpclient.URIException
 import org.apache.commons.httpclient.util.URIUtil
 import org.apache.commons.lang.StringUtils
-import org.apache.log4j.Logger
+import org.codehaus.groovy.grails.web.util.WebUtils
 
 /**
  * Request parameters for the advanced search form (form backing bean)
@@ -180,6 +180,22 @@ class AdvancedSearchParams {
         return finalQuery
     }
 
+    /**
+     * Get the queryString in the form of a Map - for use with 'params' attribute
+     * in redirect, etc.
+     *
+     * @return
+     */
+    public Map toParamMap() {
+        WebUtils.fromQueryString(toString())
+    }
+
+    /**
+     * Strip unwanted characters from input string
+     *
+     * @param withCharsToStrip
+     * @return
+     */
     private String stripChars(String withCharsToStrip){
         if(withCharsToStrip!=null){
             return withCharsToStrip.replaceAll("\\.","")
