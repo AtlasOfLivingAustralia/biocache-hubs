@@ -39,6 +39,7 @@ class OccurrenceController {
      * @return
      */
     def list(SpatialSearchRequestParams requestParams) {
+        def start = System.currentTimeMillis()
         if (!params.pageSize) {
             requestParams.pageSize = 20
         }
@@ -65,8 +66,9 @@ class OccurrenceController {
             String[] userFacets = postProcessingService.getFacetsFromCookie(request)
             String[] filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
             requestParams.facets = userFacets ?: filteredFacets
-
+            def wsStart = System.currentTimeMillis()
             JSONObject searchResults = webServicesService.fullTextSearch(requestParams)
+            def wsTime = (System.currentTimeMillis() - wsStart)
             // postProcessingService.modifyQueryTitle(searchResults, taxaQueries)
             // log.info "searchResults = ${searchResults.toString(2)}"
             session['hit'] = 0
@@ -76,7 +78,7 @@ class OccurrenceController {
                     sr: searchResults,
                     searchRequestParams: requestParams,
                     defaultFacets: defaultFacets,
-                    groupedFacets: webServicesService.getGroupedFacets(),
+                    groupedFacets: webServicesService.getGroupedFacets(), // cached
                     groupedFacetsMap: postProcessingService.getMapOfGroupedFacets(searchResults.facetResults),
                     dynamicFacets: null, // TODO
                     hasImages: postProcessingService.resultsHaveImages(searchResults),
@@ -84,7 +86,9 @@ class OccurrenceController {
                     sort: requestParams.sort,
                     dir: requestParams.dir,
                     userId: authService?.getUserId(),
-                    userEmail: authService?.getEmail()
+                    userEmail: authService?.getEmail(),
+                    processingTime: (System.currentTimeMillis() - start),
+                    wsTime: wsTime
             ]
         } catch (Exception ex) {
             log.warn "Error getting search results: $ex.message", ex

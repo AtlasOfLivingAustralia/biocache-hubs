@@ -6,6 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<g:set var="startPageTime" value="${System.currentTimeMillis()}"/>
 <g:set var="queryDisplay" value="${sr?.queryTitle?:searchRequestParams?.displayString?:''}"/>
 <!DOCTYPE html>
 <html>
@@ -343,5 +344,14 @@
             </div>
         </div>
     </g:else>
+<g:if test="${grailsApplication.config.showBenchMarks?.toBoolean()}">
+    <g:set var="endPageTime" value="${System.currentTimeMillis()}"/>
+    <div style="color:#ddd;">
+        page render time = ${(endPageTime - startPageTime)} ms<br>
+        biocache-service GET time = ${wsTime} ms<br>
+        controller processing time = ${processingTime} ms<br>
+        total processing time = ${(endPageTime - startPageTime) + processingTime} ms
+    </div>
+</g:if>
 </body>
 </html>

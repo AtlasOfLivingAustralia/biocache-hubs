@@ -76,6 +76,7 @@ class WebServicesService {
 
     @Cacheable('longTermCache')
     def Map getGroupedFacets() {
+        log.info "Getting grouped facets"
         def url = "${grailsApplication.config.biocache.baseUrl}/search/grouped/facets"
         JSONArray groupedArray = getJsonElements(url)
         Map groupedMap = [:] // LinkedHashMap by default so ordering is maintained

@@ -1,5 +1,6 @@
 <div id="facetWell" class="well well-small">
-    ${alatag.logMsg(msg:"Start of facets.gsp")}
+    <g:set var="startTime" value="${System.currentTimeMillis()}"/>
+    ${alatag.logMsg(msg:"Start of facets.gsp - " + startTime)}
     <h3 class="visible-phone">
         <a href="#" id="toggleFacetDisplay"><i class="icon-chevron-down" id="facetIcon"></i>
             Refine results</a>
@@ -31,7 +32,7 @@
             </div>
         </g:if>
         ${alatag.logMsg(msg:"Before grouped facets facets.gsp")}
-        <g:set var="facetMax" value="${20}"/><g:set var="i" value="${1}"/>
+        <g:set var="facetMax" value="${10}"/><g:set var="i" value="${1}"/>
         <g:each var="group" in="${groupedFacets}">
             <g:set var="keyCamelCase" value="${group.key.replaceAll(/\s+/,'')}"/>
             <div class="facetGroupName" id="heading_${keyCamelCase}">
@@ -130,4 +131,10 @@
         dynamicFacets.push('${dynamicFacet.name}');
     </g:each>
 </script>
-${alatag.logMsg(msg:"End of facets.gsp")}
+<g:if test="${grailsApplication.config.showBenchMarks?.toBoolean()}">
+    <g:set var="endTime" value="${System.currentTimeMillis()}"/>
+    ${alatag.logMsg(msg:"End of facets.gsp - " + endTime + " => " + (endTime - startTime))}
+    <div style="color:#ddd;">
+        facets render time = ${(endTime - startTime)} ms
+    </div>
+</g:if>
