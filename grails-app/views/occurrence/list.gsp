@@ -344,7 +344,7 @@
             </div>
         </div>
     </g:else>
-<g:if test="${grailsApplication.config.showBenchMarks?.toBoolean()}">
+<g:if test="${grailsApplication.config.showBenchMarks?.asBoolean()}">
     <g:set var="endPageTime" value="${System.currentTimeMillis()}"/>
     <div style="color:#ddd;">
         page render time = ${(endPageTime - startPageTime)} ms<br>

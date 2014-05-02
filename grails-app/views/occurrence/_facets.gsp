@@ -131,7 +131,7 @@
         dynamicFacets.push('${dynamicFacet.name}');
     </g:each>
 </script>
-<g:if test="${grailsApplication.config.showBenchMarks?.toBoolean()}">
+<g:if test="${grailsApplication.config.showBenchMarks?.asBoolean()}">
     <g:set var="endTime" value="${System.currentTimeMillis()}"/>
     ${alatag.logMsg(msg:"End of facets.gsp - " + endTime + " => " + (endTime - startTime))}
     <div style="color:#ddd;">
