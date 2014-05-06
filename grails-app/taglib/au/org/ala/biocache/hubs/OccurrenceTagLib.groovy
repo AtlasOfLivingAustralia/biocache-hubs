@@ -23,10 +23,12 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import java.text.SimpleDateFormat
 
 class OccurrenceTagLib {
+    // injected beans
+    def webServicesService, authService, outageService, messageSourceCacheService
+
     //static defaultEncodeAs = 'html'
     //static encodeAsForTags = [tagName: 'raw']
     static returnObjectForTags = ['getLoggerReasons']
-    def webServicesService, authService, outageService
     static namespace = 'alatag'     // namespace for headers and footers
 
     /**
@@ -159,6 +161,7 @@ class OccurrenceTagLib {
         def facetResult = attrs.facetResult
         def queryParam = attrs.queryParam
         def mb = new MarkupBuilder(out)
+        Map messagesMap = messageSourceCacheService.getMessagesMap(request.locale) // g.message too slow so we use a Map instead
         //def fqValue = fieldResult.label?.encodeAsURL()
         def linkTitle = "Filter results by ${alatag.formatDynamicFacetName(fieldName:facetResult.fieldName)}"
 
@@ -192,7 +195,9 @@ class OccurrenceTagLib {
                                 mkp.yieldUnescaped("&nbsp;")
                             }
                             span(class:"facet-item") {
-                                mkp.yield(message(code:"${fieldResult.label?:'unknown'}", default:"${fieldResult.label}"))
+                                //mkp.yield(message(code:"${fieldResult.label?:'unknown'}", default:"${fieldResult.label}"))
+                                def label = messagesMap.get(fieldResult.label) ?: fieldResult.label
+                                mkp.yield("${label}")
                                 addCounts(fieldResult.count)
                             }
 
@@ -219,8 +224,9 @@ class OccurrenceTagLib {
 
                     }
                 } else {
-                    def label = g.message(code:"${facetResult.fieldName}.${fieldResult.label}", default:"")?:
-                            g.message(code:"${fieldResult.label?:'unknown'}", default:"${fieldResult.label}")
+                    //def label = g.message(code:"${facetResult.fieldName}.${fieldResult.label}", default:"")?:
+                    //        g.message(code:"${fieldResult.label?:'unknown'}", default:"${fieldResult.label}")
+                    def label = messagesMap.get(facetResult.fieldName + "." + fieldResult.label) ?: messagesMap.get(fieldResult.label) ?: fieldResult.label
                     li {
                         a(      href:"?${queryParam}&fq=${facetResult.fieldName}:%22${fieldResult.label?.encodeAsURL()}%22",
                                 class: "tooltips",
