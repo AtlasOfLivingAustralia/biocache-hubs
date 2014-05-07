@@ -23,9 +23,16 @@ import org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessa
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 class ExtendedPluginAwareResourceBundleMessageSource extends PluginAwareResourceBundleMessageSource {
+    /**
+     * Provide a complete listing of properties for a given locale, as a Map
+     * Client app properties override those from this plugin
+     *
+     * @param locale
+     * @return
+     */
     Map<String, String> listMessageCodes(Locale locale) {
-        Properties properties = getMergedProperties(locale).properties
         Properties pluginProperties = getMergedPluginProperties(locale).properties
-        return properties.plus(pluginProperties)
+        Properties properties = getMergedProperties(locale).properties
+        return pluginProperties.plus(properties)
     }
 }

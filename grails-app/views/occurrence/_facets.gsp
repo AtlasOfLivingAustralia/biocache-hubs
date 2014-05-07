@@ -3,10 +3,10 @@
     ${alatag.logMsg(msg:"Start of facets.gsp - " + startTime)}
     <h3 class="visible-phone">
         <a href="#" id="toggleFacetDisplay"><i class="icon-chevron-down" id="facetIcon"></i>
-            Refine results</a>
+            <alatag:message code="search.facets.heading" default="Refine results"/></a>
     </h3>
     <div class="sidebar hidden-phone">
-        <h3 class="hidden-phone"><g:message code="search.facets.heading" default="Refine results"/></h3>
+        <h3 class="hidden-phone"><alatag:message code="search.facets.heading" default="Refine results"/></h3>
     </div>
     <div class="sidebar hidden-phone" style="clear:both;">
         <g:if test="${sr.query}">
@@ -16,7 +16,7 @@
         </g:if>
         <g:if test="${sr.activeFacetMap}">
             <div id="currentFilter">
-                <h4><span class="FieldName"><g:message code="search.filters.heading" default="Current filters"/></span></h4>
+                <h4><span class="FieldName"><alatag:message code="search.filters.heading" default="Current filters"/></span></h4>
                 <div class="subnavlist">
                     <ul id="refinedFacets">
                         <g:each var="item" in="${sr.activeFacetMap}">

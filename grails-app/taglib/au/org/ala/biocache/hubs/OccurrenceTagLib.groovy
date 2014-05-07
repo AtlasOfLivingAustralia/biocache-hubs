@@ -19,6 +19,7 @@ import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.time.DateUtils
 import org.codehaus.groovy.grails.web.json.JSONObject
+import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
 
@@ -28,7 +29,7 @@ class OccurrenceTagLib {
 
     //static defaultEncodeAs = 'html'
     //static encodeAsForTags = [tagName: 'raw']
-    static returnObjectForTags = ['getLoggerReasons']
+    static returnObjectForTags = ['getLoggerReasons','message']
     static namespace = 'alatag'     // namespace for headers and footers
 
     /**
@@ -45,7 +46,7 @@ class OccurrenceTagLib {
         } else if (fieldName.endsWith('_RNG')) {
             output = fieldName.substring(0,-4).replaceAll("_", " ") + " (range)"
         } else {
-            output = "${g:message(code:"facet.${fieldName}", default: fieldName)}"
+            output = "${alatag.message(code:"facet.${fieldName}", default: fieldName)}"
         }
 
         out << output
@@ -125,7 +126,7 @@ class OccurrenceTagLib {
         def mb = new MarkupBuilder(out)
         mb.a(   href:"#",
                 class: "${attrs.cssClass} tooltips activeFilter",
-                    title: message(code:"title.filter.remove", default:"Click to remove this filter"),
+                    title: alatag.message(code:"title.filter.remove", default:"Click to remove this filter"),
                     "data-facet": item.key
                     //"data-facet":"${item.key}:${item.value.value.encodeAsURL()}",
                     //onClick:"removeFacet(this); return false;"
@@ -136,13 +137,13 @@ class OccurrenceTagLib {
                 }
             }
             if (item.key.contains("occurrence_year")) {
-                fqLabel = fqLabel.replaceAll(':',': ').replaceAll('occurrence_year', message(code: 'facet.occurrence_year', default:'occurrence_year'))
+                fqLabel = fqLabel.replaceAll(':',': ').replaceAll('occurrence_year', alatag.message(code: 'facet.occurrence_year', default:'occurrence_year'))
                 mkp.yieldUnescaped( fqLabel.replaceAll(/(\d{4})\-.*?Z/) { all, year ->
                     def year10 = year?.toInteger() + 10
                     "${year} - ${year10}"
                 })
             } else {
-                mkp.yieldUnescaped(message(code: fqLabel, default: fqLabel).replaceFirst(':',': '))
+                mkp.yieldUnescaped(alatag.message(code: fqLabel, default: fqLabel).replaceFirst(':',': '))
             }
             if (attrs.addCloseBtn) {
                 mkp.yieldUnescaped("&nbsp;")
@@ -161,8 +162,6 @@ class OccurrenceTagLib {
         def facetResult = attrs.facetResult
         def queryParam = attrs.queryParam
         def mb = new MarkupBuilder(out)
-        Map messagesMap = messageSourceCacheService.getMessagesMap(request.locale) // g.message too slow so we use a Map instead
-        //def fqValue = fieldResult.label?.encodeAsURL()
         def linkTitle = "Filter results by ${alatag.formatDynamicFacetName(fieldName:facetResult.fieldName)}"
 
         def addCounts = { count ->
@@ -195,9 +194,7 @@ class OccurrenceTagLib {
                                 mkp.yieldUnescaped("&nbsp;")
                             }
                             span(class:"facet-item") {
-                                //mkp.yield(message(code:"${fieldResult.label?:'unknown'}", default:"${fieldResult.label}"))
-                                def label = messagesMap.get(fieldResult.label) ?: fieldResult.label
-                                mkp.yield("${label}")
+                                mkp.yield( alatag.message(code: fieldResult.label?:'unknown'))
                                 addCounts(fieldResult.count)
                             }
 
@@ -224,9 +221,7 @@ class OccurrenceTagLib {
 
                     }
                 } else {
-                    //def label = g.message(code:"${facetResult.fieldName}.${fieldResult.label}", default:"")?:
-                    //        g.message(code:"${fieldResult.label?:'unknown'}", default:"${fieldResult.label}")
-                    def label = messagesMap.get(facetResult.fieldName + "." + fieldResult.label) ?: messagesMap.get(fieldResult.label) ?: fieldResult.label
+                    def label = alatag.message(code: facetResult.fieldName + "." + fieldResult.label, default: '') ?: alatag.message(code: fieldResult.label)
                     li {
                         a(      href:"?${queryParam}&fq=${facetResult.fieldName}:%22${fieldResult.label?.encodeAsURL()}%22",
                                 class: "tooltips",
@@ -329,7 +324,7 @@ class OccurrenceTagLib {
         groupedAssertions.each { assertion ->
 
             mb.li(id: assertion?.usersAssertionUuid) {
-                mkp.yield(g.message(code: "${assertion.name}", default :"${assertion.name}"))
+                mkp.yield(alatag.message(code: "${assertion.name}", default :"${assertion.name}"))
 
                 if (assertion.assertionByUser) {
                     br()
@@ -432,7 +427,7 @@ class OccurrenceTagLib {
             mb.tr(id:"${fieldCode}") {
                 td(class:"dwcLabel") {
                     if (fieldNameIsMsgCode) {
-                        mkp.yield(g.message(code: "${fieldName}", default :"${fieldName}"))
+                        mkp.yield(alatag.message(code: "${fieldName}"))
                     } else {
                         mkp.yieldUnescaped(fieldName)
                     }
@@ -468,7 +463,7 @@ class OccurrenceTagLib {
 
         compareRecord.get(group).each { cr ->
             def key = cr.name
-            def label = g.message(code:key, default:"")?:alatag.camelCaseToHuman(text: key)?:StringUtils.capitalize(key)
+            def label = alatag.message(code:key, default:"")?:alatag.camelCaseToHuman(text: key)?:StringUtils.capitalize(key)
 
             // only output fields not already included (by checking fieldsMap Map) && not in excluded list
             if (!fieldsMap.containsKey(key) && !StringUtils.containsIgnoreCase(exclude, key)) {
@@ -498,7 +493,7 @@ class OccurrenceTagLib {
      * @attr occurrence REQUIRED
      */
     def formatListRecordRow = { attrs ->
-        log.debug "formatListRecordRow - ${session['hit']++}"
+        //log.debug "formatListRecordRow - ${session['hit']++}"
         def JSONObject occurrence = attrs.occurrence
         def mb = new MarkupBuilder(out)
 
@@ -535,17 +530,17 @@ class OccurrenceTagLib {
                         outputResultsLabel("Year: ", g.formatDate(number:"${occurrence.occurrenceYear}", format:"yyyy"), true)
                     }
                     if (occurrence.stateProvince) {
-                        outputResultsLabel("State: ", message(code:occurrence.stateProvince), true)
+                        outputResultsLabel("State: ", alatag.message(code:occurrence.stateProvince), true)
                     } else if (occurrence.country) {
-                        outputResultsLabel("Country: ", message(code:occurrence.country), true)
+                        outputResultsLabel("Country: ", alatag.message(code:occurrence.country), true)
                     }
                 }
             }
             p(class:'rowB') {
-                outputResultsLabel("Institution: ", message(code: occurrence.institutionName), occurrence.institutionName)
-                outputResultsLabel("Collection: ", message(code: occurrence.collectionName), occurrence.collectionName)
-                outputResultsLabel("Data&nbsp;Resource: ", message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
-                outputResultsLabel("Basis&nbsp;of&nbsp;record: ", message(code: occurrence.basisOfRecord), occurrence.basisOfRecord)
+                outputResultsLabel("Institution: ", alatag.message(code:occurrence.institutionName), occurrence.institutionName)
+                outputResultsLabel("Collection: ", alatag.message(code:occurrence.collectionName), occurrence.collectionName)
+                outputResultsLabel("Data&nbsp;Resource: ", alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
+                outputResultsLabel("Basis&nbsp;of&nbsp;record: ", alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
                 outputResultsLabel("Catalog&nbsp;number: ", "${occurrence.raw_collectionCode}:${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber!= null && occurrence.raw_catalogNumber)
                 a(
                         href: g.createLink(url:"${request.contextPath}/occurrences/${occurrence.uuid}"),
@@ -555,6 +550,37 @@ class OccurrenceTagLib {
                 )
             }
         }
+    }
+
+    /**
+     * Alternative to g.message(code:'foo.bar')
+     * TODO: not implemented the error, message, args, encodeAs or locale attributes (not used in this project yet)
+     *
+     * @see org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+     *
+     * @attr code REQUIRED
+     * @attr default
+     */
+    def message = { attrs ->
+        def code = attrs.code?.toString() // in case a G-sting
+        def output = ""
+
+        if (code) {
+            String defaultMessage
+            if (attrs.containsKey('default')) {
+                defaultMessage = attrs['default']?.toString()
+            } else {
+                defaultMessage = code
+            }
+
+            //log.error "code = ${code} || defaultCode = ${defaultCode}"
+            Map messagesMap = messageSourceCacheService.getMessagesMap(RequestContextUtils.getLocale(request)) // g.message too slow so we use a Map instead
+            def message = messagesMap.get(code)
+            output = message ?: defaultMessage
+            //log.error "locale = ${RequestContextUtils.getLocale(request)}"
+        }
+
+        return output
     }
 
     /**

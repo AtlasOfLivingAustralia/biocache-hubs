@@ -12,7 +12,7 @@
 <html>
 <head>
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
-    <title>Search: ${sr?.queryTitle.replaceAll("<(.|\n)*?>", '')} | <g:message code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
+    <title>Search: ${sr?.queryTitle.replaceAll("<(.|\n)*?>", '')} | <alatag:message code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
     %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <r:require modules="search, leaflet, slider, qtip, nanoscroller, amplify"/>
@@ -48,7 +48,7 @@
 <body>
     <div id="listHeader" class="row-fluid">
         <div class="span5">
-            <h1><g:message code="heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>
+            <h1><alatag:message code="heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>
         </div>
         <div id="searchBoxZ" class="span7 text-right">
             <form action="${g.createLink(controller: 'occurrence', action: 'search')}" id="solrSearchForm" class="">
@@ -81,7 +81,7 @@
             <div class="span3">
                 <div id="customiseFacetsButton" class="btn-group">
                     <a class="btn btn-small dropdown-toggle tooltips" data-toggle="dropdown" href="#" title="Customise the contents of this column">
-                        <i class="icon-cog"></i> <g:message code="search.filter.customise"/>
+                        <i class="icon-cog"></i> <alatag:message code="search.filter.customise"/>
                         <span class="caret"></span>
                     </a>
                     <div class="dropdown-menu" role="menu"> <%--facetOptions--%>
@@ -104,7 +104,7 @@
                                         <g:if test="${defaultFacets.containsKey(facetFromGroup)}">
                                             <g:set var="count" value="${count+1}"/>
                                             <input type="checkbox" name="facets" class="facetOpts" value="${facetFromGroup}"
-                                                ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<g:message code="facet.${facetFromGroup}"/><br>
+                                                ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<alatag:message code="facet.${facetFromGroup}"/><br>
                                         </g:if>
                                     </g:each>
                                 </div>
@@ -140,7 +140,7 @@
                     %{--<g:set var="hasFq" value="${false}"/>--}%
                     <g:if test="${sr.activeFacetMap?.size() > 0}">
                         <div class="activeFilters">
-                            <b><g:message code="search.filters.heading" default="Current filters"/></b>:&nbsp;
+                            <b><alatag:message code="search.filters.heading" default="Current filters"/></b>:&nbsp;
                             <g:each var="fq" in="${sr.activeFacetMap}">
                                 <g:if test="${fq.key}">
                                     <g:set var="hasFq" value="${true}"/>
@@ -184,6 +184,7 @@
             <div class="span3">
                 <g:render template="facets" />
             </div>
+            <g:set var="postFacets" value="${System.currentTimeMillis()}"/>
             <div id="content2" class="span9">
                 <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
                     <div id="alert" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="alertLabel" aria-hidden="true">
@@ -274,16 +275,19 @@
                             </div><!-- sortWidget -->
                         </div><!-- searchControls -->
                         <div id="results">
+                            <g:set var="startList" value="${System.currentTimeMillis()}"/>
                             <g:each var="occurrence" in="${sr.occurrences}">
                                 <alatag:formatListRecordRow occurrence="${occurrence}" />
                             </g:each>
                         </div><!--close results-->
+                        <div style="color:#ddd;">
+                            list render time = ${(System.currentTimeMillis() - startList)} ms<br>
+                        </div>
                         <div id="searchNavBar" class="pagination">
                             <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}" params="${[taxa:params.taxa, q:params.q, fq:params.fq]}"/>
                         </div>
                     </div><!--end solrResults-->
                     <div id="mapView" class="tab-pane">
-
                         <g:render template="map"
                                   model="[mappingUrl:alatag.getBiocacheAjaxUrl(),
                                           searchString: searchString,
@@ -347,6 +351,7 @@
 <g:if test="${grailsApplication.config.showBenchMarks?.asBoolean()}">
     <g:set var="endPageTime" value="${System.currentTimeMillis()}"/>
     <div style="color:#ddd;">
+        post-facets time = ${(endPageTime - postFacets)} ms<br>
         page render time = ${(endPageTime - startPageTime)} ms<br>
         biocache-service GET time = ${wsTime} ms<br>
         controller processing time = ${processingTime} ms<br>

@@ -35,6 +35,7 @@ class MessagesController {
             List locBits = id?.tokenize('_')
             locale = new Locale(locBits[1], locBits[2]?:'')
             log.debug "id = ${id} || locale = ${locale} || locBits = ${locBits}"
+            log.debug "test: search.facets.heading = ${messageSource.getMessage('search.facets.heading',null, locale)}"
         }
 
         Map props = messageSource.listMessageCodes(locale?:request.locale)
