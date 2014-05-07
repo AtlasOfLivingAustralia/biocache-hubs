@@ -54,9 +54,9 @@ test.var = "test"
 
 chartsBgColour = "#fffef7"
 clubRoleForHub = "ROLE_ADMIN"
+// whether map or list is the default tab to show - empty for list and "mapView" for map
 defaultListView = "" //  'mapView' or 'listView'
 dataQualityChecksUrl = "https://docs.google.com/spreadsheet/pub?key=0AjNtzhUIIHeNdHJOYk1SYWE4dU1BMWZmb2hiTjlYQlE&single=true&gid=0&output=csv"
-// whether map or list is the default tab to show - empty for list and "mapView" for map
 dwc.exclude = "dataHubUid,dataProviderUid,institutionUid,year,month,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds"
 
 exploreYourArea.lat = "-35.0"
@@ -66,7 +66,7 @@ exploreYourArea.location = "Canberra, ACT"
 facets.limit = "100"
 facets.customOrder = ""
 facets.defaultColourBy = "basis_of_record"
-facets.exclude = "dataHubUid,year,month,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds"
+facets.exclude = "dataHubUid,year,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds"
 facets.hide = "genus,order,class,phylum,kingdom,raw_taxon_name,rank,interaction,raw_state_conservation,biogeographic_region,year,institution_uid,collection_uid"
 facets.include = "establishment_means,user_assertions,assertion_user_id,name_match_metric,duplicate_type,alau_user_id,raw_datum,raw_sex,life_stage,elevation_d_rng,identified_by,species_subgroup"
 

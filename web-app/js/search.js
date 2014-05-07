@@ -1102,7 +1102,10 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                         label = label.substring(0,label.indexOf("@"));
                     } else if (jQuery.i18n.prop(label).indexOf("[") == -1) {
                         // i18n substitution
-                        label = jQuery.i18n.prop(label);
+                        var code = facetName + "." + label;
+                        var i18nLabel = jQuery.i18n.prop(code);
+                        //console.log(label, code, i18nLabel, jQuery.i18n.prop(label))
+                        label = (i18nLabel.indexOf("[") == -1) ? i18nLabel : jQuery.i18n.prop(label);
                     } else if (facetName.indexOf("outlier_layer") != -1 || /^el\d+/.test(label)) {
                         label = jQuery.i18n.prop("layer." + label);
                     } else if (facetName.indexOf("geospatial_kosher") != -1 || /^el\d+/.test(label)) {
@@ -1113,6 +1116,12 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                         label = jQuery.i18n.prop("duplication." + label);
                     } else if (facetName.indexOf("taxonomic_issue") != -1 || /^el\d+/.test(label)) {
                         label = jQuery.i18n.prop(label);
+                    } else {
+                        var code = facetName + "." + label;
+                        var i18nLabel = jQuery.i18n.prop(code);
+                        //console.log("ELSE",label, code, i18nLabel, jQuery.i18n.prop(label))
+                        var newLabel = (i18nLabel.indexOf("[") == -1) ? i18nLabel : (jQuery.i18n.prop(label));
+                        label = (newLabel.indexOf("[") == -1) ? newLabel : label;
                     }
                     facetName = facetName.replace(/_RNG$/,""); // remove range version if present
 //                    console.log("label", label, facetName, el);
