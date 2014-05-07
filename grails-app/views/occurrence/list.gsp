@@ -280,9 +280,11 @@
                                 <alatag:formatListRecordRow occurrence="${occurrence}" />
                             </g:each>
                         </div><!--close results-->
-                        <div style="color:#ddd;">
-                            list render time = ${(System.currentTimeMillis() - startList)} ms<br>
-                        </div>
+                        <g:if test="${grailsApplication.config.showBenchMarks?.asBoolean()}">
+                            <div style="color:#ddd;">
+                                list render time = ${(System.currentTimeMillis() - startList)} ms<br>
+                            </div>
+                        </g:if>
                         <div id="searchNavBar" class="pagination">
                             <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}" params="${[taxa:params.taxa, q:params.q, fq:params.fq]}"/>
                         </div>
