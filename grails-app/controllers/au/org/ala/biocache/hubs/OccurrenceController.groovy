@@ -208,10 +208,9 @@ class OccurrenceController {
      *
      * @return
      */
-    def legend(){
-       def legend = webServicesService.getText(grailsApplication.config.biocache.baseUrl + "/webportal/legend?" + request.queryString)
-       response.setContentType("application/json")
-       render legend
+    def legend() {
+        def legend = webServicesService.getMapLegend(request.queryString)
+        render legend as JSON
     }
 
     /**

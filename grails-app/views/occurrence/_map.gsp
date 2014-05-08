@@ -406,6 +406,7 @@ a.colour-by-legend-toggle {
     }
 
     function addLegendItem(name, red, green, blue){
+        var nameLabel = jQuery.i18n.prop(name);
         $(".legendTable")
             .append($('<tr>')
                 .append($('<td>')
@@ -424,7 +425,7 @@ a.colour-by-legend-toggle {
                     )
                     .append($('<span>')
                         .addClass('legendItemName')
-                        .html(name)
+                        .html((nameLabel.indexOf("[") == -1) ? nameLabel : name)
                     )
                 )
         );

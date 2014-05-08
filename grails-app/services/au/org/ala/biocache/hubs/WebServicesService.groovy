@@ -21,7 +21,7 @@ class WebServicesService {
 
     public static final String ENVIRONMENTAL = "Environmental"
     public static final String CONTEXTUAL = "Contextual"
-    def grailsApplication
+    def grailsApplication, facetsCacheService
 
     @Cacheable('biocacheCache')
     def JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
@@ -48,6 +48,33 @@ class WebServicesService {
     def JSONObject getCompareRecord(String id) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrence/compare?uuid=${id.encodeAsURL()}"
         getJsonElements(url)
+    }
+
+    @Cacheable('biocacheCache')
+    def JSONArray getMapLegend(String queryString) {
+        def url = "${grailsApplication.config.biocache.baseUrl}/webportal/legend?${queryString}"
+        JSONArray json = getJsonElements(url)
+        def facetName
+        Map facetLabelsMap = [:]
+
+        json.each { item ->
+            if (!facetName) {
+                // do this once
+                facetName = item.fq?.tokenize(':')?.get(0)?.replaceFirst(/^\-/,'')
+                try {
+                    FacetsName fn = FacetsName.valueOfFieldName(facetName)
+                    facetLabelsMap = facetsCacheService.getFacetNamesFor(fn) // cached
+                } catch (IllegalArgumentException iae) {
+                    log.info "${iae.message}"
+                }
+            }
+
+            if (facetLabelsMap.containsKey(item.name)) {
+                item.name = facetLabelsMap.get(item.name)
+            }
+        }
+
+        json
     }
 
     //@Cacheable('biocacheCache')

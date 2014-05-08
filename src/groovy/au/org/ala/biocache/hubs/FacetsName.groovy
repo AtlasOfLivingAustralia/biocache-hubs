@@ -14,15 +14,19 @@
  */
 package au.org.ala.biocache.hubs
 
+import groovy.util.logging.Log4j
+
 /**
  * Enum for facet fields needed to populate drop-down lists in advanced search page, etc.
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
+@Log4j
 enum FacetsName {
     COLLECTION("collection_uid"),
     INSTITUTION("institution_uid"),
     DATA_RESOURCE("data_resource_uid"),
+    DATA_PROVIDER("data_provider_uid"),
     TYPE_STATUS("type_status"),
     BASIS_OF_RECORD("basis_of_record"),
     SPECIES_GROUP("species_group"),
@@ -40,5 +44,22 @@ enum FacetsName {
 
     FacetsName(String name) {
         this.fieldname = name
+    }
+
+    /**
+     * Do a lookup on the fieldName field
+     *
+     * @param fieldName
+     * @return
+     */
+    public static FacetsName valueOfFieldName(String fieldName) {
+        for (FacetsName v : values()) {
+            if (v.fieldname.equals(fieldName)) {
+                log.info "matched value = ${v}"
+                return v;
+            }
+        }
+        throw new IllegalArgumentException(
+                "No enum const " + FacetsName.class + "@fieldName." + fieldName);
     }
 }
