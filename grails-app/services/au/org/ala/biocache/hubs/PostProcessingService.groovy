@@ -245,16 +245,18 @@ class PostProcessingService {
         }
 
         if (taxaQueries.size() > 1) {
+            // multiple taxa params (array)
             guidsForTaxa.eachWithIndex { guid, i ->
                 if (guid) {
                     expandedQueries.add("lsid:" + guid)
                 } else {
-                    expandedQueries.add(taxaQueries[i])
+                    expandedQueries.add("text:" + taxaQueries[i])
                 }
             }
             query = "(" + expandedQueries.join(" OR ") + ")"
         } else {
-            query = (guidsForTaxa[0]) ? "lsid:" + guidsForTaxa[0] : taxaQueries[0]
+            // single taxa param
+            query = (guidsForTaxa[0]) ? "lsid:" + guidsForTaxa[0] : "text:" + taxaQueries[0]
         }
 
         return query
