@@ -280,7 +280,7 @@
                                 <alatag:formatListRecordRow occurrence="${occurrence}" />
                             </g:each>
                         </div><!--close results-->
-                        <g:if test="${grailsApplication.config.showBenchMarks?.asBoolean()}">
+                        <g:if test="${params.benchmarks}">
                             <div style="color:#ddd;">
                                 list render time = ${(System.currentTimeMillis() - startList)} ms<br>
                             </div>
@@ -350,7 +350,7 @@
             </div>
         </div>
     </g:else>
-<g:if test="${grailsApplication.config.showBenchMarks?.asBoolean()}">
+<g:if test="${params.benchmarks}">
     <g:set var="endPageTime" value="${System.currentTimeMillis()}"/>
     <div style="color:#ddd;">
         post-facets time = ${(endPageTime - postFacets)} ms<br>
