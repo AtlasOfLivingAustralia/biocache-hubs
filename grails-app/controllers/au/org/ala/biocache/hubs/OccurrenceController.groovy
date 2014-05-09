@@ -17,6 +17,7 @@ package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
+import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 /**
@@ -65,22 +66,27 @@ class OccurrenceController {
             Map defaultFacets = postProcessingService.getAllFacets(webServicesService.getDefaultFacets())
             String[] userFacets = postProcessingService.getFacetsFromCookie(request)
             String[] filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
-            requestParams.facets = userFacets ?: filteredFacets
+            List dynamicFacets = []
+            String[] requestedFacets = userFacets ?: filteredFacets
+
+            if (grailsApplication.config.facets.includeDynamicFacets?.toBoolean()) {
+                // Sandbox only...
+                dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
+                requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
+            }
+            requestParams.facets = requestedFacets
             def wsStart = System.currentTimeMillis()
             JSONObject searchResults = webServicesService.fullTextSearch(requestParams)
             def wsTime = (System.currentTimeMillis() - wsStart)
-            // postProcessingService.modifyQueryTitle(searchResults, taxaQueries)
-            // log.info "searchResults = ${searchResults.toString(2)}"
-            session['hit'] = 0
-            //log.debug "userid = ${authService.getUserId()} - ${session['hit']++}"
+            Map groupedFacets = webServicesService.getGroupedFacets() // cached
 
             [
                     sr: searchResults,
                     searchRequestParams: requestParams,
                     defaultFacets: defaultFacets,
-                    groupedFacets: webServicesService.getGroupedFacets(), // cached
+                    groupedFacets: groupedFacets,
                     groupedFacetsMap: postProcessingService.getMapOfGroupedFacets(searchResults.facetResults),
-                    dynamicFacets: null, // TODO
+                    dynamicFacets: dynamicFacets,
                     hasImages: postProcessingService.resultsHaveImages(searchResults),
                     showSpeciesImages: false, // TODO
                     sort: requestParams.sort,

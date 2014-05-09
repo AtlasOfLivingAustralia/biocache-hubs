@@ -110,12 +110,12 @@
                                 </div>
                             </g:each>
                             %{--</div>--}%
-                            <g:if test="${dynamicFacets}"><!-- Sandbox dynamic facets TODO: add to model -->
+                            <g:if test="${false && dynamicFacets}"><!-- INACTIVE - user not able to toggle display of custom fields for now -->
                                 <div class="facetsColumn">
                                     <h4>Custom facets</h4>
                                     <g:each var="facet" in="${dynamicFacets}">
                                         <input type="checkbox" name="facets" class="facetOpts" value="${facet.name}"
-                                            ${(facet.name) ? 'checked="checked"' : ''}>&nbsp;<alatag:formatDynamicFacetName fieldName="${facet.name}"/><br>
+                                            ${(facet.name) ? 'checked="checked"' : ''}>&nbsp;${facet.displayName}<%--<alatag:formatDynamicFacetName fieldName="${facet.name}"/>--%><br>
                                     </g:each>
                                 </div>
                             </g:if>

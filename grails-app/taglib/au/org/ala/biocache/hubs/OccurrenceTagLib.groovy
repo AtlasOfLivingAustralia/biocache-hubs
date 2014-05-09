@@ -38,13 +38,12 @@ class OccurrenceTagLib {
      * @attr fieldName REQUIRED the field name
      */
     def formatDynamicFacetName = { attrs ->
-        log.debug "formatDynamicFacetName - ${session['hit']++}"
         def fieldName = attrs.fieldName
         def output
         if (fieldName.endsWith('_s') || fieldName.endsWith('_i') || fieldName.endsWith('_d')) {
-            output = fieldName.substring(0,-2).replaceAll("_", " ")
+            output = fieldName[-2].replaceAll("_", " ")
         } else if (fieldName.endsWith('_RNG')) {
-            output = fieldName.substring(0,-4).replaceAll("_", " ") + " (range)"
+            output = fieldName[-4].replaceAll("_", " ") + " (range)"
         } else {
             output = "${alatag.message(code:"facet.${fieldName}", default: fieldName)}"
         }
@@ -157,12 +156,15 @@ class OccurrenceTagLib {
     /**
      *  Generate facet links in the left hand column
      *
+     *  @attr facetResult REQUIRED
+     *  @attr queryParam REQUIRED
+     *  @attr fieldDisplayName
      */
     def facetLinkList = { attrs ->
         def facetResult = attrs.facetResult
         def queryParam = attrs.queryParam
         def mb = new MarkupBuilder(out)
-        def linkTitle = "Filter results by ${alatag.formatDynamicFacetName(fieldName:facetResult.fieldName)}"
+        def linkTitle = "Filter results by ${attrs.fieldDisplayName ?: facetResult.fieldName}"
 
         def addCounts = { count ->
             mb.span(class:"facetCount") {

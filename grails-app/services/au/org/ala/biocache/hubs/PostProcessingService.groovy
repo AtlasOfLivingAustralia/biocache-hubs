@@ -1,8 +1,5 @@
 package au.org.ala.biocache.hubs
 
-import org.apache.commons.httpclient.HttpClient
-import org.apache.commons.httpclient.methods.HeadMethod
-import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -127,7 +124,7 @@ class PostProcessingService {
      * @param defaultFacets
      * @return LinkedHashMap facetsMap
      */
-    def LinkedHashMap getAllFacets(JSONArray defaultFacets) {
+   def LinkedHashMap getAllFacets(JSONArray defaultFacets) {
         LinkedHashMap<String, Boolean> facetsMap = new LinkedHashMap<String, Boolean>()
         List orderedFacets = []
         List facetsToInclude = grailsApplication.config.facets?.include?.split(',') ?: []
@@ -151,12 +148,13 @@ class PostProcessingService {
         orderedFacets.each {
             if (it && !facetsToExclude.contains(it)) {
                 // only process facets that NOT in exclude list
+                // Map value is true|false (true is to include facet in search facets list)
                 facetsMap.put(it, !facetsToHide.contains(it))
             }
         }
 
         return facetsMap
-    }
+   }
 
     /**
      * Filter the Map of all facets to produce a list of only the "active" or selected
@@ -165,7 +163,7 @@ class PostProcessingService {
      * @param finalFacetsMap
      * @return
      */
-    def String[] getFilteredFacets(LinkedHashMap<String, Boolean> finalFacetsMap) {
+   def String[] getFilteredFacets(LinkedHashMap<String, Boolean> finalFacetsMap) {
         List finalFacets = []
 
         for (String key : finalFacetsMap.keySet()) {
@@ -187,7 +185,7 @@ class PostProcessingService {
      * @param request
      * @return
      */
-    def String[] getFacetsFromCookie(HttpServletRequest request) {
+   def String[] getFacetsFromCookie(HttpServletRequest request) {
 
         String userFacets = null
         String[] facets = null
@@ -206,7 +204,7 @@ class PostProcessingService {
         }
 
         return facets
-    }
+   }
 
     /**
      * Utility method for getting a named cookie value from the HttpServletRepsonse cookies array
@@ -226,6 +224,20 @@ class PostProcessingService {
         }
 
         return cookieValue
+    }
+
+    /**
+     * Merge requested and custom facets
+     *
+     * @param filteredFacets
+     * @param userFacets
+     * @return
+     */
+    String[] mergeRequestedFacets(List requestedFacets, List customFacets) {
+        List customFacetsFlat = customFacets.collect { it.name }
+        log.debug "customFacetsFlat = ${customFacetsFlat}"
+        requestedFacets.addAll(customFacetsFlat)
+        return requestedFacets
     }
 
     /**
