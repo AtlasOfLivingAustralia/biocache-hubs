@@ -38,12 +38,12 @@ class OccurrenceTagLib {
      * @attr fieldName REQUIRED the field name
      */
     def formatDynamicFacetName = { attrs ->
-        def fieldName = attrs.fieldName
+        String fieldName = attrs.fieldName
         def output
         if (fieldName.endsWith('_s') || fieldName.endsWith('_i') || fieldName.endsWith('_d')) {
-            output = fieldName[-2].replaceAll("_", " ")
+            output = fieldName[0..-2].replaceAll("_", " ")
         } else if (fieldName.endsWith('_RNG')) {
-            output = fieldName[-4].replaceAll("_", " ") + " (range)"
+            output = fieldName[0..-4].replaceAll("_", " ") + " (range)"
         } else {
             output = "${alatag.message(code:"facet.${fieldName}", default: fieldName)}"
         }
