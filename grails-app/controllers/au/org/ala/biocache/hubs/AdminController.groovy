@@ -147,15 +147,18 @@ class AdminController {
 
     /**
      * Reload external config file
-     * TODO: not yet wired to UI or tested.
      */
     def reloadConfig = {
         // clear any cached external config
         doClearAllCaches()
+        String configVarStr = params.configVar
+        List configVar = configVarStr.split(',')
+
 
         // reload system config
+        def configLocation = "file:${grailsApplication.config.default_config}"
         def resolver = new PathMatchingResourcePatternResolver()
-        def resource = resolver.getResource(grailsApplication.config.reloadable.cfgs[0])
+        def resource = resolver.getResource(configLocation)
         def stream = null
 
         try {
@@ -171,29 +174,23 @@ class AdminController {
                 def newConfig = configSlurper.parse(props)
                 grailsApplication.getConfig().merge(newConfig)
             }
-            String res = "<ul>"
-            grailsApplication.config.each { key, value ->
-                if (value instanceof Map) {
-                    res += "<p>" + key + "</p>"
-                    res += "<ul>"
-                    value.each { k1, v1 ->
-                        res += "<li>" + k1 + " = " + v1 + "</li>"
-                    }
-                    res += "</ul>"
-                }
-                else {
-                    res += "<li>${key} = ${value}</li>"
-                }
+
+            String res = ""
+            configVar.each {
+                res += "${it} = " + grailsApplication.config.flatten()."${it}" + " <br/>"
             }
-            render res + "</ul>"
+
+            chain(action:'index', model:[config: res], params: [configVar: configVarStr])
         }
         catch (FileNotFoundException fnf) {
-            println "No external config to reload configuration. Looking for ${grailsApplication.config.reloadable.cfgs[0]}"
-            render "No external config to reload configuration. Looking for ${grailsApplication.config.reloadable.cfgs[0]}"
+            log.error "No external config to reload configuration. Looking for ${configLocation}", fnf
+            flash.message = "No external config to reload configuration. Looking for ${configLocation}"
+            redirect(action:'index')
         }
         catch (Exception gre) {
-            println "Unable to reload configuration. Please correct problem and try again: " + gre.getMessage()
-            render "Unable to reload configuration - " + gre.getMessage()
+            log.error "Unable to reload configuration. Please correct problem and try again: ${gre}", gre
+            flash.message =  "Unable to reload configuration - " + gre.getMessage()
+            redirect(action:'index')
         }
         finally {
             stream?.close()

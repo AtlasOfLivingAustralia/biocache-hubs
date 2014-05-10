@@ -37,6 +37,22 @@
     </div>
 </div>
 <div class="row-fluid">
+    <h2>External Configuration</h2>
+    <div class="offset1 span10">
+        <form action="${g.createLink(action:'reloadConfig')}">
+            <input type="submit" class="btn" value="Reload config file"/>
+            Enter config var/s to check (comma separated): <input type="text" name="configVar" value="${params.configVar?:'default_config'}"/>
+            <br/>
+            Note: CAS config settings will not be reloaded (only Grails settings)
+        </form>
+    </div>
+    <g:if test="${config}">
+        <div class="offset1 span10" style="margin-top:10px;">
+            ${raw(config)}
+        </div>
+    </g:if>
+</div>
+<div class="row-fluid">
     <h2>Cache management</h2>
     <div class="offset1 span10 ">
         <div class="btn-group">
