@@ -476,7 +476,7 @@ function loadNewGeoJsonData(data) {
         }
         
         var content = '<div class="infoWindow">Number of records: '+n.properties.count+'<br/>'+
-                '<a href="'+ EYA_CONF.contextPath +'/occurrences/searchByArea?q='+solrQuery+fqParam+
+                '<a href="'+ EYA_CONF.contextPath +'/occurrences/search?q='+solrQuery+fqParam+
                 '&lat='+n.geometry.coordinates[1]+'&lon='+n.geometry.coordinates[0]+'&radius=0.05">View list of records</a></div>';
         infoWindows[i] = new google.maps.InfoWindow({
             content: content,
@@ -660,7 +660,7 @@ function processSpeciesJsonData(data, appendResults) {
                     '"><img src="'+ EYA_CONF.imagesUrlPrefix + '/page_white_go.png" alt="species page icon" style="margin-bottom:-3px;" class="no-rounding"/>'+
                     ' species profile</a> | ';
             }
-            speciesInfo = speciesInfo + '<a href="'+ EYA_CONF.contextPath +'/occurrences/searchByArea?q=taxon_name:%22'+data[i].name+
+            speciesInfo = speciesInfo + '<a href="'+ EYA_CONF.contextPath +'/occurrences/search?q=taxon_name:%22'+data[i].name+
                     '%22&lat='+$('input#latitude').val()+'&lon='+$('input#longitude').val()+'&radius='+$('select#radius').val()+'" title="'+
                     recsTitle+'"><img src="'+ EYA_CONF.imagesUrlPrefix + '/database_go.png" '+
                     'alt="search list icon" style="margin-bottom:-3px;" class="no-rounding"/> list of records</a></div>';
