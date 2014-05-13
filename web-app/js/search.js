@@ -1094,7 +1094,7 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                 //console.log("facet", el);
                 if (el.count > 0) {
                     // surround with quotes: fq value if contains spaces but not for range queries
-                    var fqEsc = ((el.label.indexOf(" ") != -1 || el.label.indexOf("lsid") != -1) && el.label.indexOf("[") != 0)
+                    var fqEsc = ((el.label.indexOf(" ") != -1 || el.label.indexOf(",") != -1 || el.label.indexOf("lsid") != -1) && el.label.indexOf("[") != 0)
                         ? "\"" + el.label + "\""
                         : el.label; // .replace(/:/g,"\\:")
                     var label = (el.displayLabel) ? el.displayLabel : el.label ;

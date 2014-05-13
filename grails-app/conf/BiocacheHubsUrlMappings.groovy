@@ -2,6 +2,7 @@ class BiocacheHubsUrlMappings {
 
 	static mappings = {
         "/occurrences"(redirect: [controller: 'occurrences', action: 'search'])
+        "/occurrences/searchByArea"(redirect: [controller: 'occurrences', action: 'search'])
         "/occurrences/search"(controller: 'occurrence', action: 'list')
         "/occurrence/search"(controller: 'occurrence', action: 'list')
         "/occurrences/taxa/$id"(controller: 'occurrence', action: 'taxa')

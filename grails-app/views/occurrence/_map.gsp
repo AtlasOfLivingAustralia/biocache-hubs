@@ -753,7 +753,9 @@ a.colour-by-legend-toggle {
                 fillOpacity: 0.2
             }
 
-            L.Icon.Default.imagePath = "${request.contextPath}/js/leaflet-0.7.2/images";
+            // L.Icon.Default.imagePath = "${request.contextPath}/js/leaflet-0.7.2/images";
+            // L.Icon.Default.imagePath = "http://cdn.leafletjs.com/leaflet-0.7.2/images";
+            L.Icon.Default.imagePath = "${g.createLink(uri:'/js/leaflet-0.7.2/images', plugin:'biocache-hubs')}";
             var popupText = "Centre of spatial search with radius of " + radius + " km";
             var circle = L.circle(latLng, radius * 1030, circleOpts);
             circle.addTo(MAP_VAR.map);

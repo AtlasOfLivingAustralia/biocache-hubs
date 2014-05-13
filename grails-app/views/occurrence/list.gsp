@@ -48,7 +48,7 @@
 <body>
     <div id="listHeader" class="row-fluid">
         <div class="span5">
-            <h1><alatag:message code="heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>
+            <h1><alatag:message code="search.heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>
         </div>
         <div id="searchBoxZ" class="span7 text-right">
             <form action="${g.createLink(controller: 'occurrence', action: 'search')}" id="solrSearchForm" class="">

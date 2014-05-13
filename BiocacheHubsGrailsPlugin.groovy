@@ -18,7 +18,7 @@ import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "0.15"
+    def version = "0.16"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging
@@ -76,7 +76,7 @@ the ALA biocache-service app (no local DB is required for this app).
                 }
                 cache {
                     name 'biocacheCache'
-                    timeToLiveSeconds (60 * 5)
+                    timeToLiveSeconds (60)
                     maxElementsInMemory 20000
                     overflowToDisk true
                 }
@@ -94,6 +94,9 @@ the ALA biocache-service app (no local DB is required for this app).
                 }
             }
         }
+
+        // Apache proxyPass & cached-resources seems to mangle image URL in plugins, so we exclude caching it
+        application.config.grails.resources.mappers.hashandcache.excludes = ["**/leaflet-0.7.2/images/*.*"]
 
         // Load the "sensible defaults"
         //println "config.skin = ${config.skin}"
