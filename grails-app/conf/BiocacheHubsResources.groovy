@@ -92,6 +92,7 @@ modules = {
         resource url:[dir:'js', file:'audiojs/audio.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'moment.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'show.js', plugin:'biocache-hubs']
+        resource url:[dir:'js', file:'wms2.js', plugin:'biocache-hubs'], disposition: 'head'
     }
 
     exploreYourArea {

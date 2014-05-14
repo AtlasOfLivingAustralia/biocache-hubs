@@ -2,11 +2,11 @@
  * This CSS file is used to "fix" CSS issues with the Bootstrap version fo the ALA skin.
  */
 /* Fix for Bootstrap and Google maps conflict */
-#mapCanvas img, #mapcanvas img, #leafletMap img {
+#mapCanvas img, #mapcanvas img, #leafletMap img, #expertDistroMap img {
     max-width: none;
     margin: 0px;
 }
-#mapCanvas label, #mapcanvas label {
+#mapCanvas label, #mapcanvas label, #expertDistroMap label {
     width: auto;
     display:inline;
 }
