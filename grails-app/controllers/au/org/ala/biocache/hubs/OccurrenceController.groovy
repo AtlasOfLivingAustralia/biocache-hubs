@@ -41,6 +41,8 @@ class OccurrenceController {
      */
     def list(SpatialSearchRequestParams requestParams) {
         def start = System.currentTimeMillis()
+        requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
+
         if (!params.pageSize) {
             requestParams.pageSize = 20
         }
@@ -52,7 +54,7 @@ class OccurrenceController {
 
         List taxaQueries = (ArrayList<String>) params.list("taxa") // will be list for even one instance
 
-        if (!params.q && taxaQueries) {
+        if (!params.q && taxaQueries && taxaQueries[0]) { // check for list with empty string
             // taxa query
             List guidsForTaxa = webServicesService.getGuidsForTaxa(taxaQueries)
             requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, guidsForTaxa)

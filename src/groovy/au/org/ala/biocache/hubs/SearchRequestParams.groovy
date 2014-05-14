@@ -18,8 +18,7 @@ public class SearchRequestParams {
     Long qId // "qid:12312321"
     String formattedQuery
     String q = ""
-    //String[] fq = []; // must not be null
-    String fq = ""; // must not be null
+    String[] fq = []; // must not be null
     String fl = ""
     /** The facets to be included by the search Initialised with the default facets to use */
     String[] facets = [] // get from http://biocache.ala.org.au/ws/search/facets (and cache) // FacetThemes.allFacets;
@@ -73,10 +72,8 @@ public class SearchRequestParams {
     public String toString(Boolean encodeParams) {
         StringBuilder req = new StringBuilder();
         req.append("q=").append(conditionalEncode(q, encodeParams));
-        // split fq param with regex that ignores commas inside quotes
-        // see http://stackoverflow.com/a/1757107/249327
-        getFqArray()?.each { filter ->
-            req.append("&fq=").append(conditionalEncode(filter, encodeParams));
+        fq.each { filter ->
+            req.append("&fq=").append(conditionalEncode(filter, encodeParams))
         }
         req.append("&start=").append(offset?:start);
         req.append("&pageSize=").append(max?:pageSize);
@@ -144,7 +141,8 @@ public class SearchRequestParams {
             } catch(UnsupportedEncodingException e){}
         }
 
-        for(String f : getFqArray()){
+
+        for(String f : fq){
             //only add the fq if it is not the query context
             if(f.length()>0 && !f.equals(qc))
                 try{
@@ -156,9 +154,5 @@ public class SearchRequestParams {
             req.append("&qc=").append(qc);
         }
         return req.toString();
-    }
-
-    public String[] getFqArray() {
-        fq?.split(/,(?=([^\"]*\"[^\"]*\")*[^\"]*$)/)
     }
 }

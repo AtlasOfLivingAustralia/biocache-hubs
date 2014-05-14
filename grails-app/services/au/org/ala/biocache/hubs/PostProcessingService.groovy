@@ -256,6 +256,8 @@ class PostProcessingService {
             throw new IllegalArgumentException("Arguments (List) are not the same size: taxaQueries.size() (${taxaQueries.size()}) != guidsForTaxa.size() (${guidsForTaxa.size()})");
         }
 
+        log.info "taxaQueries=${taxaQueries}||guidsForTaxa=${guidsForTaxa}"
+
         if (taxaQueries.size() > 1) {
             // multiple taxa params (array)
             guidsForTaxa.eachWithIndex { guid, i ->
@@ -268,8 +270,16 @@ class PostProcessingService {
             query = "(" + expandedQueries.join(" OR ") + ")"
         } else {
             // single taxa param
-            query = (guidsForTaxa[0]) ? "lsid:" + guidsForTaxa[0] : "text:" + taxaQueries[0]
+            log.info "taxaQueries[0] = ${taxaQueries[0]}"
+            if (taxaQueries[0]) {
+                query = (guidsForTaxa[0]) ? "lsid:" + guidsForTaxa[0] : "text:" + taxaQueries[0]
+            } else {
+                query = (guidsForTaxa[0]) ? "lsid:" + guidsForTaxa[0] : ""
+            }
+
         }
+
+        log.info "query = ${query}"
 
         return query
     }
