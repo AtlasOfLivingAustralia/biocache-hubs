@@ -168,9 +168,9 @@
                 <td>
                     <select class="type_status" name="type_status" id="type_status">
                         <option value="">-- select a type status --</option>
-                        %{--<g:each var="type" in="${request.getAttribute(FacetsName.TYPE_STATUS.fieldname)}">--}%
-                            %{--<option value="${type.key}">${type.value}</option>--}%
-                        %{--</g:each>--}%
+                        <g:each var="type" in="${request.getAttribute(FacetsName.TYPE_STATUS.fieldname)}">
+                            <option value="${type.key}">${type.value}</option>
+                        </g:each>
                     </select>
                 </td>
             </tr>
