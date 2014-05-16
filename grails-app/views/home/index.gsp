@@ -14,6 +14,7 @@
 <head>
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="search"/>
+    <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <title>Search for records | ${hubDisplayName}</title>
     <r:require modules="jquery"/>
     <r:script>

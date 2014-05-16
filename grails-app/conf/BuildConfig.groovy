@@ -44,7 +44,10 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
-        mavenRepo "http://maven.ala.org.au/repository/"
+        mavenRepo ("http://maven.ala.org.au/repository") {
+            updatePolicy 'always'
+        }
+        mavenRepo "http://maven.tmatesoft.com/content/repositories/releases/"
     }
 
     dependencies {
@@ -54,6 +57,7 @@ grails.project.dependency.resolution = {
         //runtime("au.org.ala:biocache-service:1.0-SNAPSHOT") {
         //    excludes "icu4j","servlet-api","spring-core","spring-context","spring-context-support","spring-beans","spring-web","spring-mvc"
         //}
+        compile "org.tmatesoft.svnkit:svnkit:1.8.5"
         runtime "commons-httpclient:commons-httpclient:3.1"
         runtime "commons-lang:commons-lang:2.6"
         runtime "net.sf.supercsv:super-csv:2.1.0"
@@ -72,6 +76,7 @@ grails.project.dependency.resolution = {
         compile ':cache:1.1.1'
         compile ":cache-ehcache:1.0.0"
         compile ":rest:0.8"
+        //compile ":svn:1.0.2"
         //compile ":ajax-proxy:0.1.1"
 
         // plugins needed at runtime but not for compilation

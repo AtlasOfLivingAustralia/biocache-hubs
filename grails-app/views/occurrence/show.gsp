@@ -25,6 +25,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <title>Record: ${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
