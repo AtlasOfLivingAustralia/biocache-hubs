@@ -723,12 +723,16 @@ var chartLabels = {
 // asynchronous transforms are applied after the chart is drawn, ie the chart is drawn with the original values
 // then redrawn when the ajax call for transform data returns
 var asyncTransforms = {
-    collection_uid: {method: 'lookupEntityName', param: 'collection'},
-    institution_uid: {method: 'lookupEntityName', param: 'institution'},
-    data_resource_uid: {method: 'lookupEntityName', param: 'dataResource'}
+// facet data now has entitiy names in label
+//    collection_uid: {method: 'lookupEntityName', param: 'collection'},
+//    institution_uid: {method: 'lookupEntityName', param: 'institution'},
+//    data_resource_uid: {method: 'lookupEntityName', param: 'dataResource'}
 }
 // synchronous transforms are applied to the json data before the data table is built
 var syncTransforms = {
+    collection_uid: {method: 'transformFqData'},
+    institution_uid: {method: 'transformFqData'},
+    data_resource_uid: {method: 'transformFqData'},
     occurrence_year: {method: 'transformDecadeData'},
     month: {method: 'transformMonthData'}/*,
      assertions: {method: 'expandCamelCase'}*/
@@ -826,6 +830,7 @@ function buildGenericFacetChart(name, data, query, chartsDiv, chartOptions) {
     dataTable.addColumn('number','records');
     $.each(xformedData, function(i,obj) {
         // filter any crap
+        console.log("xformedData", obj);
         if (opts == undefined || opts.ignore == undefined || $.inArray(obj.label, opts.ignore) == -1) {
             if (detectCamelCase(obj.label)) {
                 dataTable.addRow([{v: obj.label, f: capitalise(expandCamelCase(obj.label))}, obj.count]);
@@ -877,7 +882,15 @@ function buildGenericFacetChart(name, data, query, chartsDiv, chartOptions) {
             var id = dataTable.getValue(chart.getSelection()[0].row,0);
 
             // build the facet query
-            var facetQuery = name + ":" + id;
+            //var facetQuery = name + ":" + id;
+            var facetQuery;
+
+            if (id.indexOf(name) != -1) {
+                // fq provided in facet results
+                facetQuery = id;
+            } else {
+                facetQuery = name + ":" + id;
+            }
 
             // the facet query can be overridden for date ranges
             if (name == 'occurrence_year') {
@@ -920,6 +933,16 @@ function transformMonthData(data) {
     $.each(data, function(i,obj) {
         monthIdx = parseInt(obj.label, 10); // months values "01" need parsing to int
         obj.formattedLabel = months[monthIdx - 1];
+    });
+    return data;
+}
+function transformFqData(data) {
+    $.each(data, function(i,obj) {
+        // substitute label for fq data if present
+        if (obj.fq) {
+            obj.formattedLabel = obj.label;
+            obj.label = obj.fq;
+        }
     });
     return data;
 }
