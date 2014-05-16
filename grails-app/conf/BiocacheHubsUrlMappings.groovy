@@ -15,13 +15,14 @@ class BiocacheHubsUrlMappings {
         "/assertions/$id"(controller: 'assertions', action: 'assertions')
         "/explore/your-area"(controller: 'occurrence', action: 'exploreYourArea')
         "/search"(controller: 'home')
+        "/advancedSearch"(controller: 'home', action: 'advancedSearch')
         "/proxy/$path**" (controller: 'proxy'){
             action = [POST:'doPost']
         }
         "/proxy/$path**" (controller: 'proxy'){
             action = [GET:'doGet']
         }
-        "/"(redirect: [controller:"home"])
+        "/"(redirect: [uri:"/search"])
         "/$controller/$action?/$id?"{
             constraints {
                 // apply constraints here
