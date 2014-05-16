@@ -830,7 +830,6 @@ function buildGenericFacetChart(name, data, query, chartsDiv, chartOptions) {
     dataTable.addColumn('number','records');
     $.each(xformedData, function(i,obj) {
         // filter any crap
-        console.log("xformedData", obj);
         if (opts == undefined || opts.ignore == undefined || $.inArray(obj.label, opts.ignore) == -1) {
             if (detectCamelCase(obj.label)) {
                 dataTable.addRow([{v: obj.label, f: capitalise(expandCamelCase(obj.label))}, obj.count]);
