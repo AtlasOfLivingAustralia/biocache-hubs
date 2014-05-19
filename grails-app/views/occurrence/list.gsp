@@ -82,17 +82,19 @@
             <div class="span3">
                 <div id="customiseFacetsButton" class="btn-group">
                     <a class="btn btn-small dropdown-toggle tooltips" data-toggle="dropdown" href="#" title="Customise the contents of this column">
-                        <i class="icon-cog"></i> <alatag:message code="search.filter.customise"/>
+                        <i class="icon-cog"></i> <g:message code="search.filter.customise"/>
                         <span class="caret"></span>
                     </a>
                     <div class="dropdown-menu" role="menu"> <%--facetOptions--%>
                         <h4>Select the filter categories that you want to appear in the &quot;Refine results&quot; column</h4>
                         <%-- <form:checkboxes path="facets" items="${defaultFacets}" itemValue="key" itemLabel="value" /> --%>
                         <div id="facetCheckboxes">
-                            <input type="button" id="updateFacetOptions" class="btn btn-small" value="Update"/>
+                            Select: <a href="#" id="selectAll">All</a> | <a href="#" id="selectNone">None</a>
                             &nbsp;&nbsp;
-                            Select:
-                            <a href="#" id="selectAll">All</a> | <a href="#" id="selectNone">None</a>
+                            <button  id="updateFacetOptions" class="btn btn-primary btn-small">Update</button>
+                            &nbsp;&nbsp;
+                            <g:set var="resetTitle" value="Restore default settings"/>
+                            <button id="resetFacetOptions" class="btn btn-small" title="${resetTitle}">Reset to defaults</button>
                             <br/>
                             %{--<div class="facetsColumn">--}%
                             <%-- iterate over the groupedFacets, checking the defaultFacets for each entry --%>

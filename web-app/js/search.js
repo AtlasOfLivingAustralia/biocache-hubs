@@ -167,7 +167,7 @@ $(document).ready(function() {
     });
 
     // user selectable facets...
-    $(":input#updateFacetOptions").live("click",function(e) {
+    $("#updateFacetOptions").live("click",function(e) {
         e.preventDefault();
         //alert("about to reload with new facets...");
         var selectedFacets = [];
@@ -186,6 +186,15 @@ $(document).ready(function() {
             alert("Please select at least 1 filter category to display");
         }
 
+    });
+
+    // reset facet options to default values (clear cookie)
+    $("#resetFacetOptions").click(function(e) {
+        e.preventDefault();
+        console.log("in #resetFacetOptions 2")
+        //$.cookie("user_facets", null);
+        $.removeCookie('user_facets');
+        document.location.reload(true);
     });
 
     // load stored prefs from cookie
