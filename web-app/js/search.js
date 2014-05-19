@@ -191,8 +191,6 @@ $(document).ready(function() {
     // reset facet options to default values (clear cookie)
     $("#resetFacetOptions").click(function(e) {
         e.preventDefault();
-        console.log("in #resetFacetOptions 2")
-        //$.cookie("user_facets", null);
         $.removeCookie('user_facets');
         document.location.reload(true);
     });
