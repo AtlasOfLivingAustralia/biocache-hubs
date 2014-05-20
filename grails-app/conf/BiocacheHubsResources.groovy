@@ -5,9 +5,9 @@ modules = {
 
     bootstrap2 {
         dependsOn 'jquery'
-        resource url:[dir:'bootstrap/js', file:'bootstrap.js', plugin:'biocache-hubs', disposition: 'head']
+        resource url:[dir:'bootstrap/js', file:'bootstrap.js', plugin:'biocache-hubs'], disposition: 'head', exclude: '*'
         resource url:[dir:'bootstrap/css', file:'bootstrap.css', plugin:'biocache-hubs'], attrs:[media:'screen, projection, print']
-        resource url:[dir:'bootstrap/css', file:'bootstrap-responsive.css', plugin:'biocache-hubs'], attrs:[media:'screen', id:'responsiveCss']
+        resource url:[dir:'bootstrap/css', file:'bootstrap-responsive.css', plugin:'biocache-hubs'], attrs:[media:'screen', id:'responsiveCss'], exclude: '*'
     }
 
     hubCore {
