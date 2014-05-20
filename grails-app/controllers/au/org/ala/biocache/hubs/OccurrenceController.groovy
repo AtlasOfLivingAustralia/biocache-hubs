@@ -207,7 +207,7 @@ class OccurrenceController {
                 radius: radius,
                 zoom: radiusToZoomLevelMap.get(radius),
                 location: grailsApplication.config.exploreYourArea.location,
-                speciesPageUrl: grailsApplication.config.bie.baseUrl + "species/"
+                speciesPageUrl: grailsApplication.config.bie.baseUrl + "/species/"
         ]
     }
 
