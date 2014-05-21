@@ -297,7 +297,7 @@ class WebServicesService {
         HttpClient httpClient = new HttpClient()
         HeadMethod headMethod = new HeadMethod(imageURL)
         httpClient.executeMethod(headMethod)
-        String lengthString = headMethod.getResponseHeader("Content-Length").getValue()
+        String lengthString = headMethod.getResponseHeader("Content-Length")?.getValue()?:'0'
         return Long.parseLong(lengthString)
     }
 
