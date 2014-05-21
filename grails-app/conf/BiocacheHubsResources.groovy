@@ -89,7 +89,7 @@ modules = {
     show {
         dependsOn 'jquery'
         resource url:[dir:'css', file:'record.css', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'audiojs/audio.min.js', plugin:'biocache-hubs']
+        resource url:[dir:'js', file:'audiojs/audio.min.js', plugin:'biocache-hubs'], disposition: 'head', exclude: '*'
         resource url:[dir:'js', file:'moment.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'show.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'wms2.js', plugin:'biocache-hubs'], disposition: 'head'

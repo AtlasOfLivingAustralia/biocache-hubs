@@ -50,6 +50,13 @@
         google.load('maps','3.3',{ other_params: "sensor=false" });
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
+    <style type="text/css">
+        #expertDistroMap img {  max-width: none; }
+        #occurrenceMap img {  max-width: none; }
+        div.audiojs { margin: 15px 0px 10px; }
+        div.audiojs div.scrubber { width:120px;}
+        div.audiojs div.time { width:50px; }
+    </style>
 
     <script type="text/javascript" src="${r.resource(dir:'js', file:'charts2.js', plugin:'biocache-hubs')}"></script>
 
@@ -485,14 +492,14 @@
                 </g:if>
                 <g:if test="${record.sounds}">
                     <div class="sidebar">
-                        <h3 id="soundsHeader">Sounds</h3>
+                        <h3 id="soundsHeader" style="margin: 20px 0 0 0;">Sounds</h3>
                         <div class="row-fluid">
-                        <div id="audioWrapper" class="span12">
-                            <audio src="${record.sounds.get(0).alternativeFormats.audio/mpeg}" preload="auto" />
-                            <div class="track-details">
-                              ${record.raw.classification.scientificName}
+                            <div id="audioWrapper" class="span12">
+                                <audio src="${record.sounds.get(0)?.alternativeFormats?.'audio/mpeg'}" preload="auto" />
+                                <div class="track-details">
+                                  ${record.raw.classification.scientificName}
+                                </div>
                             </div>
-                        </div>
                         </div>
                         <g:if test="${record.raw.occurrence.rights}">
                             <br/>
@@ -981,7 +988,7 @@
                 <p>The requested record ID "${uuid}" was not found</p>
             </div>
         </g:if>
-            <g:if test="${record.sounds}">
+        <g:if test="${record.sounds}">
             <script>
               audiojs.events.ready(function() {
                 var as = audiojs.createAll();
