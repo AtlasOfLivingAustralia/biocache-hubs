@@ -52,7 +52,7 @@
             <h1><alatag:message code="search.heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>
         </div>
         <div id="searchBoxZ" class="span7 text-right">
-            <form action="${g.createLink(controller: 'occurrence', action: 'search')}" id="solrSearchForm" class="">
+            <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="">
                 <div id="advancedSearchLink"><a href="${g.createLink(uri: '/search')}#tab_advanceSearch">Advanced search</a></div>
                 <div class="input-append">
                     <input type="text" id="taxaQuery" name="taxa" class="input-xlarge" value="${params.list('taxa').join(' OR ')}">
@@ -129,7 +129,7 @@
             </div><!-- /.span3 -->
             <div class="span9">
                 <a name="map" class="jumpTo"></a><a name="list" class="jumpTo"></a>
-                <g:if test="${flash.message}">
+                <g:if test="${false && flash.message}"><%-- OFF for now --%>
                     <div class="alert alert-info" style="margin-left: -30px;">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                         ${flash.message}
