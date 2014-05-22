@@ -72,7 +72,23 @@
     </g:if>
     <g:elseif test="${!sr || sr.totalRecords == 0}">
         <div class="searchInfo searchError">
-            <p>No records found for <span class="queryDisplay">${raw(queryDisplay)?:params.q}</span></p>
+            <g:if test="${queryDisplay =~ /lsid:/ && params.taxa}"> <!-- ${raw(queryDisplay)} -->
+                <g:if test="${queryDisplay =~ /span/}">
+                    <p>No records found for <span class="queryDisplay">${raw(queryDisplay)}</span></p>
+                </g:if>
+                <g:else>
+                    <p>No records found for <span class="queryDisplay">${params.taxa})}</span></p>
+                </g:else>
+                <p>Trying search for <a href="?q=text:${params.taxa}">text:${params.taxa}</a></p>
+            </g:if>
+            <g:elseif test="${queryDisplay =~ /text:/ && queryDisplay =~ /\s+/ && !(queryDisplay =~ /\bOR\b/)}">
+                <p>No records found for <span class="queryDisplay">${raw(queryDisplay)}</span></p>
+                <g:set var="queryTerms" value="${queryDisplay.split(" ")}"/>
+                <p>Trying search for <a href="?q=${queryTerms.join(" OR ")}">${queryTerms.join(" OR ")}</a></p>
+            </g:elseif>
+            <g:else>
+                <p>No records found for <span class="queryDisplay">${raw(queryDisplay)?:params.q}</span></p>
+            </g:else>
         </div>
     </g:elseif>
     <g:else>
