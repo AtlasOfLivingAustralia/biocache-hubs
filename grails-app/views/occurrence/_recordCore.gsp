@@ -384,14 +384,14 @@
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="scientificName" fieldName="Scientific name">
     ${fieldsMap.put("taxonConceptID", true)}
     ${fieldsMap.put("scientificName", true)}
-    <g:set var="baseTaxonUrl"><g:if test="${useAla == 'true'}">${bieWebappContext}/species/</g:if><g:else>${request.contextPath}/taxa/</g:else></g:set>
-    <g:if test="${record.processed.classification.taxonConceptID}">
-        <a href="${baseTaxonUrl}${record.processed.classification.taxonConceptID}">
+    %{--<g:set var="baseTaxonUrl"><g:if test="${useAla == 'true'}">${bieWebappContext}/species/</g:if><g:else>${request.contextPath}/taxa/</g:else></g:set>--}%
+    <g:if test="${taxaLinks.baseUrl && record.processed.classification.taxonConceptID}">
+        <a href="${taxaLinks.baseUrl}${record.processed.classification.taxonConceptID}">
     </g:if>
     <g:if test="${record.processed.classification.taxonRankID?.toInteger() > 5000}"><i></g:if>
     ${record.processed.classification.scientificName?:''}
     <g:if test="${record.processed.classification.taxonRankID?.toInteger() > 5000}"></i></g:if>
-    <g:if test="${record.processed.classification.taxonConceptID}">
+    <g:if test="${taxaLinks.baseUrl && record.processed.classification.taxonConceptID}">
         </a>
     </g:if>
     <g:if test="${record.processed.classification.scientificName && record.raw.classification.scientificName && (record.processed.classification.scientificName.toLowerCase() != record.raw.classification.scientificName.toLowerCase())}">
@@ -406,12 +406,9 @@
     ${fieldsMap.put("originalNameUsage", true)}
     ${fieldsMap.put("originalNameUsageID", true)}
     <g:if test="${record.processed.classification.originalNameUsageID}">
-        <g:if test="${useAla == 'true'}">
-            <a href="${bieWebappContext}/species/${record.processed.classification.originalNameUsageID}">
+        <g:if test="${taxaLinks.baseUrl}">
+            <a href="${taxaLinks.baseUrl}${record.processed.classification.originalNameUsageID}">
         </g:if>
-        <g:else>
-            <a href="${request.contextPath}/taxa/${record.processed.classification.originalNameUsageID}">
-        </g:else>
     </g:if>
     <g:if test="${record.processed.classification.originalNameUsage}">
         ${record.processed.classification.originalNameUsage}
@@ -419,7 +416,7 @@
     <g:if test="${!record.processed.classification.originalNameUsage && record.raw.classification.originalNameUsage}">
         ${record.raw.classification.originalNameUsage}
     </g:if>
-    <g:if test="${record.processed.classification.originalNameUsageID}">
+    <g:if test="${taxaLinks.baseUrl && record.processed.classification.originalNameUsageID}">
         </a>
     </g:if>
     <g:if test="${record.processed.classification.originalNameUsage && record.raw.classification.originalNameUsage && (record.processed.classification.originalNameUsage.toLowerCase() != record.raw.classification.originalNameUsage.toLowerCase())}">
@@ -461,12 +458,9 @@
     ${fieldsMap.put("kingdom", true)}
     ${fieldsMap.put("kingdomID", true)}
     <g:if test="${record.processed.classification.kingdomID}">
-        <g:if test="${useAla == 'true'}">
-            <a href="${bieWebappContext}/species/${record.processed.classification.kingdomID}">
+        <g:if test="${taxaLinks.baseUrl}">
+            <a href="${taxaLinks.baseUrl}${record.processed.classification.kingdomID}">
         </g:if>
-        <g:else>
-            <a href="${request.contextPath}/taxa/${record.processed.classification.kingdomID}">
-        </g:else>
     </g:if>
     <g:if test="${record.processed.classification.kingdom}">
         ${record.processed.classification.kingdom}
@@ -474,7 +468,7 @@
     <g:if test="${!record.processed.classification.kingdom && record.raw.classification.kingdom}">
         ${record.raw.classification.kingdom}
     </g:if>
-    <g:if test="${record.processed.classification.kingdomID}">
+    <g:if test="${taxaLinks.baseUrl && record.processed.classification.kingdomID}">
         </a>
     </g:if>
     <g:if test="${record.processed.classification.kingdom && record.raw.classification.kingdom && (record.processed.classification.kingdom.toLowerCase() != record.raw.classification.kingdom.toLowerCase())}">
@@ -486,12 +480,9 @@
     ${fieldsMap.put("phylum", true)}
     ${fieldsMap.put("phylumID", true)}
     <g:if test="${record.processed.classification.phylumID}">
-        <g:if test="${useAla == 'true'}">
-            <a href="${bieWebappContext}/species/${record.processed.classification.phylumID}">
+        <g:if test="${taxaLinks.baseUrl}">
+            <a href="${taxaLinks.baseUrl}${record.processed.classification.phylumID}">
         </g:if>
-        <g:else>
-            <a href="${request.contextPath}/taxa/${record.processed.classification.phylumID}">
-        </g:else>
     </g:if>
     <g:if test="${record.processed.classification.phylum}">
         ${record.processed.classification.phylum}
@@ -499,7 +490,7 @@
     <g:if test="${!record.processed.classification.phylum && record.raw.classification.phylum}">
         ${record.raw.classification.phylum}
     </g:if>
-    <g:if test="${record.processed.classification.phylumID}">
+    <g:if test="${taxaLinks.baseUrl && record.processed.classification.phylumID}">
         </a>
     </g:if>
     <g:if test="${record.processed.classification.phylum && record.raw.classification.phylum && (record.processed.classification.phylum.toLowerCase() != record.raw.classification.phylum.toLowerCase())}">
@@ -511,12 +502,9 @@
     ${fieldsMap.put("classs", true)}
     ${fieldsMap.put("classID", true)}
     <g:if test="${record.processed.classification.classID}">
-        <g:if test="${useAla == 'true'}">
-            <a href="${bieWebappContext}/species/${record.processed.classification.classID}">
+        <g:if test="${taxaLinks.baseUrl}">
+            <a href="${taxaLinks.baseUrl}${record.processed.classification.classID}">
         </g:if>
-        <g:else>
-            <a href="${request.contextPath}/taxa/${record.processed.classification.classID}">
-        </g:else>
     </g:if>
     <g:if test="${record.processed.classification.classs}">
         ${record.processed.classification.classs}
@@ -524,7 +512,7 @@
     <g:if test="${!record.processed.classification.classs && record.raw.classification.classs}">
         ${record.raw.classification.classs}
     </g:if>
-    <g:if test="${record.processed.classification.classID}">
+    <g:if test="${taxaLinks.baseUrl && record.processed.classification.classID}">
         </a>
     </g:if>
     <g:if test="${record.processed.classification.classs && record.raw.classification.classs && (record.processed.classification.classs.toLowerCase() != record.raw.classification.classs.toLowerCase())}">
@@ -536,12 +524,9 @@
     ${fieldsMap.put("order", true)}
     ${fieldsMap.put("orderID", true)}
     <g:if test="${record.processed.classification.orderID}">
-        <g:if test="${useAla == 'true'}">
-            <a href="${bieWebappContext}/species/${record.processed.classification.orderID}">
+        <g:if test="${taxaLinks.baseUrl}">
+            <a href="${taxaLinks.baseUrl}${record.processed.classification.orderID}">
         </g:if>
-        <g:else>
-            <a href="${request.contextPath}/taxa/${record.processed.classification.orderID}">
-        </g:else>
     </g:if>
     <g:if test="${record.processed.classification.order}">
         ${record.processed.classification.order}
@@ -549,7 +534,7 @@
     <g:if test="${!record.processed.classification.order && record.raw.classification.order}">
         ${record.raw.classification.order}
     </g:if>
-    <g:if test="${record.processed.classification.orderID}">
+    <g:if test="${taxaLinks.baseUrl && record.processed.classification.orderID}">
         </a>
     </g:if>
     <g:if test="${record.processed.classification.order && record.raw.classification.order && (record.processed.classification.order.toLowerCase() != record.raw.classification.order.toLowerCase())}">
@@ -561,12 +546,9 @@
     ${fieldsMap.put("family", true)}
     ${fieldsMap.put("familyID", true)}
     <g:if test="${record.processed.classification.familyID}">
-        <g:if test="${useAla == 'true'}">
-            <a href="${bieWebappContext}/species/${record.processed.classification.familyID}">
+        <g:if test="${taxaLinks.baseUrl}">
+            <a href="${taxaLinks.baseUrl}${record.processed.classification.familyID}">
         </g:if>
-        <g:else>
-            <a href="${request.contextPath}/taxa/${record.processed.classification.familyID}">
-        </g:else>
     </g:if>
     <g:if test="${record.processed.classification.family}">
         ${record.processed.classification.family}
@@ -574,7 +556,7 @@
     <g:if test="${!record.processed.classification.family && record.raw.classification.family}">
         ${record.raw.classification.family}
     </g:if>
-    <g:if test="${record.processed.classification.familyID}">
+    <g:if test="${taxaLinks.baseUrl && record.processed.classification.familyID}">
         </a>
     </g:if>
     <g:if test="${record.processed.classification.family && record.raw.classification.family && (record.processed.classification.family.toLowerCase() != record.raw.classification.family.toLowerCase())}">
@@ -586,12 +568,9 @@
     ${fieldsMap.put("genus", true)}
     ${fieldsMap.put("genusID", true)}
     <g:if test="${record.processed.classification.genusID}">
-        <g:if test="${useAla == 'true'}">
-            <a href="${bieWebappContext}/species/${record.processed.classification.genusID}">
+        <g:if test="${taxaLinks.baseUrl}">
+            <a href="${taxaLinks.baseUrl}${record.processed.classification.genusID}">
         </g:if>
-        <g:else>
-            <a href="${request.contextPath}/taxa/${record.processed.classification.genusID}">
-        </g:else>
     </g:if>
     <g:if test="${record.processed.classification.genus}">
         <i>${record.processed.classification.genus}</i>
@@ -599,7 +578,7 @@
     <g:if test="${!record.processed.classification.genus && record.raw.classification.genus}">
         <i>${record.raw.classification.genus}</i>
     </g:if>
-    <g:if test="${record.processed.classification.genusID}">
+    <g:if test="${taxaLinks.baseUrl && record.processed.classification.genusID}">
         </a>
     </g:if>
     <g:if test="${record.processed.classification.genus && record.raw.classification.genus && (record.processed.classification.genus.toLowerCase() != record.raw.classification.genus.toLowerCase())}">
@@ -612,12 +591,9 @@
     ${fieldsMap.put("speciesID", true)}
     ${fieldsMap.put("specificEpithet", true)}
     <g:if test="${record.processed.classification.speciesID}">
-        <g:if test="${useAla == 'true'}">
-            <a href="${bieWebappContext}/species/${record.processed.classification.speciesID}">
+        <g:if test="${taxaLinks.baseUrl}">
+            <a href="${taxaLinks.baseUrl}${record.processed.classification.speciesID}">
         </g:if>
-        <g:else>
-            <a href="${request.contextPath}/taxa/${record.processed.classification.speciesID}">
-        </g:else>
     </g:if>
     <g:if test="${record.processed.classification.species}">
         <i>${record.processed.classification.species}</i>
@@ -628,7 +604,7 @@
     <g:elseif test="${record.raw.classification.specificEpithet && record.raw.classification.genus}">
         <i>${record.raw.classification.genus}&nbsp;${record.raw.classification.specificEpithet}</i>
     </g:elseif>
-    <g:if test="${record.processed.classification.speciesID}">
+    <g:if test="${taxaLinks.baseUrl && record.processed.classification.speciesID}">
         </a>
     </g:if>
     <g:if test="${record.processed.classification.species && record.raw.classification.species && (record.processed.classification.species.toLowerCase() != record.raw.classification.species.toLowerCase())}">
@@ -640,13 +616,13 @@
     <alatag:occurrenceTableRow annotate="true" section="taxonomy" fieldCode="associatedTaxa" fieldName="Associated species">
         ${fieldsMap.put("associatedTaxa", true)}
         <g:set var="colon" value=":"/>
-        <g:if test="${StringUtils.contains(record.raw.occurrence.associatedTaxa,colon)}">
+        <g:if test="${taxaLinks.baseUrl && StringUtils.contains(record.raw.occurrence.associatedTaxa,colon)}">
             <g:set var="associatedName" value="${StringUtils.substringAfter(record.raw.occurrence.associatedTaxa,colon)}"/>
-            ${StringUtils.substringBefore(record.raw.occurrence.associatedTaxa,colon) }: <a href="${bieWebappContext}/species/${StringUtils.replace(associatedName, '  ', ' ')}">${associatedName}</a>
+            ${StringUtils.substringBefore(record.raw.occurrence.associatedTaxa,colon) }: <a href="${taxaLinks.baseUrl}${StringUtils.replace(associatedName, '  ', ' ')}">${associatedName}</a>
         </g:if>
-        <g:else>
-            <a href="${bieWebappContext}/species/${StringUtils.replace(record.raw.occurrence.associatedTaxa, '  ', ' ')}">${record.raw.occurrence.associatedTaxa}</a>
-        </g:else>
+        <g:elseif test="${taxaLinks.baseUrl}">
+            <a href="${taxaLinks.baseUrl}${StringUtils.replace(record.raw.occurrence.associatedTaxa, '  ', ' ')}">${record.raw.occurrence.associatedTaxa}</a>
+        </g:elseif>
     </alatag:occurrenceTableRow>
 </g:if>
 <g:if test="${record.processed.classification.taxonomicIssue}">

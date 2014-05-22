@@ -35,8 +35,10 @@ skin.fluidLayout = "true"
 skin.orgNameLong = "Generic Portal"
 skin.orgNameShort = "Generic"
 skin.attribution = ""
-skin.useAlaBie = true
 skin.useAlaSpatialPortal = false
+skin.useAlaBie = true
+skin.taxaLinks.baseUrl = "http://bie.ala.org.au/species/" // 3rd party species pages. Leave blank for no links
+skin.taxaLinks.identifier = "guid"  // "guid" or "name". Only used if skin.useAlaBie = false TODO: not implemented
 
 // web services
 bie.baseUrl = "http://bie.ala.org.au"
@@ -75,5 +77,8 @@ map.cloudmade.key = "BC9A493B41014CAABB98F0471D759707"
 map.defaultFacetMapColourBy = "basis_of_record"
 map.pointColour = "df4a21"
 map.zoomOutsideScopedRegion = true
+map.defaultCentreCoords
+map.defaultZoom
 
+suppressIssues = "" // "missingCoordinatePrecision"
 sensitiveDataset.list = ""
