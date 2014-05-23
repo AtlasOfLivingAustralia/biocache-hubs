@@ -527,9 +527,9 @@ class OccurrenceTagLib {
                 }
                 span(style:'margin-left: 8px;') {
                     if (occurrence.eventDate) {
-                        outputResultsLabel("Date: ", g.formatDate(number:"${occurrence.eventDate}", format:"yyyy-MM-dd"), true)
+                        outputResultsLabel("Date: ", g.formatDate(date: new Date(occurrence.eventDate), format:"yyyy-MM-dd"), true)
                     } else if (occurrence.occurrenceYear) {
-                        outputResultsLabel("Year: ", g.formatDate(number:"${occurrence.occurrenceYear}", format:"yyyy"), true)
+                        outputResultsLabel("Year: ", g.formatDate(number:new Date(occurrence.occurrenceYear), format:"yyyy"), true)
                     }
                     if (occurrence.stateProvince) {
                         outputResultsLabel("State: ", alatag.message(code:occurrence.stateProvince), true)
