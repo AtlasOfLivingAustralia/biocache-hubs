@@ -77,7 +77,7 @@
                     <p>No records found for <span class="queryDisplay">${raw(queryDisplay)}</span></p>
                 </g:if>
                 <g:else>
-                    <p>No records found for <span class="queryDisplay">${params.taxa})}</span></p>
+                    <p>No records found for <span class="queryDisplay">${params.taxa}</span></p>
                 </g:else>
                 <p>Trying search for <a href="?q=text:${params.taxa}">text:${params.taxa}</a></p>
             </g:if>
