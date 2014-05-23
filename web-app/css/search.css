@@ -370,6 +370,11 @@ div#currentFilter {
     margin-top: 4px;
     font-weight: bold;
 }
+#results .resultValue {
+    color: #222;
+    text-transform:capitalize;
+    font-weight:500
+}
 #results .rowA .occurrenceNames {
     color: #222;
 }

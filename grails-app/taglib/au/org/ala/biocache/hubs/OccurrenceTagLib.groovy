@@ -285,7 +285,7 @@ class OccurrenceTagLib {
         if (skin == 'avh') {
             recordId = record.raw.occurrence.catalogNumber
         } else if (record.raw.occurrence.collectionCode && record.raw.occurrence.catalogNumber) {
-            recordId = record.raw.occurrence.collectionCode + " - " + record.raw.occurrence.catalogNumber
+            recordId = record.raw.occurrence.collectionCode + ":" + record.raw.occurrence.catalogNumber
         } else if (record.processed.attribution.dataResourceName && record.raw.occurrence.catalogNumber) {
             recordId = record.processed.attribution.dataResourceName + " - " + record.raw.occurrence.catalogNumber
         } else if (record.raw.occurrence.occurrenceID) {
@@ -501,7 +501,7 @@ class OccurrenceTagLib {
 
         def outputResultsLabel = { label, value, test ->
             if (test) {
-                mb.span(style:'text-transform: capitalize;') {
+                mb.span(class:'resultValue') {
                     strong(class:'resultsLabel') {
                         mkp.yieldUnescaped(label)
                     }
@@ -543,7 +543,7 @@ class OccurrenceTagLib {
                 outputResultsLabel("Collection: ", alatag.message(code:occurrence.collectionName), occurrence.collectionName)
                 outputResultsLabel("Data&nbsp;Resource: ", alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
                 outputResultsLabel("Basis&nbsp;of&nbsp;record: ", alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
-                outputResultsLabel("Catalog&nbsp;number: ", "${occurrence.raw_collectionCode}:${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber!= null && occurrence.raw_catalogNumber)
+                outputResultsLabel("Catalog&nbsp;number: ", "${occurrence.raw_collectionCode ? occurrence.raw_collectionCode + ':' : ''}${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber)
                 a(
                         href: g.createLink(url:"${request.contextPath}/occurrences/${occurrence.uuid}"),
                         class:"occurrenceLink",
