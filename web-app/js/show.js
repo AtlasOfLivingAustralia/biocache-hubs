@@ -31,12 +31,13 @@ $(document).ready(function() {
                     $("input:reset").hide();
                     $("input#close").show();
                     //retrieve all assertions
-                    $.get(OCC_REC.contextPath + '/occurrences/groupedAssertions?' + OCC_REC.recordUuid, function(data) { // recordUuid=${record.raw.uuid}
+                    $.get(OCC_REC.contextPath + '/assertions/' + OCC_REC.recordUuid, function(data) { // recordUuid=${record.raw.uuid}
                         //console.log("data", data);
                         $('#userAssertions').html(data);
                         $('#userAssertionsContainer').show("slow");
                     });
                     refreshUserAnnotations();
+                    //document.location.reload(true);
                 }
             ).error(function() {
                     $('#assertionSubmitProgress').css({'display':'none'});
@@ -64,6 +65,7 @@ $(document).ready(function() {
         $("input:reset").show("slow");
         $("input#close").hide("slow");
         $('#loginOrFlag').modal('hide');
+        document.location.reload(true);
     });
 
     // convert camel case field names to "normal"
