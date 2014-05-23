@@ -13,6 +13,7 @@
 <head>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+    <meta name="section" content="search"/>
     <title>Search: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
     %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
