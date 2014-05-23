@@ -49,7 +49,7 @@
             <span class="help-inline"><code>yyyy-mm-dd</code> format</span>
         </div>
     </div>
-    <div class="hide control-group">
+    <div class="control-group">
         <label class="control-label" for="endDate">Display message</label>
         <div class="controls">
             <input type="checkbox"name="showMessage" id="showMessage" class="span2" ${(true && outageBanner.showMessage)?'checked="checked"':''}/>
