@@ -6,6 +6,7 @@ import grails.plugin.cache.Cacheable
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
+import org.apache.commons.codec.net.URLCodec
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.io.FileUtils
@@ -294,8 +295,11 @@ class WebServicesService {
      */
     @Cacheable('longTermCache')
     private Long getImageSizeInBytes(String imageURL) throws Exception {
+        // encode the path part of the URI - taken from http://stackoverflow.com/a/8962869/249327
+        URL url = new URL(imageURL);
+        URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
         HttpClient httpClient = new HttpClient()
-        HeadMethod headMethod = new HeadMethod(imageURL)
+        HeadMethod headMethod = new HeadMethod(uri.toString())
         httpClient.executeMethod(headMethod)
         String lengthString = headMethod.getResponseHeader("Content-Length")?.getValue()?:'0'
         return Long.parseLong(lengthString)
