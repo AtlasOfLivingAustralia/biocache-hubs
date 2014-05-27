@@ -522,7 +522,7 @@ class OccurrenceTagLib {
                     span(class:'occurrenceNames', occurrence.raw_scientificName)
                 }
                 if (occurrence.vernacularName || occurrence.raw_vernacularName) {
-                    mkp.yieldUnescaped(":&nbsp;|&nbsp;")
+                    mkp.yieldUnescaped("&nbsp;|&nbsp;")
                     span(class:'occurrenceNames', occurrence.vernacularName?:occurrence.raw_vernacularName)
                 }
                 span(style:'margin-left: 8px;') {
