@@ -128,6 +128,13 @@ a.colour-by-legend-toggle {
         </div>
         <div id="sizeslider" style="width:100px;"></div>
     </td>
+    <td>
+        <label for="opacityslider">Opacity:</label>
+        <div class="layerControls">
+            <span id="opacityslider-val">0.8</span>
+        </div>
+        <div id="opacityslider" style="width:100px;"></div>
+    </td>
     <td class="pull-right">
         <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
             <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
@@ -298,6 +305,18 @@ a.colour-by-legend-toggle {
             addQueryLayer(true);
         });
 
+        $( "#opacityslider" ).slider({
+            min: 0.1,
+            max: 1.0,
+            step: 0.1,
+            value: 0.8, // TODO sync with value in HTML - #opacityslider-val
+            tooltip: 'hide'
+        }).on('slideStop', function(ev){
+            var value = parseFloat(ev.value).toFixed(1); // prevent values like 0.30000000004 appearing
+            $('#opacityslider-val').html(value);
+            addQueryLayer(true);
+        });
+
         fitMapToBounds(); // zoom map if points are contained within Australia
         drawCircleRadius(); // draw circle around lat/lon/radius searches
 
@@ -332,11 +351,12 @@ a.colour-by-legend-toggle {
 
         var colourByFacet = $('#colourBySelect').val();
         var pointSize = $('#sizeslider-val').html();
+        var opacity = $('#opacityslider-val').html();
 
-        var envProperty = "color:${grailsApplication.config.map.pointColour};name:circle;size:"+pointSize+";opacity:1"
+        var envProperty = "color:${grailsApplication.config.map.pointColour};name:circle;size:"+pointSize+";opacity:"+opacity
 
         if(colourByFacet){
-            envProperty = "colormode:" + colourByFacet +";name:circle;size:"+pointSize+";opacity:1"
+            envProperty = "colormode:" + colourByFacet +";name:circle;size:"+pointSize+";opacity:"+opacity
         }
 
         var layer = L.tileLayer.wms(MAP_VAR.mappingUrl + "/webportal/wms/reflect" + MAP_VAR.query + MAP_VAR.additionalFqs, {
