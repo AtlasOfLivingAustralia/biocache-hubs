@@ -685,4 +685,20 @@ class OccurrenceTagLib {
 
         out << url
     }
+
+    /**
+     * Output the meta tags (HTML head section) for the build meta data in application.properties
+     * E.g.
+     * <meta name="svn.revision" content="${g.meta(name:'svn.revision')}"/>
+     * etc.
+     *
+     * @see _Events.groovy#eventCompileStart
+     */
+    def addApplicationMetaTags = { attrs ->
+        def metaList = ['svn.revision', 'java.version', 'java.name', 'build.hostname', 'app.version', 'app.build']
+        def mb = new MarkupBuilder(out)
+        metaList.each {
+            mb.meta(name:it, content: g.meta(name:it))
+        }
+    }
 }

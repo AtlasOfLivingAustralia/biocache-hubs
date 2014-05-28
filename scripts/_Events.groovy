@@ -13,7 +13,7 @@
  * rights and limitations under the License.
  */
 
-import org.tmatesoft.svn.core.SVNException
+import org.apache.commons.lang.SystemUtils
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl
@@ -51,10 +51,13 @@ eventCompileStart = { msg ->
         def version = svninfo.revision
         println "Getting svn revision: ${version}"
         metadata.'svn.revision' = version.toString()
+        // add other system info
+        metadata.'java.version' = SystemUtils.JAVA_VERSION
+        metadata.'java.name' = SystemUtils.JAVA_VM_NAME
+        metadata.'build.hostname' = InetAddress.getLocalHost().getHostName()
         metadata.persist()
-
     }
-    catch (SVNException ex) {
+    catch (Exception ex) {
         //something went wrong
         println "**************** SVN exception **************"
         println ex.getMessage();
