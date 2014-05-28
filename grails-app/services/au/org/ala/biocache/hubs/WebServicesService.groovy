@@ -296,13 +296,20 @@ class WebServicesService {
     @Cacheable('longTermCache')
     private Long getImageSizeInBytes(String imageURL) throws Exception {
         // encode the path part of the URI - taken from http://stackoverflow.com/a/8962869/249327
-        URL url = new URL(imageURL);
-        URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-        HttpClient httpClient = new HttpClient()
-        HeadMethod headMethod = new HeadMethod(uri.toString())
-        httpClient.executeMethod(headMethod)
-        String lengthString = headMethod.getResponseHeader("Content-Length")?.getValue()?:'0'
-        return Long.parseLong(lengthString)
+        Long imageFileSize = 0l
+        try {
+            URL url = new URL(imageURL);
+            URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+            HttpClient httpClient = new HttpClient()
+            HeadMethod headMethod = new HeadMethod(uri.toString())
+            httpClient.executeMethod(headMethod)
+            String lengthString = headMethod.getResponseHeader("Content-Length")?.getValue()?:'0'
+            imageFileSize = Long.parseLong(lengthString)
+        } catch (Exception ex) {
+            log.error "Error getting image url file size: ${ex}", ex
+        }
+
+        return imageFileSize
     }
 
     /**
