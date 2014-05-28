@@ -51,6 +51,7 @@ eventCompileStart = { msg ->
         def version = svninfo.revision
         println "Getting svn revision: ${version}"
         metadata.'svn.revision' = version.toString()
+        metadata.'svn.url' = svninfo.URL.toString()
         // add other system info
         metadata.'java.version' = SystemUtils.JAVA_VERSION
         metadata.'java.name' = SystemUtils.JAVA_VM_NAME

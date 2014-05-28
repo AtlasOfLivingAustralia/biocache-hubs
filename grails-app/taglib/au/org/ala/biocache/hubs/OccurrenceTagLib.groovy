@@ -695,7 +695,7 @@ class OccurrenceTagLib {
      * @see _Events.groovy#eventCompileStart
      */
     def addApplicationMetaTags = { attrs ->
-        def metaList = ['svn.revision', 'java.version', 'java.name', 'build.hostname', 'app.version', 'app.build']
+        def metaList = ['svn.revision', 'svn.url', 'java.version', 'java.name', 'build.hostname', 'app.version', 'app.build']
         def mb = new MarkupBuilder(out)
         metaList.each {
             mb.meta(name:it, content: g.meta(name:it))
