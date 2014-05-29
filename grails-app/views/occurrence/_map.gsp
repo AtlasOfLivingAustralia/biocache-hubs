@@ -85,6 +85,14 @@ a.colour-by-legend-toggle {
     padding:5px 10px 5px 10px;
 }
 
+#mapLayerControls label {
+    margin-bottom: 0;
+}
+
+#mapLayerControls input[type="checkbox"] {
+    margin-top: 0;
+}
+
 </style>
 
 <table id="mapLayerControls">
@@ -95,6 +103,8 @@ a.colour-by-legend-toggle {
         <div class="layerControls">
             <select name="colourFacets" id="colourBySelect">
                 <option value="">None</option>
+                <option value="grid">Record density grid</option>
+                <option disabled role=separator>————————————</option>
                 <g:each var="facetResult" in="${facets}">
                     <g:set var="Defaultselected">
                         <g:if test="${defaultColourBy && facetResult.fieldName == defaultColourBy}">selected="selected"</g:if>
@@ -135,19 +145,30 @@ a.colour-by-legend-toggle {
         </div>
         <div id="opacityslider" style="width:100px;"></div>
     </td>
+    <td>
+        <label for="outlineDots">Outline:</label>
+        <g:checkBox name="outlineDots" value="true"/>
+    </td>
     <td class="pull-right">
         <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
             <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
             <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
-            <div id="downloadMaps" class="btn btn-small">
+            <div id="spatialPortalBtn" class="btn btn-small" style="margin-bottom: 2px;">
                 <a id="spatialPortalLink"
                    href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}">View in spatial portal</a>
             </div>
         </g:if>
-        <div id="downloadMaps" class="btn btn-small">
+        <div id="downloadMaps" class="btn btn-small" style="margin-bottom: 2px;">
             <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
                 <i class="hide icon-download"></i> Download map</a>
         </div>
+        <%-- <div id="spatialSearchFromMap" class="btn btn-small">
+            <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">
+                <i class="hide icon-share-alt"></i> Restrict search</a>
+        </div>
+        TODO - Needs hook in UI to detect a wkt param and include button/link under search query and selected facets.
+        TODO - Also needs to check if wkt is already specified and remove previous wkt param from query.
+        --%>
     </td>
 </tr>
 </table>
@@ -297,8 +318,9 @@ a.colour-by-legend-toggle {
         });
 
         $( "#sizeslider" ).slider({
-            min:2,
-            max:10,
+            min:1,
+            max:9,
+            value: 4, // TODO sync with value in HTML - #sizeslider-val
             tooltip: 'hide'
         }).on('slideStop', function(ev){
             $('#sizeslider-val').html(ev.value);
@@ -314,6 +336,10 @@ a.colour-by-legend-toggle {
         }).on('slideStop', function(ev){
             var value = parseFloat(ev.value).toFixed(1); // prevent values like 0.30000000004 appearing
             $('#opacityslider-val').html(value);
+            addQueryLayer(true);
+        });
+
+        $('#outlineDots').click(function(e) {
             addQueryLayer(true);
         });
 
@@ -352,6 +378,7 @@ a.colour-by-legend-toggle {
         var colourByFacet = $('#colourBySelect').val();
         var pointSize = $('#sizeslider-val').html();
         var opacity = $('#opacityslider-val').html();
+        var outlineDots = $('#outlineDots').is(':checked');
 
         var envProperty = "color:${grailsApplication.config.map.pointColour};name:circle;size:"+pointSize+";opacity:"+opacity
 
@@ -365,7 +392,7 @@ a.colour-by-legend-toggle {
             transparent: true,
             attribution: "${grailsApplication.config.skin.orgNameLong}",
             bgcolor:"0x000000",
-            outline:"true",
+            outline:outlineDots,
             ENV: envProperty
         });
 
@@ -1030,6 +1057,21 @@ a.colour-by-legend-toggle {
         $('#pcolour').colourPicker({
             ico:    '${r.resource(dir:'images',file:'jquery.colourPicker.gif', plugin:'biocache-hubs')}',//'${request.contextPath}/static/images/jquery.colourPicker.gif',
             title:    false
+        });
+
+        // restrict search to current map bounds/view
+        $('#wktFromMapBounds').click(function(e) {
+            e.preventDefault();
+            var b = MAP_VAR.map.getBounds();
+            var wkt = "POLYGON ((" + b.getWest() + " " + b.getNorth() + ", " +
+                    b.getEast()  + " " + b.getNorth() + ", " +
+                    b.getEast()  + " " + b.getSouth() + ", " +
+                    b.getWest()  + " " + b.getSouth() + ", " +
+                    b.getWest() + " " + b.getNorth() + "))";
+            //console.log('wkt', wkt);
+            var url = "${g.createLink(uri:'/occurrences/search')}" + MAP_VAR.query + "&wkt=" + encodeURIComponent(wkt);
+            //console.log('new url', url);
+            window.location.href = url;
         });
     });
 
