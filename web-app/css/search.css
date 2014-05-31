@@ -404,7 +404,7 @@ div#currentFilter {
 #results {
     clear: both;
 }
-#downloads a, #alerts a, #mapView .btn a {
+#downloads a, #alerts a, #mapView .btn a, #customiseFacetsButton .btn {
     font-size: 12px;
     font-weight: bold;
     color: inherit;

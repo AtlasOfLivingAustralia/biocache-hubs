@@ -32,6 +32,7 @@ modules = {
         resource url:[dir:'js', file:'jquery.jsonp-2.4.0.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.i18n.properties-1.0.9.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs', disposition: 'head']
+        resource url:[dir:'css/font-awesome-4.1.0/css', file:'font-awesome.min.css', plugin:'biocache-hubs']
     }
 
     search {

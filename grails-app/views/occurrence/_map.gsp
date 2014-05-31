@@ -157,13 +157,14 @@ a.colour-by-legend-toggle {
         <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
         <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
         <div id="spatialPortalBtn" class="btn btn-small" style="margin-bottom: 2px;">
-            <a id="spatialPortalLink"
-               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}">View in spatial portal</a>
+            <a id="spatialPortalLink" class="tooltips"
+               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="Continue analysis in ALA Spatial Portal">
+                <i class="fa fa-map-marker"></i>&nbsp&nbsp;View in spatial portal</a>
         </div>
     </g:if>
     <div id="downloadMaps" class="btn btn-small" style="margin-bottom: 2px;">
         <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
-            <i class="hide icon-download"></i> Download map</a>
+            <i class="fa fa-download"></i>&nbsp&nbsp;Download map</a>
     </div>
     <%-- <div id="spatialSearchFromMap" class="btn btn-small">
         <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">

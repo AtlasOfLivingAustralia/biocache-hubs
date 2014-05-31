@@ -99,7 +99,7 @@
             <div class="span3">
                 <div id="customiseFacetsButton" class="btn-group">
                     <a class="btn btn-small dropdown-toggle tooltips" data-toggle="dropdown" href="#" title="Customise the contents of this column">
-                        <i class="icon-cog"></i> <g:message code="search.filter.customise"/>
+                        <i class="fa fa-cog"></i>&nbsp;&nbsp;<g:message code="search.filter.customise"/>
                         <span class="caret"></span>
                     </a>
                     <div class="dropdown-menu" role="menu"> <%--facetOptions--%>
@@ -256,11 +256,11 @@
                         <div id="searchControls" class="row-fluid">
                             <div class="span4">
                                 <div id="downloads" class="btn btn-small">
-                                    <a href="#download" role="button" data-toggle="modal" class="tooltips" title="Download all ${g.formatNumber(number:sr.totalRecords, format:"#,###,###")} records OR species checklist"><i class="icon-download"></i> Downloads</a>
+                                    <a href="#download" role="button" data-toggle="modal" class="tooltips" title="Download all ${g.formatNumber(number:sr.totalRecords, format:"#,###,###")} records OR species checklist"><i class="fa fa-download"></i>&nbsp&nbsp;Downloads</a>
                                 </div>
                                 <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
                                     <div id="alerts" class="btn btn-small">
-                                        <a href="#alert" role="button" data-toggle="modal" class="tooltips" title="Get email alerts for this search"><i class="icon-bell"></i> Alerts</a>
+                                        <a href="#alert" role="button" data-toggle="modal" class="tooltips" title="Get email alerts for this search"><i class="fa fa-bell"></i>&nbsp;&nbsp;Alerts</a>
                                     </div>
                                 </g:if>
                             </div>
