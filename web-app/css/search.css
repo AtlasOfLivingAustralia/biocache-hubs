@@ -635,7 +635,7 @@ div.centered {
 
 #mapLayerControls {
     border-bottom: none;
-    margin-bottom: 6px;
+    /*margin-bottom: 6px;*/
     width: 100%;
 }
 
@@ -648,9 +648,9 @@ div.centered {
     float: none;
 }
 
-#mapLayerControls #sizeslider-val {
-    padding-right: 12px;
-    padding-left: 6px;
+#mapLayerControls  .slider-val {
+    padding-right: 10px;
+    padding-left: 4px;
 }
 
 /* Collection charts */

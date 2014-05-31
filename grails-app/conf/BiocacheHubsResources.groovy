@@ -54,16 +54,16 @@ modules = {
 
     leaflet {
         defaultBundle 'main-extras'
-        resource url:[dir:'js', file:'leaflet-0.7.2/leaflet.css', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'leaflet-plugins/coordinates/Leaflet.Coordinates-0.1.4.css', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'leaflet-plugins/coordinates/Leaflet.Coordinates-0.1.4.ie.css', plugin:'biocache-hubs'], wrapper: { s -> "<!--[if lt IE 8]>$s<![endif]-->" }
-        resource url:[dir:'js', file:'leaflet-0.7.2/leaflet.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'leaflet-plugins/layer/tile/Google.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'leaflet-plugins/spin/spin.min.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'leaflet-plugins/spin/leaflet.spin.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'leaflet-plugins/coordinates/Leaflet.Coordinates-0.1.4.min.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'leaflet-plugins/fullscreen/Control.FullScreen.css', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'leaflet-plugins/fullscreen/Control.FullScreen.js', plugin:'biocache-hubs']
+        resource url:[dir:'js/leaflet-0.7.2', file:'leaflet.css', plugin:'biocache-hubs']
+        resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.css', plugin:'biocache-hubs']
+        resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.ie.css', plugin:'biocache-hubs'], wrapper: { s -> "<!--[if lt IE 8]>$s<![endif]-->" }
+        resource url:[dir:'js/leaflet-0.7.2', file:'leaflet.js', plugin:'biocache-hubs']
+        resource url:[dir:'js/leaflet-plugins/layer/tile', file:'Google.js', plugin:'biocache-hubs']
+        resource url:[dir:'js/leaflet-plugins/spin', file:'spin.min.js', plugin:'biocache-hubs']
+        resource url:[dir:'js/leaflet-plugins/spin', file:'leaflet.spin.js', plugin:'biocache-hubs']
+        resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.min.js', plugin:'biocache-hubs']
+        resource url:[dir:'js/leaflet-plugins/fullscreen', file:'Control.FullScreen.css', plugin:'biocache-hubs']
+        resource url:[dir:'js/leaflet-plugins/fullscreen', file:'Control.FullScreen.js', plugin:'biocache-hubs']
     }
 
     qtip {

@@ -82,96 +82,142 @@ a.colour-by-legend-toggle {
     font-weight: normal;
     line-height: 18px;
     text-decoration: none solid rgb(0, 120, 168);
-    padding:5px 10px 5px 10px;
+    padding:6px 10px 6px 10px;
 }
 
 #mapLayerControls label {
     margin-bottom: 0;
 }
 
-#mapLayerControls input[type="checkbox"] {
+/*#mapLayerControls input[type="checkbox"] {*/
+    /*margin-top: 0;*/
+/*}*/
+
+.leaflet-bar-bg a,
+.leaflet-bar-bg a:hover {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+}
+
+.leaflet-bar-bg .fa {
+    line-height: 36px;
+    opacity: 0.8;
+}
+#mapLayerControls {
+    /*position: absolute;*/
+    /*width: 80%;*/
+    /*z-index: 1010;*/
+    /*top: 0;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    height: 30px;
+    /*margin: 10px auto;*/
+    /*background: rgba(0,0,0,0.4);*/
+    /* box-shadow: -2px 0 2px rgba(0,0,0,0.3); */
+    /*box-shadow: 0 1px 5px rgba(0,0,0,0.4);*/
+    /*-webkit-border-radius: 5px;*/
+    /*-moz-border-radius: 5px;*/
+    /*border-radius: 5px;*/
+    color: #000;
+    font-size: 13px;
+}
+#mapLayerControls .layerControls, #mapLayerControls #sizeslider {
+    display: inline-block;
+    float: none;
+}
+#mapLayerControls td {
+    padding: 2px 5px 0px 5px;
+}
+#mapLayerControls label {
+    padding-top: 4px;
+}
+#mapLayerControls .slider {
+    margin-bottom: 4px;
+}
+#mapLayerControls select {
+    color: #000;
+    background: #EEEEEE;
+    /*-moz-user-select: auto;*/
+}
+#mapLayerControls .layerControls {
     margin-top: 0;
+}
+#outlineDots {
+    height: 20px;
+}
+#recordLayerControl {
+    padding: 0 5px;
 }
 
 </style>
 
-<table id="mapLayerControls">
-<tr>
-    <td>
-        <label for="colourBySelect">Colour by:&nbsp;</label>
-
-        <div class="layerControls">
-            <select name="colourFacets" id="colourBySelect">
-                <option value="">None</option>
-                <option value="grid">Record density grid</option>
-                <option disabled role=separator>————————————</option>
-                <g:each var="facetResult" in="${facets}">
-                    <g:set var="Defaultselected">
-                        <g:if test="${defaultColourBy && facetResult.fieldName == defaultColourBy}">selected="selected"</g:if>
-                    </g:set>
-                    <g:if test="${facetResult.fieldResult.size() > 1}">
-                        <option value="${facetResult.fieldName}" ${Defaultselected}>
-                            <alatag:formatDynamicFacetName fieldName="${facetResult.fieldName}"/>
-                        </option>
-                    </g:if>
-                </g:each>
-            </select>
+<div style="margin-bottom: 10px">
+    <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
+        <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
+        <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
+        <div id="spatialPortalBtn" class="btn btn-small" style="margin-bottom: 2px;">
+            <a id="spatialPortalLink"
+               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}">View in spatial portal</a>
         </div>
-    </td>
-    <g:if test="${skin == 'avh'}">
-        <td>
-            <label for="envLyrList">Environmental layer:&nbsp;</label>
-
-            <div class="layerControls">
-                <select id="envLyrList">
-                    <option value="">None</option>
-                </select>
-            </div>
-        </td>
-        </tr>
-        <tr>
     </g:if>
-    <td>
-        <label for="sizeslider">Size:</label>
-        <div class="layerControls">
-            <span id="sizeslider-val">4</span>
-        </div>
-        <div id="sizeslider" style="width:100px;"></div>
-    </td>
-    <td>
-        <label for="opacityslider">Opacity:</label>
-        <div class="layerControls">
-            <span id="opacityslider-val">0.8</span>
-        </div>
-        <div id="opacityslider" style="width:100px;"></div>
-    </td>
-    <td>
-        <label for="outlineDots">Outline:</label>
-        <g:checkBox name="outlineDots" value="true"/>
-    </td>
-    <td class="pull-right">
-        <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
-            <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
-            <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
-            <div id="spatialPortalBtn" class="btn btn-small" style="margin-bottom: 2px;">
-                <a id="spatialPortalLink"
-                   href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}">View in spatial portal</a>
-            </div>
-        </g:if>
-        <div id="downloadMaps" class="btn btn-small" style="margin-bottom: 2px;">
-            <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
-                <i class="hide icon-download"></i> Download map</a>
-        </div>
-        <%-- <div id="spatialSearchFromMap" class="btn btn-small">
-            <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">
-                <i class="hide icon-share-alt"></i> Restrict search</a>
-        </div>
-        TODO - Needs hook in UI to detect a wkt param and include button/link under search query and selected facets.
-        TODO - Also needs to check if wkt is already specified and remove previous wkt param from query.
-        --%>
-    </td>
-</tr>
-</table>
+    <div id="downloadMaps" class="btn btn-small" style="margin-bottom: 2px;">
+        <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
+            <i class="hide icon-download"></i> Download map</a>
+    </div>
+    <%-- <div id="spatialSearchFromMap" class="btn btn-small">
+        <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">
+            <i class="hide icon-share-alt"></i> Restrict search</a>
+    </div>
+    TODO - Needs hook in UI to detect a wkt param and include button/link under search query and selected facets.
+    TODO - Also needs to check if wkt is already specified and remove previous wkt param from query.
+    --%>
+</div>
+
+<div class="hide" id="recordLayerControls">
+    <table id="mapLayerControls">
+        <tr>
+            <td>
+                <label for="colourBySelect">Colour by:&nbsp;</label>
+                <div class="layerControls">
+                    <select name="colourFacets" id="colourBySelect" onchange="changeFacetColours();return true;">
+                        <option value="">None</option>
+                        <option value="grid">Record density grid</option>
+                        <option disabled role=separator>————————————</option>
+                        <g:each var="facetResult" in="${facets}">
+                            <g:set var="Defaultselected">
+                                <g:if test="${defaultColourBy && facetResult.fieldName == defaultColourBy}">selected="selected"</g:if>
+                            </g:set>
+                            <g:if test="${facetResult.fieldResult.size() > 1}">
+                                <option value="${facetResult.fieldName}" ${Defaultselected}>
+                                    <alatag:formatDynamicFacetName fieldName="${facetResult.fieldName}"/>
+                                </option>
+                            </g:if>
+                        </g:each>
+                    </select>
+                </div>
+            </td>
+            <td>
+                <label for="sizeslider">Size:</label>
+                <div class="layerControls">
+                    <span class="slider-val" id="sizeslider-val">4</span>
+                </div>
+                <div id="sizeslider" style="width:75px;"></div>
+            </td>
+            <td>
+                <label for="opacityslider">Opacity:</label>
+                <div class="layerControls">
+                    <span class="slider-val" id="opacityslider-val">0.8</span>
+                </div>
+                <div id="opacityslider" style="width:75px;"></div>
+            </td>
+            <td>
+                <label for="outlineDots">Outline:</label>
+                <input type="checkbox" name="outlineDots" checked="checked" value="true" class="layerControls" id="outlineDots">
+            </td>
+        </tr>
+    </table>
+</div>
 
 <div id="leafletMap" class="span12" style="height:600px;"></div>
 
@@ -248,8 +294,29 @@ a.colour-by-legend-toggle {
         }
     });
 
+    var RecordLayerControl = L.Control.extend({
+        options: {
+            position: 'topright',
+            collapsed: false
+        },
+        onAdd: function (map) {
+            // create the control container with a particular class name
+            //var $controlToAdd = $('.colourbyTemplate').clone();
+            var container = L.DomUtil.create('div', 'leaflet-control-layers');
+            var $container = $(container);
+            $container.attr("id","recordLayerControl");
+            $('#mapLayerControls').prependTo($container);
+            // Fix for Firefox select bug
+            var stop = L.DomEvent.stopPropagation;
+            L.DomEvent
+                .on(container, 'click', stop)
+                .on(container, 'mousedown', stop);
+            return container;
+        }
+    });
+
     function initialiseMap(){
-        console.log("initialiseMap", MAP_VAR.map);
+        //console.log("initialiseMap", MAP_VAR.map);
         if(MAP_VAR.map != null){
             return;
         }
@@ -276,14 +343,11 @@ a.colour-by-legend-toggle {
 
         addQueryLayer(true);
 
+        MAP_VAR.map.addControl(new RecordLayerControl());
         MAP_VAR.map.addControl(new ColourByControl());
 
         L.Util.requestAnimFrame(MAP_VAR.map.invalidateSize, MAP_VAR.map, !1, MAP_VAR.map._container);
-
-        $('#colourBySelect').change(function(e) {
-            MAP_VAR.additionalFqs = '';
-            addQueryLayer(true);
-        });
+        L.Browser.any3d = false; // FF bug prevents selects working properly
 
         $('.colour-by-control').click(function(e){
 
@@ -299,17 +363,20 @@ a.colour-by-legend-toggle {
             return false;
         });
 
-        $('#colourByControl').mouseover(function(e){
+        $('#colourByControl,#recordLayerControl').mouseover(function(e){
+            //console.log('mouseover');
             MAP_VAR.map.dragging.disable();
-            MAP_VAR.map.off('click', pointLookup);
+            MAP_VAR.map.off('click', pointLookupClickRegister);
         });
 
-        $('#colourByControl').mouseout(function(e){
+        $('#colourByControl,#recordLayerControl').mouseout(function(e){
+            //console.log('mouseout');
             MAP_VAR.map.dragging.enable();
-            MAP_VAR.map.on('click', pointLookup);
+            MAP_VAR.map.on('click', pointLookupClickRegister);
         });
 
         $('.hideColourControl').click(function(e){
+            //console.log('hideColourControl');
             $('#colourByControl').removeClass('leaflet-control-layers-expanded');
             $('.colour-by-legend-toggle').show();
             e.preventDefault();
@@ -320,7 +387,7 @@ a.colour-by-legend-toggle {
         $( "#sizeslider" ).slider({
             min:1,
             max:9,
-            value: 4, // TODO sync with value in HTML - #sizeslider-val
+            value: Number($('#sizeslider-val').text()), // TODO sync with value in HTML - #sizeslider-val
             tooltip: 'hide'
         }).on('slideStop', function(ev){
             $('#sizeslider-val').html(ev.value);
@@ -331,7 +398,7 @@ a.colour-by-legend-toggle {
             min: 0.1,
             max: 1.0,
             step: 0.1,
-            value: 0.8, // TODO sync with value in HTML - #opacityslider-val
+            value: Number($('#opacityslider-val').text()), // TODO sync with value in HTML - #opacityslider-val
             tooltip: 'hide'
         }).on('slideStop', function(ev){
             var value = parseFloat(ev.value).toFixed(1); // prevent values like 0.30000000004 appearing
@@ -346,21 +413,49 @@ a.colour-by-legend-toggle {
         fitMapToBounds(); // zoom map if points are contained within Australia
         drawCircleRadius(); // draw circle around lat/lon/radius searches
 
-        //enable the point lookup - but still allow double clicks to propagate
-        var clickCount = 0;
         MAP_VAR.recordList = new Array(); // store list of records for popup
 
-        MAP_VAR.map.on('click', function(e) {
-            clickCount += 1;
-            if (clickCount <= 1) {
-                setTimeout(function() {
-                    if (clickCount <= 1) {
-                        pointLookup(e);
-                    }
-                    clickCount = 0;
-                }, 400);
-            }
-        });
+        MAP_VAR.map.on('click', pointLookupClickRegister);
+    }
+
+    var clickCount = 0;
+    /**
+    * Fudge to allow double clicks to propagate to map while allowing single clicks to be registered
+    *
+    */
+    function pointLookupClickRegister(e) {
+        //console.log('pointLookupClickRegister', clickCount);
+        clickCount += 1;
+        if (clickCount <= 1) {
+            setTimeout(function() {
+                if (clickCount <= 1) {
+                    pointLookup(e);
+                }
+                clickCount = 0;
+            }, 400);
+        }
+    }
+
+    function changeFacetColours() {
+        MAP_VAR.additionalFqs = '';
+        //e.preventDefault();
+        //e.stopPropagation();
+        addQueryLayer(true);
+        return true;
+    }
+
+    function showHideControls(el) {
+        //console.log("el", el, this);
+        var $this = this;
+        if ($($this).hasClass('fa')) {
+            alert("activating");
+            $($this).hide();
+            $($this + ' table.controls').show();
+        } else {
+            alert("deactivating");
+            $($this).show();
+            $($this + ' table.controls').hide();
+        }
     }
 
     /**
@@ -433,6 +528,7 @@ a.colour-by-legend-toggle {
         MAP_VAR.layerControl.addOverlay(layer, 'Occurrences');
         MAP_VAR.map.addLayer(layer);
         MAP_VAR.currentLayers.push(layer);
+        return true;
     }
 
     function addDefaultLegendItem(pointColour){

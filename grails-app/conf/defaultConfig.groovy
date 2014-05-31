@@ -10,7 +10,8 @@
 //  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
 //  implied. See the License for the specific language governing
 //  rights and limitations under the License.
-
+//
+//grails.resources.work.dir=/data/cache/hubs
 //
 // CAS properties - may be omitted for non-ALA deployments
 //
