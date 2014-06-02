@@ -224,7 +224,7 @@ a.colour-by-legend-toggle {
 
 <div id="template" style="display:none">
     <div class="colourbyTemplate">
-        <a class="colour-by-legend-toggle colour-by-control" href="#" title="Map legend">Legend</a>
+        <a class="colour-by-legend-toggle colour-by-control tooltips" href="#" title="Map legend - click to expand"><i class="fa fa-list-ul fa-lg"></i></a>
         <form class="leaflet-control-layers-list">
             <div class="leaflet-control-layers-overlays">
                 <div style="overflow:auto; max-height:400px;">
@@ -496,6 +496,9 @@ a.colour-by-legend-toggle {
              if(!colourByFacet){
                 $('.legendTable').html('');
                 addDefaultLegendItem("${grailsApplication.config.map.pointColour}");
+             } else if (colourByFacet == 'grid') {
+                 $('.legendTable').html('');
+                 addGridLegendItem();
              } else {
                 //update the legend
                 $('.legendTable').html('<tr><td>Loading legend....</td></tr>');
@@ -545,6 +548,15 @@ a.colour-by-legend-toggle {
                         .addClass('legendItemName')
                         .html("All records")
                     )
+                )
+        );
+    }
+
+    function addGridLegendItem(){
+        $(".legendTable")
+            .append($('<tr>')
+                .append($('<td>')
+                    .append($('<img id="gridLegendImg" src="' + MAP_VAR.mappingUrl + '/density/legend' + MAP_VAR.query + '"/>'))
                 )
         );
     }
