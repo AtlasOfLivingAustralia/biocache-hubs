@@ -142,7 +142,7 @@
                 $("#statusMsg").html("Download has commenced");
                 window.setTimeout(function() {
                     $("#statusMsg").html("");
-                    $.fancybox.close();
+                    $('#download').modal('hide');
                 }, 2000);
             }
 

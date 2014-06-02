@@ -6,7 +6,6 @@ import grails.plugin.cache.Cacheable
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
-import org.apache.commons.codec.net.URLCodec
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.io.FileUtils
@@ -333,7 +332,6 @@ class WebServicesService {
             log.error error
             throw new RestClientException(error)
         }
-
     }
 
     /**
@@ -391,5 +389,44 @@ class WebServicesService {
         }
 
         postResponse
+    }
+
+    def JSONElement postJsonElements(String url, String jsonBody) {
+        HttpURLConnection conn = null
+        def charEncoding = 'UTF-8'
+        try {
+            conn = new URL(url).openConnection()
+            conn.setDoOutput(true)
+            conn.setRequestProperty("Content-Type", "application/json;charset=${charEncoding}");
+//            conn.setRequestProperty("Authorization", grailsApplication.config.api_key);
+//
+//            def user = userService.getUser()
+//            if (user) {
+//                conn.setRequestProperty(grailsApplication.config.app.http.header.userId, user.userId) // used by ecodata
+//                conn.setRequestProperty("Cookie", "ALA-Auth="+java.net.URLEncoder.encode(user.userName, charEncoding)) // used by specieslist
+//            }
+            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream(), charEncoding)
+            wr.write(jsonBody)
+            wr.flush()
+            def resp = conn.inputStream.text
+            log.debug "fileid = ${conn.getHeaderField("fileId")}"
+            //log.debug "resp = ${resp}"
+            //log.debug "code = ${conn.getResponseCode()}"
+            if (!resp && conn.getResponseCode() == 201) {
+                // Field guide code...
+                log.debug "field guide catch"
+                resp = "{fileId: \"${conn.getHeaderField("fileId")}\" }"
+            }
+            wr.close()
+            return JSON.parse(resp?:"{}")
+        } catch (SocketTimeoutException e) {
+            def error = "Timed out calling web service. URL= ${url}."
+            throw new RestClientException(error) // exception will result in no caching as opposed to returning null
+        } catch (Exception e) {
+            def error = "Failed calling web service. ${e.getMessage()} URL= ${url}." +
+                        "statusCode: " +conn?.responseCode?:"" +
+                        "detail: " + conn?.errorStream?.text
+            throw new RestClientException(error) // exception will result in no caching as opposed to returning null
+        }
     }
 }

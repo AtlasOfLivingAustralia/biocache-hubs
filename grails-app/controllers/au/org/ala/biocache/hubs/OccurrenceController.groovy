@@ -20,6 +20,8 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
 
+import java.text.SimpleDateFormat
+
 /**
  * Controller for occurrence searches and records
  */
@@ -219,6 +221,55 @@ class OccurrenceController {
     def legend() {
         def legend = webServicesService.getMapLegend(request.queryString)
         render legend as JSON
+    }
+
+    /**
+     * Field guide download
+     *
+     * @param requestParams
+     * @return
+     */
+    def fieldGuideDownload(SpatialSearchRequestParams requestParams) {
+        requestParams.pageSize = 0 // we just want the facet results
+        requestParams.flimit = params.maxSpecies ?: 150
+        FieldGuideDTO fg = new FieldGuideDTO()
+        JSONObject searchResults = webServicesService.fullTextSearch(requestParams)
+
+        searchResults?.facetResults?.each { fr ->
+            if (fr.fieldName == 'species_guid') {
+                fg.guids = fr.fieldResult?.label // groovy does an implicit collect
+            }
+        }
+
+        if (fg.guids.isEmpty()) {
+            flash.message = "Error: No species were found for the requested search (${requestParams.toString()})."
+            render view:'../error'
+            return
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMMM yyyy")
+        //set the properties of the query
+        fg.title = "This document was generated on "+ sdf.format(new Date())
+        String serverName = grailsApplication.config.serverName ?: grailsApplication.config.security.cas.appServerName
+        String contextPath = grailsApplication.config.contextPath ?: grailsApplication.config.security.cas.contextPath ?: ""
+        fg.link = serverName + contextPath + "/occurrences/search?" + request.getQueryString()
+        //log.info "FG json = " + fg.getJson()
+
+        try {
+            JSONElement fgPostObj = webServicesService.postJsonElements("http://fieldguide.ala.org.au/generate", fg.getJson())
+            //log.info "fgFileId = ${fgFileId}"
+
+            if (fgPostObj.fileId) {
+                response.sendRedirect("http://fieldguide.ala.org.au/guide/"+fgPostObj.fileId)
+            } else {
+                flash.message = "No field guide found for requested taxa."
+                render view:'../error'
+            }
+        } catch (Exception ex) {
+            flash.message = "Error generating field guide PDF. ${ex}"
+            log.error ex, ex
+            render view:'../error'
+        }
     }
 
     /**
