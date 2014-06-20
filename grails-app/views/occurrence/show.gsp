@@ -57,7 +57,7 @@
         #occurrenceMap img {  max-width: none; }
         div.audiojs { margin: 15px 0px 10px; }
         div.audiojs div.scrubber { width:120px;}
-        div.audiojs div.time { width:50px; }
+        div.audiojs div.time { display:none; width:50px; }
     </style>
 
     <script type="text/javascript" src="${r.resource(dir:'js', file:'charts2.js', plugin:'biocache-hubs')}"></script>
