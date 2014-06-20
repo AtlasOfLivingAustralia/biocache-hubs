@@ -479,7 +479,7 @@ a.colour-by-legend-toggle {
         var envProperty = "color:${grailsApplication.config.map.pointColour};name:circle;size:"+pointSize+";opacity:"+opacity
 
         if(colourByFacet){
-            envProperty = "colormode:" + colourByFacet +";name:circle;size:"+pointSize+";opacity:"+opacity
+            envProperty = "colormode:" + colourByFacet +";name:circle;size:"+pointSize+";opacity:1"//+opacity
         }
 
         var layer = L.tileLayer.wms(MAP_VAR.mappingUrl + "/webportal/wms/reflect" + MAP_VAR.query + MAP_VAR.additionalFqs, {
@@ -489,7 +489,9 @@ a.colour-by-legend-toggle {
             attribution: "${grailsApplication.config.skin.orgNameLong}",
             bgcolor:"0x000000",
             outline:outlineDots,
-            ENV: envProperty
+            ENV: envProperty,
+            opacity: opacity,
+            STYLE: "opacity:"+opacity // for grid data
         });
 
         if(redraw){
