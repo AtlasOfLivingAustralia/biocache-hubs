@@ -404,7 +404,11 @@ a.colour-by-legend-toggle {
         }).on('slideStop', function(ev){
             var value = parseFloat(ev.value).toFixed(1); // prevent values like 0.30000000004 appearing
             $('#opacityslider-val').html(value);
-            addQueryLayer(true);
+            if (MAP_VAR.currentLayers.length == 1) {
+                MAP_VAR.currentLayers[0].setOpacity(value);
+            } else {
+                addQueryLayer(true);
+            }
         });
 
         $('#outlineDots').click(function(e) {
