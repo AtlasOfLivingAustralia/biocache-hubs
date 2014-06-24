@@ -8,6 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <g:set var="startPageTime" value="${System.currentTimeMillis()}"/>
 <g:set var="queryDisplay" value="${sr?.queryTitle?:searchRequestParams?.displayString?:''}"/>
+<g:set var="searchQuery" value="${grailsApplication.config.skin.useAlaBie ? 'taxa' : 'q'}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -56,7 +57,7 @@
             <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="">
                 <div id="advancedSearchLink"><a href="${g.createLink(uri: '/search')}#tab_advanceSearch">Advanced search</a></div>
                 <div class="input-append">
-                    <input type="text" id="taxaQuery" name="taxa" class="input-xlarge" value="${params.list('taxa').join(' OR ')}">
+                    <input type="text" id="taxaQuery" name="${searchQuery}" class="input-xlarge" value="${params.list(searchQuery).join(' OR ')}">
                     <button type="submit" id="solrSubmit" class="btn">Quick search</button>
                 </div>
             </form>
