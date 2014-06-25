@@ -680,15 +680,15 @@ div.centered {
     margin-left: 14px;
 }
 #imagesGrid, #speciesGallery {
-    padding:10px;
+    padding-bottom:10px;
 }
-#imagesGrid img, #speciesGallery img {
+/*#imagesGrid img, #speciesGallery img {*/
 /*    float:left;*/
-    display: inline-block;
-    height:100px;
-    margin:5px;
-    padding:0px;
-}
+    /*display: inline-block;*/
+    /*height:100px;*/
+    /*margin:5px;*/
+    /*padding:0px;*/
+/*}*/
 #ibox {
     position:absolute;
     overflow-y: hidden;
@@ -914,4 +914,43 @@ span.red {
     font-size: 12px;
     font-weight: normal;
     margin: 0;
+}
+
+/* Gallery styling */
+.imgCon {
+    display: inline-block;
+    /* margin-right: 8px; */
+    text-align: center;
+    line-height: 1.3em;
+    background-color: #DDD;
+    color: #DDD;
+    font-size: 12px;
+    /*text-shadow: 2px 2px 6px rgba(255, 255, 255, 1);*/
+    /* padding: 5px; */
+    /* margin-bottom: 8px; */
+    margin: 2px 4px 2px 0;
+    position: relative;
+}
+.imgCon img {
+    height: 170px;
+    min-width: 150px;
+}
+.imgCon .meta {
+    opacity: 0.8;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    text-align: left;
+    padding: 4px 5px 2px 5px;
+}
+.imgCon .brief {
+    color: black;
+    background-color: white;
+}
+.imgCon .detail {
+    color: white;
+    background-color: black;
+    opacity: 0.7;
 }

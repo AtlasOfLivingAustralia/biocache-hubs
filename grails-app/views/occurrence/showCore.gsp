@@ -36,7 +36,7 @@
         }
     </script>
 
-    <r:require modules="show"/>
+    <r:require modules="show, moment"/>
 </head>
 
 <body>

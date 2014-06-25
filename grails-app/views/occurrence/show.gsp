@@ -62,7 +62,7 @@
 
     <script type="text/javascript" src="${r.resource(dir:'js', file:'charts2.js', plugin:'biocache-hubs')}"></script>
 
-    <r:require modules="show, amplify"/>
+    <r:require modules="show, amplify, moment"/>
 
     <r:script disposition="head">
         $(document).ready(function() {

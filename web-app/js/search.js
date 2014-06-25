@@ -321,8 +321,10 @@ $(document).ready(function() {
     });
 
     // load more images button
-    $("#loadMoreImages").live("click", function(e) {
+    $("#loadMoreImages .btn").live("click", function(e) {
         e.preventDefault();
+        $(this).addClass('disabled');
+        $(this).find('img').show(); // turn on spinner
         var start = $("#imagesGrid").data('count');
         //console.log("start", start);
         loadImages(start);
@@ -569,6 +571,11 @@ $(document).ready(function() {
     // store last search in local storage for a "back button" on record pages
     amplify.store('lastSearch', $.url().attr('relative'));
 
+    // mouse over affect on thumbnail images
+    $('#recordImages').on('hover', '.imgCon', function() {
+        $(this).find('.brief, .detail').toggleClass('hide');
+    });
+
 }); // end JQuery document ready
 
 /**
@@ -811,36 +818,51 @@ function loadImages(start) {
             var count = 0;
             $.each(data.occurrences, function(i, el) {
                 //console.log("el", el.image);
-                var imgSrc = el.smallImageUrl;
                 count++;
-                var imgEl = $("<img src='" + imgSrc +
-                    "' style='height: 100px; cursor: pointer;'/>");
-                var metaData = {
-                    type: 'record',
-                    uuid: el.uuid,
-                    rank: el.taxonRank,
-                    rankId: el.taxonRankID,
-                    sciName: el.raw_scientificName,
-                    commonName: (el.raw_vernacularName) ? "| " + el.raw_vernacularName : "",
-                    date: new Date(el.eventDate * 1000),
-                    basisOfRecord: el.basisOfRecord
-                };
-                imgEl.data(metaData);
-                //htmlUl += htmlLi;
-                $("#imagesGrid").append(imgEl);
-                
+                // clone template div & populate with metadata
+                var $ImgConTmpl = $('.imgConTmpl').clone();
+                $ImgConTmpl.removeClass('imgConTmpl').removeClass('hide');
+                var link = $ImgConTmpl.find('a.cbLink');
+                //link.attr('id','thumb_' + category + i);
+                link.addClass('thumbImage tooltips');
+                link.attr('href', BC_CONF.contextPath + "/occurrences/"  + el.uuid);
+                link.attr('title', 'click to enlarge');
+                link.attr('data-occurrenceuid', el.uuid);
+                $ImgConTmpl.find('img').attr('src', el.smallImageUrl);
+                // brief metadata
+                var briefHtml = el.raw_scientificName;
+                var br = "<br>";
+                if (el.typeStatus) briefHtml += br + el.typeStatus;
+                if (el.institutionName) briefHtml += ((el.typeStatus) ? ' | ' : br) + el.institutionName;
+                $ImgConTmpl.find('.brief').html(briefHtml);
+                // detail metadata
+                var detailHtml = el.raw_scientificName;
+                if (el.typeStatus) detailHtml += br + 'Type: ' + el.typeStatus;
+                if (el.collector) detailHtml += br + 'By: ' + el.collector;
+                if (el.eventDate) detailHtml += br + 'Date: ' + moment(el.eventDate).format('YYYY-MM-DD');
+                if (el.institutionName) {
+                    detailHtml += br + el.institutionName;
+                } else {
+                    detailHtml += br + el.dataResourceName;
+                }
+                $ImgConTmpl.find('.detail').html(detailHtml);
+
+                // write to DOM
+                $("#imagesGrid").append($ImgConTmpl.html());
             });
             
             if (count + start < data.totalRecords) {
                 //console.log("load more", count, start, count + start, data.totalRecords);
                 $('#imagesGrid').data('count', count + start);
                 $("#loadMoreImages").show();
+                $("#loadMoreImages .btn").removeClass('disabled');
             } else {
                 $("#loadMoreImages").hide();
             }
-            
-            $('#imagesGrid img').ibox(); // enable hover effect
+
         }
+    }).always(function() {
+        $("#loadMoreImages img").hide();
     });
 }
 
