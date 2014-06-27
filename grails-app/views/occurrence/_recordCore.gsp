@@ -228,7 +228,7 @@
 <!-- ALA user id -->
 <g:if test="${record.raw.occurrence.userId}">
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="userId" fieldNameIsMsgCode="true" fieldName="ALA User">
-        ${fieldsMap.put("userId", true)}
+        <!-- ${fieldsMap.put("userId", true)} -->
         <a href="http://sightings.ala.org.au/spotter/${record.raw.occurrence.userId}">${record.alaUserName}</a>
     </alatag:occurrenceTableRow>
 </g:if>
