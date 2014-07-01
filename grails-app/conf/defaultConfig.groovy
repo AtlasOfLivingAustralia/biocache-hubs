@@ -38,6 +38,7 @@ skin.orgNameShort = "Generic"
 skin.attribution = ""
 skin.useAlaSpatialPortal = false
 skin.useAlaBie = true
+skin.useAlaImageService = false
 skin.taxaLinks.baseUrl = "http://bie.ala.org.au/species/" // 3rd party species pages. Leave blank for no links
 skin.taxaLinks.identifier = "guid"  // "guid" or "name". Only used if skin.useAlaBie = false TODO: not implemented
 
@@ -49,6 +50,9 @@ biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 ||
 biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
 collections.baseUrl = "http://collections.ala.org.au"
+
+images.baseUrl="http://images.ala.org.au"
+
 // For sandbox environment
 //spatial.params = "&dynamic=true&ws=http%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=http%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"
 spatial.baseUrl = "http://spatial.ala.org.au/"

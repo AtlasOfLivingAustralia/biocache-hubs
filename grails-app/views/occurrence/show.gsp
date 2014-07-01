@@ -11,6 +11,7 @@
 <g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseUrl}"/>
 <g:set var="collectionsWebappContext" value="${grailsApplication.config.collections.baseUrl}"/>
 <g:set var="useAla" value="${grailsApplication.config.skin.useAlaBie?.toBoolean() ? 'true' : 'false'}"/>
+<g:set var="useImageService" value="${grailsApplication.config.skin.useAlaImageService?.toBoolean()} "/>
 <g:set var="taxaLinks" value="${grailsApplication.config.skin.taxaLinks}"/>
 <g:set var="dwcExcludeFields" value="${grailsApplication.config.dwc.exclude}"/>
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
@@ -413,9 +414,16 @@
                         <div id="occurrenceImages" style="margin-top:5px;">
                             <g:each in="${record.images}" var="image">
                                 <div style="margin-bottom:10px;">
-                                    <a href="${image.alternativeFormats.largeImageUrl}" target="_blank">
-                                        <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;"/>
-                                    </a>
+                                    <g:if test="${useImageService}">
+                                        <a href="${grailsApplication.config.images.baseUrl}/image/view?imageId=${image.filePath}" target="_blank">
+                                            <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;"/>
+                                        </a>
+                                    </g:if>
+                                    <g:else>
+                                        <a href="${image.alternativeFormats.largeImageUrl}" target="_blank">
+                                            <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;"/>
+                                        </a>
+                                    </g:else>
                                     <br/>
                                     <g:if test="${record.raw.occurrence.photographer}">
                                         <cite>Photographer: ${record.raw.occurrence.photographer}</cite><br/>
@@ -426,7 +434,13 @@
                                     <g:if test="${record.raw.occurrence.rightsholder}">
                                         <cite>Rights holder: ${record.raw.occurrence.rightsholder}</cite><br/>
                                     </g:if>
-                                    <a href="${image.alternativeFormats.imageUrl}" target="_blank">Original image (${formattedImageSizes?.get(image.alternativeFormats?.imageUrl)?:'file size not known'})</a>
+                                    <g:if test="${useImageService}">
+                                        <a href="${grailsApplication.config.images.baseUrl}/image/details?imageId=${image.filePath}" target="_blank">Image details</a>
+                                    </g:if>
+                                    <g:else>
+                                        <a href="${image.alternativeFormats.imageUrl}" target="_blank">Original image</a>
+                                    </g:else>
+
                                 </div>
                             </g:each>
                         </div>
