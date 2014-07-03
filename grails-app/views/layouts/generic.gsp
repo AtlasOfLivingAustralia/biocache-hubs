@@ -102,12 +102,12 @@
             <a class="brand" href="#">${raw(orgNameLong)}</a>
             <div class="nav-collapse collapse">
                 <p class="navbar-text pull-right">
-                    Logged in as <a href="#" class="navbar-link">${username}</a>
+                    <g:message code="generic.navbar01.label" default="Logged in as"/> <a href="#" class="navbar-link">${username}</a>
                 </p>
                 <ul class="nav">
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
+                    <li class="active"><a href="#"><g:message code="generic.navbar02.li01" default="Home"/></a></li>
+                    <li><a href="#about"><g:message code="generic.navbar02.li02" default="About"/></a></li>
+                    <li><a href="#contact"><g:message code="generic.navbar02.li03" default="Contact"/></a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
@@ -122,8 +122,8 @@
     <div class="container-fluid">
         <div class="row-fluid">
             <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons"><img src="http://i.creativecommons.org/l/by/3.0/88x31.png" width="88" height="31" alt=""></a>
-            This site is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="external">Creative Commons Attribution 3.0 Australia License</a>.
-        Provider content may be covered by other <a href="#terms-of-use" title="Terms of Use">Terms of Use</a>.
+            <g:message code="generic.footer.link01" default="This site is licensed under a"/> <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="external"><g:message code="generic.footer.link02" default="Creative Commons Attribution 3.0 Australia License"/></a>.
+            <g:message code="generic.footer.link03" default="Provider content may be covered by other"/> <a href="#terms-of-use" title="Terms of Use"><g:message code="generic.footer.link04" default="Terms of Use"/></a>.
         </div>
     </div>
 </div><!--/#footer -->

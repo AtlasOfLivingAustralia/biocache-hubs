@@ -159,12 +159,12 @@ a.colour-by-legend-toggle {
         <div id="spatialPortalBtn" class="btn btn-small" style="margin-bottom: 2px;">
             <a id="spatialPortalLink" class="tooltips"
                href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="Continue analysis in ALA Spatial Portal">
-                <i class="fa fa-map-marker"></i>&nbsp&nbsp;View in spatial portal</a>
+                <i class="fa fa-map-marker"></i>&nbsp&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
         </div>
     </g:if>
     <div id="downloadMaps" class="btn btn-small" style="margin-bottom: 2px;">
         <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
-            <i class="fa fa-download"></i>&nbsp&nbsp;Download map</a>
+            <i class="fa fa-download"></i>&nbsp&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
     </div>
     <%-- <div id="spatialSearchFromMap" class="btn btn-small">
         <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">
@@ -179,11 +179,11 @@ a.colour-by-legend-toggle {
     <table id="mapLayerControls">
         <tr>
             <td>
-                <label for="colourBySelect">Colour by:&nbsp;</label>
+                <label for="colourBySelect"><g:message code="map.maplayercontrols.tr01td01.label" default="Colour by"/>:&nbsp;</label>
                 <div class="layerControls">
                     <select name="colourFacets" id="colourBySelect" onchange="changeFacetColours();return true;">
-                        <option value="">None</option>
-                        <option value="grid">Record density grid</option>
+                        <option value=""><g:message code="map.maplayercontrols.tr01td01.option01" default="None"/></option>
+                        <option value="grid"><g:message code="map.maplayercontrols.tr01td01.option02" default="Record density grid"/></option>
                         <option disabled role=separator>————————————</option>
                         <g:each var="facetResult" in="${facets}">
                             <g:set var="Defaultselected">
@@ -199,21 +199,21 @@ a.colour-by-legend-toggle {
                 </div>
             </td>
             <td>
-                <label for="sizeslider">Size:</label>
+                <label for="sizeslider"><g:message code="map.maplayercontrols.tr01td02.label" default="Size"/>:</label>
                 <div class="layerControls">
                     <span class="slider-val" id="sizeslider-val">4</span>
                 </div>
                 <div id="sizeslider" style="width:75px;"></div>
             </td>
             <td>
-                <label for="opacityslider">Opacity:</label>
+                <label for="opacityslider"><g:message code="map.maplayercontrols.tr01td03.label" default="Opacity"/>:</label>
                 <div class="layerControls">
                     <span class="slider-val" id="opacityslider-val">0.8</span>
                 </div>
                 <div id="opacityslider" style="width:75px;"></div>
             </td>
             <td>
-                <label for="outlineDots">Outline:</label>
+                <label for="outlineDots"><g:message code="map.maplayercontrols.tr01td04.label" default="Outline"/>:</label>
                 <input type="checkbox" name="outlineDots" checked="checked" value="true" class="layerControls" id="outlineDots">
             </td>
         </tr>
@@ -238,7 +238,7 @@ a.colour-by-legend-toggle {
 
 
 <div id="recordPopup" style="display:none;">
-    <a href="#">View records at this point</a>
+    <a href="#"><g:message code="map.recordpopup" default="View records at this point"/></a>
 </div>
 
 
@@ -997,19 +997,19 @@ a.colour-by-legend-toggle {
     <form id="downloadMapForm">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="downloadsMapLabel">Download publication map</h3>
+            <h3 id="downloadsMapLabel"><g:message code="map.downloadmap.title" default="Download publication map"/></h3>
         </div>
         <div class="modal-body">
             <input id="mapDownloadUrl" type="hidden" value="${alatag.getBiocacheAjaxUrl()}/webportal/wms/image"/>
             <fieldset>
-                <p><label for="format">Format</label>
+                <p><label for="format"><g:message code="map.downloadmap.field01.label" default="Format"/></label>
                     <select name="format" id="format">
-                        <option value="jpg">JPEG</option>
-                        <option value="png">PNG</option>
+                        <option value="jpg"><g:message code="map.downloadmap.field01.option01" default="JPEG"/></option>
+                        <option value="png"><g:message code="map.downloadmap.field01.option02" default="PNG"/></option>
                     </select>
                 </p>
                 <p>
-                    <label for="dpi">Quality (DPI)</label>
+                    <label for="dpi"><g:message code="map.downloadmap.field02.label" default="Quality (DPI)"/></label>
                     <select name="dpi" id="dpi">
                         <option value="100">100</option>
                         <option value="300" selected="true">300</option>
@@ -1017,7 +1017,7 @@ a.colour-by-legend-toggle {
                     </select>
                 </p>
                 <p>
-                    <label for="pradiusmm">Point radius (mm)</label>
+                    <label for="pradiusmm"><g:message code="map.downloadmap.field03.label" default="Point radius (mm)"/></label>
                     <select name="pradiusmm" id="pradiusmm">
                         <option>0.1</option>
                         <option>0.2</option>
@@ -1041,7 +1041,7 @@ a.colour-by-legend-toggle {
                     </select>
                 </p>
                 <p>
-                    <label for="popacity">Opacity</label>
+                    <label for="popacity"><g:message code="map.downloadmap.field04.label" default="Opacity"/></label>
                     <select name="popacity" id="popacity">
                         <option>1</option>
                         <option>0.9</option>
@@ -1056,7 +1056,7 @@ a.colour-by-legend-toggle {
                     </select>
                 </p>
                 <p id="colourPickerWrapper">
-                    <label for="pcolour">Color</label>
+                    <label for="pcolour"><g:message code="map.downloadmap.field05.label" default="Color"/></label>
                     <%--<input type="text" name="pcolour" id="pcolour" value="0000FF" size="6"  />--%>
                     <select name="pcolour" id="pcolour">
                         <option value="ffffff">#ffffff</option>
@@ -1125,40 +1125,40 @@ a.colour-by-legend-toggle {
                     </select>
                 </p>
                 <p>
-                    <label for="widthmm">Width (mm)</label>
+                    <label for="widthmm"><g:message code="map.downloadmap.field06.label" default="Width (mm)"/></label>
                     <input type="text" name="widthmm" id="widthmm" value="150" />
                 </p>
                 <p>
-                    <label for="scale_on">Include scale</label>
-                    <input type="radio" name="scale" value="on" id="scale_on" checked="checked"/> Yes &nbsp;
-                    <input type="radio" name="scale" value="off" /> No
+                    <label for="scale_on"><g:message code="map.downloadmap.field07.label" default="Include scale"/></label>
+                    <input type="radio" name="scale" value="on" id="scale_on" checked="checked"/> <g:message code="map.downloadmap.field07.option01" default="Yes"/> &nbsp;
+                    <input type="radio" name="scale" value="off" /> <g:message code="map.downloadmap.field07.option02" default="No"/>
                 </p>
                 <p>
-                    <label for="outline">Outline points</label>
-                    <input type="radio" name="outline" value="true" id="outline" checked="checked"/> Yes &nbsp;
-                    <input type="radio" name="outline" value="false" /> No
+                    <label for="outline"><g:message code="map.downloadmap.field08.label" default="Outline points"/></label>
+                    <input type="radio" name="outline" value="true" id="outline" checked="checked"/> <g:message code="map.downloadmap.field08.option01" default="Yes"/> &nbsp;
+                    <input type="radio" name="outline" value="false" /> <g:message code="map.downloadmap.field08.option02" default="No"/>
                 </p>
                 <p>
-                    <label for="baselayer">Base layer</label>
+                    <label for="baselayer"><g:message code="map.downloadmap.field09.label" default="Base layer"/></label>
                     <select name="baselayer" id="baselayer">
-                        <option value="world">World outline</option>
-                        <option value="aus1" selected="true">States & Territories</option>
-                        <option value="aus2">Local government areas</option>
-                        <option value="ibra_merged">IBRA</option>
-                        <option value="ibra_sub_merged">IBRA sub regions</option>
-                        <option value="imcra4_pb">IMCRA</option>
+                        <option value="world"><g:message code="map.downloadmap.field09.option01" default="World outline"/></option>
+                        <option value="aus1" selected="true"><g:message code="map.downloadmap.field09.option02" default="States & Territories"/></option>
+                        <option value="aus2"><g:message code="map.downloadmap.field09.option03" default="Local government areas"/></option>
+                        <option value="ibra_merged"><g:message code="map.downloadmap.field09.option04" default="IBRA"/></option>
+                        <option value="ibra_sub_merged"><g:message code="map.downloadmap.field09.option05" default="IBRA sub regions"/></option>
+                        <option value="imcra4_pb"><g:message code="map.downloadmap.field09.option06" default="IMCRA"/></option>
                     </select>
                 </p>
                 <p>
-                    <label for="fileName">File name (without extension)</label>
+                    <label for="fileName"><g:message code="map.downloadmap.field10.label" default="File name (without extension)"/></label>
                     <input type="text" name="fileName" id="fileName" value="MyMap"/>
                 </p>
             </fieldset>
 
         </div>
         <div class="modal-footer">
-            <button id="submitDownloadMap" class="btn" style="float:left;">Download map</button>
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button id="submitDownloadMap" class="btn" style="float:left;"><g:message code="map.downloadmap.button01.label" default="Download map"/></button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true"><g:message code="map.downloadmap.button02.label" default="Close"/></button>
         </div>
     </form>
 </div>

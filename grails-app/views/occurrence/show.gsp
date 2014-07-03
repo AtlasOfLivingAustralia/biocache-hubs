@@ -30,7 +30,7 @@
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="search"/>
-    <title>Record: ${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
+    <title><g:message code="show.title" default="Record"/>: ${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
         // Global var OCC_REC to pass GSP data to external JS file
@@ -157,21 +157,21 @@
     <g:if test="${record}">
         <g:if test="${record.raw}">
             <div id="headingBar" class="recordHeader">
-                <h1><g:message code="show.occurrenceRecord" default="Occurrence record"/>: <span id="recordId">${recordId}</span></h1>
+                <h1><g:message code="show.headingbar01.title" default="Occurrence record"/>: <span id="recordId">${recordId}</span></h1>
                 <div id="jsonLink">
                     <g:if test="${isCollectionAdmin}">
                         <g:set var="admin" value=" - admin"/>
                     </g:if>
                     <g:if test="${alatag.loggedInUserDisplayname()}">
-                        Logged in as: ${alatag.loggedInUserDisplayname()}
+                        <g:message code="show.jsonlink.login" default="Logged in as:"/> ${alatag.loggedInUserDisplayname()}
                     </g:if>
                     <g:if test="${clubView}">
-                        <div id="clubView">Showing &quot;Club View&quot;</div>
+                        <div id="clubView"><g:message code="show.clubview.message" default="Showing &quot;Club View&quot;"/></div>
                     </g:if>
                     <!-- <a href="${json}">JSON</a> -->
                 </div>
                 <div id="backBtn" class="hide pull-right">
-                    <a href="#" title="Return to search results" class="btn">Back to search results</a>
+                    <a href="#" title="Return to search results" class="btn"><g:message code="show.backbtn.navigator" default="Back to search results"/></a>
                 </div>
                 <g:if test="${record.raw.classification}">
                     <h2 id="headingSciName">
@@ -198,345 +198,7 @@
             </div>
             <div class="row-fluid">
                 <div id="SidebarBoxZ" class="span4">
-                <g:if test="${collectionLogo}">
-                    <div class="sidebar">
-                        <img src="${collectionLogo}" alt="institution logo" id="institutionLogo"/>
-                    </div>
-                </g:if>
-
-                <g:if test="${record.processed.attribution.provenance != 'Draft'}">
-                    <div class="sidebar">
-                        <div id="warnings">
-
-                            <div id="systemAssertionsContainer" <g:if test="${!record.systemAssertions}">style="display:none"</g:if>>
-                                <h3>Data quality tests</h3>
-
-                                <ul id="systemAssertions">
-                                    <li class="failedTestCount">
-                                        <g:message code="assertions.failed" default="failed"/>: ${record.systemAssertions.failed?.size()?:0}
-                                    </li>
-                                    <li class="warningsTestCount">
-                                        <g:message code="assertions.warnings" default="warnings"/>: ${record.systemAssertions.warning?.size()?:0}
-                                    </li>
-                                    <li class="passedTestCount">
-                                        <g:message code="assertions.passed" default="passed"/>: ${record.systemAssertions.passed?.size()?:0}
-                                    </li>
-                                    <li class="missingTestCount">
-                                        <g:message code="assertions.missing" default="missing"/>: ${record.systemAssertions.missing?.size()?:0}
-                                    </li>
-                                    <li class="uncheckedTestCount">
-                                        <g:message code="assertions.unchecked" default="unchecked"/>: ${record.systemAssertions.unchecked?.size()?:0}
-                                    </li>
-
-                                    <li id="dataQualityFurtherDetails">
-                                        <i class="icon-hand-right"></i>&nbsp;
-                                        <a id="dataQualityReportLink" href="#dataQualityReport">
-                                            View full data quality report
-                                        </a>
-                                    </li>
-
-                                    <g:set var="hasExpertDistribution" value="${false}"/>
-                                    <g:each var="systemAssertion" in="${record.systemAssertions.failed}">
-                                        <g:if test="${systemAssertion.code == 26}">
-                                            <g:set var="hasExpertDistribution" value="${true}"/>
-                                        </g:if>
-                                    </g:each>
-
-                                    <g:set var="isDuplicate" value="${false}"/>
-                                    <g:if test="${record.processed.occurrence.duplicationStatus}">
-                                        <g:set var="isDuplicate" value="${true}"/>
-                                    </g:if>
-
-                                    <g:if test="${isDuplicate}">
-                                       <li><i class="icon-hand-right"></i>&nbsp;
-                                        <a id="duplicateLink" href="#inferredOccurrenceDetails">
-                                            Potential duplicate record - view details
-                                        </a>
-                                        </li>
-                                    </g:if>
-
-                                    <g:if test="${hasExpertDistribution}">
-                                       <li><i class="icon-hand-right"></i>&nbsp;
-                                        <a id="expertRangeLink" href="#expertReport">
-                                            Outside expert range - view details
-                                        </a>
-                                        </li>
-                                    </g:if>
-
-                                    <g:if test="${record.processed.occurrence.outlierForLayers}">
-                                       <li><i class="icon-hand-right"></i>&nbsp;
-                                        <a id="outlierReportLink" href="#outlierReport">
-                                            Environmental outlier - view details
-                                        </a>
-                                        </li>
-                                    </g:if>
-                                </ul>
-
-                                <!--<p class="half-padding-bottom">Data validation tools identified the following possible issues:</p>-->
-                                <g:set var="recordIsVerified" value="false"/>
-
-                                <g:each in="${record.userAssertions}" var="userAssertion">
-                                    <g:if test="${userAssertion.name == 'userVerified'}"><g:set var="recordIsVerified" value="true"/></g:if>
-                                </g:each>
-                            </div>
-
-                            <div id="userAssertionsContainer" <g:if test="${!record.userAssertions && !queryAssertions}">style="display:none"</g:if>>
-                                <h3>User flagged issues</h3>
-                                <ul id="userAssertions">
-                                    <!--<p class="half-padding-bottom">Users have highlighted the following possible issues:</p>-->
-                                    <alatag:groupedAssertions groupedAssertions="${groupedAssertions}" />
-                                </ul>
-                                <div id="userAssertionsDetailsLink">
-                                    <a id="showUserFlaggedIssues" href="#userAnnotations">
-                                        View issue list & comments
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </g:if>
-                <g:if test="${isCollectionAdmin && (record.systemAssertions.failed || record.userAssertions) && ! recordIsVerified}">
-                    <div class="sidebar">
-                        <button class="btn" id="verifyButton" href="#verifyRecord">
-                            <span id="verifyRecordSpan" title="">Verify record</span>
-                        </button>
-                        <div style="display:none;">
-                            <div id="verifyRecord">
-                                <h3>Confirmation</h3>
-                                <div id="verifyAsk">
-                                    <g:set var="markedAssertions"/>
-                                    <g:if test="!record.processed.geospatiallyKosher">
-                                        <g:set var="markedAssertions">geospatially suspect</g:set>
-                                    </g:if>
-                                    <g:if test="!record.processed.taxonomicallyKosher">
-                                        <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}taxonomically suspect</g:set>
-                                    </g:if>
-                                    <g:each var="sysAss" in="${record.systemAssertions.failed}">
-                                        <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}<g:message code="${sysAss.name}" /></g:set>
-                                    </g:each>
-                                    <p>
-                                        Record is marked as <b>${markedAssertions}</b>
-                                    </p>
-                                    <p style="margin-bottom:10px;">
-                                        Click the &quot;Confirm&quot; button to verify that this record is correct and that
-                                        the listed &quot;validation issues&quot; are incorrect/invalid.<br/>Please provide a
-                                        short comment supporting your verification.
-                                    </p>
-                                    <textarea id="verifyComment" rows="3"></textarea><br/>
-                                    <button class="btn confirmVerify">Confirm</button>
-                                    <button class="btn cancelVerify">Cancel</button>
-                                    <img src="${request.contextPath}/images/spinner.gif" id="verifySpinner" class="hide" alt="spinner icon"/>
-                                </div>
-                                <div id="verifyDone" style="display:none;">
-                                    Record successfully verified
-                                    <br/>
-                                    <button class="btn closeVerify">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </g:if>
-                <g:if test="${record.processed.attribution.provenance && record.processed.attribution.provenance == 'Draft'}">
-                    <div class="sidebar">
-                        <p class="grey-bg" style="padding:5px; margin-top:15px; margin-bottom:10px;">
-                            This record was transcribed from the label by an online volunteer.
-                            It has not yet been validated by the owner institution
-                            <a href="http://volunteer.ala.org.au/">Biodiversity Volunteer Portal</a>.
-                        </p>
-
-                        <button class="btn" id="viewDraftButton" >
-                            <span id="viewDraftSpan" title="View Draft">See draft in Biodiversity Volunteer Portal</span>
-                        </button>
-                    </div>
-                </g:if>
-                <g:if test="${isUnderCas && !isReadOnly && record.processed.attribution.provenance != 'Draft'}">
-                    <div class="sidebar">
-                        <button class="btn" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="report a problem or suggest a correction for this record">
-                            <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="icon-flag"></i> Flag an issue</span>
-                        </button>
-                        <div id="loginOrFlag" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true"><!-- BS modal div -->
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                <h3 id="loginOrFlagLabel">Flag an issue</h3>
-                            </div>
-                            <div class="modal-body">
-                                <g:if test="${!userId}">
-                                    <div style="margin: 20px 0;">Login please:
-                                        <a href="https://auth.ala.org.au/cas/login?service=${serverName}${request.contextPath}/occurrences/${record.raw.uuid}">Click here</a>
-                                    </div>
-                                </g:if>
-                                <g:else>
-                                    <div>
-                                        You are logged in as  <strong>${userDisplayName} (${alatag.loggedInUserEmail()})</strong>.
-                                        <form id="issueForm">
-                                            <p style="margin-top:20px;">
-                                                <label for="issue">Issue type:</label>
-                                                <select name="issue" id="issue">
-                                                    <g:each in="${errorCodes}" var="code">
-                                                        <option value="${code.code}"><g:message code="${code.name}" default="${code.name}"/></option>
-                                                    </g:each>
-                                                </select>
-                                            </p>
-                                            <p style="margin-top:30px;">
-                                                <label for="issueComment" style="vertical-align:top;">Comment:</label>
-                                                <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
-                                            </p>
-                                            <p style="margin-top:20px;">
-                                                <input id="issueFormSubmit" type="submit" value="Submit" class="btn" />
-                                                <input type="reset" value="Cancel" class="btn" onClick="$('#loginOrFlag').modal('hide');"/>
-                                                <input type="button" id="close" value="Close" class="btn" style="display:none;"/>
-                                                <span id="submitSuccess"></span>
-                                            </p>
-                                            <p id="assertionSubmitProgress" style="display:none;">
-                                                <img src="${request.contextPath}/static/images/indicator.gif"/>
-                                                %{--<img src="${g.createLink(uri:'/images/indicator.gif', plugin:'biocache-hubs')}"/>--}%
-                                            </p>
-
-                                        </form>
-                                    </div>
-                                </g:else>
-                            </div>
-                            <div class="hide modal-footer">
-                                <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </g:if>
-                <div class="sidebar">
-                    <button href="#processedVsRawView" class="btn" id="showRawProcessed" role="button" data-toggle="modal"
-                            title="Table showing both original and processed record values">
-                        <span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="icon-th"></i> Original vs Processed</span>
-                    </button>
-                </div>
-                <g:if test="${record.images}">
-                    <div class="sidebar">
-                        <h3>Images</h3>
-                        <div id="occurrenceImages" style="margin-top:5px;">
-                            <g:each in="${record.images}" var="image">
-                                <div style="margin-bottom:10px;">
-                                    <g:if test="${useImageService}">
-                                        <a href="${grailsApplication.config.images.baseUrl}/image/view?imageId=${image.filePath}" target="_blank">
-                                            <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;"/>
-                                        </a>
-                                    </g:if>
-                                    <g:else>
-                                        <a href="${image.alternativeFormats.largeImageUrl}" target="_blank">
-                                            <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;"/>
-                                        </a>
-                                    </g:else>
-                                    <br/>
-                                    <g:if test="${record.raw.occurrence.photographer}">
-                                        <cite>Photographer: ${record.raw.occurrence.photographer}</cite><br/>
-                                    </g:if>
-                                    <g:if test="${record.raw.occurrence.rights}">
-                                        <cite>Rights: ${record.raw.occurrence.rights}</cite><br/>
-                                    </g:if>
-                                    <g:if test="${record.raw.occurrence.rightsholder}">
-                                        <cite>Rights holder: ${record.raw.occurrence.rightsholder}</cite><br/>
-                                    </g:if>
-                                    <g:if test="${useImageService}">
-                                        <a href="${grailsApplication.config.images.baseUrl}/image/details?imageId=${image.filePath}" target="_blank">Image details</a>
-                                    </g:if>
-                                    <g:else>
-                                        <a href="${image.alternativeFormats.imageUrl}" target="_blank">Original image</a>
-                                    </g:else>
-
-                                </div>
-                            </g:each>
-                        </div>
-                    </div>
-                </g:if>
-                <g:if test="${record.processed.location.decimalLatitude && record.processed.location.decimalLongitude}">
-                    <g:set var="latLngStr">
-                        <g:if test="${clubView && record.raw.location.decimalLatitude && record.raw.location.decimalLatitude != record.processed.location.decimalLatitude}">
-                            ${record.raw.location.decimalLatitude},${record.raw.location.decimalLongitude}
-                        </g:if>
-                        <g:else>
-                            ${record.processed.location.decimalLatitude},${record.processed.location.decimalLongitude}
-                        </g:else>
-                    </g:set>
-                    <div class="sidebar">
-
-                        %{--<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>--}%
-                        <script type="text/javascript">
-                            $(document).ready(function() {
-                                var latlng = new google.maps.LatLng(${latLngStr.trim()});
-                                var myOptions = {
-                                    zoom: 5,
-                                    center: latlng,
-                                    scrollwheel: false,
-                                    scaleControl: true,
-                                    streetViewControl: false,
-                                    mapTypeControl: true,
-                                    mapTypeControlOptions: {
-                                        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                                        mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN ]
-                                    },
-                                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                                };
-
-                                var map = new google.maps.Map(document.getElementById("occurrenceMap"), myOptions);
-
-                                var marker = new google.maps.Marker({
-                                    position: latlng,
-                                    map: map,
-                                    title:"Occurrence Location"
-                                });
-
-                                <g:if test="${record.processed.location.coordinateUncertaintyInMeters}">
-                                var radius = parseInt('${record.processed.location.coordinateUncertaintyInMeters}');
-                                if (!isNaN(radius)) {
-                                    // Add a Circle overlay to the map.
-                                    circle = new google.maps.Circle({
-                                        map: map,
-                                        radius: radius, // 3000 km
-                                        strokeWeight: 1,
-                                        strokeColor: 'white',
-                                        strokeOpacity: 0.5,
-                                        fillColor: '#2C48A6',
-                                        fillOpacity: 0.2
-                                    });
-                                    // bind circle to marker
-                                    circle.bindTo('center', marker, 'position');
-                                }
-                                </g:if>
-                            });
-                        </script>
-                        <h3>Location of record</h3>
-                        <div id="occurrenceMap" class="google-maps"></div>
-                    </div>
-                </g:if>
-                <g:if test="${record.sounds}">
-                    <div class="sidebar">
-                        <h3 id="soundsHeader" style="margin: 20px 0 0 0;">Sounds</h3>
-                        <div class="row-fluid">
-                            <div id="audioWrapper" class="span12">
-                                <audio src="${record.sounds.get(0)?.alternativeFormats?.'audio/mpeg'}" preload="auto" />
-                                <div class="track-details">
-                                  ${record.raw.classification.scientificName}
-                                </div>
-                            </div>
-                        </div>
-                        <g:if test="${record.raw.occurrence.rights}">
-                            <br/>
-                            <cite>Rights: ${record.raw.occurrence.rights}</cite>
-                        </g:if>
-                        <p>
-                            Please press the play button to hear the sound file
-                            associated with this occurrence record.
-                        </p>
-                    </div>
-                </g:if>
-                <g:if test="${record.raw.lastModifiedTime && record.processed.lastModifiedTime}">
-                    <div class="sidebar" style="margin-top: 10px;font-size: 12px; color: #555;">
-                        <g:set var="rawLastModifiedString" value="${record.raw.lastModifiedTime.substring(0,10)}"/>
-                        <g:set var="processedLastModifiedString" value="${record.processed.lastModifiedTime.substring(0,10)}"/>
-                        <p style="margin-bottom:20px;">
-                            Date loaded: ${rawLastModifiedString}<br/>
-                            Date last processed: ${processedLastModifiedString}<br/>
-                        </p>
-                    </div>
-                </g:if>
+                    <g:render template="recordSidebar" />
                 </div><!-- end div#SidebarBox -->
                 <div id="content2Z" class="span8">
                     <g:render template="recordCore" />
@@ -545,7 +207,7 @@
 
             <g:if test="${hasExpertDistribution}">
                 <div id="hasExpertDistribution"  class="additionalData" style="clear:both;padding-top: 20px;">
-                    <h2>Record outside of expert distribution area (shown in red) <a id="expertReport" href="#expertReport">&nbsp;</a></h2>
+                    <h2><g:message code="show.hasexpertdistribution.title" default="Record outside of expert distribution area (shown in red)"/> <a id="expertReport" href="#expertReport">&nbsp;</a></h2>
                     <script type="text/javascript" src="${request.contextPath}/js/wms2.js"></script>
                     <script type="text/javascript">
                         $(document).ready(function() {
@@ -627,30 +289,30 @@
             <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts"></script>
 
             <div id="userAnnotationsDiv" class="additionalData">
-                <h2>User flagged issues<a id="userAnnotations">&nbsp;</a></h2>
+                <h2><g:message code="show.userannotationsdiv.title" default="User flagged issues"/><a id="userAnnotations">&nbsp;</a></h2>
                 <ul id="userAnnotationsList" style="list-style: none; margin:0;"></ul>
             </div>
 
             <div id="dataQuality" class="additionalData"><a name="dataQualityReport"></a>
-                <h2>Data quality tests</h2>
+                <h2><g:message code="show.dataquality.title" default="Data quality tests"/></h2>
                 <div id="dataQualityModal" class="modal hide fade" tabindex="-1" role="dialog">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">×</button>
-                        <h3>Data Quality Details</h3>
+                        <h3><g:message code="show.dataqualitymodal.title" default="Data Quality Details"/></h3>
                     </div>
                     <div class="modal-body">
-                        <p>loading...</p>
+                        <p><g:message code="show.dataqualitymodal.body" default="loading"/>...</p>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal">Close</button>
+                        <button class="btn" data-dismiss="modal"><g:message code="show.dataqualitymodal.button" default="Close"/></button>
                     </div>
                 </div>
                 <table class="dataQualityResults table-striped table-bordered table-condensed">
                     <%--<caption>Details of tests that have been performed for this record.</caption>--%>
                     <thead>
                         <tr class="sectionName">
-                            <td class="dataQualityTestName">Test name</td>
-                            <td class="dataQualityTestResult">Result</td>
+                            <td class="dataQualityTestName"><g:message code="show.tabledataqualityresultscol01.title" default="Test name"/></td>
+                            <td class="dataQualityTestResult"><g:message code="show.tabledataqualityresultscol02.title" default="Result"/></td>
                             <%--<th class="dataQualityMoreInfo">More information</th>--%>
                         </tr>
                     </thead>
@@ -659,7 +321,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr>
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="icon-thumbs-down icon-red"></i> Failed</td>
+                            <td><i class="icon-thumbs-down icon-red"></i> <g:message code="show.tabledataqualityresults.tr01td02" default="Failed"/></td>
                             <%--<td>More info</td>--%>
                         </tr>
                         </g:each>
@@ -668,7 +330,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr>
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="icon-warning-sign"></i> Warning</td>
+                            <td><i class="icon-warning-sign"></i> <g:message code="show.tabledataqualityresults.tr02td02" default="Warning"/></td>
                             <%--<td>More info</td>--%>
                         </tr>
                         </g:each>
@@ -677,7 +339,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr>
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="icon-thumbs-up icon-green"></i> Passed</td>
+                            <td><i class="icon-thumbs-up icon-green"></i> <g:message code="show.tabledataqualityresults.tr03td02" default="Passed"/></td>
                             <%--<td>More info</td>--%>
                         </tr>
                         </g:each>
@@ -685,7 +347,7 @@
                         <g:if test="${record.systemAssertions.missing}">
                             <tr>
                                 <td colspan="2">
-                                <a href="javascript:void(0)" id="showMissingPropResult">Show/Hide  ${record.systemAssertions.missing.length()} missing properties</a>
+                                <a href="javascript:void(0)" id="showMissingPropResult"><g:message code="show.tabledataqualityresults.tr04td02" default="Show/Hide"/>  ${record.systemAssertions.missing.length()} missing properties</a>
                                 </td>
                             </tr>
                         </g:if>
@@ -693,14 +355,14 @@
                         <g:each in="${testSet}" var="test">
                         <tr class="missingPropResult" style="display:none;">
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class=" icon-question-sign"></i> Missing</td>
+                            <td><i class=" icon-question-sign"></i> <g:message code="show.tabledataqualityresults.tr05td02" default="Missing"/></td>
                         </tr>
                         </g:each>
 
                         <g:if test="${record.systemAssertions.unchecked}">
                             <tr>
                                 <td colspan="2">
-                                <a href="javascript:void(0)" id="showUncheckedTests">Show/Hide  ${record.systemAssertions.unchecked.length()} tests that havent been ran</a>
+                                <a href="javascript:void(0)" id="showUncheckedTests"><g:message code="show.tabledataqualityresults.tr06td02" default="Show/Hide"/>  ${record.systemAssertions.unchecked.length()} tests that havent been ran</a>
                                 </td>
                             </tr>
                         </g:if>
@@ -708,7 +370,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr class="uncheckTestResult" style="display:none;">
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td>Unchecked (lack of data)</td>
+                            <td><g:message code="show.tabledataqualityresults.tr07td02" default="Unchecked (lack of data)"/></td>
                         </tr>
                         </g:each>
 
@@ -719,25 +381,25 @@
             <div id="outlierFeedback">
                 <g:if test="${record.processed.occurrence.outlierForLayers}">
                     <div id="outlierInformation" class="additionalData">
-                        <h2>Outlier information <a id="outlierReport" href="#outlierReport">&nbsp;</a></h2>
+                        <h2><g:message code="show.outlierinformation.title" default="Outlier information"/> <a id="outlierReport" href="#outlierReport">&nbsp;</a></h2>
                         <p>
-                            This record has been detected as an outlier using the
-                            <a href="http://code.google.com/p/ala-dataquality/wiki/DETECTED_OUTLIER_JACKKNIFE">Reverse Jackknife algorithm</a>
-                            for the following layers:</p>
+                            <g:message code="show.outlierinformation.p01" default="This record has been detected as an outlier using the"/>
+                            <a href="http://code.google.com/p/ala-dataquality/wiki/DETECTED_OUTLIER_JACKKNIFE"><g:message code="show.outlierinformation.p.vavigator" default="Reverse Jackknife algorithm"/></a>
+                            <g:message code="show.outlierinformation.p02" default="for the following layers"/>:</p>
                         <ul>
                         <g:each in="${metadataForOutlierLayers}" var="layerMetadata">
                             <li>
                                 <a href="http://spatial.ala.org.au/layers/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
-                                Notes: ${layerMetadata.notes}<br/>
-                                Scale: ${layerMetadata.scale}
+                                <g:message code="show.outlierinformation.each.label01" default="Notes"/>: ${layerMetadata.notes}<br/>
+                                <g:message code="show.outlierinformation.each.label02" default="Scale"/>: ${layerMetadata.scale}
                             </li>
                         </g:each>
                         </ul>
 
-                        <p style="margin-top:20px;">More information on the data quality work being undertaken by the Atlas is available here:
+                        <p style="margin-top:20px;"><g:message code="show.outlierinformation.p.label" default="More information on the data quality work being undertaken by the Atlas is available here"/>:
                             <ul>
                                 <li><a href="http://code.google.com/p/ala-dataquality/wiki/DETECTED_OUTLIER_JACKKNIFE">http://code.google.com/p/ala-dataquality/wiki/DETECTED_OUTLIER_JACKKNIFE</a></li>
-                                <li><a href="https://docs.google.com/open?id=0B7rqu1P0r1N0NGVhZmVhMjItZmZmOS00YmJjLWJjZGQtY2Y0ZjczZmUzZTZl">Notes on Methods for Detecting Spatial Outliers</a></li>
+                                <li><a href="https://docs.google.com/open?id=0B7rqu1P0r1N0NGVhZmVhMjItZmZmOS00YmJjLWJjZGQtY2Y0ZjczZmUzZTZl"><g:message code="show.outlierinformation.p.li02" default="Notes on Methods for Detecting Spatial Outliers"/></a></li>
                             </ul>
                         </p>
                     </div>
@@ -747,18 +409,14 @@
 				<g:if test="${record.processed.occurrence.duplicationStatus}">
 					<div id="inferredOccurrenceDetails">
               		<a href="#inferredOccurrenceDetails" name="inferredOccurrenceDetails" id="inferredOccurrenceDetails" hidden="true"></a>
-              		<h2>Inferred associated occurrence details</h2>
+              		<h2><g:message code="show.inferredoccurrencedetails.title" default="Inferred associated occurrence details"/></h2>
 					<p style="margin-top:5px;">
                         <g:if test="${record.processed.occurrence.duplicationStatus == 'R' }">
-                            This record has been identified as the <em>representative</em> occurrence in a group of associated occurrences.
-                            This mean other records have been detected that seem to relate to this record and this particular record has the most detailed
-                            information on the occurrence.
+                            <g:message code="show.inferredoccurrencedetails.p01" default="This record has been identified as the representative occurrence in a group of associated occurrences."/>
                         </g:if>
-                        <g:else>This record is associated with the <em>representative</em> record.
-                            This mean another record has been detected to be similar to this record, and that the other
-                            record (the representative record) has the most detailed information for the occurrence.
+                        <g:else><g:message code="show.inferredoccurrencedetails.p02" default="This record is associated with the representative record."/>
                         </g:else>
-					    More information about the duplication detection methods and terminology in use is available here:
+                        <g:message code="show.inferredoccurrencedetails.p03" default="More information about the duplication detection methods and terminology in use is available here"/>:
 						<ul>
 							<li>
 							<a href="http://code.google.com/p/ala-dataquality/wiki/INFERRED_DUPLICATE_RECORD">http://code.google.com/p/ala-dataquality/wiki/INFERRED_DUPLICATE_RECORD</a>
@@ -767,7 +425,7 @@
 					</p>
 					<g:if test="${duplicateRecordDetails}">
 						<table class="duplicationTable table-striped table-bordered table-condensed" style="border-bottom:none;">
-							<tr class="sectionName"><td colspan="4">Representative Record</td></tr>
+							<tr class="sectionName"><td colspan="4"><g:message code="show.table01.title" default="Representative Record"/></td></tr>
 							<alatag:occurrenceTableRow
                                     annotate="false"
                                     section="duplicate"
@@ -821,7 +479,7 @@
                             ${duplicateRecordDetails.day}</alatag:occurrenceTableRow>
                             </g:if>
                             <!-- Loop through all the duplicate records -->
-                            <tr class="sectionName"><td colspan="4">Related records</td></tr>
+                            <tr class="sectionName"><td colspan="4"><g:message code="show.table02.title" default="Related records"/></td></tr>
                             <g:each in="${duplicateRecordDetails.duplicates }" var="dup">
                             	<alatag:occurrenceTableRow
                                     annotate="false"
@@ -896,7 +554,7 @@
 
                 <div id="outlierInformation" class="additionalData">
                     <g:if test="${contextualSampleInfo}">
-                    <h3>Additional political boundaries information</h3>
+                    <h3><g:message code="show.outlierinformation.02.title01" default="Additional political boundaries information"/></h3>
                     <table class="layerIntersections table-striped table-bordered table-condensed">
                         <tbody>
                         <g:each in="${contextualSampleInfo}" var="sample" status="vs">
@@ -916,7 +574,7 @@
                     </g:if>
 
                     <g:if test="${environmentalSampleInfo}">
-                    <h3>Environmental sampling for this location</h3>
+                    <h3><g:message code="show.outlierinformation.02.title02" default="Environmental sampling for this location"/></h3>
                     <table class="layerIntersections table-striped table-bordered table-condensed" >
                         <tbody>
                         <g:each in="${environmentalSampleInfo}" var="sample" status="vs">
@@ -941,16 +599,16 @@
             <div id="processedVsRawView" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="processedVsRawViewLabel" aria-hidden="true"><!-- BS modal div -->
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 id="processedVsRawViewLabel"><g:message code="show.comparisonTable.title" default="&quot;Original versus Processed&quot; Comparison Table"/></h3>
+                    <h3 id="processedVsRawViewLabel"><g:message code="show.processedvsrawview.title" default="&quot;Original versus Processed&quot; Comparison Table"/></h3>
                 </div>
                 <div class="modal-body">
                     <table class="table table-bordered table-striped table-condensed">
                         <thead>
                         <tr>
-                            <th style="width:15%;">Group</th>
-                            <th style="width:15%;">Field Name</th>
-                            <th style="width:35%;">Original Value</th>
-                            <th style="width:35%;">Processed Value</th>
+                            <th style="width:15%;"><g:message code="show.processedvsrawview.table.th01" default="Group"/></th>
+                            <th style="width:15%;"><g:message code="show.processedvsrawview.table.th02" default="Field Name"/></th>
+                            <th style="width:35%;"><g:message code="show.processedvsrawview.table.th03" default="Original Value"/></th>
+                            <th style="width:35%;"><g:message code="show.processedvsrawview.table.th04" default="Processed Value"/></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -959,7 +617,7 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;">Close</button>
+                    <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.processedvsrawview.button.close" default="Close"/></button>
                 </div>
             </div>
 
@@ -985,23 +643,23 @@
 
         <ul style="display:none;">
         <li id="userAnnotationTemplate" class="userAnnotationTemplate well">
-           <h3><span class="issue"></span> - flagged by <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h3>
+           <h3><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h3>
            <p class="comment"></p>
            <p class="hide userDisplayName"></p>
            <p class="created"></p>
            <p class="viewMore" style="display:none;">
-               <a class="viewMoreLink" href="#">View more with this annotation</a>
+               <a class="viewMoreLink" href="#"><g:message code="show.userannotationtemplate.p01.navigator" default="View more with this annotation"/></a>
            </p>
            <p class="deleteAnnotation" style="display:none;">
-               <a class="deleteAnnotationButton btn" href="#">Delete this annotation</a>
+               <a class="deleteAnnotationButton btn" href="#"><g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/></a>
            </p>
         </li>
         </ul>
 
         <g:if test="${!record.raw}">
             <div id="headingBar">
-                <h1>Record Not Found</h1>
-                <p>The requested record ID "${uuid}" was not found</p>
+                <h1><g:message code="show.headingbar02.title" default="Record Not Found"/></h1>
+                <p><g:message code="show.headingbar02.p01" default="The requested record ID"/> "${uuid}" <g:message code="show.headingbar02.p02" default="was not found"/></p>
             </div>
         </g:if>
         <g:if test="${record.sounds}">
@@ -1013,7 +671,7 @@
         </g:if>
     </g:if>
     <g:else>
-        <h3>An error occurred <br/>${flash.message}</h3>
+        <h3><g:message code="show.body.error.title" default="An error occurred"/> <br/>${flash.message}</h3>
     </g:else>
 </body>
 </html>

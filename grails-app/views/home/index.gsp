@@ -15,7 +15,7 @@
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="search"/>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
-    <title>Search for records | ${hubDisplayName}</title>
+    <title><g:message code="home.index.title" deafault="Search for records"/> | ${hubDisplayName}</title>
     <r:require modules="jquery"/>
     <r:script>
         $(document).ready(function() {
@@ -58,23 +58,23 @@
 
 <body>
     <div id="headingBar">
-        <h1 style="width:100%;" id="searchHeader"><g:message code="home.searchForRecordsIn" deafault="Search for records in"/> ${raw(hubDisplayName)}</h1>
+        <h1 style="width:100%;" id="searchHeader"><g:message code="home.index.body.title" deafault="Search for records in"/> ${raw(hubDisplayName)}</h1>
     </div>
     <g:if test="${flash.message}">
         <div class="message alert alert-info">
             <button type="button" class="close" onclick="$(this).parent().hide()">×</button>
-            <b>Alert:</b> ${raw(flash.message)}
+            <b><g:message code="home.index.body.alert" deafault="Alert:"/></b> ${raw(flash.message)}
         </div>
     </g:if>
     <div class="row-fluid" id="content">
         <div class="span12">
             <div class="tabbable">
                 <ul class="nav nav-tabs" id="searchTabs">
-                    <li><a id="t1" href="#simpleSearch" data-toggle="tab">Simple search</a></li>
-                    <li><a id="t2" href="#advanceSearch" data-toggle="tab">Advanced search</a></li>
-                    <li><a id="t3" href="#taxaUpload" data-toggle="tab">Batch taxon search</a></li>
-                    <li><a id="t4" href="#catalogUpload" data-toggle="tab">Catalogue number search</a></li>
-                    <li><a id="t5" href="#shapeFileUpload" data-toggle="tab">Shapefile search</a></li>
+                    <li><a id="t1" href="#simpleSearch" data-toggle="tab"><g:message code="home.index.navigator01" deafault="Simple search"/></a></li>
+                    <li><a id="t2" href="#advanceSearch" data-toggle="tab"><g:message code="home.index.navigator02" deafault="Advanced search"/></a></li>
+                    <li><a id="t3" href="#taxaUpload" data-toggle="tab"><g:message code="home.index.navigator03" deafault="Batch taxon search"/></a></li>
+                    <li><a id="t4" href="#catalogUpload" data-toggle="tab"><g:message code="home.index.navigator04" deafault="Catalogue number search"/></a></li>
+                    <li><a id="t5" href="#shapeFileUpload" data-toggle="tab"><g:message code="home.index.navigator05" deafault="Shapefile search"/></a></li>
                 </ul>
             </div>
             <div class="tab-content searchPage">
@@ -84,14 +84,13 @@
                         <div class="controls">
                             <div class="input-append">
                                 <input type="text" name="taxa" id="taxa" class="input-xxlarge">
-                                <button id="locationSearch" type="submit" class="btn"><g:message code="search.simple.button.label" default="Search"/></button>
+                                <button id="locationSearch" type="submit" class="btn"><g:message code="home.index.simsplesearch.button" default="Search"/></button>
                             </div>
                         </div>
                         <div>
                             <br/>
                             <span style="font-size: 12px; color: #444;">
-                                <b>Note:</b> the simple search attempts to match a known <b>species/taxon</b> - by its scientific name or common name.
-                                If there are no name matches, a <b>full text</b> search will be performed on your query
+                                <b><g:message code="home.index.simsplesearch.span" deafault="Note: the simple search attempts to match a known species/taxon - by its scientific name or common name. If there are no name matches, a full text search will be performed on your query"/>
                             </span>
                         </div>
                     </form>
@@ -101,7 +100,7 @@
                 </div><!-- end #advancedSearch div -->
                 <div id="taxaUpload" class="tab-pane">
                     <form name="taxaUploadForm" id="taxaUploadForm" action="${biocacheServiceUrl}/occurrences/batchSearch" method="POST">
-                        <p>Enter a list of taxon names/scientific names, one name per line (common names not currently supported).</p>
+                        <p><g:message code="home.index.taxaupload.des01" deafault="Enter a list of taxon names/scientific names, one name per line (common names not currently supported)."/></p>
                         <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" /><input type="file" /></p>--%>
                         <p><textarea name="queries" id="raw_names" class="span6" rows="15" cols="60"></textarea></p>
                         <p>
@@ -109,12 +108,12 @@
                             <%--&nbsp;OR&nbsp;--%>
                             <input type="hidden" name="redirectBase" value="${serverName}${request.contextPath}/occurrences/search"/>
                             <input type="hidden" name="field" value="raw_name"/>
-                            <input type="submit" name="action" value="Search" class="btn" /></p>
+                            <input type="submit" name="action" value=<g:message code="home.index.taxaupload.button01" deafault="Search"/> class="btn" /></p>
                     </form>
                 </div><!-- end #uploadDiv div -->
                 <div id="catalogUpload" class="tab-pane">
                     <form name="catalogUploadForm" id="catalogUploadForm" action="${biocacheServiceUrl}/occurrences/batchSearch" method="POST">
-                        <p>Enter a list of catalogue numbers (one number per line).</p>
+                        <p><g:message code="home.index.catalogupload.des01" deafault="Enter a list of catalogue numbers (one number per line)."/></p>
                         <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" /><input type="file" /></p>--%>
                         <p><textarea name="queries" id="catalogue_numbers" class="span6" rows="15" cols="60"></textarea></p>
                         <p>
@@ -122,16 +121,15 @@
                             <%--&nbsp;OR&nbsp;--%>
                             <input type="hidden" name="redirectBase" value="${serverName}${request.contextPath}/occurrences/search"/>
                             <input type="hidden" name="field" value="catalogue_number"/>
-                            <input type="submit" name="action" value="Search" class="btn"/></p>
+                            <input type="submit" name="action" value=<g:message code="home.index.catalogupload.button01" deafault="Search"/> class="btn"/></p>
                     </form>
                 </div><!-- end #catalogUploadDiv div -->
                 <div id="shapeFileUpload" class="tab-pane">
                     <form name="shapeUploadForm" id="shapeUploadForm" action="${request.contextPath}/occurrences/shapeUpload" method="POST" enctype="multipart/form-data">
-                        <p>Note: this feature is still experimental. If there are multiple polygons present in the shapefile,
-                            only the first polygon will be used for searching.</p>
-                        <p>Upload a shapefile (*.shp).</p>
+                        <p><g:message code="home.index.shapefileupload.des01" deafault="Note: this feature is still experimental. If there are multiple polygons present in the shapefile, only the first polygon will be used for searching"/>.</p>
+                        <p><g:message code="home.index.shapefileupload.des02" deafault="Upload a shapefile (*.shp)."/></p>
                         <p><input type="file" name="file" class="" /></p>
-                        <p><input type="submit" value="Search" class="btn"/></p>
+                        <p><input type="submit" value=<g:message code="home.index.shapefileupload.button01" deafault="Search"/> class="btn"/></p>
                     </form>
                 </div><!-- end #shapeFileUpload  -->
             </div><!-- end .tab-content -->

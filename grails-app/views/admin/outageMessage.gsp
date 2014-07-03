@@ -11,55 +11,55 @@
 <html>
 <head>
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
-    <title>Admin - Outage banner</title>
+    <title><g:message code="admin.outagem.title" default="Admin - Outage banner"/></title>
 </head>
 <body>
 <div id="breadcrumb">
     <ol class="breadcrumb">
-        <li><a href="${g.createLink(uri:"/")}">Home</a> <span class=" icon icon-arrow-right"></span></li>
-        <li><a href="${g.createLink(controller: 'admin')}">Admin</a> <span class=" icon icon-arrow-right"></span></li>
-        <li class="active">Outage banner</li>
+        <li><a href="${g.createLink(uri:"/")}"><g:message code="admin.outagem.navigator.home" default="Home"/></a> <span class=" icon icon-arrow-right"></span></li>
+        <li><a href="${g.createLink(controller: 'admin')}"><g:message code="admin.outagem.navigator.admin" default="Admin"/></a> <span class=" icon icon-arrow-right"></span></li>
+        <li class="active"><g:message code="admin.outagem.navigator.ob" default="Outage banner"/></li>
     </ol>
 </div>
 <div class="row-fluid">
-    <h1>Admin - Outage Message</h1>
+    <h1><g:message code="admin.outagem.aom.title" default="Admin - Outage Message"/></h1>
 </div>
 <form method="POST" class="form-horizontal">
     <div class="warning">
         <g:if test="${message}">${message}</g:if>
     </div>
     <div class="control-group">
-        <label class="control-label" for="message">Outage Message</label>
+        <label class="control-label" for="message"><g:message code="admin.outagem.form.label01" default="Outage Message"/></label>
         <div class="controls">
             <textarea name="message" id="message" class="span4" rows="4">${outageBanner.message}</textarea>
-            <span class="help-inline">This text will appear on all pages for the<br> period specified in the date fields below</span>
+            <span class="help-inline"><g:message code="admin.outagem.form.span01" default="This text will appear on all pages for the<br> period specified in the date fields below"/></span>
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label" for="startDate">Start Date</label>
+        <label class="control-label" for="startDate"><g:message code="admin.outagem.form.label02" default="Start Date"/></label>
         <div class="controls">
             <input type="text" name="startDate" id="startDate" class="span2" value="${outageBanner.startDate}"/>
-            <span class="help-inline"><code>yyyy-mm-dd</code> format</span>
+            <span class="help-inline"><code><g:message code="admin.outagem.form.span02" default="yyyy-mm-dd"/></code> format</span>
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label" for="endDate">End Date</label>
+        <label class="control-label" for="endDate"><g:message code="admin.outagem.form.label03" default="End Date"/></label>
         <div class="controls">
             <input type="text" name="endDate" id="endDate" class="span2" value="${outageBanner.endDate}"/>
-            <span class="help-inline"><code>yyyy-mm-dd</code> format</span>
+            <span class="help-inline"><code><g:message code="admin.outagem.form.span03" default="yyyy-mm-dd"/></code> format</span>
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label" for="endDate">Display message</label>
+        <label class="control-label" for="endDate"><g:message code="admin.outagem.form.label04" default="Display message"/></label>
         <div class="controls">
             <input type="checkbox"name="showMessage" id="showMessage" class="span2" ${(true && outageBanner.showMessage)?'checked="checked"':''}/>
-            <span class="help-inline">check this to show the message (dates are still required to be valid)</span>
+            <span class="help-inline"><g:message code="admin.outagem.form.span04" default="check this to show the message (dates are still required to be valid)"/></span>
         </div>
     </div>
     <div class="control-group">
         <%--<label class="control-label" for="endDate"></label>--%>
         <div class="controls">
-            <input type="submit" value="Submit" class="btn">
+            <input type="submit" value=<g:message code="admin.outagem.form.submit" default="Submit"/> class="btn">
         </div>
     </div>
 </form>

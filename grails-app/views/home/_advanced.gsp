@@ -2,26 +2,26 @@
 <form name="advancedSearchForm" id="advancedSearchForm" action="${request.contextPath}/advancedSearch" method="POST">
     <input type="text" id="solrQuery" name="q" style="position:absolute;left:-9999px;" value="${params.q}"/>
     <input type="hidden" name="nameType" value="matched_name_children"/>
-    <b>Find records that have</b>
+    <b><g:message code="advancedsearch.title01" deafault="Find records that have"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
         <tbody>
         <tr>
-            <td class="labels">ALL of these words (full text)</td>
+            <td class="labels"><g:message code="advancedsearch.table01col01.title" deafault="ALL of these words (full text)"/></td>
             <td>
                 <input type="text" name="text" id="text" class="dataset" placeholder="" size="80" value="${params.text}"/>
             </td>
         </tr>
         </tbody>
     </table>
-    <b>Find records for ANY of the following taxa (matched/processed taxon concepts)</b>
+    <b><g:message code="advancedsearch.title02" deafault="Find records for ANY of the following taxa (matched/processed taxon concepts)"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
         <tbody>
         <g:each in="${1..4}" var="i">
             <g:set var="lsidParam" value="lsid_${i}"/>
             <tr style="" id="taxon_row_${i}">
-                <td class="labels">Species/Taxon</td>
+                <td class="labels"><g:message code="advancedsearch.table02col01.title" deafault="Species/Taxon"/></td>
                 <td>
                     <input type="text" value="" id="taxa_${i}" name="taxonText" class="name_autocomplete" size="60">
                     <input type="hidden" name="lsid" class="lsidInput" id="taxa_${i}" value=""/>
@@ -30,27 +30,27 @@
         </g:each>
         </tbody>
     </table>
-    <b>Find records that specify the following scientific name (verbatim/unprocessed name)</b>
+    <b><g:message code="advancedsearch.title03" deafault="Find records that specify the following scientific name (verbatim/unprocessed name)"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
         <tbody>
         <tr>
-            <td class="labels">Raw Scientific Name</td>
+            <td class="labels"><g:message code="advancedsearch.table03col01.title" deafault="Raw Scientific Name"/></td>
             <td>
                 <input type="text" name="raw_taxon_name" id="raw_taxon_name" class="dataset" placeholder="" size="60" value=""/>
             </td>
         </tr>
         </tbody>
     </table>
-    <b>Find records from the following species group</b>
+    <b><g:message code="advancedsearch.title04" deafault="Find records from the following species group"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
         <tbody>
         <tr>
-            <td class="labels">Species Group</td>
+            <td class="labels"><g:message code="advancedsearch.table04col01.title" deafault="Species Group"/></td>
             <td>
                 <select class="species_group" name="species_group" id="species_group">
-                    <option value="">-- select a species group --</option>
+                    <option value=""><g:message code="advancedsearch.table04col01.option.label" deafault="-- select a species group --"/></option>
                     <g:each var="group" in="${request.getAttribute(FacetsName.SPECIES_GROUP.fieldname)}">
                         <option value="${group.key}">${group.value}</option>
                     </g:each>
@@ -59,21 +59,21 @@
         </tr>
         </tbody>
     </table>
-    <b>Find records from the following institution or collection</b>
+    <b><g:message code="advancedsearch.title05" deafault="Find records from the following institution or collection"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
         <tbody>
         <tr>
-            <td class="labels">Institution or Collection</td>
+            <td class="labels"><g:message code="advancedsearch.table05col01.title" deafault="Institution or Collection"/></td>
             <td>
                 <select class="institution_uid collection_uid" name="institution_collection" id="institution_collection">
-                    <option value="">-- select an institution or collection --</option>
+                    <option value=""><g:message code="advancedsearch.table05col01.option01.label" deafault="-- select an institution or collection --"/></option>
                     <g:each var="inst" in="${request.getAttribute(FacetsName.INSTITUTION.fieldname)}">
                         <optgroup label="${inst.value}">
-                            <option value="${inst.key}">All records from ${inst.value}</option>
+                            <option value="${inst.key}"><g:message code="advancedsearch.table05col01.option02.label" deafault="All records from"/> ${inst.value}</option>
                             <g:each var="coll" in="${request.getAttribute(FacetsName.COLLECTION.fieldname)}">
                                 <g:if test="${inst.key == 'in13' && StringUtils.startsWith(coll.value, inst.value)}">
-                                    <option value="${coll.key}">${StringUtils.replace(StringUtils.replace(coll.value, inst.value, ""), " - " ,"")} Collection</option>
+                                    <option value="${coll.key}">${StringUtils.replace(StringUtils.replace(coll.value, inst.value, ""), " - " ,"")} <g:message code="advancedsearch.table05col01.option03.label" deafault="Collection"/></option>
                                 </g:if>
                                 <g:elseif test="${inst.key == 'in6' && StringUtils.startsWith(coll.value, 'Australian National')}">
                                     <%-- <option value="${coll.key}">${fn:replace(coll.value,"Australian National ", "")}</option> --%>
@@ -90,15 +90,15 @@
         </tr>
         </tbody>
     </table>
-    <b>Find records from the following regions</b>
+    <b><g:message code="advancedsearch.title06" deafault="Find records from the following regions"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
         <tbody>
         <tr>
-            <td class="labels">Country</td>
+            <td class="labels"><g:message code="advancedsearch.table06col01.title" deafault="Country"/></td>
             <td>
                 <select class="country" name="country" id="country">
-                    <option value="">-- select a country --</option>
+                    <option value=""><g:message code="advancedsearch.table06col01.option.label" deafault="-- select a country --"/></option>
                     <g:each var="country" in="${request.getAttribute(FacetsName.COUNTRIES.fieldname)}">
                         <option value="${country.key}">${country.value}</option>
                     </g:each>
@@ -106,10 +106,10 @@
             </td>
         </tr>
         <tr>
-            <td class="labels">State/Territory</td>
+            <td class="labels"><g:message code="advancedsearch.table06col02.title" deafault="State/Territory"/></td>
             <td>
                 <select class="state" name="state" id="state">
-                    <option value="">-- select a state/territory --</option>
+                    <option value=""><g:message code="advancedsearch.table06col02.option.label" deafault="-- select a state/territory --"/></option>
                     <g:each var="state" in="${request.getAttribute(FacetsName.STATES.fieldname)}">
                         <option value="${state.key}">${state.value}</option>
                     </g:each>
@@ -119,10 +119,10 @@
         <g:set var="autoPlaceholder" value="start typing and select from the autocomplete drop-down list"/>
         <g:if test="${request.getAttribute(FacetsName.IBRA.fieldname) && request.getAttribute(FacetsName.IBRA.fieldname).size() > 1}">
         <tr>
-            <td class="labels"><abbr title="Interim Biogeographic Regionalisation of Australia">IBRA</abbr> region</td>
+            <td class="labels"><abbr title="Interim Biogeographic Regionalisation of Australia">IBRA</abbr> <g:message code="advancedsearch.table06col03.title" deafault="region"/></td>
             <td>
                 <select class="biogeographic_region" name="ibra" id="ibra">
-                    <option value="">-- select an IBRA region --</option>
+                    <option value=""><g:message code="advancedsearch.table06col03.option.label" deafault="-- select an IBRA region --"/></option>
                     <g:each var="region" in="${request.getAttribute(FacetsName.IBRA.fieldname)}">
                         <option value="${region.key}">${region.value}</option>
                     </g:each>
@@ -132,10 +132,10 @@
         </g:if>
         <g:if test="${request.getAttribute(FacetsName.IMCRA.fieldname) && request.getAttribute(FacetsName.IMCRA.fieldname).size() > 1}">
         <tr>
-            <td class="labels"><abbr title="Integrated Marine and Coastal Regionalisation of Australia">IMCRA</abbr> region</td>
+            <td class="labels"><abbr title="Integrated Marine and Coastal Regionalisation of Australia">IMCRA</abbr> <g:message code="advancedsearch.table06col04.title" deafault="region"/></td>
             <td>
                 <select class="biogeographic_region" name="imcra" id="imcra">
-                    <option value="">-- select an IMCRA region --</option>
+                    <option value=""><g:message code="advancedsearch.table06col04.option.label" deafault="-- select an IMCRA region --"/></option>
                     <g:each var="region" in="${request.getAttribute(FacetsName.IMCRA.fieldname)}">
                         <option value="${region.key}">${region.value}</option>
                     </g:each>
@@ -145,10 +145,10 @@
         </g:if>
         <g:if test="${request.getAttribute(FacetsName.LGA.fieldname) && request.getAttribute(FacetsName.LGA.fieldname).size() > 1}">
         <tr>
-            <td class="labels">Local Govt. Area</td>
+            <td class="labels"><g:message code="advancedsearch.table06col05.title" deafault="Local Govt. Area"/></td>
             <td>
                 <select class="lga" name="cl959" id="cl959">
-                    <option value="">-- select local government area--</option>
+                    <option value=""><g:message code="advancedsearch.table06col05.option.label" deafault="-- select local government area--"/></option>
                     <g:each var="region" in="${request.getAttribute(FacetsName.LGA.fieldname)}">
                         <option value="${region.key}">${region.value}</option>
                     </g:each>
@@ -159,15 +159,15 @@
         </tbody>
     </table>
     <g:if test="${request.getAttribute(FacetsName.TYPE_STATUS.fieldname) && request.getAttribute(FacetsName.TYPE_STATUS.fieldname).size() > 1}">
-        <b>Find records from the following type status</b>
+        <b><g:message code="advancedsearch.title07" deafault="Find records from the following type status"/></b>
         <table border="0" width="100" cellspacing="2" class="compact">
             <thead/>
             <tbody>
             <tr>
-                <td class="labels">Type Status</td>
+                <td class="labels"><g:message code="advancedsearch.table07col01.title" deafault="Type Status"/></td>
                 <td>
                     <select class="type_status" name="type_status" id="type_status">
-                        <option value="">-- select a type status --</option>
+                        <option value=""><g:message code="advancedsearch.table07col01.option.label" deafault="-- select a type status --"/></option>
                         <g:each var="type" in="${request.getAttribute(FacetsName.TYPE_STATUS.fieldname)}">
                             <option value="${type.key}">${type.value}</option>
                         </g:each>
@@ -178,15 +178,15 @@
         </table>
     </g:if>
     <g:if test="${request.getAttribute(FacetsName.BASIS_OF_RECORD.fieldname) && request.getAttribute(FacetsName.BASIS_OF_RECORD.fieldname).size() > 1}">
-        <b>Find records from the following basis of record (record type)</b>
+        <b><g:message code="advancedsearch.title08" deafault="Find records from the following basis of record (record type)"/></b>
         <table border="0" width="100" cellspacing="2" class="compact">
             <thead/>
             <tbody>
             <tr>
-                <td class="labels">Basis of record</td>
+                <td class="labels"><g:message code="advancedsearch.table08col01.title" deafault="Basis of record"/></td>
                 <td>
                     <select class="basis_of_record" name="basis_of_record" id="basis_of_record">
-                        <option value="">-- select a basis of record --</option>
+                        <option value=""><g:message code="advancedsearch.table08col01.option.label" deafault="-- select a basis of record --"/></option>
                         <g:each var="bor" in="${request.getAttribute(FacetsName.BASIS_OF_RECORD.fieldname)}">
                             <option value="${bor.key}"><g:message code="${bor.value}"/></option>
                         </g:each>
@@ -196,18 +196,18 @@
             </tbody>
         </table>
     </g:if>
-    <b>Find records with the following dataset fields</b>
+    <b><g:message code="advancedsearch.title09" deafault="Find records with the following dataset fields"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
         <tbody>
         <tr>
-            <td class="labels">Catalogue Number</td>
+            <td class="labels"><g:message code="advancedsearch.table09col01.title" deafault="Catalogue Number"/></td>
             <td>
                 <input type="text" name="catalogue_number" id="catalogue_number" class="dataset" placeholder="" value=""/>
             </td>
         </tr>
         <tr>
-            <td class="labels">Record Number</td>
+            <td class="labels"><g:message code="advancedsearch.table09col02.title" deafault="Record Number"/></td>
             <td>
                 <input type="text" name="record_number" id="record_number" class="dataset" placeholder="" value=""/>
             </td>
@@ -220,27 +220,27 @@
         </tr> --%>
         </tbody>
     </table>
-    <b>Find records within the following date range</b>
+    <b><g:message code="advancedsearch.title10" deafault="Find records within the following date range"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
         <tbody>
         <tr>
-            <td class="labels">Begin Date</td>
+            <td class="labels"><g:message code="advancedsearch.table10col01.title" deafault="Begin Date"/></td>
             <td>
                 <input type="text" name="start_date" id="startDate" class="occurrence_date" placeholder="" value=""/>
-                (YYYY-MM-DD) leave blank for earliest record date
+                <g:message code="advancedsearch.table10col01.des" deafault="(YYYY-MM-DD) leave blank for earliest record date"/>
             </td>
         </tr>
         <tr>
-            <td class="labels">End Date</td>
+            <td class="labels"><g:message code="advancedsearch.table10col02.title" deafault="End Date"/></td>
             <td>
                 <input type="text" name="end_date" id="endDate" class="occurrence_date" placeholder="" value=""/>
-                (YYYY-MM-DD) leave blank for most recent record date
+                <g:message code="advancedsearch.table10col02.des" deafault="(YYYY-MM-DD) leave blank for most recent record date"/>
             </td>
         </tr>
         </tbody>
     </table>
-    <input type="submit" value="Search" class="btn btn-primary" />
+    <input type="submit" value=<g:message code="advancedsearch.button.submit" deafault="Search"/> class="btn btn-primary" />
     &nbsp;&nbsp;
     <input type="reset" value="Clear all" id="clearAll" class="btn" onclick="$('input#solrQuery').val(''); $('input.clear_taxon').click(); return true;"/>
 </form>

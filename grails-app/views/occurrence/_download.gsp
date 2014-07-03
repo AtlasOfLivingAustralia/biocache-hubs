@@ -7,15 +7,15 @@
 <div id="download" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="downloadsLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="downloadsLabel">Downloads</h3>
+        <h3 id="downloadsLabel"><g:message code="download.download.title" default="Downloads"/></h3>
     </div>
     <div class="modal-body">
         <p id="termsOfUseDownload">
-            By downloading this content you are agreeing to use it in accordance with the Atlas of Living Australia
-            <a href="http://www.ala.org.au/about/terms-of-use/#TOUusingcontent">Terms of Use</a> and any Data Provider
-        Terms associated with the data download.
+            <g:message code="download.termsofusedownload.01" default="By downloading this content you are agreeing to use it in accordance with the Atlas of Living Australia"/>
+            <a href="http://www.ala.org.au/about/terms-of-use/#TOUusingcontent"><g:message code="download.termsofusedownload.02" default="Terms of Use"/></a>
+            <g:message code="download.termsofusedownload.03" default="and any Data Provider Terms associated with the data download."/>
             <br/><br/>
-            Please provide the following details before downloading (* required):
+            <g:message code="download.termsofusedownload.04" default="Please provide the following details before downloading (* required)"/>:
         </p>
         <form id="downloadForm">
             <input type="hidden" name="searchParams" id="searchParams" value="${sr?.urlParameters}"/>
@@ -34,15 +34,15 @@
             <input type="hidden" name="sourceTypeId" id="sourceTypeId" value="${alatag.getSourceId()}"/>
 
             <fieldset>
-                <div><label for="email">Email</label>
+                <div><label for="email"><g:message code="download.downloadform.label01" default="Email"/></label>
                     <input type="text" name="email" id="email" value="${request.remoteUser}" size="30"  />
                 </div>
-                <div><label for="filename">Filename</label>
+                <div><label for="filename"><g:message code="download.downloadform.label02" default="Filename"/></label>
                     <input type="text" name="filename" id="filename" value="data" size="30"  />
                 </div>
-                <div><label for="reasonTypeId" style="vertical-align: top">Download reason *</label>
+                <div><label for="reasonTypeId" style="vertical-align: top"><g:message code="download.downloadform.label03" default="Download reason"/> *</label>
                     <select name="reasonTypeId" id="reasonTypeId">
-                        <option value="">-- select a reason --</option>
+                        <option value="">-- <g:message code="download.downloadformreasontypeid.option" default="select a reason"/> --</option>
                         <g:each var="it" in="${alatag.getLoggerReasons()}">
                             <option value="${it.id}">${it.name}</option>
                         </g:each>
@@ -50,23 +50,23 @@
                 </div>
 
                 <div>
-                    <label for="filename" style="float: left;">Download type</label>
+                    <label for="filename" style="float: left;"><g:message code="download.downloadform.label04" default="Download type"/></label>
                     <div style="display: inline-block; width: 55%; float: left; padding-left: 5px;">
-                        <input type="radio" name="downloadType" value="fast" class="tooltips" title="Download the occurrence records" checked="checked"/>&nbsp;All Records<br/>
+                        <input type="radio" name="downloadType" value="fast" class="tooltips" title="Download the occurrence records" checked="checked"/>&nbsp;<g:message code="download.downloadform.radio01" default="All Records"/><br/>
                         <%--<input type="radio" name="downloadType" value="detailed" class="tooltips" title="Slower download but all fields are included" checked="checked"/>&nbsp;All Records (detailed)<br/>--%>
-                        <input type="radio" name="downloadType" value="checklist"  class="tooltips" title="Lists all species from the current search results"/>&nbsp;Species Checklist<br/>
+                        <input type="radio" name="downloadType" value="checklist"  class="tooltips" title="Lists all species from the current search results"/>&nbsp;<g:message code="download.downloadform.radio02" default="Species Checklist"/><br/>
                         <g:if test="${skin != 'avh'}">
-                            <input type="radio" name="downloadType" value="fieldGuide" class="tooltips" title="PDF file listing species with images and distribution maps"/>&nbsp;Species Field Guide
+                            <input type="radio" name="downloadType" value="fieldGuide" class="tooltips" title="PDF file listing species with images and distribution maps"/>&nbsp;<g:message code="download.downloadform.radio03" default="Species Field Guide"/>
                         </g:if>
                     </div>
                 </div>
 
                 <div style="clear: both; text-align: center;">
-                    <br/><input type="submit" value="Start Download" id="downloadStart" class="btn tooltips"/>
+                    <br/><input type="submit" value="<g:message code="download.downloadform.button.submit" default="Start Download"/>" id="downloadStart" class="btn tooltips"/>
                 </div>
 
                 <div style="margin-top:10px;">
-                    <strong>Note</strong>: The field guide may take several minutes to prepare and download.
+                    <strong><g:message code="download.note.01" default="Note"/></strong>: <g:message code="download.note.02" default="The field guide may take several minutes to prepare and download"/>.
                 </div>
                 <div id="statusMsg" style="text-align: center; font-weight: bold; "></div>
             </fieldset>
@@ -164,6 +164,6 @@
         </script>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><g:message code="download.button.close" default="Close"/></button>
     </div>
 </div>

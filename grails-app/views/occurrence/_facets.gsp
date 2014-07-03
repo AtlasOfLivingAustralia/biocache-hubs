@@ -24,7 +24,7 @@
                         </g:each>
                         <g:if test="${sr.activeFacetMap?.size() > 1}">
                             <li><a href="#" class="activeFilter" data-facet="all" title="Click to clear all filters">
-                                <span class="closeX" style="margin-left:7px;">&gt;&nbsp;</span>Clear all</a>
+                                <span class="closeX" style="margin-left:7px;">&gt;&nbsp;</span><g:message code="facets.currentfilter.link" default="Clear all"/></a>
                             </li>
                         </g:if>
                     </ul>
@@ -53,7 +53,7 @@
                             <g:if test="${facetResult.fieldResult.length() > 0}">
                                 <div class="showHide">
                                     <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-displayname="${fieldDisplayName}"
-                                       title="See more options or refine with multiple values"><i class="icon-hand-right"></i> choose more...</a>
+                                       title="See more options or refine with multiple values"><i class="icon-hand-right"></i> <g:message code="facets.groupdynamicfacets.link" default="choose more"/>...</a>
                                 </div>
                             </g:if>
                         </g:if>
@@ -82,7 +82,7 @@
                         <g:if test="${facetResult.fieldResult.length() > 0}">
                             <div class="showHide">
                                 <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-displayname="${fieldDisplayName}"
-                                   title="See more options or refine with multiple values"><i class="icon-hand-right"></i> choose more...</a>
+                                   title="See more options or refine with multiple values"><i class="icon-hand-right"></i> <g:message code="facets.facetfromgroup.link" default="choose more"/>...</a>
                             </div>
                         </g:if>
                     </g:if>
@@ -96,7 +96,7 @@
 <div id="multipleFacets" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="multipleFacetsLabel" aria-hidden="true"><!-- BS modal div -->
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="multipleFacetsLabel">Refine your search</h3>
+        <h3 id="multipleFacetsLabel"><g:message code="facets.multiplefacets.title" default="Refine your search"/></h3>
     </div>
     <div class="modal-body">
         <div id="dynamic" class="tableContainer">
@@ -106,7 +106,7 @@
                         <tr class="tableHead">
                             <th>&nbsp;</th>
                             <th id="indexCol" width="80%"><a href="#index" class="fsort" data-sort="index" data-foffset="0"></a></th>
-                            <th style="border-right-style: none;text-align: right;"><a href="#count" class="fsort" data-sort="count" data-foffset="0" title="Sort by record count">Count</a></th>
+                            <th style="border-right-style: none;text-align: right;"><a href="#count" class="fsort" data-sort="count" data-foffset="0" title="Sort by record count"><g:message code="facets.multiplefacets.tableth01" default="Count"/></a></th>
                         </tr>
                     </thead>
                     <tbody class="scrollContent">
@@ -116,7 +116,7 @@
                             <td style="text-align: right; border-right-style: none;"></td>
                         </tr>
                         <tr id="spinnerRow">
-                            <td colspan="3" style="text-align: center;">loading data... <g:img dir="images" file="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
+                            <td colspan="3" style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <g:img dir="images" file="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
                         </tr>
                     </tbody>
                 </table>
@@ -132,7 +132,7 @@
             <ul class="dropdown-menu">
                 <!-- dropdown menu links -->
                 <li>
-                    <a href="#" class="wildcard" id="includeAll">INCLUDE all values (wildcard include)</a>
+                    <a href="#" class="wildcard" id="includeAll"><g:message code="facets.submitfacets.li01" default="INCLUDE all values (wildcard include)"/></a>
                 </li>
             </ul>
         </div>
@@ -145,12 +145,12 @@
             <ul class="dropdown-menu">
                 <!-- dropdown menu links -->
                 <li>
-                    <a href="#" class="wildcard" id="excludeAll">EXCLUDE all values (wildcard exclude)</a>
+                    <a href="#" class="wildcard" id="excludeAll"><g:message code="facets.submitfacets.li02" default="EXCLUDE all values (wildcard exclude)"/></a>
                 </li>
             </ul>
         </div>
         &nbsp;
-        <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;">Close</button>
+        <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="facets.submitfacets.button" default="Close"/></button>
     </div>
 </div>
 <script type="text/javascript">
@@ -163,6 +163,6 @@
     <g:set var="endTime" value="${System.currentTimeMillis()}"/>
     ${alatag.logMsg(msg:"End of facets.gsp - " + endTime + " => " + (endTime - startTime))}
     <div style="color:#ddd;">
-        facets render time = ${(endTime - startTime)} ms
+        <g:message code="facets.endtime.l" default="facets render time"/> = ${(endTime - startTime)} <g:message code="facets.endtime.r" default="ms"/>
     </div>
 </g:if>
