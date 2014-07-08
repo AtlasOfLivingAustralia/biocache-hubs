@@ -88,6 +88,7 @@ modules = {
     }
 
     moment {
+        defaultBundle 'main-extras'
         resource url:[dir:'js', file:'moment.min.js', plugin:'biocache-hubs']
     }
 
