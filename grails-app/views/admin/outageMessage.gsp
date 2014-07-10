@@ -32,7 +32,7 @@
         <label class="control-label" for="message"><g:message code="admin.outagem.form.label01" default="Outage Message"/></label>
         <div class="controls">
             <textarea name="message" id="message" class="span4" rows="4">${outageBanner.message}</textarea>
-            <span class="help-inline"><g:message code="admin.outagem.form.span01" default="This text will appear on all pages for the<br> period specified in the date fields below"/></span>
+            <span class="help-inline"><g:message code="admin.outagem.form.span01" default="This text will appear on all pages for the period specified in the date fields below"/></span>
         </div>
     </div>
     <div class="control-group">
