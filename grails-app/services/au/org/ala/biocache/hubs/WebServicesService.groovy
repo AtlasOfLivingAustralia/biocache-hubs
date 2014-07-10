@@ -28,7 +28,6 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    @Cacheable('longTermCache')
     def JSONObject cachedFullTextSearch(SpatialSearchRequestParams requestParams) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
         getJsonElements(url)
@@ -286,7 +285,6 @@ class WebServicesService {
      * @return
      * @throws Exception
      */
-    @Cacheable('longTermCache')
     private Long getImageSizeInBytes(String imageURL) throws Exception {
         // encode the path part of the URI - taken from http://stackoverflow.com/a/8962869/249327
         Long imageFileSize = 0l
@@ -393,7 +391,6 @@ class WebServicesService {
             conn.setDoOutput(true)
             conn.setRequestProperty("Content-Type", "application/json;charset=${charEncoding}");
 //            conn.setRequestProperty("Authorization", grailsApplication.config.api_key);
-//
 //            def user = userService.getUser()
 //            if (user) {
 //                conn.setRequestProperty(grailsApplication.config.app.http.header.userId, user.userId) // used by ecodata
