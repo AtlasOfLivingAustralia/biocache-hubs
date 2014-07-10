@@ -18,7 +18,7 @@ import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "0.32"
+    def version = "0.33"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging
@@ -73,12 +73,6 @@ the ALA biocache-service app (no local DB is required for this app).
                     overflowToDisk false
                     maxElementsInMemory 20000
                     timeToLiveSeconds 3600
-                }
-                cache {
-                    name 'biocacheCache'
-                    timeToLiveSeconds (60)
-                    maxElementsInMemory 20000
-                    overflowToDisk true
                 }
                 cache {
                     name 'collectoryCache'

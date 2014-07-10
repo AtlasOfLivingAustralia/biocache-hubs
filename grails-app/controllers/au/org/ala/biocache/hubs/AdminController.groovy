@@ -66,16 +66,10 @@ class AdminController {
 
     private String doClearAllCaches() {
         def message = "Clearing all caches...\n"
-        message += doClearBiocacheCache()
         message += doClearCollectoryCache()
         message += doClearLongTermCache()
         message += doClearFacetsCache()
         message
-    }
-
-    def clearBiocacheCache() {
-        flash.message = doClearBiocacheCache()
-        redirect(action:'index')
     }
 
     def clearCollectoryCache() {
@@ -91,11 +85,6 @@ class AdminController {
     def clearFacetsCache() {
         flash.message = doClearFacetsCache()
         redirect(action:'index')
-    }
-
-    @CacheEvict(value='biocacheCache', allEntries=true)
-    def doClearBiocacheCache() {
-        "biocacheCache cache cleared\n"
     }
 
     @CacheEvict(value='collectoryCache', allEntries=true)

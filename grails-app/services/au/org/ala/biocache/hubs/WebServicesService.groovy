@@ -23,7 +23,6 @@ class WebServicesService {
     public static final String CONTEXTUAL = "Contextual"
     def grailsApplication, facetsCacheService
 
-    //@Cacheable('biocacheCache')
     def JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
         getJsonElements(url)
@@ -35,7 +34,6 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    //@Cacheable('biocacheCache')
     def JSONObject getRecord(String id, Boolean hasClubView) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrence/${id.encodeAsURL()}"
         if (hasClubView) {
@@ -44,13 +42,11 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    //@Cacheable('biocacheCache')
     def JSONObject getCompareRecord(String id) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrence/compare?uuid=${id.encodeAsURL()}"
         getJsonElements(url)
     }
 
-    //@Cacheable('biocacheCache')
     def JSONArray getMapLegend(String queryString) {
         def url = "${grailsApplication.config.biocache.baseUrl}/webportal/legend?${queryString}"
         JSONArray json = getJsonElements(url)
@@ -77,13 +73,11 @@ class WebServicesService {
         json
     }
 
-    //@Cacheable('biocacheCache')
     def JSONArray getUserAssertions(String id) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/${id.encodeAsURL()}/assertions"
         getJsonElements(url)
     }
 
-    //@Cacheable('biocacheCache')
     def JSONArray getQueryAssertions(String id) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/${id.encodeAsURL()}/assertionQueries"
         getJsonElements(url)

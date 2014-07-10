@@ -57,7 +57,6 @@
     <div class="offset1 span10 ">
         <div class="btn-group">
             <a href="${g.createLink(action:'clearAllCaches')}" class="btn btn-primary ">Clear all caches</a>
-            <a href="${g.createLink(action:'clearBiocacheCache')}" class="btn">Clear biocache cache</a>
             <a href="${g.createLink(action:'clearCollectoryCache')}" class="btn">Clear collectory cache</a>
             <a href="${g.createLink(action:'clearFacetsCache')}" class="btn">Clear facets cache</a>
             <a href="${g.createLink(action:'clearLongTermCache')}" class="btn">Clear long term cache</a>
