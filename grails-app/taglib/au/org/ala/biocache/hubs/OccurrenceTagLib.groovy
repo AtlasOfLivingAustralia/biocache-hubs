@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.time.DateUtils
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.web.servlet.support.RequestContextUtils
+import grails.util.Environment
 
 import java.text.SimpleDateFormat
 
@@ -692,16 +693,17 @@ class OccurrenceTagLib {
      * <meta name="svn.revision" content="${g.meta(name:'svn.revision')}"/>
      * etc.
      *
-     * TODO: Fix to include meta properties from build-info plugin.
-     *
-     * @see _Events.groovy#eventCompileStart
+     * Updated to use properties provided by build-info plugin
      */
     def addApplicationMetaTags = { attrs ->
         // def metaList = ['svn.revision', 'svn.url', 'java.version', 'java.name', 'build.hostname', 'app.version', 'app.build']
-        def metaList = []
+        def metaList = ['app.version', 'app.grails.version', 'build.date', 'scm.version', 'environment.BUILD_NUMBER', 'environment.BUILD_ID', 'environment.BUILD_TAG', 'environment.GIT_BRANCH', 'environment.GIT_COMMIT']
         def mb = new MarkupBuilder(out)
+
+        mb.meta(name:'grails.env', content: "${Environment.current}")
         metaList.each {
             mb.meta(name:it, content: g.meta(name:it))
         }
+        mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
     }
 }
