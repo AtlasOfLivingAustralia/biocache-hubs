@@ -54,7 +54,7 @@ the ALA biocache-service app (no local DB is required for this app).
     def issueManagement = [ system: "Google Code", url: "https://code.google.com/p/ala/issues/list" ]
 
     // Online location of the plugin's browseable source code.
-    def scm = [ url: "http://ala-hubs.googlecode.com/svn/trunk/biocache-hubs" ]
+    def scm = [ url: "https://github.com/AtlasOfLivingAustralia/biocache-hubs" ]
 
     def loadBefore = ['alaWebTheme']
 
