@@ -47,7 +47,7 @@ grails.project.dependency.resolution = {
         mavenRepo ("http://maven.ala.org.au/repository") {
             updatePolicy 'always'
         }
-        mavenRepo "http://maven.tmatesoft.com/content/repositories/releases/"
+        //mavenRepo "http://maven.tmatesoft.com/content/repositories/releases/"
     }
 
     dependencies {
@@ -57,39 +57,24 @@ grails.project.dependency.resolution = {
         //runtime("au.org.ala:biocache-service:1.0-SNAPSHOT") {
         //    excludes "icu4j","servlet-api","spring-core","spring-context","spring-context-support","spring-beans","spring-web","spring-mvc"
         //}
-        compile "org.tmatesoft.svnkit:svnkit:1.8.5"
+        //compile "org.tmatesoft.svnkit:svnkit:1.8.5"
         runtime "commons-httpclient:commons-httpclient:3.1"
         runtime "commons-lang:commons-lang:2.6"
         runtime "net.sf.supercsv:super-csv:2.1.0"
     }
 
     plugins {
-        // plugins for the build system only
         build(  ":tomcat:7.0.50",
                 ":release:3.0.1",
                 ":rest-client-builder:1.0.3") {
             export = false
         }
-
-        // plugins for the compile step
-        //compile ":scaffolding:2.0.1"
         compile ':cache:1.1.1'
         compile ":cache-ehcache:1.0.0"
         compile ":rest:0.8"
-        //compile ":svn:1.0.2"
-        //compile ":ajax-proxy:0.1.1"
-
-        // plugins needed at runtime but not for compilation
-        //runtime ":hibernate:3.6.10.7" // or ":hibernate4:4.1.11.6"
-        //runtime ":database-migration:1.3.8"
-        //runtime ":jquery:1.10.2.2"
+        compile ":build-info:1.2.6"
         runtime ":jquery:1.8.3"
         runtime ":resources:1.2.1"
-        // Uncomment these (or add new ones) to enable additional resources capabilities
-        //runtime ":zipped-resources:1.0.1"
-        //runtime ":cached-resources:1.1"
-        //runtime ":yui-minify-resources:0.1.5"
 	    runtime ":release:3.0.1"
-        //compile ":ala-web-theme:0.2-SNAPSHOT"
     }
 }
