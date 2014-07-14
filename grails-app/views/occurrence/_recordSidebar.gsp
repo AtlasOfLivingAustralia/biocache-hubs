@@ -232,7 +232,7 @@
                         <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.occurrence.rightsholder}</cite><br/>
                     </g:if>
                     <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
-                        <a href="${grailsApplication.config.images.images.metadataUrl}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
+                        <a href="${grailsApplication.config.images.metadataUrl}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
                     </g:if>
                     <g:else>
                         <a href="${image.alternativeFormats.imageUrl}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator02" default="Original image"/></a>
