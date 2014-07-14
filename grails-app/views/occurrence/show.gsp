@@ -11,7 +11,6 @@
 <g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseUrl}"/>
 <g:set var="collectionsWebappContext" value="${grailsApplication.config.collections.baseUrl}"/>
 <g:set var="useAla" value="${grailsApplication.config.skin.useAlaBie?.toBoolean() ? 'true' : 'false'}"/>
-<g:set var="useImageService" value="${grailsApplication.config.skin.useAlaImageService?.toBoolean()} "/>
 <g:set var="taxaLinks" value="${grailsApplication.config.skin.taxaLinks}"/>
 <g:set var="dwcExcludeFields" value="${grailsApplication.config.dwc.exclude}"/>
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>

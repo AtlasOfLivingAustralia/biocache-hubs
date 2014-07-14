@@ -18,7 +18,7 @@ import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "0.36"
+    def version = "0.37"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging
@@ -26,13 +26,12 @@ class BiocacheHubsGrailsPlugin {
             "grails-app/views/error.gsp"
     ]
 
-    // TODO Fill in these fields
     def title = "Biocache Hubs Plugin" // Headline display name of the plugin
     def author = "Nick dos Remedios"
     def authorEmail = "nick.dosremedios@csiro.au"
     def description = '''\
-A client web application for searching and displaying biodiversity data from the
-Atlas of Living Australia (ALA). Data access is via JSON REST web services from
+A client web application for searching and displaying biodiversity data from biocache web services.
+Data access is via JSON REST web services from
 the ALA biocache-service app (no local DB is required for this app).
 '''
 
@@ -48,7 +47,10 @@ the ALA biocache-service app (no local DB is required for this app).
     def organization = [ name: "Atlas of Living Australia", url: "http://www.ala.org.au/" ]
 
     // Any additional developers beyond the author specified above.
-    def developers = [ [ name: "Dave Martin", email: "david.martin@csiro.au" ]]
+    def developers = [
+            [ name: "Dave Martin", email: "david.martin@csiro.au" ],
+            [ name: "Dave Baird", email: "david.baird@csiro.au" ]
+    ]
 
     // Location of the plugin's issue tracker.
     def issueManagement = [ system: "Google Code", url: "https://code.google.com/p/ala/issues/list" ]
@@ -108,26 +110,17 @@ the ALA biocache-service app (no local DB is required for this app).
     }
 
     def doWithDynamicMethods = { ctx ->
-        // TODO Implement registering dynamic methods to classes (optional)
     }
 
     def doWithApplicationContext = { ctx ->
-        // TODO Implement post initialization spring config (optional)
     }
 
     def onChange = { event ->
-        // TODO Implement code that is executed when any artefact that this plugin is
-        // watching is modified and reloaded. The event contains: event.source,
-        // event.application, event.manager, event.ctx, and event.plugin.
     }
 
     def onConfigChange = { event ->
-        //this.mergeConfig(application)
-        // TODO Implement code that is executed when the project configuration changes.
-        // The event is the same as for 'onChange'.
     }
 
     def onShutdown = { event ->
-        // TODO Implement code that is executed when the application shuts down (optional)
     }
 }

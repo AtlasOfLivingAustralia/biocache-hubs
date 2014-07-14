@@ -51,7 +51,10 @@ biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
 collections.baseUrl = "http://collections.ala.org.au"
 
-images.baseUrl="http://images.ala.org.au"
+// images
+images.baseUrl = "http://images.ala.org.au"
+images.viewerUrl = "http://images.ala.org.au/image/viewer?imageId="
+images.metadataUrl = "http://images.ala.org.au/image/details?imageId="
 
 // For sandbox environment
 //spatial.params = "&dynamic=true&ws=http%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=http%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"

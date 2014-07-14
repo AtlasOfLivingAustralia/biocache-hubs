@@ -47,7 +47,7 @@ class WebServicesService {
     }
 
     def JSONArray getMapLegend(String queryString) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/webportal/legend?${queryString}"
+        def url = "${grailsApplication.config.biocache.baseUrl}/mapping/legend?${queryString}"
         JSONArray json = getJsonElements(url)
         def facetName
         Map facetLabelsMap = [:]
@@ -158,7 +158,7 @@ class WebServicesService {
     @Cacheable('longTermCache')
     def Map getLayersMetaData() {
         Map layersMetaMap = [:]
-        def url = "${grailsApplication.config.spatial.baseUrl}/layers.json"
+        def url = "${grailsApplication.config.spatial.baseUrl}/ws/layers"
         def jsonArray = getJsonElements(url)
 
         jsonArray.each {
