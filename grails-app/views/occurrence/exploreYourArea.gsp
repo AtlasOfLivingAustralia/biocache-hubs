@@ -33,8 +33,8 @@
         // Global variables for yourAreaMap.js
         var EYA_CONF = {
             contextPath: "${request.contextPath}",
-            imagesUrlPrefix: "${r.resource(dir:'images',file:'', plugin:'biocache-hubs').replaceFirst(/\?.*$/, '')}",
             biocacheServiceUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}",
+            imagesUrlPrefix: "${request.contextPath}/static/js/eya-images",
             zoom: ${zoom},
             radius: ${radius},
             speciesPageUrl: "${speciesPageUrl}",
