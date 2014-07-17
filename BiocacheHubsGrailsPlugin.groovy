@@ -38,8 +38,6 @@ the ALA biocache-service app (no local DB is required for this app).
     // URL to the plugin's documentation
     def documentation = "http://code.google.com/p/ala-hubs/wiki/BiocacheHubsPlugin"
 
-    // Extra (optional) plugin metadata
-
     // License: one of 'APACHE', 'GPL2', 'GPL3'
     def license = "MPL2"
 
