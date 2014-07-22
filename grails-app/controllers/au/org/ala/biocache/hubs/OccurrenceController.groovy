@@ -47,7 +47,7 @@ class OccurrenceController {
         }
 
         if (!params.sort && !params.dir) {
-            requestParams.sort = "first_loaded_date"x
+            requestParams.sort = "first_loaded_date"
             requestParams.dir = "desc"
         }
 
