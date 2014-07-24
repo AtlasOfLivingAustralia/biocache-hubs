@@ -264,7 +264,16 @@ a.colour-by-legend-toggle {
         defaultLatitude : "${grailsApplication.config.map.defaultLatitude?:'-23.6'}",
         defaultLongitude : "${grailsApplication.config.map.defaultLongitude?:'133.6'}",
         defaultZoom : "${grailsApplication.config.map.defaultZoom?:'4'}",
-        overlays : {},
+        overlays : {
+
+            //example WMS layer
+//            "overlay-test" : L.tileLayer.wms("http://ec2-54-81-188-102.compute-1.amazonaws.com/geoserver/ALA/wms", {
+//                    layers: 'ALA:ucstodas',
+//                    format: 'image/png',
+//                    transparent: true,
+//                    attribution: "Test layer"
+//                })
+        },
         baseLayers : {
             "Minimal" : defaultBaseLayer,
             //"Night view" : L.tileLayer(cmUrl, {styleId: 999,   attribution: cmAttr}),
@@ -316,6 +325,32 @@ a.colour-by-legend-toggle {
         }
     });
 
+    function getParamsforWKT(wkt) {
+        return MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + "&wkt=" + encodeURI(wkt);
+    }
+
+    function getSpeciesCountInArea(params) {
+        speciesCount = -1;
+        $.getJSON(baseFacetChart.biocacheServicesUrl + "/occurrence/facets.json" + params + "&facets=taxon_name&callback=?",
+            function( data ) {
+                var speciesCount = data[0].count;
+                document.getElementById("speciesCountDiv").innerHTML = speciesCount;
+            });
+    }
+    function getOccurrenceCountInArea(params) {
+        occurrenceCount = -1;
+        $.getJSON(baseFacetChart.biocacheServicesUrl + "/occurrences/search.json" + params + "&pageSize=0&facet=off&callback=?",
+            function( data ) {
+                var occurrenceCount = data.totalRecords;
+
+                document.getElementById("occurrenceCountDiv").innerHTML = occurrenceCount;
+            });
+    }
+
+    function getRecordsUrl(params) {
+        return window.location.origin + window.location.pathname + params
+    }
+
     function initialiseMap(){
         //console.log("initialiseMap", MAP_VAR.map);
         if(MAP_VAR.map != null){
@@ -332,6 +367,54 @@ a.colour-by-legend-toggle {
             fullscreenControlOptions: {
                 position: 'topleft'
             }
+        });
+
+        //add edit drawing toolbar
+        // Initialise the FeatureGroup to store editable layers
+        MAP_VAR.drawnItems = new L.FeatureGroup();
+        MAP_VAR.map.addLayer(MAP_VAR.drawnItems);
+
+        // Initialise the draw control and pass it the FeatureGroup of editable layers
+        MAP_VAR.drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: MAP_VAR.drawnItems
+            },
+            draw: {
+                polyline: false,
+                rectangle: false,
+                circle: false,
+                marker: false,
+                polygon: {
+                    allowIntersection: false, // Restricts shapes to simple polygons
+                    drawError: {
+                        color: '#e1e100', // Color the shape will turn when intersects
+                        message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                    },
+                    shapeOptions: {
+                        color: '#bada55'
+                    }
+                }
+            }
+        });
+        MAP_VAR.map.addControl(MAP_VAR.drawControl);
+
+        MAP_VAR.map.on('draw:created', function(e) {
+            //setup onclick event for this object
+            e.layer.on('click', function(e) {
+                    console.log(e);
+                    var params = getParamsforWKT(toWKT(this));
+                    L.popup()
+                        .setLatLng([e.latlng.lat, e.latlng.lng])
+                        .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
+                            "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
+                            "<a id='showOnlyTheseRecords' href='" + getRecordsUrl(params) + "' >show only these records</a>")
+                        .openOn(MAP_VAR.map);
+
+                    getSpeciesCountInArea(params);
+                    getOccurrenceCountInArea(params);
+                })
+
+            MAP_VAR.drawnItems.addLayer(e.layer);
         });
 
         //add the default base layer
@@ -686,7 +769,7 @@ a.colour-by-legend-toggle {
         }
 
         MAP_VAR.popupRadius = radius;
-        var mapQuery = MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, ''); // remove existing lat/lon/radius params
+        var mapQuery = MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, ''); // remove existing lat/lon/radius/wkt params
         MAP_VAR.map.spin(true);
 
         $.ajax({
