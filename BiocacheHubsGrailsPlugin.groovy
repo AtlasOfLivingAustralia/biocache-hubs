@@ -18,7 +18,7 @@ import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "0.42"
+    def version = "0.43"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging
@@ -101,7 +101,7 @@ the ALA biocache-service app (no local DB is required for this app).
 
         // Custom message source
         messageSource(ExtendedPluginAwareResourceBundleMessageSource) {
-            basenames = ["classpath:grails-app/i18n/messages","${application.config.biocache.baseUrl}/facets/i18n"] as String[]
+            basenames = ["WEB-INF/grails-app/i18n/messages","${application.config.biocache.baseUrl}/facets/i18n"] as String[]
             cacheSeconds = (60 * 60 * 6) // 6 hours
             useCodeAsDefaultMessage = false
         }
