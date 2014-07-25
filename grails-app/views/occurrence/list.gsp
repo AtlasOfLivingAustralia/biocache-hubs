@@ -145,6 +145,7 @@
                     </div>
                 </div>
             </div><!-- /.span3 -->
+            <!-- Results column -->
             <div class="span9">
                 <a name="map" class="jumpTo"></a><a name="list" class="jumpTo"></a>
                 <g:if test="${false && flash.message}"><%-- OFF for now --%>
@@ -154,12 +155,10 @@
                     </div>
                 </g:if>
                 <div id="resultsReturned">
-                    %{--<div class="alert alert-info ">--}%
                         <span id="returnedText"><strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong> <g:message code="list.resultsretuened.span.returnedtext" default="results for"/></span>
                         <span class="queryDisplay"><strong>${raw(queryDisplay)}</strong></span>&nbsp;&nbsp;
-                    %{--</div>--}%
                     %{--<g:set var="hasFq" value="${false}"/>--}%
-                    <g:if test="${sr.activeFacetMap?.size() > 0}">
+                    <g:if test="${sr.activeFacetMap?.size() > 0 || params.wkt}">
                         <div class="activeFilters">
                             <b><alatag:message code="search.filters.heading" default="Current filters"/></b>:&nbsp;
                             <g:each var="fq" in="${sr.activeFacetMap}">
@@ -168,6 +167,12 @@
                                     <alatag:currentFilterItem item="${fq}" cssClass="btn btn-mini" addCloseBtn="${true}"/>
                                 </g:if>
                             </g:each>
+                            <g:if test="${params.wkt}"><%-- WKT spatial filter   --%>
+                                <g:set var="spatialType" value="${params.wkt =~ /^\w+/}"/>
+                                <a href="${alatag.getQueryStringForWktRemove()}" class="btn btn-mini tooltips" title="Click to remove this filter">Spatial filter: ${spatialType[0]}
+                                    <span class="closeX">×</span>
+                                </a>
+                            </g:if>
                             <g:if test="${sr.activeFacetMap?.size() > 1}">
                                 <button class="btn btn-primary btn-mini activeFilter" data-facet="all"
                                         title="Click to clear all filters"><span

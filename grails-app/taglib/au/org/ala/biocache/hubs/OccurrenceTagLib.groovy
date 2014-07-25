@@ -19,6 +19,7 @@ import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.time.DateUtils
 import org.codehaus.groovy.grails.web.json.JSONObject
+import org.codehaus.groovy.grails.web.util.WebUtils
 import org.springframework.web.servlet.support.RequestContextUtils
 import grails.util.Environment
 
@@ -685,6 +686,19 @@ class OccurrenceTagLib {
         }
 
         out << url
+    }
+
+    /**
+     * Generate a query string for the remove spatial filter link
+     */
+    def getQueryStringForWktRemove = { attr ->
+        def paramsCopy = params.clone()
+        paramsCopy.remove("wkt")
+        paramsCopy.remove("action")
+        paramsCopy.remove("controller")
+        def queryString = WebUtils.toQueryString(paramsCopy)
+        log.debug "queryString = ${queryString}"
+        out << queryString
     }
 
     /**
