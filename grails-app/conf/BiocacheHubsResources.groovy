@@ -67,6 +67,8 @@ modules = {
         resource url:[dir:'js/leaflet-plugins/fullscreen', file:'Control.FullScreen.js', plugin:'biocache-hubs']
 	    resource url:[dir:'js/leaflet-plugins/draw', file:'leaflet.draw.css', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/draw', file:'leaflet.draw-src.js', plugin:'biocache-hubs']
+        resource url:[dir:'js/leaflet-plugins/wicket', file:'wicket.js', plugin:'biocache-hubs']
+        resource url:[dir:'js/leaflet-plugins/wicket', file:'wicket-leaflet.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'LeafletToWKT.js', plugin:'biocache-hubs']
     }
 

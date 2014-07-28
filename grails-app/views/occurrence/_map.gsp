@@ -266,13 +266,16 @@ a.colour-by-legend-toggle {
         defaultZoom : "${grailsApplication.config.map.defaultZoom?:'4'}",
         overlays : {
 
-            //example WMS layer
-//            "overlay-test" : L.tileLayer.wms("http://ec2-54-81-188-102.compute-1.amazonaws.com/geoserver/ALA/wms", {
-//                    layers: 'ALA:ucstodas',
-//                    format: 'image/png',
-//                    transparent: true,
-//                    attribution: "Test layer"
-//                })
+            <g:if test="${grailsApplication.config.map.overlay.url}">
+                //example WMS layer
+                "${grailsApplication.config.map.overlay.name?:'overlay'}" : L.tileLayer.wms("${grailsApplication.config.map.overlay.url}", {
+                    layers: 'ALA:ucstodas',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "${grailsApplication.config.map.overlay.name?:'overlay'}"
+                })
+            </g:if>
+
         },
         baseLayers : {
             "Minimal" : defaultBaseLayer,
@@ -326,7 +329,14 @@ a.colour-by-legend-toggle {
     });
 
     function getParamsforWKT(wkt) {
-        return MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + "&wkt=" + encodeURI(wkt);
+        //console.log("query", MAP_VAR.query, $.url(MAP_VAR.query).param());
+        var paramsObj = $.url(MAP_VAR.query).param();
+        delete paramsObj.wkt;
+        delete paramsObj.lat;
+        delete paramsObj.lon;
+        delete paramsObj.radius;
+        //return MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + "&wkt=" + encodeURI(wkt);
+        return "?" + $.param(paramsObj) + "&wkt=" + encodeURI(wkt);
     }
 
     function getSpeciesCountInArea(params) {
@@ -401,7 +411,7 @@ a.colour-by-legend-toggle {
         MAP_VAR.map.on('draw:created', function(e) {
             //setup onclick event for this object
             e.layer.on('click', function(e) {
-                    console.log(e);
+                    //console.log(e);
                     var params = getParamsforWKT(toWKT(this));
                     L.popup()
                         .setLatLng([e.latlng.lat, e.latlng.lng])
@@ -412,7 +422,7 @@ a.colour-by-legend-toggle {
 
                     getSpeciesCountInArea(params);
                     getOccurrenceCountInArea(params);
-                })
+                });
 
             MAP_VAR.drawnItems.addLayer(e.layer);
         });
@@ -500,6 +510,36 @@ a.colour-by-legend-toggle {
 
         fitMapToBounds(); // zoom map if points are contained within Australia
         drawCircleRadius(); // draw circle around lat/lon/radius searches
+
+        var wktFromParams = "${params.wkt}";
+        if (wktFromParams) {
+            var wkt = new Wkt.Wkt();
+            wkt.read(wktFromParams);
+            var wktObject = wkt.toObject();
+            wktObject.editing.enable();
+            MAP_VAR.drawnItems.addLayer(wktObject);
+
+            MAP_VAR.map.on('draw:edited', function(e) {
+                //setup onclick event for this object
+                var layers = e.layers;
+                layers.eachLayer(function (layer) {
+                    layer.on('click', function(e) {
+                        console.log("edited",e);
+                        var params = getParamsforWKT(toWKT(this));
+                        L.popup()
+                            .setLatLng([e.latlng.lat, e.latlng.lng])
+                            .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
+                                "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
+                                    "<a id='showOnlyTheseRecords' href='" + getRecordsUrl(params) + "'>show only these records</a>")
+                            .openOn(MAP_VAR.map);
+
+                        getSpeciesCountInArea(params);
+                        getOccurrenceCountInArea(params);
+                    });
+                });
+            });
+
+        }
 
         MAP_VAR.recordList = new Array(); // store list of records for popup
 

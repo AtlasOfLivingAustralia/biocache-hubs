@@ -87,6 +87,9 @@ map.pointColour = "df4a21"
 map.zoomOutsideScopedRegion = true
 map.defaultCentreCoords
 map.defaultZoom
+// 3rd part WMS layer to show on maps. TODO: Allow multiple overlays
+map.overlay.url
+map.overlay.name
 
 suppressIssues = "" // "missingCoordinatePrecision"
 sensitiveDataset.list = ""
