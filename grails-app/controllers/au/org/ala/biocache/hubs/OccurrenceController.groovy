@@ -85,13 +85,15 @@ class OccurrenceController {
             JSONObject searchResults = webServicesService.fullTextSearch(requestParams)
             def wsTime = (System.currentTimeMillis() - wsStart)
             Map groupedFacets = webServicesService.getGroupedFacets() // cached
+            Map facetResultsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
 
             [
                     sr: searchResults,
                     searchRequestParams: requestParams,
                     defaultFacets: defaultFacets,
                     groupedFacets: groupedFacets,
-                    groupedFacetsMap: postProcessingService.getMapOfGroupedFacets(searchResults.facetResults),
+                    groupedFacetsMap: facetResultsMap,
+                    ungroupedFacetsMap: postProcessingService.getMapOfUngroupedFacets(groupedFacets, facetResultsMap),
                     dynamicFacets: dynamicFacets,
                     hasImages: postProcessingService.resultsHaveImages(searchResults),
                     showSpeciesImages: false, // TODO

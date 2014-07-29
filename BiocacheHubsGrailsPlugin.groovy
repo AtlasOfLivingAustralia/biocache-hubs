@@ -18,7 +18,7 @@ import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "0.44"
+    def version = "0.45"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging
@@ -30,13 +30,13 @@ class BiocacheHubsGrailsPlugin {
     def author = "Nick dos Remedios"
     def authorEmail = "nick.dosremedios@csiro.au"
     def description = '''\
-A client web application for searching and displaying biodiversity data from biocache web services.
-Data access is via JSON REST web services from
-the ALA biocache-service app (no local DB is required for this app).
+A Grails plugin to provide the core functionality for searching and displaying biodiversity data from
+biocache web services. Data access is via JSON REST web services
+from the ALA biocache-service app (no local DB is required for this app).
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://code.google.com/p/ala-hubs/wiki/BiocacheHubsPlugin"
+    def documentation = "https://github.com/AtlasOfLivingAustralia/biocache-hubs"
 
     // License: one of 'APACHE', 'GPL2', 'GPL3'
     def license = "MPL2"
@@ -51,7 +51,7 @@ the ALA biocache-service app (no local DB is required for this app).
     ]
 
     // Location of the plugin's issue tracker.
-    def issueManagement = [ system: "Google Code", url: "https://code.google.com/p/ala/issues/list" ]
+    def issueManagement = [ system: "Google Code", url: "https://github.com/AtlasOfLivingAustralia/biocache-hubs/issues" ]
 
     // Online location of the plugin's browseable source code.
     def scm = [ url: "https://github.com/AtlasOfLivingAustralia/biocache-hubs" ]

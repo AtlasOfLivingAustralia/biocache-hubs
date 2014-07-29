@@ -309,7 +309,7 @@ class PostProcessingService {
      * @param facetResults
      * @return
      */
-    def Map getMapOfGroupedFacets(JSONArray facetResults) {
+    def Map getMapOfFacetResults(JSONArray facetResults) {
         Map facetMap = [:]
 
         facetResults.each { fr ->
@@ -323,5 +323,31 @@ class PostProcessingService {
         }
 
         facetMap
+    }
+
+    /**
+     * Get a Map of facets in facetResults that are NOT included in the groupedFacets structure
+     *
+     * @param groupedFacets
+     * @param facetResults
+     * @return
+     */
+    def Map getMapOfUngroupedFacets(Map groupedFacets, def facetResults) {
+        def ungroupedFacets = [:]
+        def groupedFacetsList = []
+        // get a flat list of facets in groupedFacets (search independent)
+        groupedFacets.each { grp ->
+            groupedFacetsList.addAll(grp.value)
+        }
+
+        // Find any facets not defined in groupedFacets
+        // and add to ungroupedFacets
+        facetResults.each {
+            if (!groupedFacetsList.contains(it.key)) {
+                ungroupedFacets.put(it.key, it.value)
+            }
+        }
+
+        ungroupedFacets
     }
 }
