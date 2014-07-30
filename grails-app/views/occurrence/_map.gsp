@@ -339,6 +339,16 @@ a.colour-by-legend-toggle {
         return "?" + $.param(paramsObj) + "&wkt=" + encodeURI(wkt);
     }
 
+    function getParamsForCircle(circle) {
+        var paramsObj = $.url(MAP_VAR.query).param();
+        delete paramsObj.wkt;
+        delete paramsObj.lat;
+        delete paramsObj.lon;
+        delete paramsObj.radius;
+        var latlng = circle.getLatLng();
+        return "?" + $.param(paramsObj) + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
+    }
+
     function getSpeciesCountInArea(params) {
         speciesCount = -1;
         $.getJSON(baseFacetChart.biocacheServicesUrl + "/occurrence/facets.json" + params + "&facets=taxon_name&callback=?",
@@ -391,8 +401,16 @@ a.colour-by-legend-toggle {
             },
             draw: {
                 polyline: false,
-                rectangle: false,
-                circle: false,
+                rectangle: {
+                    shapeOptions: {
+                        color: '#bada55'
+                    }
+                },
+                circle: {
+                    shapeOptions: {
+                        color: '#bada55'
+                    }
+                },
                 marker: false,
                 polygon: {
                     allowIntersection: false, // Restricts shapes to simple polygons
@@ -410,21 +428,9 @@ a.colour-by-legend-toggle {
 
         MAP_VAR.map.on('draw:created', function(e) {
             //setup onclick event for this object
-            e.layer.on('click', function(e) {
-                    //console.log(e);
-                    var params = getParamsforWKT(toWKT(this));
-                    L.popup()
-                        .setLatLng([e.latlng.lat, e.latlng.lng])
-                        .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
-                            "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
-                            "<a id='showOnlyTheseRecords' href='" + getRecordsUrl(params) + "' >show only these records</a>")
-                        .openOn(MAP_VAR.map);
-
-                    getSpeciesCountInArea(params);
-                    getOccurrenceCountInArea(params);
-                });
-
-            MAP_VAR.drawnItems.addLayer(e.layer);
+            var layer = e.layer;
+            addClickEventForVector(layer);
+            MAP_VAR.drawnItems.addLayer(layer);
         });
 
         //add the default base layer
@@ -481,7 +487,7 @@ a.colour-by-legend-toggle {
         $( "#sizeslider" ).slider({
             min:1,
             max:9,
-            value: Number($('#sizeslider-val').text()), // TODO sync with value in HTML - #sizeslider-val
+            value: Number($('#sizeslider-val').text()),
             tooltip: 'hide'
         }).on('slideStop', function(ev){
             $('#sizeslider-val').html(ev.value);
@@ -492,7 +498,7 @@ a.colour-by-legend-toggle {
             min: 0.1,
             max: 1.0,
             step: 0.1,
-            value: Number($('#opacityslider-val').text()), // TODO sync with value in HTML - #opacityslider-val
+            value: Number($('#opacityslider-val').text()),
             tooltip: 'hide'
         }).on('slideStop', function(ev){
             var value = parseFloat(ev.value).toFixed(1); // prevent values like 0.30000000004 appearing
@@ -509,37 +515,35 @@ a.colour-by-legend-toggle {
         });
 
         fitMapToBounds(); // zoom map if points are contained within Australia
-        drawCircleRadius(); // draw circle around lat/lon/radius searches
+        //drawCircleRadius(); // draw circle around lat/lon/radius searches
 
+        // display vector from previous wkt search
         var wktFromParams = "${params.wkt}";
         if (wktFromParams) {
             var wkt = new Wkt.Wkt();
             wkt.read(wktFromParams);
-            var wktObject = wkt.toObject();
-            wktObject.editing.enable();
+            var wktObject = wkt.toObject({color: '#bada55'});
+            //addClickEventForVector(wktObject); // can't click on points if this is set
+            //wktObject.editing.enable();
+            wktObject.on('click', pointLookupClickRegister);
             MAP_VAR.drawnItems.addLayer(wktObject);
 
-            MAP_VAR.map.on('draw:edited', function(e) {
-                //setup onclick event for this object
-                var layers = e.layers;
-                layers.eachLayer(function (layer) {
-                    layer.on('click', function(e) {
-                        console.log("edited",e);
-                        var params = getParamsforWKT(toWKT(this));
-                        L.popup()
-                            .setLatLng([e.latlng.lat, e.latlng.lng])
-                            .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
-                                "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
-                                    "<a id='showOnlyTheseRecords' href='" + getRecordsUrl(params) + "'>show only these records</a>")
-                            .openOn(MAP_VAR.map);
-
-                        getSpeciesCountInArea(params);
-                        getOccurrenceCountInArea(params);
-                    });
-                });
-            });
-
+        } else if (isSpatialRadiusSearch()) {
+            // draw circle onto map
+            var circle = L.circle([$.url().param('lat'), $.url().param('lon')], ($.url().param('radius') * 1000), {color: '#bada55'});
+            //console.log("circle", circle);
+            //addClickEventForVector(circle);  // can't click on points if this is set
+            circle.on('click', pointLookupClickRegister);
+            MAP_VAR.drawnItems.addLayer(circle);
         }
+
+        MAP_VAR.map.on('draw:edited', function(e) {
+            //setup onclick event for this object
+            var layers = e.layers;
+            layers.eachLayer(function (layer) {
+                addClickEventForVector(layer);
+            });
+        });
 
         MAP_VAR.recordList = new Array(); // store list of records for popup
 
@@ -562,6 +566,30 @@ a.colour-by-legend-toggle {
                 clickCount = 0;
             }, 400);
         }
+    }
+
+    function addClickEventForVector(layer) {
+        layer.on('click', function(e) {
+            var params = "";
+            if (jQuery.isFunction(layer.getRadius)) {
+                // circle
+                params = getParamsForCircle(layer);
+            } else {
+                var wkt = new Wkt.Wkt();
+                wkt.fromObject(layer);
+                params = getParamsforWKT(wkt.write());
+            }
+
+            L.popup()
+                .setLatLng([e.latlng.lat, e.latlng.lng])
+                .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
+                    "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
+                        "<a id='showOnlyTheseRecords' href='" + getRecordsUrl(params) + "'>show only these records</a>")
+                .openOn(MAP_VAR.map);
+
+            getSpeciesCountInArea(params);
+            getOccurrenceCountInArea(params);
+        });
     }
 
     function changeFacetColours() {
@@ -978,7 +1006,7 @@ a.colour-by-legend-toggle {
      */
     function fitMapToBounds() {
         // Don't run for spatial searches, which have their own fitBounds() method
-        if (!isSpatialRadiusSearch()) {
+        if (true || !isSpatialRadiusSearch()) { // inactive if
             // all other searches (non-spatial)
             // do webservice call to get max extent of WMS data
             var jsonUrl = "${alatag.getBiocacheAjaxUrl()}/webportal/bounds.json" + MAP_VAR.query + "&callback=?";

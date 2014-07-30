@@ -701,6 +701,18 @@ class OccurrenceTagLib {
         out << queryString
     }
 
+    def getQueryStringForRadiusRemove = { attr ->
+        def paramsCopy = params.clone()
+        paramsCopy.remove("lat")
+        paramsCopy.remove("lon")
+        paramsCopy.remove("radius")
+        paramsCopy.remove("action")
+        paramsCopy.remove("controller")
+        def queryString = WebUtils.toQueryString(paramsCopy)
+        log.debug "queryString = ${queryString}"
+        out << queryString
+    }
+
     /**
      * Output the meta tags (HTML head section) for the build meta data in application.properties
      * E.g.

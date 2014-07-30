@@ -158,7 +158,7 @@
                         <span id="returnedText"><strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong> <g:message code="list.resultsretuened.span.returnedtext" default="results for"/></span>
                         <span class="queryDisplay"><strong>${raw(queryDisplay)}</strong></span>&nbsp;&nbsp;
                     %{--<g:set var="hasFq" value="${false}"/>--}%
-                    <g:if test="${sr.activeFacetMap?.size() > 0 || params.wkt}">
+                    <g:if test="${sr.activeFacetMap?.size() > 0 || params.wkt || params.radius}">
                         <div class="activeFilters">
                             <b><alatag:message code="search.filters.heading" default="Current filters"/></b>:&nbsp;
                             <g:each var="fq" in="${sr.activeFacetMap}">
@@ -173,6 +173,11 @@
                                     <span class="closeX">×</span>
                                 </a>
                             </g:if>
+                            <g:elseif test="${params.radius && params.lat && params.lon}">
+                                <a href="${alatag.getQueryStringForRadiusRemove()}" class="btn btn-mini tooltips" title="Click to remove this filter">Spatial filter: CIRCLE
+                                    <span class="closeX">×</span>
+                                </a>
+                            </g:elseif>
                             <g:if test="${sr.activeFacetMap?.size() > 1}">
                                 <button class="btn btn-primary btn-mini activeFilter" data-facet="all"
                                         title="Click to clear all filters"><span
@@ -310,7 +315,7 @@
                             </div>
                         </g:if>
                         <div id="searchNavBar" class="pagination">
-                            <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}" params="${[taxa:params.taxa, q:params.q, fq:params.fq]}"/>
+                            <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}" params="${[taxa:params.taxa, q:params.q, fq:params.fq, wkt:params.wkt, lat:params.lat, lon:params.lon, radius:params.radius]}"/>
                         </div>
                     </div><!--end solrResults-->
                     <div id="mapView" class="tab-pane">
