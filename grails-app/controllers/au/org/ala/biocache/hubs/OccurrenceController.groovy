@@ -91,9 +91,8 @@ class OccurrenceController {
                     sr: searchResults,
                     searchRequestParams: requestParams,
                     defaultFacets: defaultFacets,
-                    groupedFacets: groupedFacets,
+                    groupedFacets: postProcessingService.getAllGroupedFacets(groupedFacets, searchResults.facetResults),
                     groupedFacetsMap: facetResultsMap,
-                    ungroupedFacetsMap: postProcessingService.getMapOfUngroupedFacets(groupedFacets, facetResultsMap),
                     dynamicFacets: dynamicFacets,
                     hasImages: postProcessingService.resultsHaveImages(searchResults),
                     showSpeciesImages: false, // TODO
