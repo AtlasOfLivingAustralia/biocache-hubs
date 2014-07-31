@@ -85,7 +85,8 @@ map.cloudmade.key = "BC9A493B41014CAABB98F0471D759707"
 map.defaultFacetMapColourBy = "basis_of_record"
 map.pointColour = "df4a21"
 map.zoomOutsideScopedRegion = true
-map.defaultCentreCoords
+map.defaultLatitude
+map.defaultLongitude
 map.defaultZoom
 // 3rd part WMS layer to show on maps. TODO: Allow multiple overlays
 map.overlay.url
