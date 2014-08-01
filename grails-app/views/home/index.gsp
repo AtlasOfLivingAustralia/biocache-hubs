@@ -31,6 +31,27 @@
             /* If max-width does not work, try using width instead */
             /*width: 150px;*/
         }
+        .leaflet-control-layers-base  {
+            font-size: 12px;
+        }
+        .leaflet-control-layers-base label,  .leaflet-control-layers-base input, .leaflet-control-layers-base button, .leaflet-control-layers-base select, .leaflet-control-layers-base textarea {
+            margin:0px;
+            height:20px;
+            font-size: 12px;
+            line-height:18px;
+            width:auto;
+        }
+
+        .leaflet-control-layers {
+            opacity:0.8;
+            filter:alpha(opacity=80);
+        }
+
+        .leaflet-control-layers-overlays label {
+            font-size: 12px;
+            line-height: 18px;
+            margin-bottom: 0px;
+        }
     </style>
     <script src="http://maps.google.com/maps/api/js?v=3.5&sensor=false"></script>
     <r:require modules="jquery, leaflet"/>
@@ -78,6 +99,15 @@
 
         });
 
+        // extend tooltip with callback
+        var tmp = $.fn.tooltip.Constructor.prototype.show;
+        $.fn.tooltip.Constructor.prototype.show = function () {
+            tmp.call(this);
+            if (this.options.callback) {
+                this.options.callback();
+            }
+        };
+
         var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
             '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
             'Imagery © <a href="http://mapbox.com">Mapbox</a>';
@@ -90,8 +120,8 @@
             mappingUrl : "${mappingUrl}",
             query : "${searchString}",
             queryDisplayString : "${queryDisplayString}",
-            center: [-23.6,133.6],
-            defaultLatitude : "${grailsApplication.config.map.defaultLatitude?:'-23.6'}",
+            //center: [-30.0,133.6],
+            defaultLatitude : "${grailsApplication.config.map.defaultLatitude?:'-25.4'}",
             defaultLongitude : "${grailsApplication.config.map.defaultLongitude?:'133.6'}",
             defaultZoom : "${grailsApplication.config.map.defaultZoom?:'4'}",
             overlays : {
@@ -185,6 +215,7 @@
                 //setup onclick event for this object
                 var layers = e.layers;
                 layers.eachLayer(function (layer) {
+                    generatePopup(layer, layer._latlng);
                     addClickEventForVector(layer);
                 });
             });
@@ -203,13 +234,11 @@
             // Add a help tooltip to map when first loaded
             MAP_VAR.map.whenReady(function() {
                 var opts = {
-                    placement:'right'
+                    placement:'right',
+                    callback: destroyHelpTooltip // hide help tooltip when mouse over the tools
                 }
                 $('.leaflet-draw-toolbar a').tooltip(opts);
-                $('.leaflet-draw-toolbar').first().attr('title','Start by choosing a tool').tooltip(opts).tooltip('show');
-                setTimeout(function(){
-                    $('.leaflet-draw-toolbar').tooltip('destroy');
-                }, 10000);
+                $('.leaflet-draw-toolbar').first().attr('title','Start by choosing a tool').tooltip({placement:'right'}).tooltip('show');
             });
 
             // Hide help tooltip on first click event
@@ -220,6 +249,14 @@
                     once = false;
                 }
             });
+        }
+
+        var once = true;
+        function destroyHelpTooltip() {
+            if ($('.leaflet-draw-toolbar').length && once) {
+                $('.leaflet-draw-toolbar').tooltip('destroy');
+                once = false;
+            }
         }
 
         function addClickEventForVector(layer) {
@@ -382,15 +419,13 @@
                     </form>
                 </div><!-- end #catalogUploadDiv div -->
                 <div id="spatialSearch" class="tab-pane">
-                    <g:message code="search.map.helpText" default="Select one of the draw tools (polygon, rectangle, circle), draw a shape and click the search link that pops up."/>
-                    <div id="leafletMap" class="span12" style="height:600px;"></div>
-                    %{--<form name="shapeUploadForm" id="shapeUploadForm" action="${request.contextPath}/occurrences/shapeUpload" method="POST" enctype="multipart/form-data">--}%
-                        %{--<p><g:message code="home.index.shapefileupload.des01" default="Note: this feature is still experimental. If there are multiple polygons present in the shapefile, only the first polygon will be used for searching"/>.</p>--}%
-                        %{--<p><g:message code="home.index.shapefileupload.des02" default="Upload a shapefile (*.shp)."/></p>--}%
-                        %{--<p><input type="file" name="file" class="" /></p>--}%
-                        %{--<p><input type="submit" value=<g:message code="home.index.shapefileupload.button01" default="Search"/> class="btn"/></p>--}%
-                    %{--</form>--}%
-                </div><!-- end #shapeFileUpload  -->
+                    <div class="row-fluid">
+                        <div class="span3 alertXalert-info">
+                            <g:message code="search.map.helpText" default="Select one of the draw tools (polygon, rectangle, circle), draw a shape and click the search link that pops up."/>
+                        </div>
+                        <div id="leafletMap" class="span9" style="height:600px;"></div>
+                    </div>
+                </div><!-- end #spatialSearch  -->
             </div><!-- end .tab-content -->
         </div><!-- end .span12 -->
     </div><!-- end .row-fluid -->
