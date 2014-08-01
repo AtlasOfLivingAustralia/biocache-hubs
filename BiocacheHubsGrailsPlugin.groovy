@@ -14,6 +14,7 @@
  */
 
 import au.org.ala.biocache.hubs.ExtendedPluginAwareResourceBundleMessageSource
+import grails.build.logging.GrailsConsole
 import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
@@ -62,6 +63,8 @@ from the ALA biocache-service app (no local DB is required for this app).
         // Note this code only gets executed at compile time (not runtime)
     }
 
+    def grailsConsole =  new GrailsConsole()
+
     def doWithSpring = {
         def config = application.config
 
@@ -104,6 +107,23 @@ from the ALA biocache-service app (no local DB is required for this app).
             basenames = ["WEB-INF/grails-app/i18n/messages","${application.config.biocache.baseUrl}/facets/i18n"] as String[]
             cacheSeconds = (60 * 60 * 6) // 6 hours
             useCodeAsDefaultMessage = false
+        }
+
+        grailsConsole.info "grails.resources.work.dir = " + config.grails.resources.work.dir
+
+        // check custom resources cache dir for permissions
+        if (config.grails.resources.work.dir) {
+            if (new File(config.grails.resources.work.dir).isDirectory()) {
+                // cache dir exists - check if its writable
+                if (!new File(config.grails.resources.work.dir).canWrite()) {
+                    grailsConsole.error "grails.resources.work.dir (${config.grails.resources.work.dir}) is NOT WRITABLE, please fix this!"
+                }
+            } else {
+                // check we can create the directory
+                if (!new File(config.grails.resources.work.dir).mkdir()) {
+                    grailsConsole.error "grails.resources.work.dir (${config.grails.resources.work.dir}) cannot be created, please fix this!"
+                }
+            }
         }
     }
 
