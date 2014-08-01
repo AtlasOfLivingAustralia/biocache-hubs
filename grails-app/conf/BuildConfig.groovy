@@ -44,9 +44,7 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
-        mavenRepo ("http://maven.ala.org.au/repository") {
-            updatePolicy 'always'
-        }
+        mavenRepo "http://maven.ala.org.au/repository"
         //mavenRepo "http://maven.tmatesoft.com/content/repositories/releases/"
     }
 
