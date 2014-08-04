@@ -420,10 +420,12 @@
                 </div><!-- end #catalogUploadDiv div -->
                 <div id="spatialSearch" class="tab-pane">
                     <div class="row-fluid">
-                        <div class="span3 alertXalert-info">
+                        <div class="span3">
                             <g:message code="search.map.helpText" default="Select one of the draw tools (polygon, rectangle, circle), draw a shape and click the search link that pops up."/>
                         </div>
-                        <div id="leafletMap" class="span9" style="height:600px;"></div>
+                        <div class="span9">
+                            <div id="leafletMap" style="height:600px;"></div>
+                        </div>
                     </div>
                 </div><!-- end #spatialSearch  -->
             </div><!-- end .tab-content -->
