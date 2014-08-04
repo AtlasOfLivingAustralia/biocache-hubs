@@ -149,7 +149,7 @@ class OccurrenceController {
                         collectionInstitution: collectionInfo?.institution,
                         isCollectionAdmin: false, // TODO implement this
                         queryAssertions: null, // TODO implement this
-                        duplicateRecordDetails: null, // TODO implement
+                        duplicateRecordDetails: webServicesService.getDuplicateRecordDetails(record),
                         dataResourceCodes: facetsCacheService.getFacetNamesFor(FacetsName.DATA_RESOURCE), // TODO test
                         clubView: hasClubView,
                         errorCodes: webServicesService.getErrorCodes(),

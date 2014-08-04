@@ -82,6 +82,25 @@ class WebServicesService {
         getJsonElements(url)
     }
 
+    def JSONObject getDuplicateRecordDetails(JSONObject record) {
+        log.debug "getDuplicateRecordDetails -> ${record?.processed?.occurrence?.associatedOccurrences}"
+        if (record?.processed?.occurrence?.associatedOccurrences) {
+            def status = record.processed.occurrence.duplicationStatus
+            def uuid
+
+            if (status == "R") {
+                // reference record so use its UUID
+                uuid = record.raw.uuid
+            } else {
+                // duplicate record so use the reference record UUID
+                uuid = record.processed.occurrence.associatedOccurrences
+            }
+
+            def url = "${grailsApplication.config.biocache.baseUrl}/duplicates/${uuid.encodeAsURL()}"
+            getJsonElements(url)
+        }
+    }
+
     @Cacheable('longTermCache')
     def JSONArray getDefaultFacets() {
         def url = "${grailsApplication.config.biocache.baseUrl}/search/facets"

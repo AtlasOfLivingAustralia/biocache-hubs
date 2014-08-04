@@ -422,7 +422,7 @@
 							</li>
 						</ul>
 					</p>
-					<g:if test="${duplicateRecordDetails}">
+					<g:if test="${duplicateRecordDetails && duplicateRecordDetails.duplicates?.size() > 0}">
 						<table class="duplicationTable table-striped table-bordered table-condensed" style="border-bottom:none;">
 							<tr class="sectionName"><td colspan="4"><g:message code="show.table01.title" default="Representative Record"/></td></tr>
 							<alatag:occurrenceTableRow
@@ -434,7 +434,7 @@
         							annotate="false"
         							section="duplicate"
         							fieldName="Data Resource">
-        					<g:set var="dr">${duplicateRecordDetails.rowKey.substring(0, duplicateRecordDetails.rowKey.indexOf("|"))}</g:set>
+        					<g:set var="dr">${duplicateRecordDetails.rowKey?.substring(0, duplicateRecordDetails.rowKey?.indexOf("|"))}</g:set>
         					<a href="${collectionsWebappContext}/public/show/${dr}">${dataResourceCodes.get(dr)}</a>
 				 			</alatag:occurrenceTableRow>
                             <g:if test="${duplicateRecordDetails.rawScientificName}">
