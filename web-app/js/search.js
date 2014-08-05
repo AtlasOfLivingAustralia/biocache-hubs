@@ -695,6 +695,7 @@ function removeFilter(el) {
     var lon = $.url().param('lon');
     var rad = $.url().param('radius');
     var taxa = $.url().param('taxa');
+    var wkt = $.url().param('wkt');
     var paramList = [];
     if (q != null) {
         paramList.push("q=" + q);
@@ -711,6 +712,10 @@ function removeFilter(el) {
         paramList.push("lat=" + lat);
         paramList.push("lon=" + lon);
         paramList.push("radius=" + rad);
+    }
+
+    if (wkt) {
+        paramList.push("wkt=" + wkt);
     }
 
     if (taxa) {
