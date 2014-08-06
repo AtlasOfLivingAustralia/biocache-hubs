@@ -38,33 +38,31 @@
                 <a href="#" class="showHideFacetGroup" data-name="dynamicFacets"><span class="caret right-caret"></span> ${alatag.message(code:"facets.dynamic.heading", default:"Custom fields")}</a>
             </div>
             <div class="facetsGroup hide" id="group_dynamicFacets">
-                %{--<div class="subnavlist nano" style="clear:left">--}%
-                    <g:each in="${dynamicFacets}" var="df">
-                        %{--${df.name}<br>--}%
-                        <g:set var="facetResult" value="${groupedFacetsMap.get(df.name)}"/>
-                        %{--<g:if test="${facetResult}">facetResult = ${facetResult}<br></g:if>--}%
-                        <g:if test="${facetResult && facetResult.fieldResult.length() >= 1 && facetResult.fieldResult[0].count != sr.totalRecords && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
-                            <g:set var="fieldDisplayName" value="${df.displayName}"/>
-                            <h4><span class="FieldName">${fieldDisplayName?:alatag.formatDynamicFacetName(fieldName:facetResult.fieldName)}</span></h4>
-                            <div class="subnavlist nano" style="clear:left">
-                                <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}" fieldDisplayName="${fieldDisplayName}"/>
+                <g:each in="${dynamicFacets}" var="df">
+                    %{--${df.name}<br>--}%
+                    <g:set var="facetResult" value="${groupedFacetsMap.get(df.name)}"/>
+                    %{--<g:if test="${facetResult}">facetResult = ${facetResult}<br></g:if>--}%
+                    <g:if test="${facetResult && facetResult.fieldResult.length() >= 1 && facetResult.fieldResult[0].count != sr.totalRecords && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
+                        <g:set var="fieldDisplayName" value="${df.displayName}"/>
+                        <h4><span class="FieldName">${fieldDisplayName?:alatag.formatDynamicFacetName(fieldName:facetResult.fieldName)}</span></h4>
+                        <div class="subnavlist nano" style="clear:left">
+                            <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}" fieldDisplayName="${fieldDisplayName}"/>
+                        </div>
+                        %{--<div class="fadeout"></div>--}%
+                        <g:if test="${facetResult.fieldResult.length() > 0}">
+                            <div class="showHide">
+                                <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-displayname="${fieldDisplayName}"
+                                   title="See more options or refine with multiple values"><i class="icon-hand-right"></i> <g:message code="facets.groupdynamicfacets.link" default="choose more"/>...</a>
                             </div>
-                            %{--<div class="fadeout"></div>--}%
-                            <g:if test="${facetResult.fieldResult.length() > 0}">
-                                <div class="showHide">
-                                    <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-displayname="${fieldDisplayName}"
-                                       title="See more options or refine with multiple values"><i class="icon-hand-right"></i> <g:message code="facets.groupdynamicfacets.link" default="choose more"/>...</a>
-                                </div>
-                            </g:if>
                         </g:if>
-                    </g:each>
-                %{--</div>--}%
+                    </g:if>
+                </g:each>
             </div>
         </g:if>
         <g:each var="group" in="${groupedFacets}">
             <g:set var="keyCamelCase" value="${group.key.replaceAll(/\s+/,'')}"/>
             <div class="facetGroupName" id="heading_${keyCamelCase}">
-                <a href="#" class="showHideFacetGroup" data-name="${keyCamelCase}"><span class="caret right-caret"></span> ${group.key}</a>
+                <a href="#" class="showHideFacetGroup" data-name="${keyCamelCase}"><span class="caret right-caret"></span> <g:message code="facet.group.${group.key}" default="${group.key}"/></a>
             </div>
             <div class="facetsGroup hide" id="group_${keyCamelCase}">
                 <g:set var="firstGroup" value="${false}"/>

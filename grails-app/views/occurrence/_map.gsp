@@ -264,7 +264,19 @@ a.colour-by-legend-toggle {
         defaultLatitude : "${grailsApplication.config.map.defaultLatitude?:'-23.6'}",
         defaultLongitude : "${grailsApplication.config.map.defaultLongitude?:'133.6'}",
         defaultZoom : "${grailsApplication.config.map.defaultZoom?:'4'}",
-        overlays : {},
+        overlays : {
+
+            <g:if test="${grailsApplication.config.map.overlay.url}">
+                //example WMS layer
+                "${grailsApplication.config.map.overlay.name?:'overlay'}" : L.tileLayer.wms("${grailsApplication.config.map.overlay.url}", {
+                    layers: 'ALA:ucstodas',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "${grailsApplication.config.map.overlay.name?:'overlay'}"
+                })
+            </g:if>
+
+        },
         baseLayers : {
             "Minimal" : defaultBaseLayer,
             //"Night view" : L.tileLayer(cmUrl, {styleId: 999,   attribution: cmAttr}),
@@ -316,6 +328,49 @@ a.colour-by-legend-toggle {
         }
     });
 
+    function getParamsforWKT(wkt) {
+        //console.log("query", MAP_VAR.query, $.url(MAP_VAR.query).param());
+        var paramsObj = $.url(MAP_VAR.query).param();
+        delete paramsObj.wkt;
+        delete paramsObj.lat;
+        delete paramsObj.lon;
+        delete paramsObj.radius;
+        //return MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + "&wkt=" + encodeURI(wkt);
+        return "?" + $.param(paramsObj) + "&wkt=" + encodeURI(wkt);
+    }
+
+    function getParamsForCircle(circle) {
+        var paramsObj = $.url(MAP_VAR.query).param();
+        delete paramsObj.wkt;
+        delete paramsObj.lat;
+        delete paramsObj.lon;
+        delete paramsObj.radius;
+        var latlng = circle.getLatLng();
+        return "?" + $.param(paramsObj) + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
+    }
+
+    function getSpeciesCountInArea(params) {
+        speciesCount = -1;
+        $.getJSON(baseFacetChart.biocacheServicesUrl + "/occurrence/facets.json" + params + "&facets=taxon_name&callback=?",
+            function( data ) {
+                var speciesCount = data[0].count;
+                document.getElementById("speciesCountDiv").innerHTML = speciesCount;
+            });
+    }
+    function getOccurrenceCountInArea(params) {
+        occurrenceCount = -1;
+        $.getJSON(baseFacetChart.biocacheServicesUrl + "/occurrences/search.json" + params + "&pageSize=0&facet=off&callback=?",
+            function( data ) {
+                var occurrenceCount = data.totalRecords;
+
+                document.getElementById("occurrenceCountDiv").innerHTML = occurrenceCount;
+            });
+    }
+
+    function getRecordsUrl(params) {
+        return window.location.origin + window.location.pathname + params
+    }
+
     function initialiseMap(){
         //console.log("initialiseMap", MAP_VAR.map);
         if(MAP_VAR.map != null){
@@ -332,6 +387,50 @@ a.colour-by-legend-toggle {
             fullscreenControlOptions: {
                 position: 'topleft'
             }
+        });
+
+        //add edit drawing toolbar
+        // Initialise the FeatureGroup to store editable layers
+        MAP_VAR.drawnItems = new L.FeatureGroup();
+        MAP_VAR.map.addLayer(MAP_VAR.drawnItems);
+
+        // Initialise the draw control and pass it the FeatureGroup of editable layers
+        MAP_VAR.drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: MAP_VAR.drawnItems
+            },
+            draw: {
+                polyline: false,
+                rectangle: {
+                    shapeOptions: {
+                        color: '#bada55'
+                    }
+                },
+                circle: {
+                    shapeOptions: {
+                        color: '#bada55'
+                    }
+                },
+                marker: false,
+                polygon: {
+                    allowIntersection: false, // Restricts shapes to simple polygons
+                    drawError: {
+                        color: '#e1e100', // Color the shape will turn when intersects
+                        message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                    },
+                    shapeOptions: {
+                        color: '#bada55'
+                    }
+                }
+            }
+        });
+        MAP_VAR.map.addControl(MAP_VAR.drawControl);
+
+        MAP_VAR.map.on('draw:created', function(e) {
+            //setup onclick event for this object
+            var layer = e.layer;
+            addClickEventForVector(layer);
+            MAP_VAR.drawnItems.addLayer(layer);
         });
 
         //add the default base layer
@@ -388,7 +487,7 @@ a.colour-by-legend-toggle {
         $( "#sizeslider" ).slider({
             min:1,
             max:9,
-            value: Number($('#sizeslider-val').text()), // TODO sync with value in HTML - #sizeslider-val
+            value: Number($('#sizeslider-val').text()),
             tooltip: 'hide'
         }).on('slideStop', function(ev){
             $('#sizeslider-val').html(ev.value);
@@ -399,7 +498,7 @@ a.colour-by-legend-toggle {
             min: 0.1,
             max: 1.0,
             step: 0.1,
-            value: Number($('#opacityslider-val').text()), // TODO sync with value in HTML - #opacityslider-val
+            value: Number($('#opacityslider-val').text()),
             tooltip: 'hide'
         }).on('slideStop', function(ev){
             var value = parseFloat(ev.value).toFixed(1); // prevent values like 0.30000000004 appearing
@@ -416,7 +515,35 @@ a.colour-by-legend-toggle {
         });
 
         fitMapToBounds(); // zoom map if points are contained within Australia
-        drawCircleRadius(); // draw circle around lat/lon/radius searches
+        //drawCircleRadius(); // draw circle around lat/lon/radius searches
+
+        // display vector from previous wkt search
+        var wktFromParams = "${params.wkt}";
+        if (wktFromParams) {
+            var wkt = new Wkt.Wkt();
+            wkt.read(wktFromParams);
+            var wktObject = wkt.toObject({color: '#bada55'});
+            //addClickEventForVector(wktObject); // can't click on points if this is set
+            //wktObject.editing.enable();
+            wktObject.on('click', pointLookupClickRegister);
+            MAP_VAR.drawnItems.addLayer(wktObject);
+
+        } else if (isSpatialRadiusSearch()) {
+            // draw circle onto map
+            var circle = L.circle([$.url().param('lat'), $.url().param('lon')], ($.url().param('radius') * 1000), {color: '#bada55'});
+            //console.log("circle", circle);
+            //addClickEventForVector(circle);  // can't click on points if this is set
+            circle.on('click', pointLookupClickRegister);
+            MAP_VAR.drawnItems.addLayer(circle);
+        }
+
+        MAP_VAR.map.on('draw:edited', function(e) {
+            //setup onclick event for this object
+            var layers = e.layers;
+            layers.eachLayer(function (layer) {
+                addClickEventForVector(layer);
+            });
+        });
 
         MAP_VAR.recordList = new Array(); // store list of records for popup
 
@@ -439,6 +566,30 @@ a.colour-by-legend-toggle {
                 clickCount = 0;
             }, 400);
         }
+    }
+
+    function addClickEventForVector(layer) {
+        layer.on('click', function(e) {
+            var params = "";
+            if (jQuery.isFunction(layer.getRadius)) {
+                // circle
+                params = getParamsForCircle(layer);
+            } else {
+                var wkt = new Wkt.Wkt();
+                wkt.fromObject(layer);
+                params = getParamsforWKT(wkt.write());
+            }
+
+            L.popup()
+                .setLatLng([e.latlng.lat, e.latlng.lng])
+                .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
+                    "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
+                        "<a id='showOnlyTheseRecords' href='" + getRecordsUrl(params) + "'>show only these records</a>")
+                .openOn(MAP_VAR.map);
+
+            getSpeciesCountInArea(params);
+            getOccurrenceCountInArea(params);
+        });
     }
 
     function changeFacetColours() {
@@ -686,7 +837,7 @@ a.colour-by-legend-toggle {
         }
 
         MAP_VAR.popupRadius = radius;
-        var mapQuery = MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, ''); // remove existing lat/lon/radius params
+        var mapQuery = MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, ''); // remove existing lat/lon/radius/wkt params
         MAP_VAR.map.spin(true);
 
         $.ajax({
@@ -855,7 +1006,7 @@ a.colour-by-legend-toggle {
      */
     function fitMapToBounds() {
         // Don't run for spatial searches, which have their own fitBounds() method
-        if (!isSpatialRadiusSearch()) {
+        if (true || !isSpatialRadiusSearch()) { // inactive if
             // all other searches (non-spatial)
             // do webservice call to get max extent of WMS data
             var jsonUrl = "${alatag.getBiocacheAjaxUrl()}/webportal/bounds.json" + MAP_VAR.query + "&callback=?";

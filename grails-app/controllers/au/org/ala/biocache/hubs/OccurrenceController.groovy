@@ -14,14 +14,11 @@
  */
 
 package au.org.ala.biocache.hubs
-
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 import java.text.SimpleDateFormat
-
 /**
  * Controller for occurrence searches and records
  */
@@ -57,7 +54,7 @@ class OccurrenceController {
         List taxaQueries = (ArrayList<String>) params.list("taxa") // will be list for even one instance
         log.debug "skin.useAlaBie = ${grailsApplication.config.skin.useAlaBie}"
 
-        if (grailsApplication.config.skin.useAlaBie && !params.q && taxaQueries && taxaQueries[0]) { // check for list with empty string
+        if (grailsApplication.config.skin.useAlaBie?.toBoolean() && grailsApplication.config.bie.baseUrl && !params.q && taxaQueries && taxaQueries[0]) { // check for list with empty string
             // taxa query - attempt GUID lookup via BIE
             List guidsForTaxa = webServicesService.getGuidsForTaxa(taxaQueries)
             requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, guidsForTaxa)
@@ -88,13 +85,14 @@ class OccurrenceController {
             JSONObject searchResults = webServicesService.fullTextSearch(requestParams)
             def wsTime = (System.currentTimeMillis() - wsStart)
             Map groupedFacets = webServicesService.getGroupedFacets() // cached
+            Map facetResultsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
 
             [
                     sr: searchResults,
                     searchRequestParams: requestParams,
                     defaultFacets: defaultFacets,
-                    groupedFacets: groupedFacets,
-                    groupedFacetsMap: postProcessingService.getMapOfGroupedFacets(searchResults.facetResults),
+                    groupedFacets: postProcessingService.getAllGroupedFacets(groupedFacets, searchResults.facetResults),
+                    groupedFacetsMap: facetResultsMap,
                     dynamicFacets: dynamicFacets,
                     hasImages: postProcessingService.resultsHaveImages(searchResults),
                     showSpeciesImages: false, // TODO
@@ -151,7 +149,7 @@ class OccurrenceController {
                         collectionInstitution: collectionInfo?.institution,
                         isCollectionAdmin: false, // TODO implement this
                         queryAssertions: null, // TODO implement this
-                        duplicateRecordDetails: null, // TODO implement
+                        duplicateRecordDetails: webServicesService.getDuplicateRecordDetails(record),
                         dataResourceCodes: facetsCacheService.getFacetNamesFor(FacetsName.DATA_RESOURCE), // TODO test
                         clubView: hasClubView,
                         errorCodes: webServicesService.getErrorCodes(),

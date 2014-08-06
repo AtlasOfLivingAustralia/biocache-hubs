@@ -14,11 +14,12 @@
  */
 
 import au.org.ala.biocache.hubs.ExtendedPluginAwareResourceBundleMessageSource
+import grails.build.logging.GrailsConsole
 import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "0.35"
+    def version = "0.47"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging
@@ -26,20 +27,17 @@ class BiocacheHubsGrailsPlugin {
             "grails-app/views/error.gsp"
     ]
 
-    // TODO Fill in these fields
     def title = "Biocache Hubs Plugin" // Headline display name of the plugin
     def author = "Nick dos Remedios"
     def authorEmail = "nick.dosremedios@csiro.au"
     def description = '''\
-A client web application for searching and displaying biodiversity data from the
-Atlas of Living Australia (ALA). Data access is via JSON REST web services from
-the ALA biocache-service app (no local DB is required for this app).
+A Grails plugin to provide the core functionality for searching and displaying biodiversity data from
+biocache web services. Data access is via JSON REST web services
+from the ALA biocache-service app (no local DB is required for this app).
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://code.google.com/p/ala-hubs/wiki/BiocacheHubsPlugin"
-
-    // Extra (optional) plugin metadata
+    def documentation = "https://github.com/AtlasOfLivingAustralia/biocache-hubs"
 
     // License: one of 'APACHE', 'GPL2', 'GPL3'
     def license = "MPL2"
@@ -48,13 +46,16 @@ the ALA biocache-service app (no local DB is required for this app).
     def organization = [ name: "Atlas of Living Australia", url: "http://www.ala.org.au/" ]
 
     // Any additional developers beyond the author specified above.
-    def developers = [ [ name: "Dave Martin", email: "david.martin@csiro.au" ]]
+    def developers = [
+            [ name: "Dave Martin", email: "david.martin@csiro.au" ],
+            [ name: "Dave Baird", email: "david.baird@csiro.au" ]
+    ]
 
     // Location of the plugin's issue tracker.
-    def issueManagement = [ system: "Google Code", url: "https://code.google.com/p/ala/issues/list" ]
+    def issueManagement = [ system: "Google Code", url: "https://github.com/AtlasOfLivingAustralia/biocache-hubs/issues" ]
 
     // Online location of the plugin's browseable source code.
-    def scm = [ url: "http://ala-hubs.googlecode.com/svn/trunk/biocache-hubs" ]
+    def scm = [ url: "https://github.com/AtlasOfLivingAustralia/biocache-hubs" ]
 
     def loadBefore = ['alaWebTheme']
 
@@ -62,16 +63,18 @@ the ALA biocache-service app (no local DB is required for this app).
         // Note this code only gets executed at compile time (not runtime)
     }
 
+    def grailsConsole =  new GrailsConsole()
+
     def doWithSpring = {
         def config = application.config
 
         // EhCache settings
         if (!config.grails.cache.config) {
             config.grails.cache.config = {
-                defaults {
+                defaults {1
                     eternal false
                     overflowToDisk false
-                    maxElementsInMemory 20000
+                    maxElementsInMemory 10000
                     timeToLiveSeconds 3600
                 }
                 cache {
@@ -101,33 +104,41 @@ the ALA biocache-service app (no local DB is required for this app).
 
         // Custom message source
         messageSource(ExtendedPluginAwareResourceBundleMessageSource) {
-            basenames = ["classpath:grails-app/i18n/messages","${application.config.biocache.baseUrl}/facets/i18n"] as String[]
+            basenames = ["WEB-INF/grails-app/i18n/messages","${application.config.biocache.baseUrl}/facets/i18n"] as String[]
             cacheSeconds = (60 * 60 * 6) // 6 hours
             useCodeAsDefaultMessage = false
+        }
+
+        grailsConsole.info "grails.resources.work.dir = " + config.grails.resources.work.dir
+
+        // check custom resources cache dir for permissions
+        if (config.grails.resources.work.dir) {
+            if (new File(config.grails.resources.work.dir).isDirectory()) {
+                // cache dir exists - check if its writable
+                if (!new File(config.grails.resources.work.dir).canWrite()) {
+                    grailsConsole.error "grails.resources.work.dir (${config.grails.resources.work.dir}) is NOT WRITABLE, please fix this!"
+                }
+            } else {
+                // check we can create the directory
+                if (!new File(config.grails.resources.work.dir).mkdir()) {
+                    grailsConsole.error "grails.resources.work.dir (${config.grails.resources.work.dir}) cannot be created, please fix this!"
+                }
+            }
         }
     }
 
     def doWithDynamicMethods = { ctx ->
-        // TODO Implement registering dynamic methods to classes (optional)
     }
 
     def doWithApplicationContext = { ctx ->
-        // TODO Implement post initialization spring config (optional)
     }
 
     def onChange = { event ->
-        // TODO Implement code that is executed when any artefact that this plugin is
-        // watching is modified and reloaded. The event contains: event.source,
-        // event.application, event.manager, event.ctx, and event.plugin.
     }
 
     def onConfigChange = { event ->
-        //this.mergeConfig(application)
-        // TODO Implement code that is executed when the project configuration changes.
-        // The event is the same as for 'onChange'.
     }
 
     def onShutdown = { event ->
-        // TODO Implement code that is executed when the application shuts down (optional)
     }
 }

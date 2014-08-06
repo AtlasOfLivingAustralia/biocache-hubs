@@ -19,7 +19,9 @@ import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.time.DateUtils
 import org.codehaus.groovy.grails.web.json.JSONObject
+import org.codehaus.groovy.grails.web.util.WebUtils
 import org.springframework.web.servlet.support.RequestContextUtils
+import grails.util.Environment
 
 import java.text.SimpleDateFormat
 
@@ -687,18 +689,47 @@ class OccurrenceTagLib {
     }
 
     /**
+     * Generate a query string for the remove spatial filter link
+     */
+    def getQueryStringForWktRemove = { attr ->
+        def paramsCopy = params.clone()
+        paramsCopy.remove("wkt")
+        paramsCopy.remove("action")
+        paramsCopy.remove("controller")
+        def queryString = WebUtils.toQueryString(paramsCopy)
+        log.debug "queryString = ${queryString}"
+        out << queryString
+    }
+
+    def getQueryStringForRadiusRemove = { attr ->
+        def paramsCopy = params.clone()
+        paramsCopy.remove("lat")
+        paramsCopy.remove("lon")
+        paramsCopy.remove("radius")
+        paramsCopy.remove("action")
+        paramsCopy.remove("controller")
+        def queryString = WebUtils.toQueryString(paramsCopy)
+        log.debug "queryString = ${queryString}"
+        out << queryString
+    }
+
+    /**
      * Output the meta tags (HTML head section) for the build meta data in application.properties
      * E.g.
      * <meta name="svn.revision" content="${g.meta(name:'svn.revision')}"/>
      * etc.
      *
-     * @see _Events.groovy#eventCompileStart
+     * Updated to use properties provided by build-info plugin
      */
     def addApplicationMetaTags = { attrs ->
-        def metaList = ['svn.revision', 'svn.url', 'java.version', 'java.name', 'build.hostname', 'app.version', 'app.build']
+        // def metaList = ['svn.revision', 'svn.url', 'java.version', 'java.name', 'build.hostname', 'app.version', 'app.build']
+        def metaList = ['app.version', 'app.grails.version', 'build.date', 'scm.version', 'environment.BUILD_NUMBER', 'environment.BUILD_ID', 'environment.BUILD_TAG', 'environment.GIT_BRANCH', 'environment.GIT_COMMIT']
         def mb = new MarkupBuilder(out)
+
+        mb.meta(name:'grails.env', content: "${Environment.current}")
         metaList.each {
             mb.meta(name:it, content: g.meta(name:it))
         }
+        mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
     }
 }

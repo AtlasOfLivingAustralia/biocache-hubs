@@ -1,4 +1,3 @@
-
 <g:if test="${collectionLogo}">
     <div class="sidebar">
         <img src="${collectionLogo}" alt="institution logo" id="institutionLogo"/>
@@ -212,9 +211,9 @@
         <div id="occurrenceImages" style="margin-top:5px;">
             <g:each in="${record.images}" var="image">
                 <div style="margin-bottom:10px;">
-                    <g:if test="${useImageService}">
-                        <a href="${grailsApplication.config.images.baseUrl}/image/view?imageId=${image.filePath}" target="_blank">
-                            <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;"/>
+                    <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
+                        <a href="${grailsApplication.config.images.viewerUrl}${image.filePath}" target="_blank">
+                            <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;" alt="Click to view this image in a large viewer"/>
                         </a>
                     </g:if>
                     <g:else>
@@ -232,8 +231,8 @@
                     <g:if test="${record.raw.occurrence.rightsholder}">
                         <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.occurrence.rightsholder}</cite><br/>
                     </g:if>
-                    <g:if test="${useImageService}">
-                        <a href="${grailsApplication.config.images.baseUrl}/image/details?imageId=${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="Image details"/></a>
+                    <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
+                        <a href="${grailsApplication.config.images.metadataUrl}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
                     </g:if>
                     <g:else>
                         <a href="${image.alternativeFormats.imageUrl}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator02" default="Original image"/></a>

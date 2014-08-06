@@ -305,11 +305,12 @@ class PostProcessingService {
 
     /**
      * Create a Map of facet fields for a "lookup" in _facets.gsp
+     * Also normalises some fields (decade)
      *
      * @param facetResults
      * @return
      */
-    def Map getMapOfGroupedFacets(JSONArray facetResults) {
+    def Map getMapOfFacetResults(JSONArray facetResults) {
         Map facetMap = [:]
 
         facetResults.each { fr ->
@@ -323,5 +324,45 @@ class PostProcessingService {
         }
 
         facetMap
+    }
+
+    /**
+     * Add any ungrouped facets from search results to the groupedFacetsMap
+     * used to construct the facets column in search results.
+     *
+     * @param groupedFacets
+     * @param ungroupedFacetsList
+     * @return
+     */
+    def Map getAllGroupedFacets(Map groupedFacets, def facetResults) {
+        List ungroupedFacetsList = getUngroupedFacetsList(groupedFacets, getMapOfFacetResults(facetResults))
+        def finalGroupedFacets = groupedFacets.clone()
+        finalGroupedFacets.put("Ungrouped", ungroupedFacetsList)
+        finalGroupedFacets
+    }
+
+    /**
+     * Get a list of facet fields (from search results) that are
+     * NOT in the grouped facets Map.
+     *
+     * @param groupedFacets
+     * @param facetResults
+     * @return
+     */
+    def List getUngroupedFacetsList(Map groupedFacets, def facetResults) {
+        def groupedFacetsList = []
+        def ungroupedFacetsList = []
+        // get a flat list of facets in groupedFacets (search independent)
+        groupedFacets.each { grp ->
+            groupedFacetsList.addAll(grp.value)
+        }
+
+        facetResults.each {
+            if (!groupedFacetsList.contains(it.key)) {
+                ungroupedFacetsList.add(it.key)
+            }
+        }
+
+        ungroupedFacetsList
     }
 }

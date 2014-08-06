@@ -16,14 +16,58 @@
     <meta name="section" content="search"/>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <title><g:message code="home.index.title" default="Search for records"/> | ${hubDisplayName}</title>
-    <r:require modules="jquery"/>
+    <style type="text/css">
+        #leafletMap {
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 18px;
+        }
+        #leafletMap, input {
+            margin: 0px;
+        }
+        .tooltip-inner {
+            max-width: 350px;
+            white-space: nowrap;
+            /* If max-width does not work, try using width instead */
+            /*width: 150px;*/
+        }
+        .leaflet-control-layers-base  {
+            font-size: 12px;
+        }
+        .leaflet-control-layers-base label,  .leaflet-control-layers-base input, .leaflet-control-layers-base button, .leaflet-control-layers-base select, .leaflet-control-layers-base textarea {
+            margin:0px;
+            height:20px;
+            font-size: 12px;
+            line-height:18px;
+            width:auto;
+        }
+
+        .leaflet-control-layers {
+            opacity:0.8;
+            filter:alpha(opacity=80);
+        }
+
+        .leaflet-control-layers-overlays label {
+            font-size: 12px;
+            line-height: 18px;
+            margin-bottom: 0px;
+        }
+    </style>
+    <script src="http://maps.google.com/maps/api/js?v=3.5&sensor=false"></script>
+    <r:require modules="jquery, leaflet"/>
     <r:script>
         $(document).ready(function() {
 
+            var mapInit = false;
             $('a[data-toggle="tab"]').on('shown', function(e) {
                 //console.log("this", $(this).attr('id'));
                 var id = $(this).attr('id');
                 location.hash = 'tab_'+ $(e.target).attr('href').substr(1);
+
+                if (id == "t5" && !mapInit) {
+                    initialiseMap();
+                    mapInit = true;
+                }
             });
             // catch hash URIs and trigger tabs
             if (location.hash !== '') {
@@ -52,7 +96,257 @@
                     $($this).toggleClass('toggleOptionsActive');
                 });
             });
+
         });
+
+        // extend tooltip with callback
+        var tmp = $.fn.tooltip.Constructor.prototype.show;
+        $.fn.tooltip.Constructor.prototype.show = function () {
+            tmp.call(this);
+            if (this.options.callback) {
+                this.options.callback();
+            }
+        };
+
+        var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+            'Imagery © <a href="http://mapbox.com">Mapbox</a>';
+        var mbUrl = 'https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png';
+        var defaultBaseLayer = L.tileLayer(mbUrl, {id: 'examples.map-20v6611k', attribution: mbAttr});
+
+        // Global var to store map config
+        var MAP_VAR = {
+            map : null,
+            mappingUrl : "${mappingUrl}",
+            query : "${searchString}",
+            queryDisplayString : "${queryDisplayString}",
+            //center: [-30.0,133.6],
+            defaultLatitude : "${grailsApplication.config.map.defaultLatitude?:'-25.4'}",
+            defaultLongitude : "${grailsApplication.config.map.defaultLongitude?:'133.6'}",
+            defaultZoom : "${grailsApplication.config.map.defaultZoom?:'4'}",
+            overlays : {
+                <g:if test="${grailsApplication.config.map.overlay.url}">
+                    "${grailsApplication.config.map.overlay.name?:'overlay'}" : L.tileLayer.wms("${grailsApplication.config.map.overlay.url}", {
+                        layers: 'ALA:ucstodas',
+                        format: 'image/png',
+                        transparent: true,
+                        attribution: "${grailsApplication.config.map.overlay.name?:'overlay'}"
+                    })
+                </g:if>
+            },
+            baseLayers : {
+                "Minimal" : defaultBaseLayer,
+                //"Night view" : L.tileLayer(cmUrl, {styleId: 999,   attribution: cmAttr}),
+                "Road" :  new L.Google('ROADMAP'),
+                "Terrain" : new L.Google('TERRAIN'),
+                "Satellite" : new L.Google('HYBRID')
+            },
+            layerControl : null,
+            //currentLayers : [],
+            //additionalFqs : '',
+            //zoomOutsideScopedRegion: ${(grailsApplication.config.map.zoomOutsideScopedRegion == false || grailsApplication.config.map.zoomOutsideScopedRegion == "false") ? false : true}
+        };
+
+        function initialiseMap() {
+            //alert('starting map');
+            if(MAP_VAR.map != null){
+                return;
+            }
+
+            //initialise map
+            MAP_VAR.map = L.map('leafletMap', {
+                center: [MAP_VAR.defaultLatitude, MAP_VAR.defaultLongitude],
+                zoom: MAP_VAR.defaultZoom,
+                minZoom: 1,
+                scrollWheelZoom: false,
+//                fullscreenControl: true,
+//                fullscreenControlOptions: {
+//                    position: 'topleft'
+//                }
+            });
+
+            //add edit drawing toolbar
+            // Initialise the FeatureGroup to store editable layers
+            MAP_VAR.drawnItems = new L.FeatureGroup();
+            MAP_VAR.map.addLayer(MAP_VAR.drawnItems);
+
+            // Initialise the draw control and pass it the FeatureGroup of editable layers
+            MAP_VAR.drawControl = new L.Control.Draw({
+                edit: {
+                    featureGroup: MAP_VAR.drawnItems
+                },
+                draw: {
+                    polyline: false,
+                    rectangle: {
+                        shapeOptions: {
+                            color: '#bada55'
+                        }
+                    },
+                    circle: {
+                        shapeOptions: {
+                            color: '#bada55'
+                        }
+                    },
+                    marker: false,
+                    polygon: {
+                        allowIntersection: false, // Restricts shapes to simple polygons
+                        drawError: {
+                            color: '#e1e100', // Color the shape will turn when intersects
+                            message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                        },
+                        shapeOptions: {
+                            color: '#bada55'
+                        }
+                    }
+                }
+            });
+            MAP_VAR.map.addControl(MAP_VAR.drawControl);
+
+            MAP_VAR.map.on('draw:created', function(e) {
+                //setup onclick event for this object
+                var layer = e.layer;
+                //console.log("layer",layer, layer._latlng.lat);
+                generatePopup(layer, layer._latlng);
+                addClickEventForVector(layer);
+                MAP_VAR.drawnItems.addLayer(layer);
+            });
+
+            MAP_VAR.map.on('draw:edited', function(e) {
+                //setup onclick event for this object
+                var layers = e.layers;
+                layers.eachLayer(function (layer) {
+                    generatePopup(layer, layer._latlng);
+                    addClickEventForVector(layer);
+                });
+            });
+
+            //add the default base layer
+            MAP_VAR.map.addLayer(defaultBaseLayer);
+
+            L.control.coordinates({position:"bottomleft", useLatLngOrder: true}).addTo(MAP_VAR.map); // coordinate plugin
+
+            MAP_VAR.layerControl = L.control.layers(MAP_VAR.baseLayers, MAP_VAR.overlays, {collapsed:true, position:'topleft'});
+            MAP_VAR.layerControl.addTo(MAP_VAR.map);
+
+            L.Util.requestAnimFrame(MAP_VAR.map.invalidateSize, MAP_VAR.map, !1, MAP_VAR.map._container);
+            L.Browser.any3d = false; // FF bug prevents selects working properly
+
+            // Add a help tooltip to map when first loaded
+            MAP_VAR.map.whenReady(function() {
+                var opts = {
+                    placement:'right',
+                    callback: destroyHelpTooltip // hide help tooltip when mouse over the tools
+                }
+                $('.leaflet-draw-toolbar a').tooltip(opts);
+                $('.leaflet-draw-toolbar').first().attr('title','Start by choosing a tool').tooltip({placement:'right'}).tooltip('show');
+            });
+
+            // Hide help tooltip on first click event
+            var once = true;
+            MAP_VAR.map.on('click', function(e) {
+                if (once) {
+                    $('.leaflet-draw-toolbar').tooltip('destroy');
+                    once = false;
+                }
+            });
+        }
+
+        var once = true;
+        function destroyHelpTooltip() {
+            if ($('.leaflet-draw-toolbar').length && once) {
+                $('.leaflet-draw-toolbar').tooltip('destroy');
+                once = false;
+            }
+        }
+
+        function addClickEventForVector(layer) {
+            layer.on('click', function(e) {
+                generatePopup(layer, e.latlng);
+            });
+        }
+
+        function generatePopup(layer, latlng) {
+            console.log('generatePopup', layer, latlng);
+            var params = "";
+            if (jQuery.isFunction(layer.getRadius)) {
+                // circle
+                params = getParamsForCircle(layer);
+            } else {
+                var wkt = new Wkt.Wkt();
+                wkt.fromObject(layer);
+                params = getParamsforWKT(wkt.write());
+            }
+
+            if (latlng == null) {
+                latlng = layer.getBounds().getCenter();
+            }
+            console.log('latlng', latlng);
+            L.popup()
+                .setLatLng([latlng.lat, latlng.lng])
+                .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
+                    "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
+                        "<a id='showOnlyTheseRecords' href='${g.createLink(uri:'/occurrences/search')}" + params + "'><g:message code="map.search.link.text" default="Search for records in this area"/></a>")
+                .openOn(MAP_VAR.map);
+
+            //layer.openPopup();
+
+            getSpeciesCountInArea(params);
+            getOccurrenceCountInArea(params);
+        }
+
+        function getParamsForCircle(circle) {
+            var paramsObj = $.url(MAP_VAR.query).param();
+            delete paramsObj.wkt;
+            delete paramsObj.lat;
+            delete paramsObj.lon;
+            delete paramsObj.radius;
+            var latlng = circle.getLatLng();
+            return "?" + $.param(paramsObj) + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
+        }
+
+        function getSpeciesCountInArea(params) {
+            speciesCount = -1;
+            $.getJSON(baseFacetChart.biocacheServicesUrl + "/occurrence/facets.json" + params + "&facets=taxon_name&callback=?",
+                function( data ) {
+                    var speciesCount = data[0].count;
+                    document.getElementById("speciesCountDiv").innerHTML = speciesCount;
+                });
+        }
+
+        function getOccurrenceCountInArea(params) {
+            occurrenceCount = -1;
+            $.getJSON(baseFacetChart.biocacheServicesUrl + "/occurrences/search.json" + params + "&pageSize=0&facet=off&callback=?",
+                function( data ) {
+                    var occurrenceCount = data.totalRecords;
+
+                    document.getElementById("occurrenceCountDiv").innerHTML = occurrenceCount;
+                });
+        }
+
+        function getRecordsUrl(params) {
+            return window.location.origin + window.location.pathname + params
+        }
+
+        function getParamsforWKT(wkt) {
+            //console.log("query", MAP_VAR.query, $.url(MAP_VAR.query).param());
+            var paramsObj = $.url(MAP_VAR.query).param();
+            delete paramsObj.wkt;
+            delete paramsObj.lat;
+            delete paramsObj.lon;
+            delete paramsObj.radius;
+            //return MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + "&wkt=" + encodeURI(wkt);
+            return "?q=*:*" + $.param(paramsObj) + "&wkt=" + encodeURI(wkt);
+        }
+
+        function getParamsForCircle(circle) {
+            var paramsObj = $.url(MAP_VAR.query).param();
+            delete paramsObj.wkt;
+            delete paramsObj.lat;
+            delete paramsObj.lon;
+            delete paramsObj.radius;
+            var latlng = circle.getLatLng();
+            return "?q=*:*" + $.param(paramsObj) + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
+        }
     </r:script>
 </head>
 
@@ -74,7 +368,7 @@
                     <li><a id="t2" href="#advanceSearch" data-toggle="tab"><g:message code="home.index.navigator02" default="Advanced search"/></a></li>
                     <li><a id="t3" href="#taxaUpload" data-toggle="tab"><g:message code="home.index.navigator03" default="Batch taxon search"/></a></li>
                     <li><a id="t4" href="#catalogUpload" data-toggle="tab"><g:message code="home.index.navigator04" default="Catalogue number search"/></a></li>
-                    <li><a id="t5" href="#shapeFileUpload" data-toggle="tab"><g:message code="home.index.navigator05" default="Shapefile search"/></a></li>
+                    <li><a id="t5" href="#spatialSearch" data-toggle="tab"><g:message code="home.index.navigator05" default="Spatial search"/></a></li>
                 </ul>
             </div>
             <div class="tab-content searchPage">
@@ -124,14 +418,16 @@
                             <input type="submit" name="action" value=<g:message code="home.index.catalogupload.button01" default="Search"/> class="btn"/></p>
                     </form>
                 </div><!-- end #catalogUploadDiv div -->
-                <div id="shapeFileUpload" class="tab-pane">
-                    <form name="shapeUploadForm" id="shapeUploadForm" action="${request.contextPath}/occurrences/shapeUpload" method="POST" enctype="multipart/form-data">
-                        <p><g:message code="home.index.shapefileupload.des01" default="Note: this feature is still experimental. If there are multiple polygons present in the shapefile, only the first polygon will be used for searching"/>.</p>
-                        <p><g:message code="home.index.shapefileupload.des02" default="Upload a shapefile (*.shp)."/></p>
-                        <p><input type="file" name="file" class="" /></p>
-                        <p><input type="submit" value=<g:message code="home.index.shapefileupload.button01" default="Search"/> class="btn"/></p>
-                    </form>
-                </div><!-- end #shapeFileUpload  -->
+                <div id="spatialSearch" class="tab-pane">
+                    <div class="row-fluid">
+                        <div class="span3">
+                            <g:message code="search.map.helpText" default="Select one of the draw tools (polygon, rectangle, circle), draw a shape and click the search link that pops up."/>
+                        </div>
+                        <div class="span9">
+                            <div id="leafletMap" style="height:600px;"></div>
+                        </div>
+                    </div>
+                </div><!-- end #spatialSearch  -->
             </div><!-- end .tab-content -->
         </div><!-- end .span12 -->
     </div><!-- end .row-fluid -->

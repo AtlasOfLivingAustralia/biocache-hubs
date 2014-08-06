@@ -37,7 +37,7 @@ skin.orgNameLong = "Generic Portal"
 skin.orgNameShort = "Generic"
 skin.attribution = ""
 skin.useAlaSpatialPortal = false
-skin.useAlaBie = true
+skin.useAlaBie = false
 skin.useAlaImageService = false
 skin.taxaLinks.baseUrl = "http://bie.ala.org.au/species/" // 3rd party species pages. Leave blank for no links
 skin.taxaLinks.identifier = "guid"  // "guid" or "name". Only used if skin.useAlaBie = false TODO: not implemented
@@ -51,7 +51,10 @@ biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
 collections.baseUrl = "http://collections.ala.org.au"
 
-images.baseUrl="http://images.ala.org.au"
+// images
+images.baseUrl = "http://images.ala.org.au"
+images.viewerUrl = "http://images.ala.org.au/image/viewer?imageId="
+images.metadataUrl = "http://images.ala.org.au/image/details?imageId="
 
 // For sandbox environment
 //spatial.params = "&dynamic=true&ws=http%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=http%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"
@@ -82,8 +85,12 @@ map.cloudmade.key = "BC9A493B41014CAABB98F0471D759707"
 map.defaultFacetMapColourBy = "basis_of_record"
 map.pointColour = "df4a21"
 map.zoomOutsideScopedRegion = true
-map.defaultCentreCoords
+map.defaultLatitude
+map.defaultLongitude
 map.defaultZoom
+// 3rd part WMS layer to show on maps. TODO: Allow multiple overlays
+map.overlay.url
+map.overlay.name
 
 suppressIssues = "" // "missingCoordinatePrecision"
 sensitiveDataset.list = ""

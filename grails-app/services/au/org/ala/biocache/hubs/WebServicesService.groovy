@@ -47,7 +47,7 @@ class WebServicesService {
     }
 
     def JSONArray getMapLegend(String queryString) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/webportal/legend?${queryString}"
+        def url = "${grailsApplication.config.biocache.baseUrl}/mapping/legend?${queryString}"
         JSONArray json = getJsonElements(url)
         def facetName
         Map facetLabelsMap = [:]
@@ -80,6 +80,25 @@ class WebServicesService {
     def JSONArray getQueryAssertions(String id) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/${id.encodeAsURL()}/assertionQueries"
         getJsonElements(url)
+    }
+
+    def JSONObject getDuplicateRecordDetails(JSONObject record) {
+        log.debug "getDuplicateRecordDetails -> ${record?.processed?.occurrence?.associatedOccurrences}"
+        if (record?.processed?.occurrence?.associatedOccurrences) {
+            def status = record.processed.occurrence.duplicationStatus
+            def uuid
+
+            if (status == "R") {
+                // reference record so use its UUID
+                uuid = record.raw.uuid
+            } else {
+                // duplicate record so use the reference record UUID
+                uuid = record.processed.occurrence.associatedOccurrences
+            }
+
+            def url = "${grailsApplication.config.biocache.baseUrl}/duplicates/${uuid.encodeAsURL()}"
+            getJsonElements(url)
+        }
     }
 
     @Cacheable('longTermCache')
@@ -158,7 +177,7 @@ class WebServicesService {
     @Cacheable('longTermCache')
     def Map getLayersMetaData() {
         Map layersMetaMap = [:]
-        def url = "${grailsApplication.config.spatial.baseUrl}/layers.json"
+        def url = "${grailsApplication.config.spatial.baseUrl}/ws/layers"
         def jsonArray = getJsonElements(url)
 
         jsonArray.each {

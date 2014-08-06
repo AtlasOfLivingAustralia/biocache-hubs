@@ -119,7 +119,7 @@
                             <g:set var="count" value="${0}"/>
                             <g:each var="group" in="${groupedFacets}">
                                 <div class="facetsColumn">
-                                    <div class="facetGroupName">${group.key}</div>
+                                    <div class="facetGroupName"><g:message code="facet.group.${group.key}" default="${group.key}"/></div>
                                     <g:each in="${group.value}" var="facetFromGroup">
                                         %{--<g:set var="facet" value="${defaultFacets.get(facetFromGroup)}"/>--}%
                                         <g:if test="${defaultFacets.containsKey(facetFromGroup)}">
@@ -145,6 +145,7 @@
                     </div>
                 </div>
             </div><!-- /.span3 -->
+            <!-- Results column -->
             <div class="span9">
                 <a name="map" class="jumpTo"></a><a name="list" class="jumpTo"></a>
                 <g:if test="${false && flash.message}"><%-- OFF for now --%>
@@ -154,12 +155,10 @@
                     </div>
                 </g:if>
                 <div id="resultsReturned">
-                    %{--<div class="alert alert-info ">--}%
                         <span id="returnedText"><strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong> <g:message code="list.resultsretuened.span.returnedtext" default="results for"/></span>
                         <span class="queryDisplay"><strong>${raw(queryDisplay)}</strong></span>&nbsp;&nbsp;
-                    %{--</div>--}%
                     %{--<g:set var="hasFq" value="${false}"/>--}%
-                    <g:if test="${sr.activeFacetMap?.size() > 0}">
+                    <g:if test="${sr.activeFacetMap?.size() > 0 || params.wkt || params.radius}">
                         <div class="activeFilters">
                             <b><alatag:message code="search.filters.heading" default="Current filters"/></b>:&nbsp;
                             <g:each var="fq" in="${sr.activeFacetMap}">
@@ -168,6 +167,17 @@
                                     <alatag:currentFilterItem item="${fq}" cssClass="btn btn-mini" addCloseBtn="${true}"/>
                                 </g:if>
                             </g:each>
+                            <g:if test="${params.wkt}"><%-- WKT spatial filter   --%>
+                                <g:set var="spatialType" value="${params.wkt =~ /^\w+/}"/>
+                                <a href="${alatag.getQueryStringForWktRemove()}" class="btn btn-mini tooltips" title="Click to remove this filter">Spatial filter: ${spatialType[0]}
+                                    <span class="closeX">×</span>
+                                </a>
+                            </g:if>
+                            <g:elseif test="${params.radius && params.lat && params.lon}">
+                                <a href="${alatag.getQueryStringForRadiusRemove()}" class="btn btn-mini tooltips" title="Click to remove this filter">Spatial filter: CIRCLE
+                                    <span class="closeX">×</span>
+                                </a>
+                            </g:elseif>
                             <g:if test="${sr.activeFacetMap?.size() > 1}">
                                 <button class="btn btn-primary btn-mini activeFilter" data-facet="all"
                                         title="Click to clear all filters"><span
@@ -305,7 +315,7 @@
                             </div>
                         </g:if>
                         <div id="searchNavBar" class="pagination">
-                            <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}" params="${[taxa:params.taxa, q:params.q, fq:params.fq]}"/>
+                            <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}" params="${[taxa:params.taxa, q:params.q, fq:params.fq, wkt:params.wkt, lat:params.lat, lon:params.lon, radius:params.radius]}"/>
                         </div>
                     </div><!--end solrResults-->
                     <div id="mapView" class="tab-pane">
