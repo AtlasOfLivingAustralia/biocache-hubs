@@ -351,7 +351,7 @@ a.colour-by-legend-toggle {
 
     function getSpeciesCountInArea(params) {
         speciesCount = -1;
-        $.getJSON(baseFacetChart.biocacheServicesUrl + "/occurrence/facets.json" + params + "&facets=taxon_name&callback=?",
+        $.getJSON("${grailsApplication.config.biocache.baseUrl}/occurrence/facets.json" + params + "&facets=taxon_name&callback=?",
             function( data ) {
                 var speciesCount = data[0].count;
                 document.getElementById("speciesCountDiv").innerHTML = speciesCount;
@@ -359,7 +359,7 @@ a.colour-by-legend-toggle {
     }
     function getOccurrenceCountInArea(params) {
         occurrenceCount = -1;
-        $.getJSON(baseFacetChart.biocacheServicesUrl + "/occurrences/search.json" + params + "&pageSize=0&facet=off&callback=?",
+        $.getJSON("${grailsApplication.config.biocache.baseUrl}/occurrences/search.json" + params + "&pageSize=0&facet=off&callback=?",
             function( data ) {
                 var occurrenceCount = data.totalRecords;
 
