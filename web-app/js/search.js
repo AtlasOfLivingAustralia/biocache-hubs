@@ -750,7 +750,10 @@ function removeFilter(el) {
  * Load all the charts 
  */
 function loadAllCharts() {
-
+    // set baseURls...
+    baseFacetChart.biocacheServicesUrl = BC_CONF.biocacheServiceUrl;
+    baseFacetChart.collectionsUrl = BC_CONF.collectoryUrl;
+    baseFacetChart.biocacheWebappUrl = ""; // keep empty so URLs come from the same host
     //console.log("Loading charts.....");
     var bgcolour = BC_CONF.chartsBgColour; //"#fffef7"; // was "#F0F0E8"
 

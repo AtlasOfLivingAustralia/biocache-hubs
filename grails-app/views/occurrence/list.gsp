@@ -31,6 +31,7 @@
             queryString: "${queryDisplay.encodeAsJavaScript()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
+            collectoryUrl: "${grailsApplication.config.collectory.baseUrl}",
             skin: "${grailsApplication.config.skin.layout}",
             defaultListView: "${grailsApplication.config.defaultListView}",
             resourceName: "${grailsApplication.config.skin.orgNameLong}",
