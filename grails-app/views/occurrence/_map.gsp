@@ -335,7 +335,9 @@ a.colour-by-legend-toggle {
         delete paramsObj.lat;
         delete paramsObj.lon;
         delete paramsObj.radius;
+        console.log("paramsObj", paramsObj, $.param(paramsObj));
         //return MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + "&wkt=" + encodeURI(wkt);
+        $.ajaxSetup({ traditional: true }); // tells jquery $.param to NOT include array style params (which break URL)
         return "?" + $.param(paramsObj) + "&wkt=" + encodeURI(wkt);
     }
 
@@ -346,6 +348,7 @@ a.colour-by-legend-toggle {
         delete paramsObj.lon;
         delete paramsObj.radius;
         var latlng = circle.getLatLng();
+        $.ajaxSetup({ traditional: true }); // tells jquery $.param to NOT include array style params (which break URL)
         return "?" + $.param(paramsObj) + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
     }
 
