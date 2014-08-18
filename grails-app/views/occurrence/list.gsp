@@ -40,7 +40,8 @@
             //mapDefaultCentreCoords:"${grailsApplication.config.mapDefaultCentreCoords}",
             //mapDefaultZoom:"${grailsApplication.config.mapDefaultZoom}",
             hasMultimedia: ${hasImages?:'false'}, // will be either true or false
-            chartsBgColour: "${grailsApplication.config.chartsBgColour?:'#fffef7'}"
+            chartsBgColour: "${grailsApplication.config.chartsBgColour?:'#fffef7'}",
+            locale: "${request.locale}"
         };
 
         google.load('maps','3.5',{ other_params: "sensor=false" });

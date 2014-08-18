@@ -40,7 +40,12 @@ class MessagesController {
 
         Map props = messageSource.listMessageCodes(locale?:request.locale)
         //log.debug "props = ${props}"
-        response.setHeader("Content-type", "text/plain")
+
+        //Alan modified it for outstream utf-8 on 16/08/2014 --- START
+        //response.setHeader("Content-type", "text/plain")
+        response.setHeader("Content-type", "text/plain; charset=UTF-8")
+        //Alan modified it --- END
+
         render ( text: props.collect{ "${it.key}=${it.value}" }.join("\n") )
     }
 }
