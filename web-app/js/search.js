@@ -511,10 +511,10 @@ $(document).ready(function() {
      * Load Spring i18n messages into JS
      */
     jQuery.i18n.properties({
-        name:'messages',
+        name: 'messages',
         path: BC_CONF.contextPath + '/messages/i18n/',
-        mode:'map'
-        //language:'es', // default is to use browser specified locale
+        mode: 'map',
+        language: BC_CONF.locale // default is to use browser specified locale
         //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
     });
     //alert( "default.paginate.prev = " + jQuery.i18n.prop('default.paginate.prev'));
