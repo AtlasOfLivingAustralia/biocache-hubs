@@ -554,6 +554,7 @@ a.colour-by-legend-toggle {
     }
 
     var clickCount = 0;
+
     /**
     * Fudge to allow double clicks to propagate to map while allowing single clicks to be registered
     *

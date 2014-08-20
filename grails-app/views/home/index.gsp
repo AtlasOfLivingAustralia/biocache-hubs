@@ -52,10 +52,52 @@
             line-height: 18px;
             margin-bottom: 0px;
         }
+        #wktInput {
+            height: 280px;
+            width: 95%;
+        }
+        #addWkt {
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .accordion-heading .accordion-toggle {
+            padding: 8px 10px;
+        }
+
+        .accordion-inner {
+            padding: 10px 10px;
+        }
+
+        .accordion-caret .accordion-toggle:hover {
+            text-decoration: none;
+        }
+        .accordion-caret .accordion-toggle:hover span,
+        .accordion-caret .accordion-toggle:hover strong {
+            text-decoration: underline;
+        }
+        .accordion-caret .accordion-toggle:before {
+            font-size: 18px;
+            vertical-align: -1px;
+        }
+        .accordion-caret .accordion-toggle:not(.collapsed):before {
+            content: "▾";
+            margin-right: 0px;
+        }
+        .accordion-caret .accordion-toggle.collapsed:before {
+            content: "▸";
+            margin-right: 0px;
+        }
     </style>
     <script src="http://maps.google.com/maps/api/js?v=3.5&sensor=false"></script>
-    <r:require modules="jquery, leaflet"/>
+    <r:require modules="jquery, leaflet, mapCommon"/>
     <r:script>
+        // global var for GSP tags/vars to be passed into JS functions
+        var BC_CONF = {
+            biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
+            contextPath: "${request.contextPath}"
+        }
+
         $(document).ready(function() {
 
             var mapInit = false;
@@ -97,7 +139,29 @@
                 });
             });
 
-        });
+            // Add WKT string to map button click
+            $('#addWkt').click(function() {
+                var wktString = $('#wktInput').val();
+
+                if (wktString) {
+                    drawWktObj($('#wktInput').val());
+                } else {
+                    alert("Please paste a valid WKT string"); // TODO i18n this
+                }
+            });
+
+            /**
+             * Load Spring i18n messages into JS
+             */
+            jQuery.i18n.properties({
+                name: 'messages',
+                path: '${request.contextPath}/messages/i18n/',
+                mode: 'map',
+                language: '${request.locale}' // default is to use browser specified locale
+                //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
+            });
+
+        }); // end $(document).ready()
 
         // extend tooltip with callback
         var tmp = $.fn.tooltip.Constructor.prototype.show;
@@ -158,7 +222,7 @@
                 center: [MAP_VAR.defaultLatitude, MAP_VAR.defaultLongitude],
                 zoom: MAP_VAR.defaultZoom,
                 minZoom: 1,
-                scrollWheelZoom: false,
+                scrollWheelZoom: false
 //                fullscreenControl: true,
 //                fullscreenControlOptions: {
 //                    position: 'topleft'
@@ -259,94 +323,6 @@
             }
         }
 
-        function addClickEventForVector(layer) {
-            layer.on('click', function(e) {
-                generatePopup(layer, e.latlng);
-            });
-        }
-
-        function generatePopup(layer, latlng) {
-            console.log('generatePopup', layer, latlng);
-            var params = "";
-            if (jQuery.isFunction(layer.getRadius)) {
-                // circle
-                params = getParamsForCircle(layer);
-            } else {
-                var wkt = new Wkt.Wkt();
-                wkt.fromObject(layer);
-                params = getParamsforWKT(wkt.write());
-            }
-
-            if (latlng == null) {
-                latlng = layer.getBounds().getCenter();
-            }
-            console.log('latlng', latlng);
-            L.popup()
-                .setLatLng([latlng.lat, latlng.lng])
-                .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
-                    "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
-                        "<a id='showOnlyTheseRecords' href='${g.createLink(uri:'/occurrences/search')}" + params + "'><g:message code="map.search.link.text" default="Search for records in this area"/></a>")
-                .openOn(MAP_VAR.map);
-
-            //layer.openPopup();
-
-            getSpeciesCountInArea(params);
-            getOccurrenceCountInArea(params);
-        }
-
-        function getParamsForCircle(circle) {
-            var paramsObj = $.url(MAP_VAR.query).param();
-            delete paramsObj.wkt;
-            delete paramsObj.lat;
-            delete paramsObj.lon;
-            delete paramsObj.radius;
-            var latlng = circle.getLatLng();
-            return "?" + $.param(paramsObj) + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
-        }
-
-        function getSpeciesCountInArea(params) {
-            speciesCount = -1;
-            $.getJSON("${grailsApplication.config.biocache.baseUrl}/occurrence/facets.json" + params + "&facets=taxon_name&callback=?",
-                function( data ) {
-                    var speciesCount = data[0].count;
-                    document.getElementById("speciesCountDiv").innerHTML = speciesCount;
-                });
-        }
-
-        function getOccurrenceCountInArea(params) {
-            occurrenceCount = -1;
-            $.getJSON("${grailsApplication.config.biocache.baseUrl}/occurrences/search.json" + params + "&pageSize=0&facet=off&callback=?",
-                function( data ) {
-                    var occurrenceCount = data.totalRecords;
-
-                    document.getElementById("occurrenceCountDiv").innerHTML = occurrenceCount;
-                });
-        }
-
-        function getRecordsUrl(params) {
-            return window.location.origin + window.location.pathname + params
-        }
-
-        function getParamsforWKT(wkt) {
-            //console.log("query", MAP_VAR.query, $.url(MAP_VAR.query).param());
-            var paramsObj = $.url(MAP_VAR.query).param();
-            delete paramsObj.wkt;
-            delete paramsObj.lat;
-            delete paramsObj.lon;
-            delete paramsObj.radius;
-            //return MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + "&wkt=" + encodeURI(wkt);
-            return "?q=*:*" + $.param(paramsObj) + "&wkt=" + encodeURI(wkt);
-        }
-
-        function getParamsForCircle(circle) {
-            var paramsObj = $.url(MAP_VAR.query).param();
-            delete paramsObj.wkt;
-            delete paramsObj.lat;
-            delete paramsObj.lon;
-            delete paramsObj.radius;
-            var latlng = circle.getLatLng();
-            return "?q=*:*" + $.param(paramsObj) + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
-        }
     </r:script>
 </head>
 
@@ -421,7 +397,29 @@
                 <div id="spatialSearch" class="tab-pane">
                     <div class="row-fluid">
                         <div class="span3">
-                            <g:message code="search.map.helpText" default="Select one of the draw tools (polygon, rectangle, circle), draw a shape and click the search link that pops up."/>
+                            <div>
+                                <g:message code="search.map.helpText" default="Select one of the draw tools (polygon, rectangle, circle), draw a shape and click the search link that pops up."/>
+                            </div>
+                            <br>
+                            <div class="accordion accordion-caret" id="accordion2">
+                                <div class="accordion-group">
+                                    <div class="accordion-heading">
+                                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                                            <g:message code="search.map.importToggle" default="Import WKT"/>
+                                        </a>
+                                    </div>
+                                    <div id="collapseOne" class="accordion-body collapse">
+                                        <div class="accordion-inner">
+                                            <p><g:message code="search.map.importText"/></p>
+                                            <p><g:message code="search.map.wktHelpText" default="Optionally, paste a WKT string: "/></p>
+                                            <textarea type="text" id="wktInput"></textarea>
+                                            <br>
+                                            <button class="btn btn-small" id="addWkt"><g:message code="search.map.wktButtonText" default="Add to map"/></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="span9">
                             <div id="leafletMap" style="height:600px;"></div>

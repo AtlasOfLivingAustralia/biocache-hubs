@@ -18,6 +18,7 @@ modules = {
         resource url: [dir:'css', file:'bootstrapAdditions.css', plugin: 'biocache-hubs']
         resource url: [dir:'js', file:'jquery.autocomplete.js', plugin:'biocache-hubs', disposition: 'head']
         resource url: [dir:'js', file:'bieAutocomplete.js', plugin:'biocache-hubs', disposition: 'head']
+        resource url: [dir:'js', file:'jquery.i18n.properties-1.0.9.js', plugin:'biocache-hubs']
         resource url: [dir:'js', file:'html5.js', plugin:'biocache-hubs'], wrapper: { s -> "<!--[if lt IE 9]>$s<![endif]-->" }, disposition: 'head'
     }
 
@@ -30,7 +31,6 @@ modules = {
         resource url:[dir:'js', file:'jquery.cookie.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.inview.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.jsonp-2.4.0.min.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'jquery.i18n.properties-1.0.9.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs', disposition: 'head']
         resource url:[dir:'css/font-awesome-4.1.0/css', file:'font-awesome.min.css', plugin:'biocache-hubs']
     }
@@ -70,6 +70,10 @@ modules = {
         resource url:[dir:'js/leaflet-plugins/wicket', file:'wicket.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/wicket', file:'wicket-leaflet.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'LeafletToWKT.js', plugin:'biocache-hubs']
+    }
+
+    mapCommon {
+        resource url:[dir:'js', file:'map.common.js', plugin:'biocache-hubs']
     }
 
     qtip {
