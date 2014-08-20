@@ -328,52 +328,6 @@ a.colour-by-legend-toggle {
         }
     });
 
-    function getParamsforWKT(wkt) {
-        //console.log("query", MAP_VAR.query, $.url(MAP_VAR.query).param());
-        var paramsObj = $.url(MAP_VAR.query).param();
-        delete paramsObj.wkt;
-        delete paramsObj.lat;
-        delete paramsObj.lon;
-        delete paramsObj.radius;
-        console.log("paramsObj", paramsObj, $.param(paramsObj));
-        //return MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + "&wkt=" + encodeURI(wkt);
-        $.ajaxSetup({ traditional: true }); // tells jquery $.param to NOT include array style params (which break URL)
-        return "?" + $.param(paramsObj) + "&wkt=" + encodeURI(wkt);
-    }
-
-    function getParamsForCircle(circle) {
-        var paramsObj = $.url(MAP_VAR.query).param();
-        delete paramsObj.wkt;
-        delete paramsObj.lat;
-        delete paramsObj.lon;
-        delete paramsObj.radius;
-        var latlng = circle.getLatLng();
-        $.ajaxSetup({ traditional: true }); // tells jquery $.param to NOT include array style params (which break URL)
-        return "?" + $.param(paramsObj) + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
-    }
-
-    function getSpeciesCountInArea(params) {
-        speciesCount = -1;
-        $.getJSON("${grailsApplication.config.biocache.baseUrl}/occurrence/facets.json" + params + "&facets=taxon_name&callback=?",
-            function( data ) {
-                var speciesCount = data[0].count;
-                document.getElementById("speciesCountDiv").innerHTML = speciesCount;
-            });
-    }
-    function getOccurrenceCountInArea(params) {
-        occurrenceCount = -1;
-        $.getJSON("${grailsApplication.config.biocache.baseUrl}/occurrences/search.json" + params + "&pageSize=0&facet=off&callback=?",
-            function( data ) {
-                var occurrenceCount = data.totalRecords;
-
-                document.getElementById("occurrenceCountDiv").innerHTML = occurrenceCount;
-            });
-    }
-
-    function getRecordsUrl(params) {
-        return window.location.origin + window.location.pathname + params
-    }
-
     function initialiseMap(){
         //console.log("initialiseMap", MAP_VAR.map);
         if(MAP_VAR.map != null){
@@ -432,6 +386,7 @@ a.colour-by-legend-toggle {
         MAP_VAR.map.on('draw:created', function(e) {
             //setup onclick event for this object
             var layer = e.layer;
+            generatePopup(layer, layer._latlng);
             addClickEventForVector(layer);
             MAP_VAR.drawnItems.addLayer(layer);
         });
@@ -544,6 +499,7 @@ a.colour-by-legend-toggle {
             //setup onclick event for this object
             var layers = e.layers;
             layers.eachLayer(function (layer) {
+                generatePopup(layer, layer._latlng);
                 addClickEventForVector(layer);
             });
         });
@@ -570,30 +526,6 @@ a.colour-by-legend-toggle {
                 clickCount = 0;
             }, 400);
         }
-    }
-
-    function addClickEventForVector(layer) {
-        layer.on('click', function(e) {
-            var params = "";
-            if (jQuery.isFunction(layer.getRadius)) {
-                // circle
-                params = getParamsForCircle(layer);
-            } else {
-                var wkt = new Wkt.Wkt();
-                wkt.fromObject(layer);
-                params = getParamsforWKT(wkt.write());
-            }
-
-            L.popup()
-                .setLatLng([e.latlng.lat, e.latlng.lng])
-                .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
-                    "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
-                        "<a id='showOnlyTheseRecords' href='" + getRecordsUrl(params) + "'>show only these records</a>")
-                .openOn(MAP_VAR.map);
-
-            getSpeciesCountInArea(params);
-            getOccurrenceCountInArea(params);
-        });
     }
 
     function changeFacetColours() {

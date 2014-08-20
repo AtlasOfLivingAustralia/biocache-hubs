@@ -51,16 +51,6 @@ function generatePopup(layer, latlng) {
     getOccurrenceCountInArea(params);
 }
 
-function getParamsForCircle(circle) {
-    var paramsObj = $.url(MAP_VAR.query).param();
-    delete paramsObj.wkt;
-    delete paramsObj.lat;
-    delete paramsObj.lon;
-    delete paramsObj.radius;
-    var latlng = circle.getLatLng();
-    return "?" + $.param(paramsObj) + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
-}
-
 function getSpeciesCountInArea(params) {
     speciesCount = -1;
     $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrence/facets.json" + params + "&facets=taxon_name&callback=?",
@@ -80,29 +70,24 @@ function getOccurrenceCountInArea(params) {
         });
 }
 
-function getRecordsUrl(params) {
-    return window.location.origin + window.location.pathname + params
-}
-
 function getParamsforWKT(wkt) {
-    //console.log("query", MAP_VAR.query, $.url(MAP_VAR.query).param());
-    var paramsObj = $.url(MAP_VAR.query).param();
-    delete paramsObj.wkt;
-    delete paramsObj.lat;
-    delete paramsObj.lon;
-    delete paramsObj.radius;
-    //return MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + "&wkt=" + encodeURI(wkt);
-    return "?q=*:*" + $.param(paramsObj) + "&wkt=" + encodeURI(wkt.replace(" ", "+"));
+    return "?q=*:*" + getExistingParams() + "&wkt=" + encodeURI(wkt.replace(" ", "+"));
 }
 
 function getParamsForCircle(circle) {
+    var latlng = circle.getLatLng();
+    return "?q=*:*" + getExistingParams() + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
+}
+
+function getExistingParams() {
     var paramsObj = $.url(MAP_VAR.query).param();
+    delete paramsObj.q;
     delete paramsObj.wkt;
     delete paramsObj.lat;
     delete paramsObj.lon;
     delete paramsObj.radius;
-    var latlng = circle.getLatLng();
-    return "?q=*:*" + $.param(paramsObj) + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
+    var existingParams = $.param(paramsObj);
+    return existingParams ? "&" + existingParams : "";
 }
 
 function drawWktObj(wktString) {
