@@ -73,6 +73,7 @@ modules = {
     }
 
     mapCommon {
+        resource url:[dir:'js', file:'purl.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'map.common.js', plugin:'biocache-hubs']
     }
 
