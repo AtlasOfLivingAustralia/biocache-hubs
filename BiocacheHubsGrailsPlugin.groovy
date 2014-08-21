@@ -14,14 +14,13 @@
  */
 
 import au.org.ala.biocache.hubs.ExtendedPluginAwareResourceBundleMessageSource
-import grails.build.logging.GrailsConsole
 import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "0.50"
+    def version = "0.51"
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = "2.3 > *"
+    def grailsVersion = "2.3 > 2.4"
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
             "grails-app/views/error.gsp"
@@ -62,8 +61,6 @@ from the ALA biocache-service app (no local DB is required for this app).
     def doWithWebDescriptor = { xml ->
         // Note this code only gets executed at compile time (not runtime)
     }
-
-    def grailsConsole =  new GrailsConsole()
 
     def doWithSpring = {
         def config = application.config
@@ -109,19 +106,20 @@ from the ALA biocache-service app (no local DB is required for this app).
             useCodeAsDefaultMessage = false
         }
 
-        grailsConsole.info "grails.resources.work.dir = " + config.grails.resources.work.dir
+        println  "grails.resources.work.dir = " + config.grails.resources.work.dir
 
         // check custom resources cache dir for permissions
         if (config.grails.resources.work.dir) {
             if (new File(config.grails.resources.work.dir).isDirectory()) {
                 // cache dir exists - check if its writable
                 if (!new File(config.grails.resources.work.dir).canWrite()) {
-                    grailsConsole.error "grails.resources.work.dir (${config.grails.resources.work.dir}) is NOT WRITABLE, please fix this!"
+                    //grailsConsole.error "grails.resources.work.dir (${config.grails.resources.work.dir}) is NOT WRITABLE, please fix this!"
+                    println  "grails.resources.work.dir (${config.grails.resources.work.dir}) is NOT WRITABLE, please fix this!"
                 }
             } else {
                 // check we can create the directory
                 if (!new File(config.grails.resources.work.dir).mkdir()) {
-                    grailsConsole.error "grails.resources.work.dir (${config.grails.resources.work.dir}) cannot be created, please fix this!"
+                    println  "grails.resources.work.dir (${config.grails.resources.work.dir}) cannot be created, please fix this!"
                 }
             }
         }

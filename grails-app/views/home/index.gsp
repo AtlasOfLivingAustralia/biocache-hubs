@@ -61,12 +61,24 @@
             margin-top: 5px;
         }
 
+        #spatialSearch .accordion-group {
+            border: none;
+
+        }
+
+        #spatialSearch .accordion-heading .accordion-toggle {
+            padding: 0;
+        }
+
         .accordion-heading .accordion-toggle {
             padding: 8px 10px;
         }
 
         .accordion-inner {
-            padding: 10px 10px;
+            /*padding: 10px 10px;*/
+            margin-top: 5px;
+            padding: 0;
+            border: none;
         }
 
         .accordion-caret .accordion-toggle:hover {
