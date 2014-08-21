@@ -71,23 +71,24 @@ function getOccurrenceCountInArea(params) {
 }
 
 function getParamsforWKT(wkt) {
-    return "?q=*:*" + getExistingParams() + "&wkt=" + encodeURI(wkt.replace(" ", "+"));
+    return "?" + getExistingParams() + "&wkt=" + encodeURI(wkt.replace(" ", "+"));
 }
 
 function getParamsForCircle(circle) {
     var latlng = circle.getLatLng();
-    return "?q=*:*" + getExistingParams() + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
+    return "?" + getExistingParams() + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
 }
 
 function getExistingParams() {
     var paramsObj = $.url(MAP_VAR.query).param();
-    delete paramsObj.q;
+    if (!paramsObj.q) {
+        paramsObj.q = "*:*";
+    }
     delete paramsObj.wkt;
     delete paramsObj.lat;
     delete paramsObj.lon;
     delete paramsObj.radius;
-    var existingParams = $.param(paramsObj);
-    return existingParams ? "&" + existingParams : "";
+    return $.param(paramsObj);
 }
 
 function drawWktObj(wktString) {
