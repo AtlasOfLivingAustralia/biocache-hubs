@@ -76,7 +76,8 @@ function getParamsforWKT(wkt) {
 
 function getParamsForCircle(circle) {
     var latlng = circle.getLatLng();
-    return "?" + getExistingParams() + "&radius=" + Math.round(circle.getRadius() / 1000) + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
+    var radius = Math.round((circle.getRadius() / 1000) * 10) / 10; // convert to km (from m) and round to 1 decmial place
+    return "?" + getExistingParams() + "&radius=" + radius + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
 }
 
 function getExistingParams() {
