@@ -123,7 +123,7 @@
     </div>
     <div id='submitFacets' class="modal-footer" style="text-align: left;">
         <div class="btn-group">
-            <input type='submit' class='submit btn btn-small' id="include" value="INCLUDE selected items"/>
+            <button type='submit' class='submit btn btn-small' id="include"><g:message code="facets.includeSelected.button" default="INCLUDE selected items"/></button>
             <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
                 <span class="caret"></span>
             </button>
@@ -136,7 +136,7 @@
         </div>
         &nbsp;
         <div class="btn-group">
-            <input type='submit' class='submit btn btn-small' id="exclude" value="EXCLUDE selected items"/>
+            <button type='submit' class='submit btn btn-small' id="exclude" ><g:message code="facets.excludeSelected.button" default="EXCLUDE selected items"/></button>
             <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
                 <span class="caret"></span>
             </button>
