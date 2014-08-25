@@ -466,7 +466,7 @@ function loadNewGeoJsonData(data) {
             }
             solrQuery = newParts.join(" OR ");
         } else {
-            solrQuery = rank+':'+taxa;
+            solrQuery = "*:*"; //rank+':'+taxa;
         }
         var fqParam = "";
         if (taxonGuid) {
