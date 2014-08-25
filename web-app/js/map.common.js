@@ -89,6 +89,7 @@ function getExistingParams() {
     delete paramsObj.lat;
     delete paramsObj.lon;
     delete paramsObj.radius;
+    paramsObj.qc = BC_CONF.queryContext;
     return $.param(paramsObj);
 }
 

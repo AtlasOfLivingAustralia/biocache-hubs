@@ -107,7 +107,8 @@
         // global var for GSP tags/vars to be passed into JS functions
         var BC_CONF = {
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
-            contextPath: "${request.contextPath}"
+            contextPath: "${request.contextPath}",
+            queryContext: "${grailsApplication.config.biocache.queryContext}"
         }
 
         $(document).ready(function() {
