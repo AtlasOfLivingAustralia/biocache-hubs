@@ -44,6 +44,8 @@ class MessagesController {
         response.setHeader("Content-type", "text/plain; charset=UTF-8")
         //Alan modified it --- END
 
-        render ( text: props.collect{ "${it.key}=${it.value}" }.join("\n") )
+        def messages = props.collect{ "${it.key}=${it.value}" }
+
+        render ( text: messages.sort().join("\n") )
     }
 }
