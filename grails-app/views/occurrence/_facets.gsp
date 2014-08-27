@@ -114,7 +114,7 @@
                             <td style="text-align: right; border-right-style: none;"></td>
                         </tr>
                         <tr id="spinnerRow">
-                            <td colspan="3" style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <g:img dir="images" file="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
+                            <td colspan="3" style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <g:img plugin="biocache-hubs" dir="images" file="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
                         </tr>
                     </tbody>
                 </table>
