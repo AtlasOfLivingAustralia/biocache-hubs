@@ -13,12 +13,14 @@
  * rights and limitations under the License.
  */
 
+
+import au.org.ala.biocache.hubs.EnglishValueConverter
 import au.org.ala.biocache.hubs.ExtendedPluginAwareResourceBundleMessageSource
 import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "0.53"
+    def version = "0.54"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > 2.4"
     // resources that are excluded from plugin packaging
@@ -57,6 +59,7 @@ from the ALA biocache-service app (no local DB is required for this app).
     def scm = [ url: "https://github.com/AtlasOfLivingAustralia/biocache-hubs" ]
 
     def loadBefore = ['alaWebTheme']
+    def loadAfter = ['dataBinding'] // needed for custom ValueConverter bean
 
     def doWithWebDescriptor = { xml ->
         // Note this code only gets executed at compile time (not runtime)
@@ -105,6 +108,10 @@ from the ALA biocache-service app (no local DB is required for this app).
             cacheSeconds = (60 * 60 * 6) // 6 hours
             useCodeAsDefaultMessage = false
         }
+
+        // Define Custom ValueConverter beans (force EN formatting of Floats)
+        "defaultGrailsjava.lang.FloatConverter"(EnglishValueConverter) // for Float
+        defaultGrailsfloatConverter(EnglishValueConverter)             // for float
 
         println  "grails.resources.work.dir = " + config.grails.resources.work.dir
 
