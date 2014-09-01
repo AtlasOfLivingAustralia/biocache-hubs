@@ -16,28 +16,28 @@ modules = {
         resource url: [dir:'css', file:'autocomplete.css', plugin:'biocache-hubs']
         resource url: [dir:'css', file:'base.css', plugin: 'biocache-hubs']
         resource url: [dir:'css', file:'bootstrapAdditions.css', plugin: 'biocache-hubs']
-        resource url: [dir:'js', file:'jquery.autocomplete.js', plugin:'biocache-hubs', disposition: 'head']
-        resource url: [dir:'js', file:'bieAutocomplete.js', plugin:'biocache-hubs', disposition: 'head']
+        resource url: [dir:'js', file:'jquery.autocomplete.js', plugin:'biocache-hubs'], disposition: 'head'
+        resource url: [dir:'js', file:'bieAutocomplete.js', plugin:'biocache-hubs'], disposition: 'head'
         resource url: [dir:'js', file:'jquery.i18n.properties-1.0.9.js', plugin:'biocache-hubs']
         resource url: [dir:'js', file:'html5.js', plugin:'biocache-hubs'], wrapper: { s -> "<!--[if lt IE 9]>$s<![endif]-->" }, disposition: 'head'
     }
 
-    'search-core' {
-        dependsOn 'jquery'
-        defaultBundle 'main-core'
+    searchCore {
+        dependsOn 'jquery, purl'
+        defaultBundle 'search-core'
         resource url:[dir:'css', file:'search.css', plugin:'biocache-hubs']
         resource url:[dir:'css', file:'pagination.css', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'purl.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.cookie.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.inview.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.jsonp-2.4.0.min.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs', disposition: 'head']
+        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs'], disposition: 'head'
         resource url:[dir:'css/font-awesome-4.1.0/css', file:'font-awesome.min.css', plugin:'biocache-hubs']
     }
 
     search {
-        dependsOn 'search-core'
-        resource url:[dir:'js', file:'search.js', plugin:'biocache-hubs']
+        dependsOn 'searchCore'
+        defaultBundle 'search-core'
+        resource url:[dir:'js', file:'search.js', plugin:'biocache-hubs'], disposition: 'head'
     }
 
     nanoscroller {
@@ -54,7 +54,7 @@ modules = {
     }
 
     leaflet {
-        defaultBundle 'main-extras'
+        defaultBundle 'leaflet'
         resource url:[dir:'js/leaflet-0.7.2', file:'leaflet.css', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.css', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.ie.css', plugin:'biocache-hubs'], wrapper: { s -> "<!--[if lt IE 8]>$s<![endif]-->" }
@@ -73,7 +73,7 @@ modules = {
     }
 
     mapCommon {
-        resource url:[dir:'js', file:'purl.js', plugin:'biocache-hubs']
+        dependsOn 'jquery, purl'
         resource url:[dir:'js', file:'map.common.js', plugin:'biocache-hubs']
     }
 
@@ -97,6 +97,11 @@ modules = {
         resource url:[dir:'css', file:'jquery.colourPicker.css', plugin:'biocache-hubs']
     }
 
+    purl {
+        defaultBundle 'main-extras'
+        resource url:[dir:'js', file:'purl.js', plugin:'biocache-hubs']
+    }
+
     moment {
         defaultBundle 'main-extras'
         resource url:[dir:'js', file:'moment.min.js', plugin:'biocache-hubs']
@@ -107,13 +112,13 @@ modules = {
         resource url:[dir:'css', file:'record.css', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'audiojs/audio.min.js', plugin:'biocache-hubs'], disposition: 'head', exclude: '*'
         resource url:[dir:'js', file:'show.js', plugin:'biocache-hubs']
+        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs'], disposition: 'head'
         resource url:[dir:'js', file:'wms2.js', plugin:'biocache-hubs'], disposition: 'head'
     }
 
     exploreYourArea {
-        dependsOn 'jquery'
+        dependsOn 'jquery, purl'
         resource url:[dir:'css', file:'exploreYourArea.css', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'purl.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'yourAreaMap.js', plugin:'biocache-hubs']
     }
 

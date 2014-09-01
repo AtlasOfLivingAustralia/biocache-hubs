@@ -60,7 +60,7 @@
         div.audiojs div.time { display:none; width:50px; }
     </style>
 
-    <script type="text/javascript" src="${r.resource(dir:'js', file:'charts2.js', plugin:'biocache-hubs')}"></script>
+    %{--<script type="text/javascript" src="${r.resource(dir:'js', file:'charts2.js', plugin:'biocache-hubs')}"></script>--}%
 
     <r:require modules="show, amplify, moment"/>
 

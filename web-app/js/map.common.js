@@ -36,7 +36,7 @@ function generatePopup(layer, latlng) {
     if (latlng == null) {
         latlng = layer.getBounds().getCenter();
     }
-    console.log('latlng', latlng);
+    //console.log('latlng', latlng);
     L.popup()
         .setLatLng([latlng.lat, latlng.lng])
         .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
