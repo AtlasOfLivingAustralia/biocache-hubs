@@ -17,7 +17,6 @@ modules = {
         resource url: [dir:'css', file:'base.css', plugin: 'biocache-hubs']
         resource url: [dir:'css', file:'bootstrapAdditions.css', plugin: 'biocache-hubs']
         resource url: [dir:'js', file:'jquery.autocomplete.js', plugin:'biocache-hubs'], disposition: 'head'
-        resource url: [dir:'js', file:'bieAutocomplete.js', plugin:'biocache-hubs'], disposition: 'head'
         resource url: [dir:'js', file:'jquery.i18n.properties-1.0.9.js', plugin:'biocache-hubs']
         resource url: [dir:'js', file:'html5.js', plugin:'biocache-hubs'], wrapper: { s -> "<!--[if lt IE 9]>$s<![endif]-->" }, disposition: 'head'
     }
@@ -38,6 +37,12 @@ modules = {
         dependsOn 'searchCore'
         defaultBundle 'search-core'
         resource url:[dir:'js', file:'search.js', plugin:'biocache-hubs'], disposition: 'head'
+    }
+
+    bieAutocomplete {
+        dependsOn 'jquery'
+        defaultBundle 'main-core'
+        resource url: [dir:'js', file:'bieAutocomplete.js', plugin:'biocache-hubs'], disposition: 'head'
     }
 
     nanoscroller {

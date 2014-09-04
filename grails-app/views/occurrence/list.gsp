@@ -19,6 +19,9 @@
     %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <r:require modules="search, leaflet, slider, qtip, nanoscroller, amplify, moment, mapCommon"/>
+    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
+        <r:require module="bieAutocomplete"/>
+    </g:if>
     <script type="text/javascript">
         // single global var for app conf settings
         <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>

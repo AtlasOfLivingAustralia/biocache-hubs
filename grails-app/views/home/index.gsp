@@ -103,6 +103,9 @@
     </style>
     <script src="http://maps.google.com/maps/api/js?v=3.5&sensor=false"></script>
     <r:require modules="jquery, leaflet, mapCommon"/>
+    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
+        <r:require module="bieAutocomplete"/>
+    </g:if>
     <r:script>
         // global var for GSP tags/vars to be passed into JS functions
         var BC_CONF = {
