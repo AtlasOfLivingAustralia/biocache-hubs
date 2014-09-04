@@ -6,41 +6,39 @@
 <h3><g:message code="recordcore.oc.title" default="Dataset"/></h3>
 <table class="occurrenceTable table table-bordered table-striped table-condensed" id="datasetTable">
 <g:if test="${useAla == 'true'}">
-    <!-- Data Provider -->
-    <g:if test="${!StringUtils.contains(skin, 'avh')}">
-        <alatag:occurrenceTableRow annotate="false" section="dataset" fieldCode="dataProvider" fieldName="Data provider">
-            <g:if test="${record.processed.attribution.dataProviderUid}">
-                ${fieldsMap.put("dataProviderUid", true)}
-                ${fieldsMap.put("dataProviderName", true)}
-                <a href="${collectionsWebappContext}/public/show/${record.processed.attribution.dataProviderUid}">
-                    ${record.processed.attribution.dataProviderName}
-                </a>
-            </g:if>
-            <g:else>
-                ${fieldsMap.put("dataProviderName", true)}
+<!-- Data Provider -->
+    <alatag:occurrenceTableRow annotate="false" section="dataset" fieldCode="dataProvider" fieldName="Data provider">
+        <g:if test="${record.processed.attribution.dataProviderUid}">
+            ${fieldsMap.put("dataProviderUid", true)}
+            ${fieldsMap.put("dataProviderName", true)}
+            <a href="${collectionsWebappContext}/public/show/${record.processed.attribution.dataProviderUid}">
                 ${record.processed.attribution.dataProviderName}
-            </g:else>
-        </alatag:occurrenceTableRow>
-        <!-- Data Resource -->
-        <alatag:occurrenceTableRow annotate="false" section="dataset" fieldCode="dataResource" fieldName="Data resource">
-            <g:if test="${record.raw.attribution.dataResourceUid != null && record.raw.attribution.dataResourceUid}">
-                ${fieldsMap.put("dataResourceUid", true)}
-                ${fieldsMap.put("dataResourceName", true)}
-                <a href="${collectionsWebappContext}/public/show/${record.raw.attribution.dataResourceUid}">
-                    <g:if test="${record.processed.attribution.dataResourceName}">
-                        ${record.processed.attribution.dataResourceName}
-                    </g:if>
-                    <g:else>
-                        ${record.raw.attribution.dataResourceUid}
-                    </g:else>
-                </a>
-            </g:if>
-            <g:else>
-                ${fieldsMap.put("dataResourceName", true)}
-                ${record.processed.attribution.dataResourceName}
-            </g:else>
-        </alatag:occurrenceTableRow>
-    </g:if>
+            </a>
+        </g:if>
+        <g:else>
+            ${fieldsMap.put("dataProviderName", true)}
+            ${record.processed.attribution.dataProviderName}
+        </g:else>
+    </alatag:occurrenceTableRow>
+    <!-- Data Resource -->
+    <alatag:occurrenceTableRow annotate="false" section="dataset" fieldCode="dataResource" fieldName="Data resource">
+        <g:if test="${record.raw.attribution.dataResourceUid != null && record.raw.attribution.dataResourceUid}">
+            ${fieldsMap.put("dataResourceUid", true)}
+            ${fieldsMap.put("dataResourceName", true)}
+            <a href="${collectionsWebappContext}/public/show/${record.raw.attribution.dataResourceUid}">
+                <g:if test="${record.processed.attribution.dataResourceName}">
+                    ${record.processed.attribution.dataResourceName}
+                </g:if>
+                <g:else>
+                    ${record.raw.attribution.dataResourceUid}
+                </g:else>
+            </a>
+        </g:if>
+        <g:else>
+            ${fieldsMap.put("dataResourceName", true)}
+            ${record.processed.attribution.dataResourceName}
+        </g:else>
+    </alatag:occurrenceTableRow>
 </g:if>
 <!-- Institution -->
 <g:if test="${!StringUtils.contains(skin, 'avh')}">
@@ -48,13 +46,7 @@
         <g:if test="${record.processed.attribution.institutionUid}">
             ${fieldsMap.put("institutionUid", true)}
             ${fieldsMap.put("institutionName", true)}
-            <!-- <a href="${collectionsWebappContext}/public/show/${record.processed.attribution.institutionUid}"> -->
-            <g:if test="${useAla == 'true'}">
-                <a href="${collectionsWebappContext}/public/show/${record.processed.attribution.institutionUid}">
-            </g:if>
-            <g:else>
-                <a href="${request.contextPath}/institution/${record.processed.attribution.institutionUid}">
-            </g:else>
+            <a href="${collectionsWebappContext}/public/show/${record.processed.attribution.institutionUid}">
             ${record.processed.attribution.institutionName}
             </a>
         </g:if>
@@ -73,12 +65,7 @@
 <alatag:occurrenceTableRow annotate="false" section="dataset" fieldNameIsMsgCode="true" fieldCode="collectionCode" fieldName="Collection">
     <g:if test="${record.processed.attribution.collectionUid}">
         ${fieldsMap.put("collectionUid", true)}
-        <g:if test="${useAla == 'true'}">
-            <a href="${collectionsWebappContext}/public/show/${record.processed.attribution.collectionUid}">
-        </g:if>
-        <g:else>
-            <a href="${request.contextPath}/collection/${record.processed.attribution.collectionUid}" title="view collection page">
-        </g:else>
+        <a href="${collectionsWebappContext}/public/show/${record.processed.attribution.collectionUid}">
     </g:if>
     <g:if test="${record.processed.attribution.collectionName}">
         ${fieldsMap.put("collectionName", true)}
