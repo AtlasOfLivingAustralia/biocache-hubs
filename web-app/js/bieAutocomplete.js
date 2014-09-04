@@ -18,7 +18,8 @@
  */
 jQuery(document).ready(function() {
     // Autocomplete
-    jQuery(":input#taxaQuery, :input#solrQuery, :input#taxa, :input.name_autocomplete").autocomplete('http://bie.ala.org.au/search/auto.json', {
+    var bieBaseUrl = BC_CONF.bieWebappUrl;
+    jQuery(":input#taxaQuery, :input#solrQuery, :input#taxa, :input.name_autocomplete").autocomplete(bieBaseUrl + '/search/auto.json', {
         extraParams: {limit:100},
         dataType: 'jsonp',
         parse: function(data) {

@@ -41,7 +41,7 @@ modules = {
 
     bieAutocomplete {
         dependsOn 'jquery'
-        defaultBundle 'main-core'
+        //defaultBundle 'main-core'
         resource url: [dir:'js', file:'bieAutocomplete.js', plugin:'biocache-hubs'], disposition: 'head'
     }
 
