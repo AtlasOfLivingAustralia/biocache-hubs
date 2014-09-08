@@ -189,6 +189,7 @@ a.colour-by-legend-toggle {
                             <g:set var="Defaultselected">
                                 <g:if test="${defaultColourBy && facetResult.fieldName == defaultColourBy}">selected="selected"</g:if>
                             </g:set>
+                            <g:if test="${facetResult.fieldName == 'occurrence_year'}">${facetResult.fieldName = 'decade'}</g:if>
                             <g:if test="${facetResult.fieldResult.size() > 1}">
                                 <option value="${facetResult.fieldName}" ${Defaultselected}>
                                     <alatag:formatDynamicFacetName fieldName="${facetResult.fieldName}"/>
@@ -656,6 +657,11 @@ a.colour-by-legend-toggle {
 
     function addLegendItem(name, red, green, blue){
         var nameLabel = jQuery.i18n.prop(name);
+        var isoDateRegEx = /^(\d{4})-\d{2}-\d{2}T.*/; // e.g. 2001-02-31T12:00:00Z with year capture
+        if (name.search(isoDateRegEx) > -1) {
+            // convert full ISO date to YYYY-MM-DD format
+            name = name.replace(isoDateRegEx, "$1");
+        }
         $(".legendTable")
             .append($('<tr>')
                 .append($('<td>')
