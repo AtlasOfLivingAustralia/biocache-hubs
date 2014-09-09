@@ -20,4 +20,4 @@ script: "grails clean && grails upgrade --non-interactive && grails refresh-depe
 
 env:
   global:
-    - GRAILS_VERSION=2.3.11
+    - GRAILS_VERSION=2.3.8
