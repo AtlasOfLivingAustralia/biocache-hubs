@@ -286,7 +286,7 @@ class WebServicesService {
      * @return
      */
     List getDynamicFacets(String query) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/upload/dynamicFacets?q=${query}"
+        def url = "${grailsApplication.config.biocache.baseUrl}/upload/dynamicFacets?q=data_resource_uid:${query}"
         JSONArray facets = getJsonElements(url)
         def dfs = []
         facets.each {
