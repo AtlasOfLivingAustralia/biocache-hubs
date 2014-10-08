@@ -33,6 +33,7 @@ class OccurrenceTagLib {
     //static encodeAsForTags = [tagName: 'raw']
     static returnObjectForTags = ['getLoggerReasons','message']
     static namespace = 'alatag'     // namespace for headers and footers
+    static rangePattern = ~/\[\d+(\.\d+)? TO \d+(\.\d+)?\]/
 
     /**
      * Formats the display of dynamic facet names in Sandbox (facet options popup)
@@ -50,7 +51,7 @@ class OccurrenceTagLib {
             output = "${alatag.message(code:"facet.${fieldName}", default: fieldName)}"
         }
 
-        out << output
+        out << StringUtils.capitalise(output)
     }
 
     /**
@@ -226,8 +227,14 @@ class OccurrenceTagLib {
                     }
                 } else {
                     def label = alatag.message(code: facetResult.fieldName + "." + fieldResult.label, default: '') ?: alatag.message(code: fieldResult.label)
+                    def href = "?${queryParam}&fq=${facetResult.fieldName}:"
+                    if(isRangeFilter(fieldResult.label)){
+                        href = href + "${fieldResult.label?.encodeAsURL()}"
+                    } else {
+                        href = href + "%22${fieldResult.label?.encodeAsURL()}%22"
+                    }
                     li {
-                        a(      href:"?${queryParam}&fq=${facetResult.fieldName}:%22${fieldResult.label?.encodeAsURL()}%22",
+                        a(      href:href,
                                 class: "tooltips",
                                 title: linkTitle
                         ) {
@@ -243,6 +250,10 @@ class OccurrenceTagLib {
                 }
             }
         }
+    }
+
+    private Boolean isRangeFilter(fqValue){
+        rangePattern.matcher(fqValue).matches()
     }
 
     /**
