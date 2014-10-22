@@ -148,6 +148,7 @@
             </ul>
         </div>
         &nbsp;
+        <a href="#" id="downloadFacet" class="btn btn-small" title="${g.message(code:'facets.downloadfacets.button', default:'Download this list')}"><i class="icon icon-download-alt" title="${g.message(code:'facets.downloadfacets.button', default:'Download this list')}"></i> <span class="hide"><g:message code="facets.downloadfacets.button" default="Download"/></span></a>
         <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="facets.submitfacets.button" default="Close"/></button>
     </div>
 </div>

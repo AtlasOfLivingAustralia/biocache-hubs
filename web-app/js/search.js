@@ -375,6 +375,12 @@ $(document).ready(function() {
         $("tbody.scrollContent tr").not("#spinnerRow").remove();
     });
 
+    $("#downloadFacet").live("click", function(e) {
+        var facetName = $("table#fullFacets").data("facet");
+        console.log('clicked ' + window.location.href );
+        window.location.href = BC_CONF.biocacheServiceUrl + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName + '&count=true';
+    });
+
     // form validation for form#facetRefineForm
     $("#submitFacets :input.submit").live("click", function(e) {
         e.preventDefault();

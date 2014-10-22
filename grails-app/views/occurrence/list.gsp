@@ -24,6 +24,7 @@
     </g:if>
     <script type="text/javascript">
         // single global var for app conf settings
+        <g:set var="fqParamsSingleQ" value="${(params.fq) ? ' AND ' + params.list('fq')?.join(' AND ') : ''}"/>
         <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
         <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
         var BC_CONF = {
@@ -31,6 +32,7 @@
             serverName: "${grailsApplication.config.serverName}${request.contextPath}",
             searchString: "${searchString}", //  JSTL var can contain double quotes // .encodeAsJavaScript()
             facetQueries: "${fqParams.encodeAsURL()}",
+            facetDownloadQuery: "${searchString}${fqParamsSingleQ}",
             queryString: "${queryDisplay.encodeAsJavaScript()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
@@ -41,8 +43,6 @@
             facetLimit: "${grailsApplication.config.facets.limit?:50}",
             queryContext: "${grailsApplication.config.biocache.queryContext}",
             zoomOutsideScopedRegion: Boolean("${grailsApplication.config.map.zoomOutsideScopedRegion}"),
-            //mapDefaultCentreCoords:"${grailsApplication.config.mapDefaultCentreCoords}",
-            //mapDefaultZoom:"${grailsApplication.config.mapDefaultZoom}",
             hasMultimedia: ${hasImages?:'false'}, // will be either true or false
             chartsBgColour: "${grailsApplication.config.chartsBgColour?:'#fffef7'}",
             locale: "${request.locale}"
