@@ -29,7 +29,7 @@ import java.text.SimpleDateFormat
  */
 class AdminController {
     def scaffold = true
-    def facetsCacheService, outageService, authService
+    def facetsCacheService, outageService, authService, webServicesService
     def beforeInterceptor = [action:this.&auth]
 
     /**
@@ -66,40 +66,25 @@ class AdminController {
 
     private String doClearAllCaches() {
         def message = "Clearing all caches...\n"
-        message += doClearCollectoryCache()
-        message += doClearLongTermCache()
+        message += webServicesService.doClearCollectoryCache()
+        message += webServicesService.doClearLongTermCache()
         message += doClearFacetsCache()
         message
     }
 
     def clearCollectoryCache() {
-        flash.message = doClearCollectoryCache()
+        flash.message = webServicesService.doClearCollectoryCache()
         redirect(action:'index')
     }
 
     def clearLongTermCache() {
-        flash.message = doClearLongTermCache()
+        flash.message = webServicesService.doClearLongTermCache()
         redirect(action:'index')
     }
 
     def clearFacetsCache() {
         flash.message = doClearFacetsCache()
         redirect(action:'index')
-    }
-
-    @CacheEvict(value='collectoryCache', allEntries=true)
-    def doClearCollectoryCache() {
-        "collectoryCache cache cleared\n"
-    }
-
-    @CacheEvict(value='longTermCache', allEntries=true)
-    def doClearLongTermCache() {
-        "longTermCache cache cleared\n"
-    }
-
-    @CacheEvict(value='fooCache', allEntries=true)
-    def doClearFooCache() {
-        "longTermCache cache cleared\n"
     }
 
     def doClearFacetsCache() {

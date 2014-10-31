@@ -1,6 +1,7 @@
 package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
+import grails.plugin.cache.CacheEvict
 import grails.plugin.cache.Cacheable
 
 import groovyx.net.http.ContentType
@@ -126,6 +127,16 @@ class WebServicesService {
         }
 
         groupedMap
+    }
+
+    @CacheEvict(value='collectoryCache', allEntries=true)
+    def doClearCollectoryCache() {
+        "collectoryCache cache cleared\n"
+    }
+
+    @CacheEvict(value='longTermCache', allEntries=true)
+    def doClearLongTermCache() {
+        "longTermCache cache cleared\n"
     }
 
     /**
