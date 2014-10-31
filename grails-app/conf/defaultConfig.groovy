@@ -63,7 +63,6 @@ spatial.baseUrl = "http://spatial.ala.org.au/"
 spatial.params = ""
 test.var = "test"
 
-chartsBgColour = "#fffef7"
 clubRoleForHub = "ROLE_ADMIN"
 // whether map or list is the default tab to show - empty for list and "mapView" for map
 defaultListView = "" //  'mapView' or 'listView'

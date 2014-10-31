@@ -134,10 +134,8 @@
             var facetChartOptions = { error: "badQuery", legend: 'right'}
             facetChartOptions.query = biocacheQuery;
             facetChartOptions.charts = [chartName];
-            facetChartOptions.backgroundColor = '${grailsApplication.config.chartsBgColour?:'#fffef7'}';
             facetChartOptions.width = "75%";
             facetChartOptions[facetName] = {chartType: 'scatter'};
-
 
             //additional config
             facetChartOptions.cumulative = cumulative;

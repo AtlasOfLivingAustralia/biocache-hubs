@@ -44,7 +44,6 @@
             queryContext: "${grailsApplication.config.biocache.queryContext}",
             zoomOutsideScopedRegion: Boolean("${grailsApplication.config.map.zoomOutsideScopedRegion}"),
             hasMultimedia: ${hasImages?:'false'}, // will be either true or false
-            chartsBgColour: "${grailsApplication.config.chartsBgColour?:'#fffef7'}",
             locale: "${request.locale}"
         };
 

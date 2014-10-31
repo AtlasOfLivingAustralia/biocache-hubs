@@ -761,14 +761,11 @@ function loadAllCharts() {
     baseFacetChart.collectionsUrl = BC_CONF.collectoryUrl;
     baseFacetChart.biocacheWebappUrl = ""; // keep empty so URLs come from the same host
     //console.log("Loading charts.....");
-    var bgcolour = BC_CONF.chartsBgColour; //"#fffef7"; // was "#F0F0E8"
-
     var queryString = BC_CONF.searchString.replace("?q=","");
     var biocacheServiceUrl = BC_CONF.biocacheServiceUrl; //BC_CONF.biocacheServiceUrl, // "http://ala-macropus.it.csiro.au/biocache-service";
     
     var taxonomyChartOptions = {
         query: queryString,
-        backgroundColor: bgcolour,
         biocacheServicesUrl: biocacheServiceUrl,
         displayRecordsUrl: BC_CONF.serverName
     };
@@ -776,16 +773,16 @@ function loadAllCharts() {
     var facetChartOptions = {
         query: queryString,
         charts: ['collection_uid','state','species_group','assertions','type_status','ibra','state_conservation','month','occurrence_year'],
-        collection_uid: {title: 'By collection', backgroundColor: bgcolour},
-        state: {title: 'By state or territory', backgroundColor: bgcolour},
-        species_group: {backgroundColor: bgcolour, title: 'By higher-level groups', ignore: ['Animals','Insects','Crustaceans','Angiosperms','Plants']},
-        assertions: {backgroundColor: bgcolour},
-        type_status: {backgroundColor: bgcolour},
-        ibra: {title: 'By IBRA region', backgroundColor: bgcolour},
-        state_conservation: {backgroundColor: bgcolour},
-        occurrence_year:{backgroundColor: bgcolour},
-        Unknown_s:{backgroundColor: bgcolour},
-        month:{backgroundColor: bgcolour},
+        collection_uid: {title: 'By collection'},
+        state: {title: 'By state or territory'},
+        species_group: { title: 'By higher-level groups', ignore: ['Animals','Insects','Crustaceans','Angiosperms','Plants']},
+        assertions: {},
+        type_status: {},
+        ibra: {title: 'By IBRA region'},
+        state_conservation: {},
+        occurrence_year:{},
+        Unknown_s:{},
+        month:{},
         biocacheServicesUrl: biocacheServiceUrl,
         displayRecordsUrl: BC_CONF.serverName
     };
@@ -795,17 +792,13 @@ function loadAllCharts() {
         for(var i = 0; i < dynamicFacets.length; i++){
            facetChartOptions.query = facetChartOptions.query + "&facets=" + dynamicFacets[i];
            facetChartOptions.charts.push(dynamicFacets[i]);
-           facetChartOptions[dynamicFacets[i]] = {backgroundColor: bgcolour};
+           facetChartOptions[dynamicFacets[i]] = {};
            //defaultChartTypes[dynamicFacets[i]] = 'bar';
            var chartTitle = dynamicFacets[i].substring(0,dynamicFacets[i].length - 2).replace('_', ' ');
            chartLabels[dynamicFacets[i]] = chartTitle;
            baseFacetChart.individualChartOptions[dynamicFacets[i]] = { title: chartTitle, facets: [dynamicFacets[i]]}
         }
     }
-
-   // baseFacetChart.individualChartOptions.Unknown_s = { title: 'Unknown_s', facets: ['Unknown_s']};
-   // defaultChartTypes.Unknown_s = 'bar';
-   // chartLabels.Unknown_s = 'Unknown';
 
     taxonomyChart.load(taxonomyChartOptions);
     loadFacetCharts(facetChartOptions);
