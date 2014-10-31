@@ -20,7 +20,7 @@ import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "0.60"
+    def version = "0.61"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > 2.4"
     // resources that are excluded from plugin packaging
