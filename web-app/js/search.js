@@ -364,7 +364,7 @@ $(document).ready(function() {
     $('.multipleFacetsLink').click(function() {
         var link = this;
         var facetName = link.id.replace("multi-","").replace("_guid","").replace("_uid","_name").replace("data_resource_name",
-            "data_resource").replace("data_provider_name","data_provider").replace("occurrence_year","decade").replace(/(_[id])$/,"$1_RNG");
+            "data_resource_uid").replace("data_provider_name","data_provider_uid").replace("occurrence_year","decade").replace(/(_[id])$/,"$1_RNG"); // TODO fix this as its bug prone (needs tests though)
         var displayName = $(link).data("displayname");
         //console.log(facetName, displayName);
         loadMoreFacets(facetName, displayName, null);
