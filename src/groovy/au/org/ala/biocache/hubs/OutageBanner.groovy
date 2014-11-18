@@ -14,10 +14,10 @@
  ***************************************************************************/
 package au.org.ala.biocache.hubs
 
-import grails.converters.JSON
 import grails.validation.Validateable
-import org.grails.databinding.BindingFormat
-import org.springframework.format.annotation.DateTimeFormat
+import org.apache.commons.lang.time.DateUtils
+
+import java.text.SimpleDateFormat
 
 /**
  * Command object for outage banner (admin function)
@@ -57,5 +57,45 @@ class OutageBanner {
         ]
 
         return map
+    }
+
+    /**
+     * Determine whether or not to display the banner
+     *
+     * @return
+     */
+    public Boolean showBanner() {
+        Boolean displayBanner = false
+
+        if (showMessage && message && !startDate && !endDate) {
+            // tickbox is ticked & dates are blank so show banner
+            displayBanner = true
+        } else if (message && startDate && endDate) {
+            // dates are specified so check them
+            Date now = new Date()
+            Date start = null
+            Date end = null
+            try {
+                start = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(startDate)
+                end = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(endDate)
+            } catch (java.text.ParseException pe) {
+                log.warn "outage banner dates were not parsed (${startDate} || ${endDate}) - ${pe.message}"
+            }
+
+            if (DateUtils.isSameDay(now, start) || now.after(start)) {
+                if (DateUtils.isSameDay(now, end) || now.before(end)) {
+                    // output the banner message
+                    displayBanner = true
+                } else {
+                    log.debug("now is not on or before endDate")
+                }
+            } else {
+                log.debug("now is not on or after startDate")
+            }
+        } else {
+            log.debug "don't show banner"
+        }
+
+        displayBanner
     }
 }

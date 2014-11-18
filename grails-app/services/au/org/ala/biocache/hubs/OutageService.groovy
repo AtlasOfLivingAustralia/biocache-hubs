@@ -41,7 +41,6 @@ class OutageService {
         log.debug("set FILE_PATH = " + FILE_PATH);
 
         try {
-            //new JsonBuilder(outageBanner.toJson()).writeTo(new File(FILE_PATH))
             def outputFile = new File(FILE_PATH)
             def jb = new JsonBuilder( outageBanner.toMap() ) // map avoids errors field injected by @Validateable
             outputFile.write(jb.toString())

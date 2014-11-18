@@ -651,26 +651,8 @@ class OccurrenceTagLib {
     def outageBanner = { attrs ->
         OutageBanner ob = outageService.getOutageBanner()
 
-        if (ob.message) {
-            String message = ob.getMessage()
-            Date now = new Date()
-            Date start = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(ob.startDate);
-            Date end = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(ob.endDate);
-
-            if (ob.getShowMessage() != null && ob.getShowMessage()) {
-                // showMessage is checked
-                // Do a date comparison to see if today is between the startDate and endDate (inclusive)
-                if (DateUtils.isSameDay(now, start) || now.after(start)) {
-                    if (DateUtils.isSameDay(now, end) || now.before(end)) {
-                        // output the banner message
-                        out << "<div id='outageMessage'>" + message + "</div>"
-                    } else {
-                        log.debug("now is not on or before endDate")
-                    }
-                } else {
-                    log.debug("now is not on or after startDate")
-                }
-            }
+        if (ob.showBanner()) {
+            out << "<div id='outageMessage'>" + ob.message + "</div>"
         }
     }
 

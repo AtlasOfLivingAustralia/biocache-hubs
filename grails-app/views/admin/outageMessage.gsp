@@ -38,22 +38,22 @@
     <div class="control-group">
         <label class="control-label" for="startDate"><g:message code="admin.outagem.form.label02" default="Start Date"/></label>
         <div class="controls">
-            <input type="text" name="startDate" id="startDate" class="span2" value="${outageBanner.startDate}"/>
-            <span class="help-inline"><code><g:message code="admin.outagem.form.span02" default="yyyy-mm-dd"/></code> format</span>
+            <input type="text" name="startDate" id="startDate" class="span2" value="${outageBanner.startDate}" placeholder=""/>
+            <span class="help-inline"><code><g:message code="admin.outagem.form.span02" default="yyyy-mm-dd"/></code> format (optional)</span>
         </div>
     </div>
     <div class="control-group">
         <label class="control-label" for="endDate"><g:message code="admin.outagem.form.label03" default="End Date"/></label>
         <div class="controls">
-            <input type="text" name="endDate" id="endDate" class="span2" value="${outageBanner.endDate}"/>
-            <span class="help-inline"><code><g:message code="admin.outagem.form.span03" default="yyyy-mm-dd"/></code> format</span>
+            <input type="text" name="endDate" id="endDate" class="span2" value="${outageBanner.endDate}" placeholder=""/>
+            <span class="help-inline"><code><g:message code="admin.outagem.form.span03" default="yyyy-mm-dd"/></code> format (optional)</span>
         </div>
     </div>
     <div class="control-group">
         <label class="control-label" for="endDate"><g:message code="admin.outagem.form.label04" default="Display message"/></label>
         <div class="controls">
             <input type="checkbox"name="showMessage" id="showMessage" class="span2" ${(true && outageBanner.showMessage)?'checked="checked"':''}/>
-            <span class="help-inline"><g:message code="admin.outagem.form.span04" default="check this to show the message (dates are still required to be valid)"/></span>
+            <span class="help-inline"><g:message code="admin.outagem.form.span04" default="check this to show the message"/></span>
         </div>
     </div>
     <div class="control-group">
