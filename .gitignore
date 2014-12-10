@@ -1,2 +1,3 @@
-grails-*
-plugin.xml
+target/*
+.idea/*
+*.iml
