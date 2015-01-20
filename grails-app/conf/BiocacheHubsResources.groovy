@@ -82,6 +82,10 @@ modules = {
         resource url:[dir:'js', file:'map.common.js', plugin:'biocache-hubs']
     }
 
+    searchMap {
+        resource url:[dir:'css', file:'searchMap.css', plugin:'biocache-hubs']
+    }
+
     qtip {
         dependsOn 'jquery'
         defaultBundle 'main-extras'

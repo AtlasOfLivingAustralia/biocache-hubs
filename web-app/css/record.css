@@ -267,3 +267,36 @@ li.userAnnotationTemplate { list-style: none; }
     -moz-opacity: 0.5;       /* mozilla, netscape */
     opacity: 0.5;           /* fx, safari, opera */
 }
+
+#expertDistroMap img {
+    max-width: none;
+}
+
+#occurrenceMap img {
+    max-width: none;
+}
+
+div.audiojs {
+    margin: 15px 0px 10px;
+}
+
+div.audiojs div.scrubber {
+    width: 120px;
+}
+
+div.audiojs div.time {
+    display: none;
+    width: 50px;
+}
+
+#outlierFeedback #inferredOccurrenceDetails {
+    clear: both;
+    margin-left: 20px;
+    margin-top: 30px;
+    width: 100%;
+}
+
+/*#outlierFeedback h3 {color: #718804; }*/
+#outlierFeedback #outlierInformation #inferredOccurrenceDetails {
+    margin-bottom: 20px;
+}

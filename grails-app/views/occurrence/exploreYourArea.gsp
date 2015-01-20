@@ -47,7 +47,7 @@
     </script>
 </head>
 <body class="nav-locations">
-<div id="header">
+<div id="header" class="heading-bar">
     <g:if test="${grailsApplication.config.skin.layout == 'ala'}">
         <div id="breadcrumb">
             <ol class="breadcrumb">

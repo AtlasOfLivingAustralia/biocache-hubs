@@ -52,18 +52,7 @@
         google.load('maps','3.3',{ other_params: "sensor=false" });
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
-    <style type="text/css">
-        #expertDistroMap img {  max-width: none; }
-        #occurrenceMap img {  max-width: none; }
-        div.audiojs { margin: 15px 0px 10px; }
-        div.audiojs div.scrubber { width:120px;}
-        div.audiojs div.time { display:none; width:50px; }
-    </style>
-
-    %{--<script type="text/javascript" src="${r.resource(dir:'js', file:'charts2.js', plugin:'biocache-hubs')}"></script>--}%
-
     <r:require modules="show, amplify, moment"/>
-
     <r:script disposition="head">
         $(document).ready(function() {
             <g:if test="${record.processed.attribution.provenance == 'Draft'}">\
@@ -153,7 +142,7 @@
     %{--<g:set var="json" value="${request.contextPath}/occurrences/${record?.raw?.uuid}.json" />--}%
     <g:if test="${record}">
         <g:if test="${record.raw}">
-            <div id="headingBar" class="recordHeader">
+            <div id="headingBar" class="recordHeader heading-bar">
                 <h1><g:message code="show.headingbar01.title" default="Occurrence record"/>: <span id="recordId">${recordId}</span></h1>
                 <div id="jsonLink">
                     <g:if test="${isCollectionAdmin}">
@@ -276,12 +265,6 @@
                     <div id="expertDistroMap" style="width:80%;height:400px;margin:20px 20px 10px 0;"></div>
                 </div>
             </g:if>
-
-                <style type="text/css">
-                    #outlierFeedback #inferredOccurrenceDetails { clear:both; margin-left:20px;margin-top:30px; width:100%; }
-                        /*#outlierFeedback h3 {color: #718804; }*/
-                    #outlierFeedback #outlierInformation #inferredOccurrenceDetails { margin-bottom:20px; }
-                </style>
 
             <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts"></script>
 
@@ -617,25 +600,6 @@
                     <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.processedvsrawview.button.close" default="Close"/></button>
                 </div>
             </div>
-
-            %{--<div style="display:none;clear:both;">--}%
-                %{--<div id="processedVsRawView">--}%
-                    %{--<h2>&quot;Original versus Processed&quot; Comparison Table</h2>--}%
-                    %{--<table>--}%
-                        %{--<thead>--}%
-                            %{--<tr>--}%
-                                %{--<th style="width:15%;text-align:center;">Group</th>--}%
-                                %{--<th style="width:15%;text-align:center;">Field Name</th>--}%
-                                %{--<th style="width:35%;text-align:center;">Original</th>--}%
-                                %{--<th style="width:35%;text-align:center;">Processed</th>--}%
-                            %{--</tr>--}%
-                        %{--</thead>--}%
-                        %{--<tbody>--}%
-                            %{--<alatag:formatRawVsProcessed map="${compareRecord}"/>--}%
-                        %{--</tbody>--}%
-                    %{--</table>--}%
-                %{--</div>--}%
-            %{--</div>--}%
         </g:if>
 
         <ul style="display:none;">

@@ -1,0 +1,83 @@
+#leafletMap {
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 18px;
+}
+#leafletMap, input {
+    margin: 0px;
+}
+.tooltip-inner {
+    max-width: 350px;
+    white-space: nowrap;
+    /* If max-width does not work, try using width instead */
+    /*width: 150px;*/
+}
+.leaflet-control-layers-base  {
+    font-size: 12px;
+}
+.leaflet-control-layers-base label,  .leaflet-control-layers-base input, .leaflet-control-layers-base button, .leaflet-control-layers-base select, .leaflet-control-layers-base textarea {
+    margin:0px;
+    height:20px;
+    font-size: 12px;
+    line-height:18px;
+    width:auto;
+}
+
+.leaflet-control-layers {
+    opacity:0.8;
+    filter:alpha(opacity=80);
+}
+
+.leaflet-control-layers-overlays label {
+    font-size: 12px;
+    line-height: 18px;
+    margin-bottom: 0px;
+}
+#wktInput {
+    height: 280px;
+    width: 95%;
+}
+#addWkt {
+    display: inline-block;
+    margin-top: 5px;
+}
+
+#spatialSearch .accordion-group {
+    border: none;
+
+}
+
+#spatialSearch .accordion-heading .accordion-toggle {
+    padding: 0;
+}
+
+.accordion-heading .accordion-toggle {
+    padding: 8px 10px;
+}
+
+.accordion-inner {
+    /*padding: 10px 10px;*/
+    margin-top: 5px;
+    padding: 0;
+    border: none;
+}
+
+.accordion-caret .accordion-toggle:hover {
+    text-decoration: none;
+}
+.accordion-caret .accordion-toggle:hover span,
+.accordion-caret .accordion-toggle:hover strong {
+    text-decoration: underline;
+}
+.accordion-caret .accordion-toggle:before {
+    font-size: 18px;
+    vertical-align: -1px;
+}
+.accordion-caret .accordion-toggle:not(.collapsed):before {
+    content: "▾";
+    margin-right: 0px;
+}
+.accordion-caret .accordion-toggle.collapsed:before {
+    content: "▸";
+    margin-right: 0px;
+}

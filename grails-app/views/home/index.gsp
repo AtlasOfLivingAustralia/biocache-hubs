@@ -16,93 +16,8 @@
     <meta name="section" content="search"/>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <title><g:message code="home.index.title" default="Search for records"/> | ${hubDisplayName}</title>
-    <style type="text/css">
-        #leafletMap {
-            cursor: pointer;
-            font-size: 12px;
-            line-height: 18px;
-        }
-        #leafletMap, input {
-            margin: 0px;
-        }
-        .tooltip-inner {
-            max-width: 350px;
-            white-space: nowrap;
-            /* If max-width does not work, try using width instead */
-            /*width: 150px;*/
-        }
-        .leaflet-control-layers-base  {
-            font-size: 12px;
-        }
-        .leaflet-control-layers-base label,  .leaflet-control-layers-base input, .leaflet-control-layers-base button, .leaflet-control-layers-base select, .leaflet-control-layers-base textarea {
-            margin:0px;
-            height:20px;
-            font-size: 12px;
-            line-height:18px;
-            width:auto;
-        }
-
-        .leaflet-control-layers {
-            opacity:0.8;
-            filter:alpha(opacity=80);
-        }
-
-        .leaflet-control-layers-overlays label {
-            font-size: 12px;
-            line-height: 18px;
-            margin-bottom: 0px;
-        }
-        #wktInput {
-            height: 280px;
-            width: 95%;
-        }
-        #addWkt {
-            display: inline-block;
-            margin-top: 5px;
-        }
-
-        #spatialSearch .accordion-group {
-            border: none;
-
-        }
-
-        #spatialSearch .accordion-heading .accordion-toggle {
-            padding: 0;
-        }
-
-        .accordion-heading .accordion-toggle {
-            padding: 8px 10px;
-        }
-
-        .accordion-inner {
-            /*padding: 10px 10px;*/
-            margin-top: 5px;
-            padding: 0;
-            border: none;
-        }
-
-        .accordion-caret .accordion-toggle:hover {
-            text-decoration: none;
-        }
-        .accordion-caret .accordion-toggle:hover span,
-        .accordion-caret .accordion-toggle:hover strong {
-            text-decoration: underline;
-        }
-        .accordion-caret .accordion-toggle:before {
-            font-size: 18px;
-            vertical-align: -1px;
-        }
-        .accordion-caret .accordion-toggle:not(.collapsed):before {
-            content: "▾";
-            margin-right: 0px;
-        }
-        .accordion-caret .accordion-toggle.collapsed:before {
-            content: "▸";
-            margin-right: 0px;
-        }
-    </style>
     <script src="http://maps.google.com/maps/api/js?v=3.5&sensor=false"></script>
-    <r:require modules="jquery, leaflet, mapCommon"/>
+    <r:require modules="jquery, leaflet, mapCommon, searchMap"/>
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <r:require module="bieAutocomplete"/>
     </g:if>
@@ -344,7 +259,7 @@
 </head>
 
 <body>
-    <div id="headingBar">
+    <div id="headingBar" class="heading-bar">
         <h1 style="width:100%;" id="searchHeader"><g:message code="home.index.body.title" default="Search for records in"/> ${raw(hubDisplayName)}</h1>
     </div>
     <g:if test="${flash.message}">
