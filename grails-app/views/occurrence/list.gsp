@@ -52,7 +52,7 @@
     </script>
 </head>
 
-<body>
+<body class="occurrence-search">
     <div id="listHeader" class="row-fluid heading-bar">
         <div class="span5">
             <h1><alatag:message code="search.heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>

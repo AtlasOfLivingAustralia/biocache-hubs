@@ -46,7 +46,7 @@
         var taxa = ["*"], rank = "*";
     </script>
 </head>
-<body class="nav-locations">
+<body class="nav-locations explore-your-area">
 <div id="header" class="heading-bar">
     <g:if test="${grailsApplication.config.skin.layout == 'ala'}">
         <div id="breadcrumb">

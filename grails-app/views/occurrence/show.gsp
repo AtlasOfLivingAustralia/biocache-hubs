@@ -138,7 +138,7 @@
     </r:script>
 
 </head>
-<body>
+<body class="occurrence-record">
     %{--<g:set var="json" value="${request.contextPath}/occurrences/${record?.raw?.uuid}.json" />--}%
     <g:if test="${record}">
         <g:if test="${record.raw}">
