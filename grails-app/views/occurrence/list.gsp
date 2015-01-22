@@ -358,7 +358,7 @@
                             <div id="speciesGallery">[<g:message code="list.speciesgallerycontrols.speciesgallery" default="image gallery should appear here"/>]</div>
                             <div id="loadMoreSpecies" style="display:none;">
                                 <button class="btn"><g:message code="list.speciesgallerycontrols.loadmorespecies.button" default="Show more images"/></button>
-                                <img style="display:none;" src="${request.contextPath}/images/indicator.gif"/>
+                                <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" style="display:none;" alt="indicator icon"/>
                             </div>
                         </div><!-- end #speciesWrapper -->
                     </g:if>
@@ -371,7 +371,7 @@
                             </div>
                             <div id="loadMoreImages" style="display:none;">
                                 <button class="btn"><g:message code="list.speciesgallerycontrols.loadmoreimages.button" default="Show more images"/>
-                                    <img style="display:none;" src="${request.contextPath}/images/indicator.gif"/>
+                                    <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" style="display:none;" alt="indicator icon"/>
                                 </button>
                             </div>
                             <%-- HTML template used by AJAX code --%>
