@@ -254,13 +254,13 @@ class WebServicesService {
 
     @Cacheable('longTermCache')
     def JSONArray getLoggerReasons() {
-        def url = "http://logger.ala.org.au/service/logger/reasons"
+        def url = "${grailsApplication.config.logger.baseUrl}/logger/reasons"
         getJsonElements(url)
     }
 
     @Cacheable('longTermCache')
     def JSONArray getLoggerSources() {
-        def url = "http://logger.ala.org.au/service/logger/sources"
+        def url = "${grailsApplication.config.logger.baseUrl}/logger/sources"
         try {
             getJsonElements(url)
         } catch (Exception ex) {

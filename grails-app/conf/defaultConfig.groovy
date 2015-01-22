@@ -45,6 +45,7 @@ skin.taxaLinks.identifier = "guid"  // "guid" or "name". Only used if skin.useAl
 // web services
 bie.baseUrl = "http://bie.ala.org.au"
 collectory.baseUrl = "http://collections.ala.org.au"
+logger.baseUrl = "http://logger.ala.org.au/service"
 biocache.apiKey = "api-key-to-use"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
