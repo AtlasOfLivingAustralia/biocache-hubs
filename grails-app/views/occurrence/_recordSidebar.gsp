@@ -185,8 +185,7 @@
                                 <span id="submitSuccess"></span>
                             </p>
                             <p id="assertionSubmitProgress" style="display:none;">
-                                <img src="${request.contextPath}/static/images/indicator.gif"/>
-                                %{--<img src="${g.createLink(uri:'/images/indicator.gif', plugin:'biocache-hubs')}"/>--}%
+                                <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" style="display:none;" alt="indicator icon"/>
                             </p>
 
                         </form>
