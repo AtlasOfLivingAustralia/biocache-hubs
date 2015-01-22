@@ -593,6 +593,7 @@ function reloadWithParam(paramName, paramValue) {
     var fqList = $.url().param('fq'); //$.query.get('fq');
     var sort = $.url().param('sort');
     var dir = $.url().param('dir');
+    var pageSize = $.url().param('pageSize');
     var lat = $.url().param('lat');
     var lon = $.url().param('lon');
     var rad = $.url().param('radius');
@@ -609,9 +610,18 @@ function reloadWithParam(paramName, paramValue) {
     if (fqList != null) {
         paramList.push("fq=" + fqList.join("&fq="));
     }
-    // add sort param if already set
+
+    // add sort/dir/pageSize params if already set (different to default)
     if (paramName != 'sort' && sort != null) {
         paramList.push('sort' + "=" + sort);
+    }
+
+    if (paramName != 'dir' && dir != null) {
+        paramList.push('dir' + "=" + dir);
+    }
+
+    if (paramName != 'pageSize' && pageSize != null) {
+        paramList.push("pageSize=" + pageSize);
     }
 
     if (paramName != null && paramValue != null) {
