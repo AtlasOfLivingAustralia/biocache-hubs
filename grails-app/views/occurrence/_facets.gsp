@@ -39,16 +39,13 @@
             </div>
             <div class="facetsGroup hide" id="group_dynamicFacets">
                 <g:each in="${dynamicFacets}" var="df">
-                    %{--${df.name}<br>--}%
                     <g:set var="facetResult" value="${groupedFacetsMap.get(df.name)}"/>
-                    %{--<g:if test="${facetResult}">facetResult = ${facetResult}<br></g:if>--}%
                     <g:if test="${facetResult && facetResult.fieldResult.length() >= 1 && facetResult.fieldResult[0].count != sr.totalRecords && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
                         <g:set var="fieldDisplayName" value="${df.displayName}"/>
                         <h4><span class="FieldName">${fieldDisplayName?:alatag.formatDynamicFacetName(fieldName:facetResult.fieldName)}</span></h4>
                         <div class="subnavlist nano" style="clear:left">
                             <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}" fieldDisplayName="${fieldDisplayName}"/>
                         </div>
-                        %{--<div class="fadeout"></div>--}%
                         <g:if test="${facetResult.fieldResult.length() > 0}">
                             <div class="showHide">
                                 <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-displayname="${fieldDisplayName}"
