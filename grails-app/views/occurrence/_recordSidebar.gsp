@@ -230,6 +230,9 @@
                     <g:if test="${record.raw.occurrence.rightsholder}">
                         <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.occurrence.rightsholder}</cite><br/>
                     </g:if>
+                    <g:if test="${record.raw.miscProperties.rightsHolder}">
+                        <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.miscProperties.rightsHolder}</cite><br/>
+                    </g:if>
                     <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
                         <a href="${grailsApplication.config.images.metadataUrl}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
                     </g:if>
