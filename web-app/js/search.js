@@ -792,7 +792,7 @@ function loadAllCharts() {
         state_conservation: {},
         occurrence_year:{},
         Unknown_s:{},
-        month:{},
+        month:{chartType: "column"},
         biocacheServicesUrl: biocacheServiceUrl,
         displayRecordsUrl: BC_CONF.serverName
     };
