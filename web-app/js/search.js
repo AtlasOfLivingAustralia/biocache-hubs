@@ -605,9 +605,11 @@ function reloadWithParam(paramName, paramValue) {
     // add filter query param
     if (fqList && typeof fqList === "string") {
         fqList = [ fqList ];
+    } else if (!fqList) {
+        fqList = [];
     }
 
-    if (fqList != null) {
+    if (fqList) {
         paramList.push("fq=" + fqList.join("&fq="));
     }
 
