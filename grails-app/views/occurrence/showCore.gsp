@@ -28,6 +28,7 @@
             recordUuid: "${record.raw.uuid}",
             taxonRank: "${record.processed.classification.taxonRank}",
             taxonConceptID: "${record.processed.classification.taxonConceptID}",
+            locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             sensitiveDatasets: {
                 <g:each var="sds" in="${sensitiveDatasets}"
                    status="s">'${sds}': '${grailsApplication.config.sensitiveDatasets[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}

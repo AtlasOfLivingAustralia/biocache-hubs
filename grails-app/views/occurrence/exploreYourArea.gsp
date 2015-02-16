@@ -39,7 +39,8 @@
             zoom: ${zoom},
             radius: ${radius},
             speciesPageUrl: "${speciesPageUrl}",
-            queryContext: "${queryContext}"
+            queryContext: "${queryContext}",
+            locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}"
         }
 
         //make the taxa and rank global variable so that they can be used in the download

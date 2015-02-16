@@ -44,7 +44,7 @@
             queryContext: "${grailsApplication.config.biocache.queryContext}",
             zoomOutsideScopedRegion: Boolean("${grailsApplication.config.map.zoomOutsideScopedRegion}"),
             hasMultimedia: ${hasImages?:'false'}, // will be either true or false
-            locale: "${request.locale}"
+            locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}"
         };
 
         google.load('maps','3.5',{ other_params: "sensor=false" });
