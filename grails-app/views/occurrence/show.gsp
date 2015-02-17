@@ -370,7 +370,7 @@
                         <ul>
                         <g:each in="${metadataForOutlierLayers}" var="layerMetadata">
                             <li>
-                                <a href="http://spatial.ala.org.au/layers/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
+                                <a href="${grailsApplication.config.layersservice.url}/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
                                 <g:message code="show.outlierinformation.each.label01" default="Notes"/>: ${layerMetadata.notes}<br/>
                                 <g:message code="show.outlierinformation.each.label02" default="Scale"/>: ${layerMetadata.scale}
                             </li>
@@ -542,7 +542,7 @@
                             <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != contextualSampleInfo.get(vs - 1).classification1 && vs != contextualSampleInfo.size() - 1))}">
                                 <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
                             </g:if>
-                            <g:set var="fn"><a href='${spatialPortalUrl}layers/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
+                            <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
                             <alatag:occurrenceTableRow
                                     annotate="false"
                                     section="contextual"
@@ -562,7 +562,7 @@
                             <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != environmentalSampleInfo.get(vs - 1).classification1 && vs != environmentalSampleInfo.size() - 1))}">
                                 <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
                             </g:if>
-                            <g:set var="fn"><a href='${spatialPortalUrl}layers/more/${sample.layerName}' title='More information about this layer'>${sample.layerDisplayName}</a></g:set>
+                            <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='More information about this layer'>${sample.layerDisplayName}</a></g:set>
                             <alatag:occurrenceTableRow
                                     annotate="false"
                                     section="contextual"

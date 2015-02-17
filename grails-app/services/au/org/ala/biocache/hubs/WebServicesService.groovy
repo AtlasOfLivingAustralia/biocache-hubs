@@ -188,7 +188,7 @@ class WebServicesService {
     @Cacheable('longTermCache')
     def Map getLayersMetaData() {
         Map layersMetaMap = [:]
-        def url = "${grailsApplication.config.spatial.baseUrl}/ws/layers"
+        def url = "${grailsApplication.config.layersservice.baseUrl}/layers"
         def jsonArray = getJsonElements(url)
 
         jsonArray.each {
