@@ -34,8 +34,7 @@
         var EYA_CONF = {
             contextPath: "${request.contextPath}",
             biocacheServiceUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}",
-            <g:if env="development">imagesUrlPrefix: "${r.resource(dir:'js/eya-images', plugin:'biocache-hubs').replaceFirst(/\?.*$/, '')}", // replaceFirst removes cache-busting param </g:if>
-            <g:else>imagesUrlPrefix: "${request.contextPath}/static/js/eya-images",</g:else>
+            imagesUrlPrefix: "${request.contextPath}/static/js/eya-images",
             zoom: ${zoom},
             radius: ${radius},
             speciesPageUrl: "${speciesPageUrl}",
