@@ -15,6 +15,7 @@
 package au.org.ala.biocache.hubs
 
 import grails.validation.Validateable
+import groovy.util.logging.Log4j
 import org.apache.commons.httpclient.URIException
 import org.apache.commons.httpclient.util.URIUtil
 import org.apache.commons.lang.StringUtils
@@ -26,6 +27,7 @@ import org.codehaus.groovy.grails.web.util.WebUtils
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 @Validateable
+@Log4j
 class AdvancedSearchParams {
     String text = ""
     String taxa = ""
@@ -119,9 +121,11 @@ class AdvancedSearchParams {
         }
 
         if (taxas) {
+            log.debug "taxas = ${taxas} || nameType = ${nameType}"
             // build up OR'ed taxa query with braces if more than one taxon
             q.append(" ").append(braces[0]).append(nameType).append(":")
             q.append(StringUtils.join(taxas, " OR " + nameType + ":")).append(braces[1])
+            log.debug "q = ${q}"
         }
 
         // TODO: deprecate this code (?)
