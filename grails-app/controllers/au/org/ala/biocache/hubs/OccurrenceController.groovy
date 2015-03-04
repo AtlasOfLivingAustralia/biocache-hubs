@@ -125,8 +125,9 @@ class OccurrenceController {
 
         try {
             String userId = authService?.getUserId()
-            Boolean hasClubView = request.isUserInRole(grailsApplication.config.clubRoleForHub)
+            Boolean hasClubView = request.isUserInRole("${grailsApplication.config.clubRoleForHub}")
             JSONObject record = webServicesService.getRecord(id, hasClubView)
+            log.debug "hasClubView = ${hasClubView} || ${grailsApplication.config.clubRoleForHub}"
 
             if (record) {
                 JSONObject compareRecord = webServicesService.getCompareRecord(id)
