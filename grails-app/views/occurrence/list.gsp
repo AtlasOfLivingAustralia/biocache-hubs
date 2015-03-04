@@ -78,9 +78,9 @@
     </g:if>
     <g:elseif test="${!sr || sr.totalRecords == 0}">
         <div class="searchInfo searchError">
-            <g:if test="${queryDisplay =~ /lsid:/ && params.taxa}"> <!-- ${raw(queryDisplay)} -->
+            <g:if test="${queryDisplay =~ /lsid/ && params.taxa}"> <!-- ${raw(queryDisplay)} -->
                 <g:if test="${queryDisplay =~ /span/}">
-                    <p><g:message code="list.02.p01" default="No records found for"/> <span class="queryDisplay">${raw(queryDisplay)}</span></p>
+                    <p><g:message code="list.02.p01" default="No records found for"/> <span class="queryDisplay">${raw(queryDisplay.replaceAll('null:',''))}</span></p>
                 </g:if>
                 <g:else>
                     <p><g:message code="list.02.p02" default="No records found for"/> <span class="queryDisplay">${params.taxa}</span></p>
