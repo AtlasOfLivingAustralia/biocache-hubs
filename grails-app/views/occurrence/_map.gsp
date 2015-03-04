@@ -578,7 +578,7 @@ a.colour-by-legend-toggle {
             layers: 'ALA:occurrences',
             format: 'image/png',
             transparent: true,
-            attribution: "${grailsApplication.config.skin.orgNameLong}",
+            //attribution: "${grailsApplication.config.skin.orgNameLong}",
             bgcolor:"0x000000",
             outline:outlineDots,
             ENV: envProperty,
