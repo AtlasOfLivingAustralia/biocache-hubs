@@ -37,6 +37,7 @@ class AdvancedSearchParams {
     String raw_taxon_name = ""
     String species_group = ""
     String institution_collection = ""
+    String dataset = ""
     String state = ""
     String country = ""
     String ibra = ""
@@ -90,6 +91,7 @@ class AdvancedSearchParams {
         if (cl959) q.append(" cl959:").append(quoteText(cl959))
         if (places) q.append(" places:").append(quoteText(places.trim()))
         if (type_status) q.append(" type_status:").append(type_status)
+        if (dataset) q.append(" data_resource_uid:").append(dataset)
         if (type_material) q.append(" type_status:").append("*")
         if (basis_of_record) q.append(" basis_of_record:").append(basis_of_record)
         if (catalogue_number) q.append(" catalogue_number:").append(quoteText(catalogue_number))
