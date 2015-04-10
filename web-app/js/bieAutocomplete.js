@@ -19,8 +19,11 @@
 jQuery(document).ready(function() {
     // Autocomplete
     var bieBaseUrl = BC_CONF.bieWebappUrl;
+    var bieParams = { limit: 100 };
+    var autoHints = BC_CONF.autocompleteHints; // expects { fq: "kingdom:Plantae" }
+    $.extend( bieParams, autoHints ); // merge autoHints into bieParams
     jQuery(":input#taxaQuery, :input#solrQuery, :input#taxa, :input.name_autocomplete").autocomplete(bieBaseUrl + '/search/auto.json', {
-        extraParams: {limit:100},
+        extraParams: bieParams,
         dataType: 'jsonp',
         parse: function(data) {
             var rows = new Array();

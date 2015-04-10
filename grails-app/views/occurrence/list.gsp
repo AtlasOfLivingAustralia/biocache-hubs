@@ -42,6 +42,7 @@
             resourceName: "${grailsApplication.config.skin.orgNameLong}",
             facetLimit: "${grailsApplication.config.facets.limit?:50}",
             queryContext: "${grailsApplication.config.biocache.queryContext}",
+            autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson()?:'{}'},
             zoomOutsideScopedRegion: Boolean("${grailsApplication.config.map.zoomOutsideScopedRegion}"),
             hasMultimedia: ${hasImages?:'false'}, // will be either true or false
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}"
