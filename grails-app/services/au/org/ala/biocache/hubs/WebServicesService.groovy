@@ -118,6 +118,12 @@ class WebServicesService {
     def Map getGroupedFacets() {
         log.info "Getting grouped facets"
         def url = "${grailsApplication.config.biocache.baseUrl}/search/grouped/facets"
+
+        if (grailsApplication.config.biocache.groupedFacetsUrl) {
+            // some hubs use a custom JSON url
+            url = "${grailsApplication.config.biocache.groupedFacetsUrl}"
+        }
+
         JSONArray groupedArray = getJsonElements(url)
         Map groupedMap = [:] // LinkedHashMap by default so ordering is maintained
 

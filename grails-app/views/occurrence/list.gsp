@@ -123,17 +123,19 @@
                             <%-- iterate over the groupedFacets, checking the defaultFacets for each entry --%>
                             <g:set var="count" value="${0}"/>
                             <g:each var="group" in="${groupedFacets}">
-                                <div class="facetsColumn">
-                                    <div class="facetGroupName"><g:message code="facet.group.${group.key}" default="${group.key}"/></div>
-                                    <g:each in="${group.value}" var="facetFromGroup">
+                                <g:if test="${defaultFacets.find { key, value -> group.value.any { it == key} }}">
+                                    <div class="facetsColumn">
+                                        <div class="facetGroupName"><g:message code="facet.group.${group.key}" default="${group.key}"/></div>
+                                        <g:each in="${group.value}" var="facetFromGroup">
                                         %{--<g:set var="facet" value="${defaultFacets.get(facetFromGroup)}"/>--}%
-                                        <g:if test="${defaultFacets.containsKey(facetFromGroup)}">
-                                            <g:set var="count" value="${count+1}"/>
-                                            <input type="checkbox" name="facets" class="facetOpts" value="${facetFromGroup}"
-                                                ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<alatag:message code="facet.${facetFromGroup}"/><br>
-                                        </g:if>
-                                    </g:each>
-                                </div>
+                                            <g:if test="${defaultFacets.containsKey(facetFromGroup)}">
+                                                <g:set var="count" value="${count+1}"/>
+                                                <input type="checkbox" name="facets" class="facetOpts" value="${facetFromGroup}"
+                                                    ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<alatag:message code="facet.${facetFromGroup}"/><br>
+                                            </g:if>
+                                        </g:each>
+                                    </div>
+                                </g:if>
                             </g:each>
                             %{--</div>--}%
                             <g:if test="${false && dynamicFacets}"><!-- INACTIVE - user not able to toggle display of custom fields for now -->
