@@ -134,7 +134,7 @@ class OccurrenceTagLib {
                     //onClick:"removeFacet(this); return false;"
             ) {
             if (attrs.addCheckBox) {
-                span(class:'checkbox-checked') {
+                span(class:'fa fa-check-square-o') {
                     mkp.yieldUnescaped("&nbsp;")
                 }
             }
@@ -195,7 +195,7 @@ class OccurrenceTagLib {
                                 class: "tooltips",
                                 title: linkTitle
                         ) {
-                            span(class:"checkbox-unchecked"){
+                            span(class:"fa fa-square-o"){
                                 mkp.yieldUnescaped("&nbsp;")
                             }
                             span(class:"facet-item") {
@@ -215,7 +215,7 @@ class OccurrenceTagLib {
                                 class: "tooltips",
                                 title: linkTitle
                         ) {
-                            span(class:"checkbox-unchecked"){
+                            span(class:"fa fa-square-o"){
                                 mkp.yieldUnescaped("&nbsp;")
                             }
                             span(class:"facet-item") {
@@ -238,7 +238,7 @@ class OccurrenceTagLib {
                                 class: "tooltips",
                                 title: linkTitle
                         ) {
-                            span(class:"checkbox-unchecked"){
+                            span(class:"fa fa-square-o"){
                                 mkp.yieldUnescaped("&nbsp;")
                             }
                             span(class:"facet-item") {
@@ -541,8 +541,8 @@ class OccurrenceTagLib {
                 span(style:'margin-left: 8px;') {
                     if (occurrence.eventDate) {
                         outputResultsLabel("Date: ", g.formatDate(date: new Date(occurrence.eventDate), format:"yyyy-MM-dd"), true)
-                    } else if (occurrence.occurrenceYear) {
-                        outputResultsLabel("Year: ", g.formatDate(number:new Date(occurrence.occurrenceYear), format:"yyyy"), true)
+                    } else if (occurrence.occurrenceYear || occurrence.year) {
+                        outputResultsTd("Year: ", g.formatDate(number:new Date(occurrence.occurrenceYear?:occurrence.year), format:"yyyy"), true)
                     }
                     if (occurrence.stateProvince) {
                         outputResultsLabel("State: ", alatag.message(code:occurrence.stateProvince), true)

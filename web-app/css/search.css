@@ -266,12 +266,12 @@ form {
 */
 
 ul#refinedFacets li {
-    text-indent: -8px;
+    text-indent: -3px;
     margin-left: 7px;
 }
 
 .subnavlist > ul > li {
-    text-indent: -4px;
+    text-indent: -2px;
     text-transform: none;
     line-height: 1.3em;
     margin-top: 4px;
@@ -290,6 +290,7 @@ ul#refinedFacets li {
     margin: 2px 10px;*/
 }
 
+/** following block is not used - mark for removal */
 span.checkbox-unchecked, span.checkbox-checked {
     /*float: left;*/
     vertical-align: top;
@@ -306,6 +307,18 @@ span.checkbox-unchecked {
 
 span.checkbox-checked {
     background: url('images/checkbox-checked.png') no-repeat left top;
+}
+/* end unused block */
+
+a span.fa-square-o, a span.fa-check-square-o {
+    color: #ffffff;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #5f5d60;
+    font-size: 13px;
+}
+
+a:hover span.fa-square-o, a:hover span.fa-check-square-o {
+    color: #C44D34;
 }
 
 span.activeFq, span.facet-item {
