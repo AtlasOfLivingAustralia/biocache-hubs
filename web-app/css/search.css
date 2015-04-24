@@ -311,9 +311,9 @@ span.checkbox-checked {
 /* end unused block */
 
 a span.fa-square-o, a span.fa-check-square-o {
-    color: #ffffff;
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: #5f5d60;
+    /*color: #ffffff;*/
+    /*-webkit-text-stroke-width: 1px;*/
+    /*-webkit-text-stroke-color: #5f5d60;*/
     font-size: 13px;
 }
 
