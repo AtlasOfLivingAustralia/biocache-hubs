@@ -318,7 +318,7 @@ a span.fa-square-o, a span.fa-check-square-o {
 }
 
 a:hover span.fa-square-o, a:hover span.fa-check-square-o {
-    color: #C44D34;
+    /*color: #C44D34;*/
 }
 
 span.activeFq, span.facet-item {
