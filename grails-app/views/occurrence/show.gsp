@@ -113,8 +113,8 @@
 
             if(chartQuery != null){
                 $.each(data, function() {
-                    drawChart(this.layerId, chartQuery, this.layerId+'Outliers', this.outlierValues, this.recordLayerValue, false);
-                    drawChart(this.layerId, chartQuery, this.layerId+'OutliersCumm', this.outlierValues, this.recordLayerValue, true);
+                    drawChart(this.layerId, chartQuery, this.layerId, this.outlierValues, this.recordLayerValue, false);
+                    drawChart(this.layerId, chartQuery, this.layerId, this.outlierValues, this.recordLayerValue, true);
                 })
             }
         }
@@ -126,13 +126,15 @@
             facetChartOptions.charts = [chartName];
             facetChartOptions.width = "75%";
             facetChartOptions[facetName] = {chartType: 'scatter'};
+            facetChartOptions.biocacheServicesUrl = "${alatag.getBiocacheAjaxUrl()}";
+            facetChartOptions.displayRecordsUrl = "${grailsApplication.config.grails.serverURL}";
 
             //additional config
             facetChartOptions.cumulative = cumulative;
             facetChartOptions.outlierValues = outlierValues;    //retrieved from WS
             facetChartOptions.highlightedValue = valueForThisRecord;           //retrieved from the record
 
-            //console.log('Start the drawing...' + chartName);
+            console.log('Start the drawing...' + chartName, facetChartOptions);
             facetChartGroup.loadAndDrawFacetCharts(facetChartOptions);
             //console.log('Finished the drawing...' + chartName);
         }

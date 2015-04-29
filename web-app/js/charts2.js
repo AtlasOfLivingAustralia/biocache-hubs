@@ -50,8 +50,8 @@ var baseFacetChart = {
         state: {ignore: ['Unknown1']},
         type_status: {title: 'By type status (as % of all type specimens)', ignore: ['notatype']},
         el895: {hAxis: {title:'Moisture Index'}},
-        el882: {hAxis: {title:'mm'}},
-        el889: {hAxis: {title:'mm'}},
+        el882: {hAxis: {title:'mm'}, chartArea: {width: "65%"}},
+        el889: {hAxis: {title:'mm'}}
         el887: {hAxis: {title:'MJ/m2/day'}},
         el865: {hAxis: {title:'Moisture Index'}},
         el894: {hAxis: {title:'MJ/m2/day'}},
@@ -216,6 +216,7 @@ var baseFacetChart = {
         var name = this.name,
             specificOptions = options[name];
 
+        console.log('name', name);
         // add the default title
         if(options.avoidTitlePrefix !== "undefined" && options.avoidTitlePrefix){
             this.title =  this.chartLabel();
@@ -244,6 +245,8 @@ var baseFacetChart = {
                 }
             }
         }
+        if (opts.displayRecordsUrl != undefined) { biocacheWebappUrl = opts.displayRecordsUrl; }
+
         this.chartsDiv = $('#' + (this.chartsDiv || 'charts'));
 
         // preserve context for callback
@@ -629,6 +632,7 @@ var facetChartGroup = {
             query = options.query,
             that = this;
         $.each(options.charts, function(index, name) {
+            console.log('options.charts', options.charts);
             that.createChart(name, options, facetMap);
         });
     }
