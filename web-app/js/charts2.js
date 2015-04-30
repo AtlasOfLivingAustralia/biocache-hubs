@@ -216,7 +216,6 @@ var baseFacetChart = {
         var name = this.name,
             specificOptions = options[name];
 
-        console.log('name', name);
         // add the default title
         if(options.avoidTitlePrefix !== "undefined" && options.avoidTitlePrefix){
             this.title =  this.chartLabel();
@@ -399,7 +398,7 @@ var baseFacetChart = {
                         dataTable.addRow([{v: obj.label, f: capitalise(expandCamelCase(obj.label))}, obj.count, null,null]);
                     } else if (that.column1DataType === 'number') {
 
-                        ////console.log('inArray: ' + $.inArray(obj.label, options.outlierValues));
+                        //console.log('inArray: ' + $.inArray(obj.label, options.outlierValues));
 
                         if (options.highlightedValue !== undefined && obj.label == options.highlightedValue){
                             dataTable.addRow([parseFloat(obj.label), null, null, obj.count]);
@@ -632,7 +631,6 @@ var facetChartGroup = {
             query = options.query,
             that = this;
         $.each(options.charts, function(index, name) {
-            console.log('options.charts', options.charts);
             that.createChart(name, options, facetMap);
         });
     }

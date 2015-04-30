@@ -134,7 +134,7 @@
             facetChartOptions.outlierValues = outlierValues;    //retrieved from WS
             facetChartOptions.highlightedValue = valueForThisRecord;           //retrieved from the record
 
-            console.log('Start the drawing...' + chartName, facetChartOptions);
+            //console.log('Start the drawing...' + chartName, facetChartOptions);
             facetChartGroup.loadAndDrawFacetCharts(facetChartOptions);
             //console.log('Finished the drawing...' + chartName);
         }
