@@ -51,7 +51,7 @@ var baseFacetChart = {
         type_status: {title: 'By type status (as % of all type specimens)', ignore: ['notatype']},
         el895: {hAxis: {title:'Moisture Index'}},
         el882: {hAxis: {title:'mm'}, chartArea: {width: "65%"}},
-        el889: {hAxis: {title:'mm'}}
+        el889: {hAxis: {title:'mm'}},
         el887: {hAxis: {title:'MJ/m2/day'}},
         el865: {hAxis: {title:'Moisture Index'}},
         el894: {hAxis: {title:'MJ/m2/day'}},
