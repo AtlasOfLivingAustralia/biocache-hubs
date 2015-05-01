@@ -68,6 +68,8 @@ class AdvancedSearchParams {
     String seed_viability_end = ""
     String seed_quantity_start = ""
     String seed_quantity_end = ""
+    String start_year = ""
+    String end_year = ""
 
     private final String QUOTE = "\""
 
@@ -167,6 +169,13 @@ class AdvancedSearchParams {
             String end = (!seed_quantity_end) ? "*" : seed_quantity_end
             String value = "[" + start + " TO " + end + "]"
             q.append(" AdjustedSeedQuantity_i:").append(value)
+        }
+
+        if (start_year || end_year) {
+            String start = (!start_year) ? "*" : start_year
+            String end = (!end_year) ? "*" : end_year
+            String value = "[" + start + " TO " + end + "]"
+            q.append(" Year:").append(value)
         }
 
         String finalQuery = ""
