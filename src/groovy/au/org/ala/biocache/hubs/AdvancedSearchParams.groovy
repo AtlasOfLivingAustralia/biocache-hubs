@@ -175,7 +175,7 @@ class AdvancedSearchParams {
             String start = (!start_year) ? "*" : start_year
             String end = (!end_year) ? "*" : end_year
             String value = "[" + start + " TO " + end + "]"
-            q.append(" Year:").append(value)
+            q.append(" year:").append(value)
         }
 
         String finalQuery = ""
