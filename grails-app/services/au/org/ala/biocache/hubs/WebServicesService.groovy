@@ -195,23 +195,27 @@ class WebServicesService {
     def Map getLayersMetaData() {
         Map layersMetaMap = [:]
         def url = "${grailsApplication.config.layersservice.baseUrl}/layers"
-        def jsonArray = getJsonElements(url)
 
-        jsonArray.each {
-            Map subset = [:]
-            subset << it // clone the original Map
-            subset.layerID = it.uid
-            subset.layerName = it.name
-            subset.layerDisplayName = it.displayname
-            subset.value = null
-            subset.classification1 = it.classification1
-            subset.units = it.environmentalvalueunits
+        try {
+            def jsonArray = getJsonElements(url)
+            jsonArray.each {
+                Map subset = [:]
+                subset << it // clone the original Map
+                subset.layerID = it.uid
+                subset.layerName = it.name
+                subset.layerDisplayName = it.displayname
+                subset.value = null
+                subset.classification1 = it.classification1
+                subset.units = it.environmentalvalueunits
 
-            if (it.type == ENVIRONMENTAL) {
-                layersMetaMap.put("el" + it.uid.trim(), subset)
-            } else if (it.type == CONTEXTUAL) {
-                layersMetaMap.put("cl" + it.uid.trim(), subset)
+                if (it.type == ENVIRONMENTAL) {
+                    layersMetaMap.put("el" + it.uid.trim(), subset)
+                } else if (it.type == CONTEXTUAL) {
+                    layersMetaMap.put("cl" + it.uid.trim(), subset)
+                }
             }
+        } catch (RestClientException rce) {
+            log.debug "Can't access layer service - ${rce.message}"
         }
 
         return layersMetaMap
