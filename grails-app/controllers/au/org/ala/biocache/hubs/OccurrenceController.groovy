@@ -151,7 +151,7 @@ class OccurrenceController {
                         isCollectionAdmin: false, // TODO implement this
                         queryAssertions: null, // TODO implement this
                         duplicateRecordDetails: webServicesService.getDuplicateRecordDetails(record),
-                        dataResourceCodes: facetsCacheService.getFacetNamesFor(FacetsName.DATA_RESOURCE), // TODO test
+                        dataResourceCodes: facetsCacheService.getFacetNamesFor("data_resource_uid"), // TODO move string value to config file
                         clubView: hasClubView,
                         errorCodes: webServicesService.getErrorCodes(),
                         metadataForOutlierLayers: postProcessingService.getMetadataForOutlierLayers(record, layersMetaData),

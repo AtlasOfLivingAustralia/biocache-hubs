@@ -58,8 +58,7 @@ class WebServicesService {
                 // do this once
                 facetName = item.fq?.tokenize(':')?.get(0)?.replaceFirst(/^\-/,'')
                 try {
-                    FacetsName fn = FacetsName.valueOfFieldName(facetName)
-                    facetLabelsMap = facetsCacheService.getFacetNamesFor(fn) // cached
+                    facetLabelsMap = facetsCacheService.getFacetNamesFor(facetName) // cached
                 } catch (IllegalArgumentException iae) {
                     log.info "${iae.message}"
                 }
@@ -124,12 +123,18 @@ class WebServicesService {
             url = "${grailsApplication.config.biocache.groupedFacetsUrl}"
         }
 
-        JSONArray groupedArray = getJsonElements(url)
         Map groupedMap = [:] // LinkedHashMap by default so ordering is maintained
 
-        // simplify DS into a Map with key as group name and value as list of facets
-        groupedArray.each { group ->
-            groupedMap.put(group.title, group.facets.collect { it.field })
+        try {
+            JSONArray groupedArray = getJsonElements(url)
+
+            // simplify DS into a Map with key as group name and value as list of facets
+            groupedArray.each { group ->
+                groupedMap.put(group.title, group.facets.collect { it.field })
+            }
+
+        } catch (Exception e) {
+            log.debug "$e"
         }
 
         groupedMap

@@ -18,10 +18,12 @@ import groovy.util.logging.Log4j
 
 /**
  * Enum for facet fields needed to populate drop-down lists in advanced search page, etc.
+ * Now deprecated for a config var: facets.cached (list of facet fields)
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 @Log4j
+@Deprecated
 enum FacetsName {
     COLLECTION("collection_uid"),
     INSTITUTION("institution_uid"),

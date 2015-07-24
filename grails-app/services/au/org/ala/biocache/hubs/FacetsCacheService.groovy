@@ -17,16 +17,27 @@ package au.org.ala.biocache.hubs
 
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.web.json.JSONObject
-import org.springframework.context.support.AbstractMessageSource
-import org.springframework.context.support.StaticMessageSource
+
+import javax.annotation.PostConstruct
 
 /**
  * Service to cache the facet values available from a given data hub.
  * Used to populate the values in select drop-down lists in advanced search page.
  */
 class FacetsCacheService {
-    def webServicesService
-    Map facetsMap = [:]
+    def webServicesService, grailsApplication
+    Map facetsMap = [:]  // generated via SOLR lookup
+    List facetsList = [] // set via config file below
+
+    /**
+     * Init method - load facetsList from config file
+     *
+     * @return
+     */
+    @PostConstruct
+    def init() {
+        facetsList = grailsApplication.config.facets?.cached?.split(',') ?: []
+    }
 
     /**
      * Get the facets values (and labels if available) for the requested facet field.
@@ -34,12 +45,12 @@ class FacetsCacheService {
      * @param facet
      * @return
      */
-    def Map getFacetNamesFor(FacetsName facet) {
+    def Map getFacetNamesFor(String facet) {
         if (!facetsMap) {
             loadSearchResults()
         }
 
-        return facetsMap?.get(facet.fieldname)
+        return facetsMap?.get(facet)
     }
 
     /**
@@ -48,6 +59,7 @@ class FacetsCacheService {
      */
     def void clearCache() {
         facetsMap = [:]
+        init() //  reload config values
     }
 
     /**
@@ -58,7 +70,7 @@ class FacetsCacheService {
         requestParams.setQ("*:*")
         requestParams.setPageSize(0)
         requestParams.setFlimit(-1)
-        requestParams.setFacets(FacetsName.values().collect{ it.fieldname } as String[])
+        requestParams.setFacets(facetsList as String[])
         JSONObject sr = webServicesService.cachedFullTextSearch(requestParams)
 
         sr.facetResults.each { fq ->

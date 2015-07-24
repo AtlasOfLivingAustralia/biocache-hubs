@@ -33,8 +33,8 @@ class HomeController {
     private Map addCommonModel() {
         def model = [:]
 
-        FacetsName.values().each { fn ->
-            model.put(fn.fieldname, facetsCacheService.getFacetNamesFor(fn))
+        facetsCacheService.facetsList.each { fn ->
+            model.put(fn, facetsCacheService.getFacetNamesFor(fn))
         }
 
         model
