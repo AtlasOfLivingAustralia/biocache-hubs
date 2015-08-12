@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
