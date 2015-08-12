@@ -95,6 +95,8 @@ map.defaultZoom
 // 3rd part WMS layer to show on maps. TODO: Allow multiple overlays
 map.overlay.url
 map.overlay.name
+map.mapbox.id = "nickdos.kf2g7gpb" // http://mapbox.com/ Registered by Nick - free to use so anyone can create a new one and add it here
+map.mapbox.token = "pk.eyJ1Ijoibmlja2RvcyIsImEiOiJ2V2dBdEg0In0.Ep2VyMOaOUnOwN1ZVa9uyQ"
 
 suppressIssues = "" // "missingCoordinatePrecision"
 sensitiveDataset.list = ""
