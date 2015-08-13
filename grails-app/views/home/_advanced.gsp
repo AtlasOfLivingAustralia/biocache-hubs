@@ -110,7 +110,7 @@
             <td>
                 <select class="state" name="state" id="state">
                     <option value=""><g:message code="advancedsearch.table06col02.option.label" default="-- select a state/territory --"/></option>
-                    <g:each var="state" in="${request.getAttribute("states")}">
+                    <g:each var="state" in="${request.getAttribute("state")}">
                         <option value="${state.key}">${state.value}</option>
                     </g:each>
                 </select>
