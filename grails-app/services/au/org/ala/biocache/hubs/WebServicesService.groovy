@@ -243,7 +243,7 @@ class WebServicesService {
 
         List encodedQueries = taxaQueries.collect { it.encodeAsURL() } // URL encode params
 
-        def url = grailsApplication.config.bie.baseUrl + "/ws/guid/batch?q=" + encodedQueries.join("&q=")
+        def url = grailsApplication.config.bieService.baseUrl + "/guid/batch?q=" + encodedQueries.join("&q=")
         JSONObject guidsJson = getJsonElements(url)
 
         taxaQueries.each { key ->
