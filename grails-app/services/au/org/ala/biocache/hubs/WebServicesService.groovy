@@ -64,11 +64,10 @@ class WebServicesService {
                 }
             }
 
-            if (facetLabelsMap.containsKey(item.name)) {
+            if (facetLabelsMap && facetLabelsMap.containsKey(item.name)) {
                 item.name = facetLabelsMap.get(item.name)
             }
         }
-
         json
     }
 
