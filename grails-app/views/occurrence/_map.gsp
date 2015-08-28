@@ -261,28 +261,28 @@ a.colour-by-legend-toggle {
 
     //var defaultBaseLayer = new L.Google('ROADMAP');
 
+    var wmsLayer;	
+    <g:if test="${grailsApplication.config.map.overlay.url}">
+	//WMS layer
+        wmsLayer =  L.tileLayer.wms("${grailsApplication.config.map.overlay.url}",{
+                          layers: "${grailsApplication.config.map.overlay.layer}",
+                          format: 'image/png',
+                          transparent: true,
+                          attribution: "${grailsApplication.config.map.overlay.name?:'overlay'}"
+                       });
+    </g:if>
+
     var MAP_VAR = {
         map : null,
         mappingUrl : "${mappingUrl}",
         query : "${searchString}",
         queryDisplayString : "${queryDisplayString}",
-        center: [-23.6,133.6],
+        //center: [-23.6,133.6],
+        center: ["${grailsApplication.config.map.defaultLatitude?:'-23.6'}","${grailsApplication.config.map.defaultLongitude?:'133.6'}"],
         defaultLatitude : "${grailsApplication.config.map.defaultLatitude?:'-23.6'}",
         defaultLongitude : "${grailsApplication.config.map.defaultLongitude?:'133.6'}",
         defaultZoom : "${grailsApplication.config.map.defaultZoom?:'4'}",
-        overlays : {
-
-            <g:if test="${grailsApplication.config.map.overlay.url}">
-                //example WMS layer
-                "${grailsApplication.config.map.overlay.name?:'overlay'}" : L.tileLayer.wms("${grailsApplication.config.map.overlay.url}", {
-                    layers: 'ALA:ucstodas',
-                    format: 'image/png',
-                    transparent: true,
-                    attribution: "${grailsApplication.config.map.overlay.name?:'overlay'}"
-                })
-            </g:if>
-
-        },
+        overlays : {},
         baseLayers : {
             "Minimal" : defaultBaseLayer,
             //"Night view" : L.tileLayer(cmUrl, {styleId: 999,   attribution: cmAttr}),
@@ -397,13 +397,20 @@ a.colour-by-legend-toggle {
             MAP_VAR.drawnItems.addLayer(layer);
         });
 
+        MAP_VAR.layerControl = L.control.layers(MAP_VAR.baseLayers, MAP_VAR.overlays, {collapsed:true, position:'topleft'});
+        MAP_VAR.layerControl.addTo(MAP_VAR.map);
+
         //add the default base layer
         MAP_VAR.map.addLayer(defaultBaseLayer);
 
-        L.control.coordinates({position:"bottomright", useLatLngOrder: true}).addTo(MAP_VAR.map); // coordinate plugin
+        //add the WMS layer
+	if(wmsLayer){
+	        MAP_VAR.layerControl.addOverlay(wmsLayer,"${grailsApplication.config.map.overlay.name?:'WMS_overlay'}");
+		MAP_VAR.map.addLayer(wmsLayer);
+	}
 
-        MAP_VAR.layerControl = L.control.layers(MAP_VAR.baseLayers, MAP_VAR.overlays, {collapsed:true, position:'topleft'});
-        MAP_VAR.layerControl.addTo(MAP_VAR.map);
+
+        L.control.coordinates({position:"bottomright", useLatLngOrder: true}).addTo(MAP_VAR.map); // coordinate plugin
 
         addQueryLayer(true);
 
