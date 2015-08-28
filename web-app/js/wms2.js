@@ -80,7 +80,9 @@ function loadWMS(map, baseURL, customParams){
         "VERSION=1.1.1",
         "BGCOLOR=0xFFFFFF",
         "TRANSPARENT=TRUE",
-        "SRS=EPSG:900913", // 3395?
+        //"SRS=EPSG:900913",
+        /*Set EPSG to 4326, WGS84/GoogleMaps*/
+        "SRS=EPSG:4326",
             "WIDTH="+ tileWidth,
             "HEIGHT="+ tileHeight
     ];
