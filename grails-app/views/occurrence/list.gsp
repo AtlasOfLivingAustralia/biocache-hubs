@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <g:set var="startPageTime" value="${System.currentTimeMillis()}"/>
 <g:set var="queryDisplay" value="${sr?.queryTitle?:searchRequestParams?.displayString?:''}"/>
-<g:set var="searchQuery" value="${grailsApplication.config.skin.useAlaBie ? 'taxa' : 'q'}"/>
+<g:set var="searchQuery" value="${grailsApplication.config.skin.useAlaBie ? 'taxa' : 'fq'}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,15 +54,35 @@
 </head>
 
 <body class="occurrence-search">
+
+<script>
+
+function validateForm_taxaquery() 
+{
+    var x = $("#taxaQuery" ).val();
+    $("#taxaQuery" ).val("text:"+x);
+    return true;
+}
+</script>
+
+
     <div id="listHeader" class="row-fluid heading-bar">
         <div class="span5">
             <h1><alatag:message code="search.heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>
         </div>
         <div id="searchBoxZ" class="span7 text-right">
-            <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="">
+
+            <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="" onsubmit="validateForm_taxaquery()">
+
+<!--
                 <div id="advancedSearchLink"><a href="${g.createLink(uri: '/search')}#tab_advanceSearch"><g:message code="list.advancedsearchlink.navigator" default="Advanced search"/></a></div>
+-->
                 <div class="input-append">
+
+<!--
                     <input type="text" id="taxaQuery" name="${searchQuery}" class="input-xlarge" value="${params.list(searchQuery).join(' OR ')}">
+-->
+                    <input type="text" id="taxaQuery" name="${searchQuery}" class="input-xlarge">
                     <button type="submit" id="solrSubmit" class="btn"><g:message code="list.advancedsearchlink.button.label" default="Quick search"/></button>
                 </div>
             </form>
