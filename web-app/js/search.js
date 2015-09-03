@@ -1154,6 +1154,7 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                         ? "\"" + el.label + "\""
                         : el.label; // .replace(/:/g,"\\:")
                     var label = (el.displayLabel) ? el.displayLabel : el.label ;
+                    var encodeFq = true;
                     if (label.indexOf("@") != -1) {
                         label = label.substring(0,label.indexOf("@"));
                     } else if (jQuery.i18n.prop(label).indexOf("[") == -1) {
@@ -1172,6 +1173,11 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                         label = jQuery.i18n.prop("duplication." + label);
                     } else if (facetName.indexOf("taxonomic_issue") != -1 || /^el\d+/.test(label)) {
                         label = jQuery.i18n.prop(label);
+                    } else if (facetName.indexOf("decade") != -1) {
+                        // decade range required
+                        fqEsc = "[" + fqEsc + "+TO+" + fqEsc.replace('0-01-01T00:00:00Z','9-12-31T11:59:59Z') + "]";
+                        encodeFq = false; // uri encoding breaks SOLR range queries for some reason so don't use it
+                        label = fqEsc.substr(1,4) + " - " + fqEsc.substr(1,3) + "9";
                     } else {
                         var code = facetName + "." + label;
                         var i18nLabel = jQuery.i18n.prop(code);
@@ -1180,8 +1186,8 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                         label = (newLabel.indexOf("[") == -1) ? newLabel : label;
                     }
                     facetName = facetName.replace(/_RNG$/,""); // remove range version if present
-//                    console.log("label", label, facetName, el);
-                    var fqParam = (el.fq) ? encodeURIComponent(el.fq) : facetName.replace("decade","occurrence_year") + ":" + encodeURIComponent(fqEsc);
+                    // console.log("label", label, facetName, el);
+                    var fqParam = (el.fq) ? encodeURIComponent(el.fq) : facetName.replace("decade","occurrence_year") + ":" + ((encodeFq) ? encodeURIComponent(fqEsc) : fqEsc) ;
                     //var link = BC_CONF.searchString.replace("'", "&apos;") + "&fq=" + fqParam;
                     
                     //NC: 2013-01-16 I changed the link so that the search string is uri encoded so that " characters do not cause issues 

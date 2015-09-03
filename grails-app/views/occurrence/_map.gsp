@@ -166,6 +166,19 @@ a.colour-by-legend-toggle {
         <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
             <i class="fa fa-download"></i>&nbsp&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
     </div>
+    <g:if test="${params.wkt}">
+        <div id="downloadWKT" class="btn btn-small" style="margin-bottom: 2px;">
+            <a href="#downloadWKT" role="button" class="tooltips" title="Download WKT file" onclick="downloadPolygon(); return false;">
+                <i class="icon icon-stop"></i>&nbsp&nbsp;<g:message code="map.downloadwkt.btn.label" default="Download WKT"/></a>
+        </div>
+    </g:if>
+    <%-- <div id="spatialSearchFromMap" class="btn btn-small">
+        <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">
+            <i class="hide icon-share-alt"></i> Restrict search</a>
+    </div>
+    TODO - Needs hook in UI to detect a wkt param and include button/link under search query and selected facets.
+    TODO - Also needs to check if wkt is already specified and remove previous wkt param from query.
+    --%>
 </div>
 
 <div class="hide" id="recordLayerControls">
@@ -383,7 +396,7 @@ a.colour-by-legend-toggle {
         //add the default base layer
         MAP_VAR.map.addLayer(defaultBaseLayer);
 
-        L.control.coordinates({position:"bottomleft", useLatLngOrder: true}).addTo(MAP_VAR.map); // coordinate plugin
+        L.control.coordinates({position:"bottomright", useLatLngOrder: true}).addTo(MAP_VAR.map); // coordinate plugin
 
         MAP_VAR.layerControl = L.control.layers(MAP_VAR.baseLayers, MAP_VAR.overlays, {collapsed:true, position:'topleft'});
         MAP_VAR.layerControl.addTo(MAP_VAR.map);
@@ -1018,6 +1031,19 @@ a.colour-by-legend-toggle {
         }
 
         return returnBool
+    }
+
+    /**
+     * http://stackoverflow.com/questions/3916191/download-data-url-file
+     */
+    function downloadPolygon() {
+      var uri = "data:text/html,${params.wkt}",
+          name = "polygon.txt";
+      var link = document.createElement("a");
+      link.download = name;
+      link.href = uri;
+      link.click();
+      return false;
     }
 
 </r:script>

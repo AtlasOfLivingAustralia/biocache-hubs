@@ -200,6 +200,19 @@
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
         <tbody>
+        <g:if test="${request.getAttribute("data_resource_uid") && request.getAttribute("data_resource_uid").size() > 1}">
+            <tr>
+                <td class="labels"><g:message code="advancedsearch.dataset.col.label" default="dataset name"/></td>
+                <td>
+                    <select class="dataset" name="dataset" id="dataset">
+                        <option value=""><g:message code="advancedsearch.dataset.select.default" default="-- select a dataset --"/></option>
+                        <g:each var="region" in="${request.getAttribute("data_resource_uid")}">
+                            <option value="${region.key}">${region.value}</option>
+                        </g:each>
+                    </select>
+                </td>
+            </tr>
+        </g:if>
         <tr>
             <td class="labels"><g:message code="advancedsearch.table09col01.title" default="Catalogue Number"/></td>
             <td>
