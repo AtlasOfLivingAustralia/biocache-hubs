@@ -378,3 +378,19 @@ function replaceURLWithHTMLLinks(text) {
     var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/i;
     return text.replace(exp,"<a href='$1'>$1</a>");
 }
+
+/************************************************************\
+ *
+ \************************************************************/
+// opens email window for slightly obfuscated email addy
+var strEncodedAtSign = "(SPAM_MAIL@ALA.ORG.AU)";
+function sendEmail(strEncoded) {
+    var strAddress;
+    strAddress = strEncoded.split(strEncodedAtSign);
+    strAddress = strAddress.join("@");
+    window.location.href = 'mailto:' + strAddress
+    if (event) {
+        event.cancelBubble = true;
+    }
+    return false;
+}
