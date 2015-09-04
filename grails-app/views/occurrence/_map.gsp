@@ -166,6 +166,12 @@ a.colour-by-legend-toggle {
         <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
             <i class="fa fa-download"></i>&nbsp&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
     </div>
+    <g:if test="${params.wkt}">
+        <div id="downloadWKT" class="btn btn-small" style="margin-bottom: 2px;">
+            <a href="#downloadWKT" role="button" class="tooltips" title="Download WKT file" onclick="downloadPolygon(); return false;">
+                <i class="icon icon-stop"></i>&nbsp&nbsp;<g:message code="map.downloadwkt.btn.label" default="Download WKT"/></a>
+        </div>
+    </g:if>
     <%-- <div id="spatialSearchFromMap" class="btn btn-small">
         <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">
             <i class="hide icon-share-alt"></i> Restrict search</a>
@@ -181,15 +187,17 @@ a.colour-by-legend-toggle {
             <td>
                 <label for="colourBySelect"><g:message code="map.maplayercontrols.tr01td01.label" default="Colour by"/>:&nbsp;</label>
                 <div class="layerControls">
-                    <select name="colourFacets" id="colourBySelect" onchange="changeFacetColours();return true;">
-                        <option value=""><g:message code="map.maplayercontrols.tr01td01.option01" default="None"/></option>
+                    <select name="colourBySelect" id="colourBySelect" onchange="changeFacetColours();return true;">
+                        <option value=""><g:message code="map.maplayercontrols.tr01td01.option01" default="Points - default colour"/></option>
                         <option value="grid"><g:message code="map.maplayercontrols.tr01td01.option02" default="Record density grid"/></option>
-                        <option disabled role=separator>————————————</option>
+                        <option value="gridVariable"><g:message code="map.maplayercontrols.tr01td01.option03" default="Grid (variable precision)"/></option>
+                        <option disabled role="separator">————————————</option>
                         <g:each var="facetResult" in="${facets}">
                             <g:set var="Defaultselected">
                                 <g:if test="${defaultColourBy && facetResult.fieldName == defaultColourBy}">selected="selected"</g:if>
                             </g:set>
-                            <g:if test="${facetResult.fieldName == 'occurrence_year'}">${facetResult.fieldName = 'decade'}</g:if>
+                            %{--<g:if test="${facetResult.fieldName == 'occurrence_year'}">${facetResult.fieldName = 'decade'}</g:if>--}%
+                            <g:if test="${facetResult.fieldName == 'uncertainty'}">${facetResult.fieldName = 'coordinate_uncertainty'}</g:if>
                             <g:if test="${facetResult.fieldResult.size() > 1}">
                                 <option value="${facetResult.fieldName}" ${Defaultselected}>
                                     <alatag:formatDynamicFacetName fieldName="${facetResult.fieldName}"/>
@@ -245,15 +253,11 @@ a.colour-by-legend-toggle {
 
 <r:script>
 
-//    var cmAttr = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
-//            cmUrl = 'http://{s}.tile.cloudmade.com/${grailsApplication.config.map.cloudmade.key}/{styleId}/256/{z}/{x}/{y}.png';
     var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 				'Imagery © <a href="http://mapbox.com">Mapbox</a>';
 	var mbUrl = 'https://{s}.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={token}';
     var defaultBaseLayer = L.tileLayer(mbUrl, {mapid: '${grailsApplication.config.map.mapbox.id}', token: '${grailsApplication.config.map.mapbox.token}', attribution: mbAttr});
-
-    //var defaultBaseLayer = new L.Google('ROADMAP');
 
     var MAP_VAR = {
         map : null,
@@ -279,7 +283,6 @@ a.colour-by-legend-toggle {
         },
         baseLayers : {
             "Minimal" : defaultBaseLayer,
-            //"Night view" : L.tileLayer(cmUrl, {styleId: 999,   attribution: cmAttr}),
             "Road" :  new L.Google('ROADMAP'),
             "Terrain" : new L.Google('TERRAIN'),
             "Satellite" : new L.Google('HYBRID')
@@ -315,7 +318,6 @@ a.colour-by-legend-toggle {
         },
         onAdd: function (map) {
             // create the control container with a particular class name
-            //var $controlToAdd = $('.colourbyTemplate').clone();
             var container = L.DomUtil.create('div', 'leaflet-control-layers');
             var $container = $(container);
             $container.attr("id","recordLayerControl");
@@ -395,7 +397,7 @@ a.colour-by-legend-toggle {
         //add the default base layer
         MAP_VAR.map.addLayer(defaultBaseLayer);
 
-        L.control.coordinates({position:"bottomleft", useLatLngOrder: true}).addTo(MAP_VAR.map); // coordinate plugin
+        L.control.coordinates({position:"bottomright", useLatLngOrder: true}).addTo(MAP_VAR.map); // coordinate plugin
 
         MAP_VAR.layerControl = L.control.layers(MAP_VAR.baseLayers, MAP_VAR.overlays, {collapsed:true, position:'topleft'});
         MAP_VAR.layerControl.addTo(MAP_VAR.map);
@@ -573,14 +575,18 @@ a.colour-by-legend-toggle {
         var envProperty = "color:${grailsApplication.config.map.pointColour};name:circle;size:"+pointSize+";opacity:"+opacity
 
         if(colourByFacet){
-            envProperty = "colormode:" + colourByFacet +";name:circle;size:"+pointSize+";opacity:1"//+opacity
+            if(colourByFacet == "gridVariable"){
+                colourByFacet = "coordinate_uncertainty"
+                envProperty = "colormode:coordinate_uncertainty;name:circle;size:"+pointSize+";opacity:1;cellfill:0xffccff;variablegrids:on"
+            } else {
+                envProperty = "colormode:" + colourByFacet + ";name:circle;size:"+pointSize+";opacity:1;"
+            }
         }
 
-        var layer = L.tileLayer.wms(MAP_VAR.mappingUrl + "/webportal/wms/reflect" + MAP_VAR.query + MAP_VAR.additionalFqs, {
+        var layer = L.tileLayer.wms(MAP_VAR.mappingUrl + "/mapping/wms/reflect" + MAP_VAR.query + MAP_VAR.additionalFqs, {
             layers: 'ALA:occurrences',
             format: 'image/png',
             transparent: true,
-            //attribution: "${grailsApplication.config.skin.orgNameLong}",
             bgcolor:"0x000000",
             outline:outlineDots,
             ENV: envProperty,
@@ -811,7 +817,6 @@ a.colour-by-legend-toggle {
                 format: "json"
             },
             success: function(response) {
-                //console.log(response);
                 MAP_VAR.map.spin(false);
 
                 if (response.occurrences && response.occurrences.length > 0) {
@@ -821,7 +826,6 @@ a.colour-by-legend-toggle {
 
                     // Load the first record details into popup
                     insertRecordInfo(0);
-
                 }
             },
             error: function() {
@@ -906,7 +910,6 @@ a.colour-by-legend-toggle {
                         displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.raw.occurrence.recordedBy + '<br />';
                     } else if(record.processed.occurrence.recordedBy != null){
                         displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.processed.occurrence.recordedBy + '<br />';
-
                     }
 
                     if(record.processed.event.eventDate != null){
@@ -940,7 +943,6 @@ a.colour-by-legend-toggle {
             jsonp: "callback",
             dataType: "jsonp",
             success: function(response) {
-
             }
         });
     }
@@ -956,7 +958,6 @@ a.colour-by-legend-toggle {
         } else {
             output = name;
         }
-
         return output;
     }
 
@@ -968,7 +969,7 @@ a.colour-by-legend-toggle {
         if (true || !isSpatialRadiusSearch()) { // inactive if
             // all other searches (non-spatial)
             // do webservice call to get max extent of WMS data
-            var jsonUrl = "${alatag.getBiocacheAjaxUrl()}/webportal/bounds.json" + MAP_VAR.query + "&callback=?";
+            var jsonUrl = "${alatag.getBiocacheAjaxUrl()}/mapping/bounds.json" + MAP_VAR.query + "&callback=?";
             $.getJSON(jsonUrl, function(data) {
                 if (data.length == 4) {
                     //console.log("data", data);
@@ -1026,15 +1027,12 @@ a.colour-by-legend-toggle {
             }
 
             L.Icon.Default.imagePath = "${request.contextPath}/static/js/leaflet-0.7.2/images";
-            // L.Icon.Default.imagePath = "${g.createLink(uri:'/js/leaflet-0.7.2/images', plugin:'biocache-hubs')}";
-            // L.Icon.Default.imagePath = "http://cdn.leafletjs.com/leaflet-0.7.2/images"; // problem on prod with apache proxypass and resources plugin
             var popupText = "Centre of spatial search with radius of " + radius + " km";
             var circle = L.circle(latLng, radius * 1030, circleOpts);
             circle.addTo(MAP_VAR.map);
             MAP_VAR.map.fitBounds(circle.getBounds()); // make circle the centre of the map, not the points
             L.marker(latLng, {title: popupText}).bindPopup(popupText).addTo(MAP_VAR.map);
             MAP_VAR.map.invalidateSize();
-            //L.circleMarker(latLng, {radius: 6, opacity: 0.8, fillOpacity: 1.0}).bindPopup(popupText).addTo(MAP_VAR.map);
         }
     }
 
@@ -1054,6 +1052,19 @@ a.colour-by-legend-toggle {
         }
 
         return returnBool
+    }
+
+    /**
+     * http://stackoverflow.com/questions/3916191/download-data-url-file
+     */
+    function downloadPolygon() {
+      var uri = "data:text/html,${params.wkt}",
+          name = "polygon.txt";
+      var link = document.createElement("a");
+      link.download = name;
+      link.href = uri;
+      link.click();
+      return false;
     }
 
 </r:script>
@@ -1076,31 +1087,6 @@ a.colour-by-legend-toggle {
         </div>
     </div>
 </div>
-%{--<div style="display:none;">--}%
-    %{--<div class="popupSingleRecordTemplate">--}%
-        %{--<span class="dataResource">Dummy resource</span><br/>--}%
-        %{--<span class="institution">Dummy institution</span><br/>--}%
-        %{--<span class="collection">Dummy collection</span><br/>--}%
-        %{--<span class="catalogueNumber">Dummy catalogue number</span><br/>--}%
-        %{--<a href="" class="viewRecord">View this record</a>--}%
-    %{--</div>--}%
-
-    %{--<div class="popupMultiRecordTemplate">--}%
-        %{--<span>Records: </span><a href="" class="viewAllRecords"><span class="recordCount">1,321</span></a><br/>--}%
-        %{--<span class="dataResource">Dummy resource</span><br/>--}%
-        %{--<span class="institution">Dummy institution</span><br/>--}%
-        %{--<span class="collection">Dummy collection</span><br/>--}%
-        %{--<span class="catalogueNumber">Dummy catalogue number</span><br/>--}%
-        %{--<a href="" class="viewRecord" >View this record</a><br/>--}%
-        %{--<a href="" class="viewAllRecords">View <span class="recordCount">1,321</span> records at this point</a>--}%
-    %{--</div>--}%
-%{--</div>--}%
-
-<style type="text/css">
-    /*#downloadMapForm { text-align:left; padding:0px; }*/
-    /*#downloadMapForm fieldset p { padding-top:9px; }*/
-    /*#downloadMapForm fieldset p input, #downloadMapForm fieldset p select { margin-left:15px; }*/
-</style>
 
 <div id="downloadMap" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="downloadsMapLabel" aria-hidden="true">
 
@@ -1167,7 +1153,6 @@ a.colour-by-legend-toggle {
                 </p>
                 <p id="colourPickerWrapper">
                     <label for="pcolour"><g:message code="map.downloadmap.field05.label" default="Color"/></label>
-                    <%--<input type="text" name="pcolour" id="pcolour" value="0000FF" size="6"  />--%>
                     <select name="pcolour" id="pcolour">
                         <option value="ffffff">#ffffff</option>
                         <option value="ffccc9">#ffccc9</option>
@@ -1274,13 +1259,11 @@ a.colour-by-legend-toggle {
 </div>
 
 <r:require module="colourPicker"/>
-%{--<link rel="stylesheet" href="${request.contextPath}/css/jquery.colourPicker.css" type="text/css" media="screen" />--}%
-%{--<script type="text/javascript" src="${request.contextPath}/static/js/jquery.colourPicker.js"></script>--}%
 <script type="text/javascript">
 
     $(document).ready(function(){
         $('#pcolour').colourPicker({
-            ico:    '${r.resource(dir:'images',file:'jquery.colourPicker.gif', plugin:'biocache-hubs')}',//'${request.contextPath}/static/images/jquery.colourPicker.gif',
+            ico:    '${r.resource(dir:'images',file:'jquery.colourPicker.gif', plugin:'biocache-hubs')}',
             title:    false
         });
 

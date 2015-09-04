@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat
 class OccurrenceTagLib {
     // injected beans
     def webServicesService, authService, outageService, messageSourceCacheService
+    def userService
 
     //static defaultEncodeAs = 'html'
     //static encodeAsForTags = [tagName: 'raw']
@@ -434,6 +435,12 @@ class OccurrenceTagLib {
         def fieldCode = attrs.fieldCode
         def fieldName = attrs.fieldName
         def fieldNameIsMsgCode = attrs.fieldNameIsMsgCode
+        def userDetails
+
+        if(fieldCode == 'transcriber'){
+            userDetails = userService.detailsForUserId(bodyText);
+            bodyText = userDetails.displayName;
+        }
 
         if (StringUtils.isNotBlank(bodyText)) {
             def link = (guid) ? "${path}${guid}" : ""
