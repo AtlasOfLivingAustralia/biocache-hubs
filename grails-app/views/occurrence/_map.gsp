@@ -287,7 +287,8 @@ a.colour-by-legend-toggle {
         layerControl : null,
         currentLayers : [],
         additionalFqs : '',
-        zoomOutsideScopedRegion: ${(grailsApplication.config.map.zoomOutsideScopedRegion == false || grailsApplication.config.map.zoomOutsideScopedRegion == "false") ? false : true}
+        zoomOutsideScopedRegion: ${(grailsApplication.config.map.zoomOutsideScopedRegion == false || grailsApplication.config.map.zoomOutsideScopedRegion == "false") ? false : true},
+        removeFqs: ''
     };
 
     var ColourByControl = L.Control.extend({
@@ -530,6 +531,8 @@ a.colour-by-legend-toggle {
 
     function changeFacetColours() {
         MAP_VAR.additionalFqs = '';
+        // clear this variable every time a new colour by is chosen.
+        MAP_VAR.removeFqs = ''
         //e.preventDefault();
         //e.stopPropagation();
         addQueryLayer(true);
@@ -602,17 +605,31 @@ a.colour-by-legend-toggle {
 
                         $.each(data, function(index, legendDef){
                             var legItemName = legendDef.name ? legendDef.name : 'Not specified';
-                            addLegendItem(legItemName, legendDef.red,legendDef.green,legendDef.blue );
+                            addLegendItem(legItemName, legendDef.red,legendDef.green,legendDef.blue, legendDef );
                         });
 
                         $('.layerFacet').click(function(e){
                             var controlIdx = 0;
                             MAP_VAR.additionalFqs = '';
+                            MAP_VAR.removeFqs = ''
                             $('#colourByControl').find('.layerFacet').each(function(idx, layerInput){
-                                var include =  $(layerInput).is(':checked');
+                                var $input = $(layerInput), fq;
+                                var include =  $input.is(':checked');
 
                                 if(!include){
                                     MAP_VAR.additionalFqs = MAP_VAR.additionalFqs + '&HQ=' + controlIdx;
+                                    fq = $input.attr('fq');
+                                    // logic for facets with missing value is different from those with value
+                                    if(fq && fq.startsWith('-')){
+                                        // to ignore unknown or missing values, minus sign must be removed
+                                         fq = fq.replace('-','');
+                                    } else{
+                                        // for all other values minus sign has to be added
+                                        fq = '-' + fq;
+                                    }
+
+                                    // add fq to ensure the query in sync with dots displayed on map
+                                    MAP_VAR.removeFqs += '&fq=' + fq;
                                 }
                                 controlIdx = controlIdx + 1;
                                 addQueryLayer(false);
@@ -654,7 +671,7 @@ a.colour-by-legend-toggle {
         );
     }
 
-    function addLegendItem(name, red, green, blue){
+    function addLegendItem(name, red, green, blue, data){
         var nameLabel = jQuery.i18n.prop(name);
         var isoDateRegEx = /^(\d{4})-\d{2}-\d{2}T.*/; // e.g. 2001-02-31T12:00:00Z with year capture
         if (name.search(isoDateRegEx) > -1) {
@@ -668,6 +685,7 @@ a.colour-by-legend-toggle {
                         .attr('type', 'checkbox')
                         .attr('checked', 'checked')
                         .attr('id', name)
+                        .attr('fq',data.fq)
                         .addClass('layerFacet')
                         .addClass('leaflet-control-layers-selector')
                     )
@@ -782,7 +800,7 @@ a.colour-by-legend-toggle {
         MAP_VAR.map.spin(true);
 
         $.ajax({
-            url: MAP_VAR.mappingUrl + "/occurrences/info" + mapQuery,
+            url: MAP_VAR.mappingUrl + "/occurrences/info" + mapQuery + MAP_VAR.removeFqs,
             jsonp: "callback",
             dataType: "jsonp",
             data: {
