@@ -992,6 +992,12 @@ a.colour-by-legend-toggle {
                         });
                         MAP_VAR.map.fitBounds(dataBounds);
                     }
+		    
+		    //Fixed mapaBounds and minZoom. Applied only when .queryContext is set.
+                    if("${grailsApplication.config.biocache.queryContext}"){
+                    	MAP_VAR.map.setMaxBounds(dataBounds);
+                    	MAP_VAR.map.options.minZoom=MAP_VAR.defaultZoom;
+		    }
                     MAP_VAR.map.invalidateSize();
                 }
             });
