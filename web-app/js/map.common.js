@@ -21,7 +21,8 @@ function addClickEventForVector(layer) {
     });
 }
 
-function generatePopup(layer, latlng) {
+function generatePopup(layer, latlng) 
+{
     //console.log('generatePopup', layer, latlng);
     var params = "";
     if (jQuery.isFunction(layer.getRadius)) {
@@ -37,23 +38,32 @@ function generatePopup(layer, latlng) {
         latlng = layer.getBounds().getCenter();
     }
     //console.log('latlng', latlng);
+
+    getSpeciesCountInArea(params);
+    getOccurrenceCountInArea(params);
+
     L.popup()
         .setLatLng([latlng.lat, latlng.lng])
         .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
             "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
             "<a id='showOnlyTheseRecords' href='" + BC_CONF.contextPath + "/occurrences/search" +
-            params + "'>" + jQuery.i18n.prop("search.map.popup.linkText") + "</a>")
+            params + "&" + getExistingParams_getOccurrences() + specialTagforWKT(layer) +"'>" + jQuery.i18n.prop("search.map.popup.linkText") + "</a>")
         .openOn(MAP_VAR.map);
 
     //layer.openPopup();
 
-    getSpeciesCountInArea(params);
-    getOccurrenceCountInArea(params);
 }
 
-function getSpeciesCountInArea(params) {
+function specialTagforWKT(layer){
+    return  jQuery.isFunction(layer.getRadius)?"":"&qc="
+}
+
+
+
+function getSpeciesCountInArea(params) 
+{
     speciesCount = -1;
-    $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrence/facets.json" + params + "&facets=taxon_name&callback=?",
+    $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrence/facets.json" + params + "&" + getExistingParams_getSpecies() +"&facets=taxon_name&callback=?",
         function( data ) {
             var speciesCount = data[0].count;
             document.getElementById("speciesCountDiv").innerHTML = speciesCount;
@@ -62,7 +72,7 @@ function getSpeciesCountInArea(params) {
 
 function getOccurrenceCountInArea(params) {
     occurrenceCount = -1;
-    $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrences/search.json" + params + "&pageSize=0&facet=off&callback=?",
+    $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrences/search.json" + params + "&" + getExistingParams_getOccurrences() + "&pageSize=0&facet=off&callback=?",
         function( data ) {
             var occurrenceCount = data.totalRecords;
 
@@ -71,25 +81,72 @@ function getOccurrenceCountInArea(params) {
 }
 
 function getParamsforWKT(wkt) {
-    return "?" + getExistingParams() + "&wkt=" + encodeURI(wkt.replace(" ", "+"));
+//  return "?" + "&wkt=" + encodeURI(wkt.replace(" ", "+"));
+    return "?" + "&wkt=" + encodeURI(wkt);
 }
 
 function getParamsForCircle(circle) {
     var latlng = circle.getLatLng();
     var radius = Math.round((circle.getRadius() / 1000) * 10) / 10; // convert to km (from m) and round to 1 decmial place
-    return "?" + getExistingParams() + "&radius=" + radius + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
+    return "?"  + "&radius=" + radius + "&lat=" + latlng.lat + "&lon=" + latlng.lng;
 }
 
-function getExistingParams() {
+function getExistingParams_getOccurrences() {
     var paramsObj = $.url(MAP_VAR.query).param();
-    if (!paramsObj.q) {
-        paramsObj.q = "*:*";
+
+    //To avoid interference between qid-wkt and user spatial filter
+    paramsObj.q = "*:*";
+
+    if (paramsObj.fq)
+    {
+       if($.isArray(paramsObj.fq)){
+         paramsObj.fq = paramsObj.fq.join(' AND ');
+       } else {
+         paramsObj.fq = paramsObj.fq.toString();
+       }
     }
+
     delete paramsObj.wkt;
     delete paramsObj.lat;
     delete paramsObj.lon;
     delete paramsObj.radius;
-    paramsObj.qc = BC_CONF.queryContext;
+    //paramsObj.qc = BC_CONF.queryContext;
+    return $.param(paramsObj);
+}
+
+
+function getExistingParams_getSpecies() {
+    
+    var paramsObj = $.url(MAP_VAR.query).param();
+
+   /* 
+	http://http://api.ala.org.au/
+	Use this service to retrieve counts for facets e.g. the number of taxa matching a query. 
+	Note: fq is ignore for this web service. If required, include any fq query into the q 
+	param with an AND clause.
+    */
+
+    //To avoid interference between qid-wkt and user spatial filter
+    paramsObj.q = "*:*";
+
+    if (paramsObj.fq)
+    {
+       paramsObj.q += " AND ";
+
+       if($.isArray(paramsObj.fq)){
+         paramsObj.q += paramsObj.fq.join(' AND ');
+       } else {
+         paramsObj.q += paramsObj.fq.toString();
+       }
+
+       delete paramsObj.fq;	
+    }
+
+    delete paramsObj.wkt;
+    delete paramsObj.lat;
+    delete paramsObj.lon;
+    delete paramsObj.radius;
+    //paramsObj.qc = BC_CONF.queryContext;
     return $.param(paramsObj);
 }
 
