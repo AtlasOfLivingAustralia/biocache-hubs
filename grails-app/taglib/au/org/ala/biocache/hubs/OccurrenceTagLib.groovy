@@ -696,6 +696,8 @@ class OccurrenceTagLib {
         paramsCopy.remove("wkt")
         paramsCopy.remove("action")
         paramsCopy.remove("controller")
+        paramsCopy.remove("qc")
+        paramsCopy.put("q", "${grailsApplication.config.biocache.queryContext}")
         def queryString = WebUtils.toQueryString(paramsCopy)
         log.debug "queryString = ${queryString}"
         out << queryString
@@ -708,6 +710,7 @@ class OccurrenceTagLib {
         paramsCopy.remove("radius")
         paramsCopy.remove("action")
         paramsCopy.remove("controller")
+	paramsCopy.put("q", "${grailsApplication.config.biocache.queryContext}")
         def queryString = WebUtils.toQueryString(paramsCopy)
         log.debug "queryString = ${queryString}"
         out << queryString
