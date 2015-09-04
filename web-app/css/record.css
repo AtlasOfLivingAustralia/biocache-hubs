@@ -300,3 +300,7 @@ div.audiojs div.time {
 #outlierFeedback #outlierInformation #inferredOccurrenceDetails {
     margin-bottom: 20px;
 }
+
+.primaryContact{
+    color: orange;
+}
