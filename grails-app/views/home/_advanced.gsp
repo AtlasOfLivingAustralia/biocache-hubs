@@ -204,8 +204,8 @@
             <tr>
                 <td class="labels"><g:message code="advancedsearch.dataset.col.label" default="dataset name"/></td>
                 <td>
-                    <select class="dataset" name="dataset" id="dataset">
-                        <option value=""><g:message code="advancedsearch.dataset.select.default" default="-- select a dataset --"/></option>
+                    <select class="dataset bscombobox" name="dataset" id="dataset">
+                        <option value=""></option>
                         <g:each var="region" in="${request.getAttribute("data_resource_uid")}">
                             <option value="${region.key}">${region.value}</option>
                         </g:each>
@@ -257,3 +257,9 @@
     &nbsp;&nbsp;
     <input type="reset" value="Clear all" id="clearAll" class="btn" onclick="$('input#solrQuery').val(''); $('input.clear_taxon').click(); return true;"/>
 </form>
+<r:script>
+    $(document).ready(function() {
+        $('.bscombobox').combobox({bsVersion: '2'});
+    });
+
+</r:script>

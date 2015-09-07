@@ -135,4 +135,10 @@ modules = {
         resource url:[dir:'css', file:'help.css', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'toc.js', plugin:'biocache-hubs']
     }
+
+    bootstrapCombobox {
+        dependsOn 'jquery'
+        resource url:[dir:'js/bootstrap-combobox/', file:'bootstrap-combobox.css', plugin:'biocache-hubs']
+        resource url:[dir:'js/bootstrap-combobox/', file:'bootstrap-combobox.js', plugin:'biocache-hubs']
+    }
 }
