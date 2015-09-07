@@ -822,7 +822,7 @@
 <!-- Coordinate Uncertainty -->
 <alatag:occurrenceTableRow annotate="false" section="geospatial" fieldCode="coordinateUncertaintyInMeters" fieldName="Coordinate uncertainty in metres">
     ${fieldsMap.put("coordinateUncertaintyInMeters", true)}
-    <g:if test="${record.raw.location.decimalLatitude || record.raw.location.decimalLongitude}">
+    <g:if test="${record.processed.location.coordinateUncertaintyInMeters}">
         ${record.processed.location.coordinateUncertaintyInMeters ? record.processed.location.coordinateUncertaintyInMeters : 'Unknown'}
     </g:if>
 </alatag:occurrenceTableRow>

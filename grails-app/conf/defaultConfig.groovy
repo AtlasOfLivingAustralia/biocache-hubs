@@ -44,6 +44,7 @@ skin.taxaLinks.identifier = "guid"  // "guid" or "name". Only used if skin.useAl
 
 // web services
 bie.baseUrl = "http://bie.ala.org.au"
+bieService.baseUrl = "http://bie.ala.org.au/ws"
 //bie.autocompleteHints.fq = "kingdom:Plantae"  // optional
 collectory.baseUrl = "http://collections.ala.org.au"
 logger.baseUrl = "http://logger.ala.org.au/service"
