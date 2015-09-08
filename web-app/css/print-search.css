@@ -1,0 +1,15 @@
+.toggleResponsive {
+    display: none !important;
+}
+
+/**
+ * this is to prevent href attributes from displaying in print page. This is caused by bootstrap.
+ * http://stackoverflow.com/questions/17613273/how-to-hide-href-attribute-of-a-tag-via-css-when-using-window-print
+ */
+a:link:after, a:visited:after {
+    display: none
+}
+
+.meta {
+    color: white !important;
+}
