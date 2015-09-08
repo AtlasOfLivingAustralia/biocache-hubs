@@ -605,6 +605,29 @@
             </div>
         </g:if>
 
+        <g:if test="${contacts}">
+            <div id="contactCuratorView" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="contactCuratorViewLabel" aria-hidden="true"><!-- BS modal div -->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="contactCuratorViewLabel"><g:message code="show.contactcuratorview.title" default="Contact curator"/></h3>
+            </div>
+            <div class="modal-body">
+                <p><g:message code="show.contactcuratorview.message" default="For more details and to report issues about this record, please contact a person mentioned below."></g:message> </p>
+                <g:each in="${contacts}" var="c">
+                    <address>
+                        <strong>${c.contact.firstName} ${c.contact.lastName} <g:if test="${c.primaryContact}"><span class="primaryContact">*</span></g:if> </strong><br>
+                        ${c.role}<br>
+                        <g:if test="${c.contact.phone}"><abbr title="Phone">P:</abbr> ${c.contact.phone} <br></g:if>
+                        <g:if test="${c.contact.email}"><abbr title="Email">E:</abbr> <alatag:emailLink email="${c.contact.email}"><g:message code="show.contactcuratorview.emailtext" default="email this contact"></g:message> </alatag:emailLink> <br></g:if>
+                    </address>
+                </g:each>
+                <p><span class="primaryContact"><b>*</b></span> <g:message code="show.contactcuratorview.primarycontact" default="Primary Contact"></g:message> </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.processedvsrawview.button.close" default="Close"/></button>
+            </div>
+        </g:if>
+
         <ul style="display:none;">
         <li id="userAnnotationTemplate" class="userAnnotationTemplate well">
            <h3><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h3>

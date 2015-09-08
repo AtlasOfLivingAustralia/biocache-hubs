@@ -204,6 +204,14 @@
         <span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="icon-th"></i> <g:message code="show.sidebar02.showrawprocessed.span" default="Original vs Processed"/></span>
     </button>
 </div>
+<g:if test="${contacts && contacts.size()}">
+    <div class="sidebar">
+        <button href="#contactCuratorView" class="btn" id="showCurator" role="button" data-toggle="modal"
+                title="Contact curator for more details on a record">
+            <span id="contactCuratorSpan" href="#contactCuratorView" title=""><i class="icon-envelope"></i> <g:message code="show.showcontactcurator.span" default="Contact curator"/></span>
+        </button>
+    </div>
+</g:if>
 <g:if test="${record.images}">
     <div class="sidebar">
         <h3><g:message code="show.sidebar03.title" default="Images"/></h3>

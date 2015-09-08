@@ -195,6 +195,18 @@ class WebServicesService {
         getJsonElements(url)
     }
 
+    @Cacheable('collectoryCache')
+    def JSONArray getCollectionContact(String id){
+        def url = "${grailsApplication.config.collections.baseUrl}/ws/collection/${id.encodeAsURL()}/contact.json"
+        getJsonElements(url)
+    }
+
+    @Cacheable('collectoryCache')
+    def JSONArray getDataresourceContact(String id){
+        def url = "${grailsApplication.config.collections.baseUrl}/ws/dataResource/${id.encodeAsURL()}/contact.json"
+        getJsonElements(url)
+    }
+
     @Cacheable('longTermCache')
     def Map getLayersMetaData() {
         Map layersMetaMap = [:]
