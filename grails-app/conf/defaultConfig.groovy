@@ -61,6 +61,8 @@ images.baseUrl = "http://images.ala.org.au"
 images.viewerUrl = "http://images.ala.org.au/image/viewer?imageId="
 images.metadataUrl = "http://images.ala.org.au/image/details?imageId="
 
+sightings.baseUrl = "http://sightings.ala.org.au"
+
 // For sandbox environment
 //spatial.params = "&dynamic=true&ws=http%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=http%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"
 spatial.baseUrl = "http://spatial.ala.org.au/"
