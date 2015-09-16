@@ -141,10 +141,18 @@ class OccurrenceController {
                 }
 
                 if(record.raw.attribution.dataResourceUid && (contacts == null)){
-                    contacts = webServicesService.getDataresourceContact(record.raw.attribution.dataResourceUid)
+                    try {
+                        contacts = webServicesService.getDataresourceContact(record.raw.attribution.dataResourceUid)
+                    } catch(Exception e){
+                        log.warn("Problem retrieving contact details for ${record.raw.attribution.dataResourceUid} - " + e.getMessage())
+                    }
                 }
 
-                List groupedAssertions = postProcessingService.getGroupedAssertions(webServicesService.getUserAssertions(id), webServicesService.getQueryAssertions(id), userId)
+                List groupedAssertions = postProcessingService.getGroupedAssertions(
+                        webServicesService.getUserAssertions(id),
+                        webServicesService.getQueryAssertions(id),
+                        userId)
+
                 Map layersMetaData = webServicesService.getLayersMetaData()
 
                 [

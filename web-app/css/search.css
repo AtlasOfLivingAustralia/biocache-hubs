@@ -405,6 +405,11 @@ div#currentFilter {
     font-weight: normal;
     color: #555;
 }
+.resultsValue {
+    font-weight: bold;
+    margin-right: 12px;
+}
+
 #searchControls {
 /*    background-color: #E0E0E0;
     border-top: 2px solid silver;*/

@@ -17,13 +17,9 @@ package au.org.ala.biocache.hubs
 
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringUtils
-import org.apache.commons.lang.time.DateUtils
-import org.codehaus.groovy.grails.web.json.JSONObject
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.springframework.web.servlet.support.RequestContextUtils
 import grails.util.Environment
-
-import java.text.SimpleDateFormat
 
 class OccurrenceTagLib {
     // injected beans
@@ -36,13 +32,25 @@ class OccurrenceTagLib {
     static namespace = 'alatag'     // namespace for headers and footers
     static rangePattern = ~/\[\d+(\.\d+)? TO \d+(\.\d+)?\]/
 
+    def maxDynamicProperties = 8
+    def maxDynamicPropertyLength = 25
+
     /**
      * Formats the display of dynamic facet names in Sandbox (facet options popup)
      *
      * @attr fieldName REQUIRED the field name
      */
     def formatDynamicFacetName = { attrs ->
-        String fieldName = attrs.fieldName
+        out << formatFieldName(attrs.fieldName)
+    }
+
+    /**
+     * Format a dynamic field name.
+     *
+     * @param fieldName
+     * @return
+     */
+    def formatFieldName(fieldName){
         def output
         if (fieldName.endsWith('_s') || fieldName.endsWith('_i') || fieldName.endsWith('_d')) {
             output = fieldName[0..-2].replaceAll("_", " ")
@@ -51,8 +59,7 @@ class OccurrenceTagLib {
         } else {
             output = "${alatag.message(code:"facet.${fieldName}", default: fieldName)}"
         }
-
-        out << StringUtils.capitalise(output)
+        StringUtils.capitalise(output)
     }
 
     /**
@@ -414,7 +421,8 @@ class OccurrenceTagLib {
      */
     def camelCaseToHuman = { attrs ->
         String text = attrs.text
-        out << text.replaceAll(/([a-z])([A-Z])/, '$1 $2').toLowerCase().capitalize()
+        text = text.replaceAll(/([a-z])([A-Z])/, '$1 $2').toLowerCase().capitalize()
+        out << text.replaceAll("_", " ")
     }
 
     /**
@@ -451,9 +459,8 @@ class OccurrenceTagLib {
                     if (fieldNameIsMsgCode) {
                         mkp.yield(alatag.message(code: "${fieldName}"))
                     } else {
-                        mkp.yieldUnescaped(fieldName)
+                        mkp.yieldUnescaped(formatFieldName(fieldName))
                     }
-
                 }
                 td(class:"value") {
                     if (link) {
@@ -509,23 +516,43 @@ class OccurrenceTagLib {
         out << output
     }
 
+    def formatDynamicLabel(str){
+        if(str){
+           str.substring(0, str.length() - 2).replaceAll("_", " ")
+        } else {
+            str
+        }
+    }
+
     /**
      * Output a row (occurrence record) in the search results "Records" tab
      *
      * @attr occurrence REQUIRED
      */
     def formatListRecordRow = { attrs ->
-        //log.debug "formatListRecordRow - ${session['hit']++}"
-        def JSONObject occurrence = attrs.occurrence
-        def mb = new MarkupBuilder(out)
 
+        def occurrence = attrs.occurrence
+        def mb = new MarkupBuilder(out)
         def outputResultsLabel = { label, value, test ->
             if (test) {
                 mb.span(class:'resultValue') {
-                    strong(class:'resultsLabel') {
+                    span(class:'resultsLabel') {
                         mkp.yieldUnescaped(label)
                     }
                     mkp.yieldUnescaped(value)
+                }
+            }
+        }
+
+        def outputDynamicResultsLabel = { label, value, test ->
+            if (test) {
+                mb.span(class:'resultValue') {
+                    span(class:'resultsLabel') {
+                        mkp.yieldUnescaped(formatDynamicLabel(label))
+                    }
+                    span(class:'resultsValue'){
+                        mkp.yieldUnescaped(value)
+                    }
                 }
             }
         }
@@ -538,14 +565,16 @@ class OccurrenceTagLib {
                     span(class:'occurrenceNames') {
                         mkp.yieldUnescaped(alatag.formatSciName(rankId:occurrence.taxonRankID?:'6000', name:"${occurrence.scientificName}"))
                     }
-                } else {
+                } else if(occurrence.raw_scientificName){
                     span(class:'occurrenceNames', occurrence.raw_scientificName)
                 }
+
                 if (occurrence.vernacularName || occurrence.raw_vernacularName) {
                     mkp.yieldUnescaped("&nbsp;|&nbsp;")
                     span(class:'occurrenceNames', occurrence.vernacularName?:occurrence.raw_vernacularName)
                 }
-                span(style:'margin-left: 8px;') {
+
+                span(class:'eventAndLocation') {
                     if (occurrence.eventDate) {
                         outputResultsLabel("Date: ", g.formatDate(date: new Date(occurrence.eventDate), format:"yyyy-MM-dd"), true)
                     } else if (occurrence.year) {
@@ -555,6 +584,33 @@ class OccurrenceTagLib {
                         outputResultsLabel("State: ", alatag.message(code:occurrence.stateProvince), true)
                     } else if (occurrence.country) {
                         outputResultsLabel("Country: ", alatag.message(code:occurrence.country), true)
+                    }
+                }
+
+                // display dynamic fields
+                if(grailsApplication.config.table.displayDynamicProperties.toBoolean()) {
+                    span(class: 'dynamicValues') {
+                        def count = 0
+                        occurrence.miscStringProperties.each { key, value ->
+                            if (count < maxDynamicProperties) {
+                                if(value && value.length < maxDynamicPropertyLength) {
+                                    outputDynamicResultsLabel(key + ": ", value, true)
+                                }
+                                count++
+                            }
+                        }
+                        occurrence.miscIntProperties.each { key, value ->
+                            if (count < maxDynamicProperties) {
+                                outputDynamicResultsLabel(key + ": ", value, true)
+                                count++
+                            }
+                        }
+                        occurrence.miscDoubleProperties.each { key, value ->
+                            if (count < maxDynamicProperties) {
+                                outputDynamicResultsLabel(key + ": ", value, true)
+                                count++
+                            }
+                        }
                     }
                 }
             }
@@ -567,7 +623,7 @@ class OccurrenceTagLib {
                 a(
                         href: g.createLink(url:"${request.contextPath}/occurrences/${occurrence.uuid}"),
                         class:"occurrenceLink",
-                        style:"margin-left: 15px;",
+//                        style:"margin-left: 15px;",
                         "View record"
                 )
             }
@@ -576,7 +632,6 @@ class OccurrenceTagLib {
 
     /**
      * Alternative to g.message(code:'foo.bar')
-     * TODO: not implemented the error, message, args, encodeAs or locale attributes (not used in this project yet)
      *
      * @see org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
      *
@@ -595,11 +650,9 @@ class OccurrenceTagLib {
                 defaultMessage = code
             }
 
-            //log.error "code = ${code} || defaultCode = ${defaultCode}"
             Map messagesMap = messageSourceCacheService.getMessagesMap(RequestContextUtils.getLocale(request)) // g.message too slow so we use a Map instead
             def message = messagesMap.get(code)
             output = message ?: defaultMessage
-            //log.error "locale = ${RequestContextUtils.getLocale(request)}"
         }
 
         return output

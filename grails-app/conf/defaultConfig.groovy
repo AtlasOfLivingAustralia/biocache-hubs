@@ -103,3 +103,5 @@ map.mapbox.token = "pk.eyJ1Ijoibmlja2RvcyIsImEiOiJ2V2dBdEg0In0.Ep2VyMOaOUnOwN1ZV
 
 suppressIssues = "" // "missingCoordinatePrecision"
 sensitiveDataset.list = ""
+
+table.displayDynamicProperties = false
