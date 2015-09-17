@@ -138,8 +138,10 @@
                                         %{--<g:set var="facet" value="${defaultFacets.get(facetFromGroup)}"/>--}%
                                             <g:if test="${defaultFacets.containsKey(facetFromGroup)}">
                                                 <g:set var="count" value="${count+1}"/>
-                                                <input type="checkbox" name="facets" class="facetOpts" value="${facetFromGroup}"
-                                                    ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<alatag:message code="facet.${facetFromGroup}"/><br>
+                                                <g:if test="${facetFromGroup != 'cl966' && facetFromGroup != 'subspecies_name' && facetFromGroup != 'species_subgroup' && facetFromGroup != 'ibra' && facetFromGroup != 'imcra'}">
+                                                    <input type="checkbox" name="facets" class="facetOpts" value="${facetFromGroup}"
+                                                        ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<g:message code="facet.${facetFromGroup}"/><br>
+                                                </g:if>
                                             </g:if>
                                         </g:each>
                                     </div>
