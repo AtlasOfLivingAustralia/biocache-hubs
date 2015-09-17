@@ -14,7 +14,7 @@
         </tr>
         </tbody>
     </table>
-    <b><g:message code="advancedsearch.title02" default="Find records for ANY of the following taxa (matched/processed taxon concepts)"/></b>
+    %{--<b><g:message code="advancedsearch.title02" default="Find records for ANY of the following taxa (matched/processed taxon concepts)"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
         <tbody>
@@ -29,7 +29,7 @@
             </tr>
         </g:each>
         </tbody>
-    </table>
+    </table>--}%
     <b><g:message code="advancedsearch.title03" default="Find records that specify the following scientific name (verbatim/unprocessed name)"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
