@@ -100,6 +100,14 @@
     </g:elseif>
     <g:else>
         <!--  first row (#searchInfoRow), contains customise facets button and number of results for query, etc.  -->
+        <ul id="systemAssertions" style="list-style: none; margin-top: 5px">
+            <li id="dataQualityFurtherDetails">
+                <i class="icon-flag"></i>&nbsp;
+                <a href="mailto:feedback@gbif.es?subject=Error en registro. Por favor especifique la URL del registro donde ha encontrado el error."><g:message code="show.button.assertionbutton.span"/></a>
+            </br>
+                <span style="color:grey;font-size:10px">(email > feedback@gbif.es)</span>
+            </li>
+        </ul>
         <div class="row-fluid clearfix" id="searchInfoRow">
             <!-- facet column -->
             <div class="span3">
