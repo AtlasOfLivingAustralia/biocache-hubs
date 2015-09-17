@@ -203,7 +203,7 @@
                 </select>
             </td>
         </tr>
-        <g:set var="autoPlaceholder" value="start typing and select from the autocomplete drop-down list"/>
+        %{--}<g:set var="autoPlaceholder" value="start typing and select from the autocomplete drop-down list"/>
         <g:if test="${request.getAttribute("cl1048") && request.getAttribute("cl1048").size() > 1}">
         <tr>
             <td class="labels"><abbr title="Interim Biogeographic Regionalisation of Australia">IBRA</abbr> <g:message code="advancedsearch.table06col03.title" default="region"/></td>
@@ -242,7 +242,7 @@
                 </select>
             </td>
         </tr>
-        </g:if>
+        </g:if>--}%
         </tbody>
     </table>
     <g:if test="${request.getAttribute("type_status") && request.getAttribute("type_status").size() > 1}">
