@@ -596,34 +596,35 @@ class OccurrenceTagLib {
                     outputResultsTd("State: ", occurrence.stateProvince, occurrence.stateProvince)
                 }
                 tr(){
-                    outputResultsTd("Data&nbsp;Resource: ", occurrence.dataResourceName, !occurrence.collectionName && occurrence.dataResourceName)
+                    if (occurrence.eventDate) {
+                        outputResultsTd("${message(code:'occurrence.raw_date')}: ", g.formatDate(date: new Date(occurrence.eventDate), format:"dd-MMM-yyyy"), occurrence.stateProvince)
+                    }else if (occurrence.year){
+                        outputResultsTd("Year: ", occurrence.year, true)
+                    }
                     outputResultsTd("Locality: ", occurrence.lga, occurrence.lga)
+
                 }
 
                 tr() {
-                    if (occurrence.collectionName){
-                        outputResultsTd("Herbarium: ", occurrence.collectionName, occurrence.collectionName)
-                        if (occurrence.eventDate) {
-                            outputResultsTd("Date: ", g.formatDate(date: new Date(occurrence.eventDate), format:"dd-MMM-yyyy"), occurrence.stateProvince)
-                        }else if (occurrence.year){
-                            outputResultsTd("Year: ", occurrence.year, true)
-                        }
-                    }else{
-                        td(){}
-                        if (occurrence.eventDate) {
-                            outputResultsTd("Date: ", g.formatDate(date: new Date(occurrence.eventDate), format:"dd-MMM-yyyy"), occurrence.stateProvince)
-                        }else if (occurrence.year){
-                            outputResultsTd("Year: ", occurrence.year, true)
-                        }
+                    outputResultsTd("Institution: ", alatag.message(code:occurrence.institutionName), occurrence.institutionName)
+
+                }
+                tr(){
+                    outputResultsTd("Collection: ", alatag.message(code:occurrence.collectionName), occurrence.collectionName)
+                }
+                tr() {
+                    outputResultsTd("Data&nbsp;Resource: ", occurrence.dataResourceName, !occurrence.collectionName && occurrence.dataResourceName)
+                }
+                tr(){
+                    outputResultsTd("Basis&nbsp;of&nbsp;record: ", alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
+                    td(colspan: '3', style: 'text-align: right;') {
+                        a(
+                                href: g.createLink(url:"${request.contextPath}/occurrences/${occurrence.uuid}"),
+                                class:"occurrenceLink",
+                                style:"margin-left: 15px;",
+                                "View record"
+                        )
                     }
-                        td(colspan: '3', style: 'text-align: right;') {
-                            a(
-                                    href: g.createLink(url:"${request.contextPath}/occurrences/${occurrence.uuid}"),
-                                    class:"occurrenceLink",
-                                    style:"margin-left: 15px;",
-                                    "View record"
-                            )
-                        }
                 }
             }
         }
