@@ -54,7 +54,7 @@
 </head>
 
 <body class="occurrence-search">
-    <div id="listHeader" class="row-fluid heading-bar" style="margin-top: 45px;">
+    <div id="listHeader" class="row-fluid heading-bar" style="margin-top: 50px;">
         <div class="span5">
             <h1><alatag:message code="search.heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>
         </div>
