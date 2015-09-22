@@ -570,27 +570,6 @@ class OccurrenceTagLib {
                 }
             }
             table(class:'avhRowB') {
-                /**tr(){
-                    outputResultsTd("Institution: ", alatag.message(code:occurrence.institutionName), occurrence.institutionName)
-                    outputResultsTd("Collection: ", alatag.message(code:occurrence.collectionName), occurrence.collectionName)
-                }
-                tr(){
-                    outputResultsTd("Data&nbsp;Resource: ", alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
-                    outputResultsTd("Basis&nbsp;of&nbsp;record: ", alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
-                    outputResultsTd("Catalog&nbsp;number: ", "${occurrence.raw_collectionCode ? occurrence.raw_collectionCode + ':' : ''}${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber)
-                }
-                tr(){
-                    outputResultsTd("Herbarium: ", occurrence.collectionName, occurrence.collectionName)
-                    td(colspan: '2', style: 'text-align: right;') {
-                        a(
-                                href: g.createLink(url: "${request.contextPath}/occurrences/${occurrence.uuid}"),
-                                class: "occurrenceLink",
-                                style: "margin-left: 15px;",
-                                "View record"
-                        )
-                    }
-                }**/
-
                 tr() {
                     outputResultsTd("Collector: ", "${occurrence.collector}&nbsp;&nbsp;${occurrence.recordNumber?:''}", true)
                     outputResultsTd("State: ", occurrence.stateProvince, occurrence.stateProvince)
