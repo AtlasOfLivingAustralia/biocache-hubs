@@ -36,6 +36,10 @@ div.recordHeader {
     margin: 0;
 }
 
+#headingBar{
+    margin-top: 45px;
+}
+
 div#occurrenceMap {
     height: 300px;
     margin-top: 5px;
