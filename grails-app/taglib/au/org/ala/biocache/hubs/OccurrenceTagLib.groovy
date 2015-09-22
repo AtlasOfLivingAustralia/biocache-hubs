@@ -446,6 +446,9 @@ class OccurrenceTagLib {
             def link = (guid) ? "${path}${guid}" : ""
             def mb = new MarkupBuilder(out)
 
+
+
+
             mb.tr(id:"${fieldCode}") {
                 td(class:"dwcLabel") {
                     if (fieldNameIsMsgCode) {
@@ -519,6 +522,30 @@ class OccurrenceTagLib {
         def JSONObject occurrence = attrs.occurrence
         def mb = new MarkupBuilder(out)
 
+        def outputResultsTd = { label, value, test ->
+            if (test) {
+                mb.td() {
+                    strong(class:'resultsLabel') {
+                        mkp.yieldUnescaped(label)
+                    }
+                    mkp.yieldUnescaped(value)
+                }
+            }
+        }
+
+        def outputResultsTr = { label, value, test ->
+            if (test) {
+                mb.tr(){
+                    mb.td() {
+                        strong(class:'resultsLabel') {
+                            mkp.yieldUnescaped(label)
+                        }
+                        mkp.yieldUnescaped(value)
+                    }
+                }
+            }
+        }
+
         def outputResultsLabel = { label, value, test ->
             if (test) {
                 mb.span(class:'resultValue') {
@@ -532,44 +559,72 @@ class OccurrenceTagLib {
 
         mb.div(class:'recordRow', id:occurrence.uuid ) {
             p(class:'rowA') {
-                if (occurrence.taxonRank && occurrence.scientificName) {
-                    span(style:'text-transform: capitalize', occurrence.taxonRank)
-                    mkp.yieldUnescaped(":&nbsp;")
-                    span(class:'occurrenceNames') {
-                        mkp.yieldUnescaped(alatag.formatSciName(rankId:occurrence.taxonRankID?:'6000', name:"${occurrence.scientificName}"))
-                    }
-                } else {
-                    span(class:'occurrenceNames', occurrence.raw_scientificName)
-                }
-                if (occurrence.vernacularName || occurrence.raw_vernacularName) {
-                    mkp.yieldUnescaped("&nbsp;|&nbsp;")
-                    span(class:'occurrenceNames', occurrence.vernacularName?:occurrence.raw_vernacularName)
-                }
-                span(style:'margin-left: 8px;') {
-                    if (occurrence.eventDate) {
-                        outputResultsLabel("Date: ", g.formatDate(date: new Date(occurrence.eventDate), format:"yyyy-MM-dd"), true)
-                    } else if (occurrence.year) {
-                        outputResultsLabel("Year: ", occurrence.year, true)
-                    }
-                    if (occurrence.stateProvince) {
-                        outputResultsLabel("State: ", alatag.message(code:occurrence.stateProvince), true)
-                    } else if (occurrence.country) {
-                        outputResultsLabel("Country: ", alatag.message(code:occurrence.country), true)
+                span(class:"occurrenceNames", "${occurrence.scientificName}")
+                if (occurrence.raw_catalogNumber!= null && occurrence.raw_catalogNumber) {
+                    span(style:'display:inline-block;float:right;') {
+                        strong(class:'resultsLabel') {
+                            mkp.yieldUnescaped("Catalogue&nbsp;number: ")
+                        }
+                        mkp.yieldUnescaped(occurrence.raw_catalogNumber)
                     }
                 }
             }
-            p(class:'rowB') {
-                outputResultsLabel("Institution: ", alatag.message(code:occurrence.institutionName), occurrence.institutionName)
-                outputResultsLabel("Collection: ", alatag.message(code:occurrence.collectionName), occurrence.collectionName)
-                outputResultsLabel("Data&nbsp;Resource: ", alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
-                outputResultsLabel("Basis&nbsp;of&nbsp;record: ", alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
-                outputResultsLabel("Catalog&nbsp;number: ", "${occurrence.raw_collectionCode ? occurrence.raw_collectionCode + ':' : ''}${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber)
-                a(
-                        href: g.createLink(url:"${request.contextPath}/occurrences/${occurrence.uuid}"),
-                        class:"occurrenceLink",
-                        style:"margin-left: 15px;",
-                        "View record"
-                )
+            table(class:'avhRowB') {
+                /**tr(){
+                    outputResultsTd("Institution: ", alatag.message(code:occurrence.institutionName), occurrence.institutionName)
+                    outputResultsTd("Collection: ", alatag.message(code:occurrence.collectionName), occurrence.collectionName)
+                }
+                tr(){
+                    outputResultsTd("Data&nbsp;Resource: ", alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
+                    outputResultsTd("Basis&nbsp;of&nbsp;record: ", alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
+                    outputResultsTd("Catalog&nbsp;number: ", "${occurrence.raw_collectionCode ? occurrence.raw_collectionCode + ':' : ''}${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber)
+                }
+                tr(){
+                    outputResultsTd("Herbarium: ", occurrence.collectionName, occurrence.collectionName)
+                    td(colspan: '2', style: 'text-align: right;') {
+                        a(
+                                href: g.createLink(url: "${request.contextPath}/occurrences/${occurrence.uuid}"),
+                                class: "occurrenceLink",
+                                style: "margin-left: 15px;",
+                                "View record"
+                        )
+                    }
+                }**/
+
+                tr() {
+                    outputResultsTd("Collector: ", "${occurrence.collector}&nbsp;&nbsp;${occurrence.recordNumber?:''}", true)
+                    outputResultsTd("State: ", occurrence.stateProvince, occurrence.stateProvince)
+                }
+                tr(){
+                    outputResultsTd("Data&nbsp;Resource: ", occurrence.dataResourceName, !occurrence.collectionName && occurrence.dataResourceName)
+                    outputResultsTd("Locality: ", occurrence.lga, occurrence.lga)
+                }
+
+                tr() {
+                    if (occurrence.collectionName){
+                        outputResultsTd("Herbarium: ", occurrence.collectionName, occurrence.collectionName)
+                        if (occurrence.eventDate) {
+                            outputResultsTd("Date: ", g.formatDate(date: new Date(occurrence.eventDate), format:"dd-MMM-yyyy"), occurrence.stateProvince)
+                        }else if (occurrence.year){
+                            outputResultsTd("Year: ", occurrence.year, true)
+                        }
+                    }else{
+                        td(){}
+                        if (occurrence.eventDate) {
+                            outputResultsTd("Date: ", g.formatDate(date: new Date(occurrence.eventDate), format:"dd-MMM-yyyy"), occurrence.stateProvince)
+                        }else if (occurrence.year){
+                            outputResultsTd("Year: ", occurrence.year, true)
+                        }
+                    }
+                        td(colspan: '3', style: 'text-align: right;') {
+                            a(
+                                    href: g.createLink(url:"${request.contextPath}/occurrences/${occurrence.uuid}"),
+                                    class:"occurrenceLink",
+                                    style:"margin-left: 15px;",
+                                    "View record"
+                            )
+                        }
+                }
             }
         }
     }
