@@ -35,6 +35,12 @@
                         </a>
                     </li>
 
+                    <li id="dataQualityFurtherDetails">
+                        <i class="icon-flag"></i>&nbsp;
+                        <a href="mailto:feedback@gbif.es?subject=Error en registro. Por favor especifique la URL del registro donde ha encontrado el error."><g:message code="show.button.assertionbutton.span"/></a>
+                        <span style="color:grey;font-size:10px">(email > feedback@gbif.es)</span>
+                    </li>
+
                     <g:set var="hasExpertDistribution" value="${false}"/>
                     <g:each var="systemAssertion" in="${record.systemAssertions.failed}">
                         <g:if test="${systemAssertion.code == 26}">
@@ -204,6 +210,7 @@
         <span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="icon-th"></i> <g:message code="show.sidebar02.showrawprocessed.span" default="Original vs Processed"/></span>
     </button>
 </div>
+%{--
 <g:if test="${contacts && contacts.size()}">
     <div class="sidebar">
         <button href="#contactCuratorView" class="btn" id="showCurator" role="button" data-toggle="modal"
@@ -211,7 +218,7 @@
             <span id="contactCuratorSpan" href="#contactCuratorView" title=""><i class="icon-envelope"></i> <g:message code="show.showcontactcurator.span" default="Contact curator"/></span>
         </button>
     </div>
-</g:if>
+</g:if>--}%
 <g:if test="${record.images}">
     <div class="sidebar">
         <h3><g:message code="show.sidebar03.title" default="Images"/></h3>
