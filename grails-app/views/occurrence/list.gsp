@@ -54,7 +54,7 @@
 </head>
 
 <body class="occurrence-search">
-    <div id="listHeader" class="row-fluid heading-bar">
+    <div id="listHeader" class="row-fluid heading-bar" style="margin-top: 45px;">
         <div class="span5">
             <h1><alatag:message code="search.heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>
         </div>
@@ -138,7 +138,7 @@
                                         %{--<g:set var="facet" value="${defaultFacets.get(facetFromGroup)}"/>--}%
                                             <g:if test="${defaultFacets.containsKey(facetFromGroup)}">
                                                 <g:set var="count" value="${count+1}"/>
-                                                <g:if test="${facetFromGroup != 'cl966' && facetFromGroup != 'subspecies_name' && facetFromGroup != 'species_subgroup' && facetFromGroup != 'ibra' && facetFromGroup != 'imcra'}">
+                                                <g:if test="${facetFromGroup != 'cl1048' && facetFromGroup != 'cl21' && facetFromGroup != 'alau_user_id' && facetFromGroup != 'subspecies_name' && facetFromGroup != 'species_subgroup' && facetFromGroup != 'ibra' && facetFromGroup != 'imcra'}">
                                                     <input type="checkbox" name="facets" class="facetOpts" value="${facetFromGroup}"
                                                         ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<g:message code="facet.${facetFromGroup}"/><br>
                                                 </g:if>
