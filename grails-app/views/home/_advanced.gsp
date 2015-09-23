@@ -123,7 +123,7 @@
             <td>
                 <select class="biogeographic_region" name="ibra" id="ibra">
                     <option value=""><g:message code="advancedsearch.table06col03.option.label" default="-- select an IBRA region --"/></option>
-                    <g:each var="region" in="${request.getAttribute("cl1048")}">
+                    <g:each var="region" in="${request.getAttribute("cl1048").sort()}">
                         <option value="${region.key}">${region.value}</option>
                     </g:each>
                 </select>
@@ -136,7 +136,7 @@
             <td>
                 <select class="biogeographic_region" name="imcra" id="imcra">
                     <option value=""><g:message code="advancedsearch.table06col04.option.label" default="-- select an IMCRA region --"/></option>
-                    <g:each var="region" in="${request.getAttribute("cl21")}">
+                    <g:each var="region" in="${request.getAttribute("cl21").sort()}">
                         <option value="${region.key}">${region.value}</option>
                     </g:each>
                 </select>
@@ -149,7 +149,7 @@
             <td>
                 <select class="lga" name="lga" id="lga">
                     <option value=""><g:message code="advancedsearch.table06col05.option.label" default="-- select local government area--"/></option>
-                    <g:each var="region" in="${request.getAttribute("cl959")}">
+                    <g:each var="region" in="${request.getAttribute("cl959").sort()}">
                         <option value="${region.key}">${region.value}</option>
                     </g:each>
                 </select>
@@ -206,7 +206,7 @@
                 <td>
                     <select class="dataset bscombobox" name="dataset" id="dataset">
                         <option value=""></option>
-                        <g:each var="region" in="${request.getAttribute("data_resource_uid")}">
+                        <g:each var="region" in="${request.getAttribute("data_resource_uid").sort({it.value})}">
                             <option value="${region.key}">${region.value}</option>
                         </g:each>
                     </select>
