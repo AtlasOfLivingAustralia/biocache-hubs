@@ -1136,13 +1136,13 @@ var taxonomyChart = {
         var $backLink = $('#backLink');
         if ($backLink.length == 0) {
             $backLink = $('<div class="link" id="backLink">&laquo; Previous rank</div>').appendTo($outerContainer);  // create it
-            $backLink.css('position','relative').css('top','-75px');
+            //$backLink.css('position','relative').css('top','-75px');
             $backLink.click(function() {
                 // only act if link was real
                 if (!$backLink.hasClass('link')) return;
 
                 // show spinner while loading
-                $container.append($('<img class="loading" style="position:absolute;left:130px;top:220px;z-index:2000" ' +
+                $container.append($('<img class="loading" style="position:relative;left:130px;top:220px;z-index:2000" ' +
                     'alt="loading..." src="' + collectionsUrl + '/images/ala/ajax-loader.gif"/>'));
 
                 // get state from history
@@ -1169,7 +1169,7 @@ var taxonomyChart = {
         var $recordsLink = $('#recordsLink');
         if ($recordsLink.length == 0) {
             $recordsLink = $('<div class="link under" id="recordsLink">View records</div>').appendTo($outerContainer);  // create it
-            $recordsLink.css('position','relative').css('top','-75px');
+            //$recordsLink.css('position','relative').css('top','-75px');
             $recordsLink.click(function () {
                 thisChart.showRecords();  // called explicitly so we have the correct 'this' context
             });
@@ -1182,6 +1182,8 @@ var taxonomyChart = {
         else {
             $recordsLink.html('View all records');
         }
+        $container = $("</div>");
+        $outerContainer.append($container);
 
         // setup a click handler - if requested
         var clickThru = this.chartOptions.clickThru == undefined ? true : this.chartOptions.clickThru;  // default to true
