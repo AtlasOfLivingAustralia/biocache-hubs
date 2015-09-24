@@ -803,7 +803,7 @@ class OccurrenceTagLib {
         int index = email.indexOf('@')
         if (index > 0) {
             email = email.replaceAll("@", strEncodedAtSign)
-            out << "<span class='link under' onclick=\"return sendEmail('${email}')\">${body()}</span>"
+            out << "<a class='link under' href='#' onclick=\"return sendEmail('${email}')\">${body()}</a>"
         }
     }
 }
