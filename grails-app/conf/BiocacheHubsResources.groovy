@@ -10,19 +10,25 @@ modules = {
         resource url:[dir:'bootstrap/css', file:'bootstrap-responsive.css', plugin:'biocache-hubs'], attrs:[media:'screen', id:'responsiveCss'], exclude: '*'
     }
 
+    jquery_i18n {
+        dependsOn 'jquery_migration'
+        resource url:[dir:'js', file:'jquery.i18n.properties-1.0.9.min.js', plugin:'biocache-hubs']
+    }
+
     hubCore {
-        //dependsOn 'bootstrap'
+        dependsOn 'bootstrap2, jquery_i18n'
         defaultBundle 'main-core'
         resource url: [dir:'css', file:'autocomplete.css', plugin:'biocache-hubs']
         resource url: [dir:'css', file:'base.css', plugin: 'biocache-hubs'],attrs: [ media: 'all' ]
         resource url: [dir:'css', file:'bootstrapAdditions.css', plugin: 'biocache-hubs'],attrs: [ media: 'all' ]
         resource url: [dir:'js', file:'jquery.autocomplete.js', plugin:'biocache-hubs'], disposition: 'head'
-        resource url: [dir:'js', file:'jquery.i18n.properties-1.0.9.js', plugin:'biocache-hubs']
+        resource url:[dir:'js', file:'biocache-hubs.js', plugin:'biocache-hubs']
+        //resource url: [dir:'js', file:'jquery.i18n.properties-1.0.9.js', plugin:'biocache-hubs']
         resource url: [dir:'js', file:'html5.js', plugin:'biocache-hubs'], wrapper: { s -> "<!--[if lt IE 9]>$s<![endif]-->" }, disposition: 'head'
     }
 
     searchCore {
-        dependsOn 'jquery, purl'
+        dependsOn 'jquery, purl, jquery_i18n'
         defaultBundle 'search-core'
         resource url:[dir:'css', file:'search.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'css', file:'pagination.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
@@ -118,7 +124,7 @@ modules = {
     }
 
     show {
-        dependsOn 'jquery'
+        dependsOn 'jquery, jquery_i18n'
         resource url:[dir:'css', file:'record.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'css', file:'print-record.css', plugin:'biocache-hubs'], attrs: [ media: 'print' ]
         resource url:[dir:'js', file:'audiojs/audio.min.js', plugin:'biocache-hubs'], disposition: 'head', exclude: '*'
@@ -143,5 +149,10 @@ modules = {
         dependsOn 'jquery'
         resource url:[dir:'js/bootstrap-combobox/', file:'bootstrap-combobox.css', plugin:'biocache-hubs']
         resource url:[dir:'js/bootstrap-combobox/', file:'bootstrap-combobox.js', plugin:'biocache-hubs']
+    }
+    jquery_migration{
+        // Needed to support legacy js components that do not work with latest versions of jQuery
+        dependsOn 'jquery'
+        resource url:[ dir: 'js',file:'jquery-migrate-1.2.1.min.js', plugin:'biocache-hubs']
     }
 }
