@@ -55,21 +55,49 @@
 
 <body class="occurrence-search">
     <div id="listHeader" class="row-fluid heading-bar">
-        <div class="span5">
-            <h1><alatag:message code="search.heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>
+        <div class="row-fluid">
+            <div class="span5">
+                <h1><alatag:message code="search.heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>
+            </div>
+            <div id="searchBoxZ" class="span7 text-right">
+                <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="">
+                    <div id="advancedSearchLink"><a href="${g.createLink(uri: '/search')}#tab_advanceSearch"><g:message code="list.advancedsearchlink.navigator" default="Advanced search"/></a></div>
+                    <g:if test="${showHistory}">
+                        <div class="btn-group input-append">
+                            <a class="btn dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-cog"></i><span class="caret">&nbsp;&nbsp;</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a id="searchHistory" href="#"><i class="icon-time"></i> My search history</a></li>
+                            </ul>
+                        </div>
+                    </g:if>
+                    <div class="input-append">
+                        <input type="text" id="taxaQuery" name="${searchQuery}" class="input-xlarge" value="${params.list(searchQuery).join(' OR ')}">
+                        <button type="submit" id="solrSubmit" class="btn"><g:message code="list.advancedsearchlink.button.label" default="Quick search"/></button>
+                    </div>
+                </form>
+            </div>
+            <input type="hidden" id="userId" value="${userId}">
+            <input type="hidden" id="userEmail" value="${userEmail}">
+            <input type="hidden" id="lsid" value="${params.lsid}"/>
         </div>
-        <div id="searchBoxZ" class="span7 text-right">
-            <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="">
-                <div id="advancedSearchLink"><a href="${g.createLink(uri: '/search')}#tab_advanceSearch"><g:message code="list.advancedsearchlink.navigator" default="Advanced search"/></a></div>
-                <div class="input-append">
-                    <input type="text" id="taxaQuery" name="${searchQuery}" class="input-xlarge" value="${params.list(searchQuery).join(' OR ')}">
-                    <button type="submit" id="solrSubmit" class="btn"><g:message code="list.advancedsearchlink.button.label" default="Quick search"/></button>
+        <g:if test="${showHistory}">
+            <div class="well well-small hide" id="historyDialog" style="height:180px;">
+                <button type="button" class="close" onclick="$('#historyDialog').hide('fast')">&times;</button>
+                <h4><b>My search history</b></h4>
+                <hr>
+                <div id="">
+                    <g:if test="${searchHistory?.size()}">
+                        <ol>
+                            <g:each in="${searchHistory}" var="item">
+                                <li><a href="${item.url}">${item.name}</a></li>
+                            </g:each>
+                        </ol>
+                    </g:if>
                 </div>
-            </form>
-        </div>
-        <input type="hidden" id="userId" value="${userId}">
-        <input type="hidden" id="userEmail" value="${userEmail}">
-        <input type="hidden" id="lsid" value="${params.lsid}"/>
+            </div>
+        </g:if>
     </div>
     <g:if test="${errors}">
         <div class="searchInfo searchError">
@@ -408,5 +436,10 @@
         <g:message code="list.endpagetime05" default="total processing time"/> = ${(endPageTime - startPageTime) + processingTime} ms
     </div>
 </g:if>
+<script type="text/javascript">
+    $('#searchHistory').click(function(){
+        $('#historyDialog').show('fast');
+    });
+</script>
 </body>
 </html>

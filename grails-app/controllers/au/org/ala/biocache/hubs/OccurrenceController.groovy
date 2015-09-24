@@ -42,6 +42,8 @@ class OccurrenceController {
     def list(SpatialSearchRequestParams requestParams) {
         def start = System.currentTimeMillis()
         requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
+        Long alaId = Long.parseLong(authService?.getUserId()?:0);
+        Boolean showHistory = grailsApplication.config.myHistory as Boolean
 
         if (!params.pageSize) {
             requestParams.pageSize = 20
@@ -75,6 +77,9 @@ class OccurrenceController {
             String[] filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
             List dynamicFacets = []
             String[] requestedFacets = userFacets ?: filteredFacets
+            List searchHistory = [];
+
+            log.debug(postProcessingService.constructRequestURL(request));
 
             if (grailsApplication.config.facets.includeDynamicFacets?.toBoolean()) {
                 // Sandbox only...
@@ -87,6 +92,15 @@ class OccurrenceController {
             def wsTime = (System.currentTimeMillis() - wsStart)
             Map groupedFacets = webServicesService.getGroupedFacets() // cached
             Map facetResultsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
+
+            // check if the hub wants to show my history, only then get history
+            if(showHistory && alaId){
+                Map newSearch = [url: postProcessingService.constructRequestURL(request),
+                                 name: searchResults?.queryTitle?.replaceAll("<(.|\n)*?>", '')]
+                searchHistory = postProcessingService.getSearchHistory(alaId)?:[]
+                postProcessingService.updateSearchHistory(alaId,  newSearch, searchHistory.clone())
+                showHistory = showHistory && (searchHistory.size() >= 1);
+            }
 
             [
                     sr: searchResults,
@@ -102,7 +116,9 @@ class OccurrenceController {
                     userId: authService?.getUserId(),
                     userEmail: authService?.getEmail(),
                     processingTime: (System.currentTimeMillis() - start),
-                    wsTime: wsTime
+                    wsTime: wsTime,
+                    searchHistory: searchHistory.reverse(),
+                    showHistory: showHistory
             ]
         } catch (Exception ex) {
             log.warn "Error getting search results: $ex.message", ex

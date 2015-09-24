@@ -55,6 +55,7 @@ biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
 //biocache.groupedFacetsUrl = "${biocache.baseUrl}/search/grouped/facets" // optional - define in hub only
 collections.baseUrl = "http://collections.ala.org.au"
+userdetails.baseUrl = "http://auth.ala.org.au/userdetails"
 
 // images
 images.baseUrl = "http://images.ala.org.au"
@@ -105,3 +106,6 @@ suppressIssues = "" // "missingCoordinatePrecision"
 sensitiveDataset.list = ""
 
 table.displayDynamicProperties = false
+
+// boolean config variable to show or hide my history button
+myHistory=false

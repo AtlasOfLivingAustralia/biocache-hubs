@@ -1,17 +1,23 @@
 package au.org.ala.biocache.hubs
-
+import au.org.ala.cas.client.AlaHttpServletRequestWrapperFilter
 import org.apache.commons.lang.StringUtils
+import org.apache.http.NameValuePair
+import org.apache.http.client.utils.URLEncodedUtils
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
-
 /**
  * Service to perform processing of data between the DAO and View layers
  */
 class PostProcessingService {
+    public static Integer MAX_SEARCH_HISTORY = 5;
+    public static String SEARCH_PROPERTY = 'au.org.ala.SearchHistory';
+    public static List PARAM_BLACKLIST = ['offset','max']
+
     def grailsApplication
+    def webServicesService
 
     /**
      * Determine if the record contains images
@@ -365,4 +371,152 @@ class PostProcessingService {
 
         ungroupedFacetsList
     }
+
+    /**
+     * fetches search history and converts it to a datastructure
+     * @param userId
+     * @return
+     */
+    List getSearchHistory(Long userId){
+        List historySerial = webServicesService.getSearchHistory(userId, SEARCH_PROPERTY);
+        String serial;
+        // webservice returns a list of map. get only one value from list.
+        historySerial?.each {
+            if(it.property == SEARCH_PROPERTY){
+                serial= it.value
+            }
+        }
+        deserializeSearchHistory(serial)
+    }
+
+    /**
+     * check if a search should be added to history and saves it to userdetails database via webservice
+     * @param alaId
+     * @param newSearch
+     * @return
+     */
+    Map updateSearchHistory(Long alaId, Map newSearch, List history){
+        String serialHistory
+        if(!isQueryDuplicate(history, newSearch)){
+            history = insertSearch(history, newSearch);
+        }
+
+        serialHistory = serializeSearchHistory(history);
+        log.debug(deserializeSearchHistory(serialHistory));
+        saveSearchHistory(alaId, serialHistory)
+    }
+
+    /**
+     * webservice call to save history
+     * @param alaId
+     * @param serialHistory
+     */
+    public void saveSearchHistory(long alaId, String serialHistory) {
+        Map saveProp = ['alaId': alaId, 'name': SEARCH_PROPERTY, 'value': serialHistory]
+        webServicesService.saveSearchHistory(saveProp)
+    }
+
+    /**
+     * checks if a new search is a duplicate of the previous search. eg. paging of results are not stored.
+     * @param history
+     * @param newSearch
+     * @return
+     */
+    Boolean isQueryDuplicate(List history, Map newSearch){
+        if(history?.size()){
+            Map lastSearch = history.get(history.size() - 1);
+            List<NameValuePair> lastSearchParams = URLEncodedUtils.parse(new URI(lastSearch.url),'UTF-8');
+            List<NameValuePair> currentSearchParams = URLEncodedUtils.parse(new URI(newSearch.url),'UTF-8');
+            Boolean flag = true
+            currentSearchParams.each { NameValuePair cparam ->
+                // only if parameter is not empty and not in black list
+                if(!(cparam.value?.isEmpty()) && !(cparam.name in PARAM_BLACKLIST)){
+                    lastSearchParams.each { NameValuePair lparam ->
+                        // if param is not the same as last query then this is a new search
+                        if((lparam.name == cparam.name) && (lparam.value != cparam.value)){
+                            flag = false;
+                            return ;
+                        }
+                    }
+                }
+            }
+            return flag;
+        } else {
+            return  false
+        }
+    }
+
+    /**
+     * manages adding a new search to history
+     * @param history
+     * @param newSearch
+     * @return
+     */
+    List insertSearch(List history, Map newSearch){
+        if(history == null){
+            history = []
+        }
+
+        while (history.size() >= MAX_SEARCH_HISTORY){
+            history.remove(0);
+        }
+
+        history.push(newSearch);
+        history
+    }
+
+    /**
+     * converts a serial representation of history to a data structure
+     * original format = [[name:'name',url:'url'],[name:'name2',url:'url2']]
+     * encoding format = name:url|name2:url2
+     * @param serialHistory
+     * @return
+     */
+    List deserializeSearchHistory(String serialHistory){
+        List history=[];
+        if(serialHistory){
+            List items = serialHistory.split('\\|')
+            items.each{
+                String [] values;
+                values = it.split(':');
+                history.push([name: values[0]?.decodeURL(), url:values[1]?.decodeURL()])
+            }
+        }
+
+        history
+    }
+
+    /**
+     * converts a history list to string
+     * @param history
+     * @return
+     */
+    String serializeSearchHistory(List history){
+        List serial = [];
+        history.each {
+            serial.push(it.name?.encodeAsURL() + ':' + it.url?.encodeAsURL())
+        }
+        serial.join('|');
+    }
+
+    /**
+     * constructs the full query url with hostname, port number, path and query string
+     * @param request
+     * @return
+     */
+    String constructRequestURL(AlaHttpServletRequestWrapperFilter.AlaHttpServletRequestWrapper request){
+        // grails adds .dispatch to the URL.
+        String http;
+        switch (request.getProtocol()){
+            case "HTTP/1.1":
+            default:
+                http = 'http://'
+        }
+        String host = request.serverName;
+        String port = request.serverPort
+
+        String url = request.forwardURI;
+        return http + host + ':' + port + url + '?' + request.queryString
+    }
+
 }

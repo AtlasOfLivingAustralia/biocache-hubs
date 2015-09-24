@@ -3,7 +3,6 @@ package au.org.ala.biocache.hubs
 import grails.converters.JSON
 import grails.plugin.cache.CacheEvict
 import grails.plugin.cache.Cacheable
-
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
@@ -14,7 +13,6 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.web.client.RestClientException
-
 /**
  * Service to perform web service DAO operations
  */
@@ -45,6 +43,22 @@ class WebServicesService {
     def JSONObject getCompareRecord(String id) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrence/compare?uuid=${id.encodeAsURL()}"
         getJsonElements(url)
+    }
+
+    def JSONArray getSearchHistory(Long userId, String prop){
+        JSONElement result
+        String url = "${grailsApplication.config.userdetails.baseUrl}/property/getProperty?alaId=${userId}&name=${prop}"
+        try{
+            result = getJsonElements(url);
+        } catch (Exception e ){
+            log.error( 'An Exception occurred while getting search history' + e);
+        }
+        result
+    }
+
+    def Map saveSearchHistory(Map prop){
+        String url = "${grailsApplication.config.userdetails.baseUrl}/property/saveProperty"
+        postFormData(url, prop)
     }
 
     def JSONArray getMapLegend(String queryString) {
@@ -446,12 +460,7 @@ class WebServicesService {
             conn = new URL(url).openConnection()
             conn.setDoOutput(true)
             conn.setRequestProperty("Content-Type", "application/json;charset=${charEncoding}");
-//            conn.setRequestProperty("Authorization", grailsApplication.config.api_key);
-//            def user = userService.getUser()
-//            if (user) {
-//                conn.setRequestProperty(grailsApplication.config.app.http.header.userId, user.userId) // used by ecodata
-//                conn.setRequestProperty("Cookie", "ALA-Auth="+java.net.URLEncoder.encode(user.userName, charEncoding)) // used by specieslist
-//            }
+
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream(), charEncoding)
             wr.write(jsonBody)
             wr.flush()
