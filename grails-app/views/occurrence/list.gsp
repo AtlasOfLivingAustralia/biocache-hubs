@@ -17,11 +17,13 @@
     <meta name="section" content="search"/>
     <title><g:message code="list.title" default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
     %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
+    <g:render template="/layouts/global"/>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <r:require modules="search, leaflet, slider, qtip, nanoscroller, amplify, moment, mapCommon"/>
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <r:require module="bieAutocomplete"/>
     </g:if>
+
     <script type="text/javascript">
         // single global var for app conf settings
         <g:set var="fqParamsSingleQ" value="${(params.fq) ? ' AND ' + params.list('fq')?.join(' AND ') : ''}"/>
@@ -47,10 +49,10 @@
             hasMultimedia: ${hasImages?:'false'}, // will be either true or false
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}"
         };
-
         google.load('maps','3.5',{ other_params: "sensor=false" });
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
+
 </head>
 
 <body class="occurrence-search">
