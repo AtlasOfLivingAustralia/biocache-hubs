@@ -16,7 +16,7 @@ modules = {
     }
 
     hubCore {
-        dependsOn 'bootstrap2, jquery_i18n'
+        dependsOn 'jquery_i18n'
         defaultBundle 'main-core'
         resource url: [dir:'css', file:'autocomplete.css', plugin:'biocache-hubs']
         resource url: [dir:'css', file:'base.css', plugin: 'biocache-hubs'],attrs: [ media: 'all' ]
@@ -28,7 +28,7 @@ modules = {
     }
 
     searchCore {
-        dependsOn 'jquery, purl, jquery_i18n'
+        dependsOn 'jquery, purl'
         defaultBundle 'search-core'
         resource url:[dir:'css', file:'search.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'css', file:'pagination.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
@@ -124,7 +124,7 @@ modules = {
     }
 
     show {
-        dependsOn 'jquery, jquery_i18n'
+        dependsOn 'jquery'
         resource url:[dir:'css', file:'record.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'css', file:'print-record.css', plugin:'biocache-hubs'], attrs: [ media: 'print' ]
         resource url:[dir:'js', file:'audiojs/audio.min.js', plugin:'biocache-hubs'], disposition: 'head', exclude: '*'
