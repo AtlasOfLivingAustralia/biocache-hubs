@@ -12,7 +12,6 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-
 /*------------------------------------------------------------------------------------------*
  *---------------- FACET BREAKDOWN CHARTS USING THE MODULE PATTERN -------------------------*
  *------------------------------------------------------------------------------------------*/
@@ -194,7 +193,15 @@ var baseFacetChart = {
     },
     labelFormatters: {
         month: function (data) {
-            return transformMonthData(data);
+            var months = [jQuery.i18n.prop('charts2.js.jan'),jQuery.i18n.prop('charts2.js.feb'),jQuery.i18n.prop('charts2.js.mar'),jQuery.i18n.prop('charts2.js.apr'),jQuery.i18n.prop('charts2.js.may'),
+                    jQuery.i18n.prop('charts2.js.jun'),jQuery.i18n.prop('charts2.js.jul'),jQuery.i18n.prop('charts2.js.aug'),jQuery.i18n.prop('charts2.js.sep'),jQuery.i18n.prop('charts2.js.oct'),
+                    jQuery.i18n.prop('charts2.js.nov'),jQuery.i18n.prop('charts2.js.dec')],
+                monthIdx;
+            $.each(data, function(i,obj) {
+                monthIdx = obj.label;
+                obj.formattedLabel = months[monthIdx - 1];
+            });
+            return data;
         }
     },
     transformDataAfter: function (dataTable, opts) {
@@ -930,7 +937,9 @@ function transformDecadeData(data) {
     return transformedData;
 }
 function transformMonthData(data) {
-    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    var months = [jQuery.i18n.prop('charts2.js.jan'),jQuery.i18n.prop('charts2.js.feb'),jQuery.i18n.prop('charts2.js.mar'),jQuery.i18n.prop('charts2.js.apr'),jQuery.i18n.prop('charts2.js.may'),
+            jQuery.i18n.prop('charts2.js.jun'),jQuery.i18n.prop('charts2.js.jul'),jQuery.i18n.prop('charts2.js.aug'),jQuery.i18n.prop('charts2.js.sep'),jQuery.i18n.prop('charts2.js.oct'),
+            jQuery.i18n.prop('charts2.js.nov'),jQuery.i18n.prop('charts2.js.dec')],
         monthIdx;
     $.each(data, function(i,obj) {
         monthIdx = parseInt(obj.label, 10); // months values "01" need parsing to int
@@ -1162,13 +1171,13 @@ var taxonomyChart = {
         }
         else {
             // show the instruction
-            $backLink.html("Click a slice to drill into the next taxonomic level.").removeClass('link');
+            $backLink.html(jQuery.i18n.prop('charts.js.slicetodrill')).removeClass('link');
         }
 
         // draw records link
         var $recordsLink = $('#recordsLink');
         if ($recordsLink.length == 0) {
-            $recordsLink = $('<div class="link under" id="recordsLink">View records</div>').appendTo($outerContainer);  // create it
+            $recordsLink = $('<div class="link under" id="recordsLink">' + jQuery.i18n.prop('charts2.js.viewrecords') + '</div>').appendTo($outerContainer);  // create it
             //$recordsLink.css('position','relative').css('top','-75px');
             $recordsLink.click(function () {
                 thisChart.showRecords();  // called explicitly so we have the correct 'this' context
@@ -1214,8 +1223,10 @@ var taxonomyChart = {
                 /* SHOW RECORDS */
                 else if (clickThru) {
                     // show occurrence records
+                    //$recordsLink.html('Estoy en el clickThru');
                     document.location = urlConcat(biocacheWebappUrl, "/occurrences/search?q=") + query +
                         "&fq=" + data.rank + ":" + name;
+
                 }
             });
         }
