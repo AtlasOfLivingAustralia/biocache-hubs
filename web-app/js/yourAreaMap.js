@@ -279,7 +279,7 @@ function loadMap() {
     });
     marker = new google.maps.Marker({
         position: latLng,
-        title: 'Marker Location',
+        title: jQuery.i18n.prop('exploreYourArea.js.markerLocation'),
         map: map,
         draggable: true
     });
