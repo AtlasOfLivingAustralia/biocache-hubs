@@ -278,12 +278,15 @@ class WebServicesService {
         getText(url)
     }
 
+    /** No needed for Spanish Data Portal, replaced by static reason
     @Cacheable('longTermCache')
     def JSONArray getLoggerReasons() {
         def url = "${grailsApplication.config.logger.baseUrl}/logger/reasons"
         getJsonElements(url)
     }
+    **/
 
+    /** No needed for Spanish Data Portal.
     @Cacheable('longTermCache')
     def JSONArray getLoggerSources() {
         def url = "${grailsApplication.config.logger.baseUrl}/logger/sources"
