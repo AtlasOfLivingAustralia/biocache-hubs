@@ -635,13 +635,16 @@ class OccurrenceTagLib {
      *
      * at top of taglib
      */
+    /**
     def getLoggerReasons = { attrs ->
         webServicesService.getLoggerReasons()
     }
+    **/
 
     /**
      * Get the appropriate sourceId for the current hub
      */
+    /**
     def getSourceId = { attrs ->
         def skin = grailsApplication.config.skin.layout?.toUpperCase()
         def sources = webServicesService.getLoggerSources()
@@ -651,6 +654,7 @@ class OccurrenceTagLib {
             }
         }
     }
+    **/
 
     /**
      * Display an outage banner
