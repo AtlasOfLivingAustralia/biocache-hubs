@@ -583,6 +583,10 @@ a.colour-by-legend-toggle {
             }
         }
 
+        var gridSizeMap = {
+            1: 256, 2:128, 3: 128, 4:64, 5:64, 6:32, 7:32, 8:16, 9:8
+        }
+
         var layer = L.tileLayer.wms(MAP_VAR.mappingUrl + "/mapping/wms/reflect" + MAP_VAR.query + MAP_VAR.additionalFqs, {
             layers: 'ALA:occurrences',
             format: 'image/png',
@@ -591,6 +595,7 @@ a.colour-by-legend-toggle {
             outline:outlineDots,
             ENV: envProperty,
             opacity: opacity,
+            GRIDDETAIL: gridSizeMap[pointSize],
             STYLE: "opacity:"+opacity // for grid data
         });
 
