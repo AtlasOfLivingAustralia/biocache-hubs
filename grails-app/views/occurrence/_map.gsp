@@ -447,7 +447,7 @@ a.colour-by-legend-toggle {
 
         $( "#sizeslider" ).slider({
             min:1,
-            max:9,
+            max:6,
             value: Number($('#sizeslider-val').text()),
             tooltip: 'hide'
         }).on('slideStop', function(ev){
@@ -584,7 +584,7 @@ a.colour-by-legend-toggle {
         }
 
         var gridSizeMap = {
-            1: 256, 2:128, 3: 128, 4:64, 5:64, 6:32, 7:32, 8:16, 9:8
+            1: 256, 2:128, 3: 64, 4:32, 5:16, 6:8
         }
 
         var layer = L.tileLayer.wms(MAP_VAR.mappingUrl + "/mapping/wms/reflect" + MAP_VAR.query + MAP_VAR.additionalFqs, {
