@@ -40,7 +40,7 @@
             <div class="facetsGroup hide" id="group_dynamicFacets">
                 <g:each in="${dynamicFacets}" var="df">
                     <g:set var="facetResult" value="${groupedFacetsMap.get(df.name)}"/>
-                    <g:if test="${facetResult && facetResult.fieldResult.length() >= 1 && facetResult.fieldResult[0].count != sr.totalRecords && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
+                    <g:if test="${facetResult && facetResult.fieldResult.length() >= 1 && (facetResult.fieldResult[0].count != sr.totalRecords || facetResult.fieldResult.length() > 1 ) && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
                         <g:set var="fieldDisplayName" value="${df.displayName}"/>
                         <h4><span class="FieldName">${fieldDisplayName?:alatag.formatDynamicFacetName(fieldName:facetResult.fieldName)}</span></h4>
                         <div class="subnavlist nano" style="clear:left">
@@ -67,7 +67,7 @@
                     <%--  Do a lookup on groupedFacetsMap for the current facet --%>
                     <g:set var="facetResult" value="${groupedFacetsMap.get(facetFromGroup)}"/>
                    <%--  Tests for when to display a facet --%>
-                    <g:if test="${facetResult && facetResult.fieldResult.length() >= 1 && facetResult.fieldResult[0].count != sr.totalRecords && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
+                    <g:if test="${facetResult && facetResult.fieldResult.length() >= 1 && (facetResult.fieldResult[0].count != sr.totalRecords || facetResult.fieldResult.length() > 1 ) && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
                         <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
                         <h4><span class="FieldName">${fieldDisplayName?:facetResult.fieldName}</span></h4>
                         <div class="subnavlist nano" style="clear:left">
