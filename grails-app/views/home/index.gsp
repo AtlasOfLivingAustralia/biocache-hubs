@@ -106,11 +106,12 @@
             }
         };
 
-        var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-            'Imagery © <a href="http://mapbox.com">Mapbox</a>';
-        var mbUrl = 'https://{s}.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={token}';
-        var defaultBaseLayer = L.tileLayer(mbUrl, {mapid: '${grailsApplication.config.map.mapbox.id}', token: '${grailsApplication.config.map.mapbox.token}', attribution: mbAttr});
+        var defaultBaseLayer = L.tileLayer("${grailsApplication.config.map.minimal.url}", {
+            attribution: "${raw(grailsApplication.config.map.minimal.attr)}",
+            subdomains: "${grailsApplication.config.map.minimal.subdomains}",
+            mapid: "${grailsApplication.config.map.mapbox?.id?:''}",
+            token: "${grailsApplication.config.map.mapbox?.token?:''}"
+        });
 
         // Global var to store map config
         var MAP_VAR = {
