@@ -323,7 +323,7 @@ class WebServicesService {
      * @return
      */
     List getDynamicFacets(String query) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/upload/dynamicFacets?q=data_resource_uid:${query}"
+        def url = "${grailsApplication.config.biocache.baseUrl}/upload/dynamicFacets?q=${query}"
         JSONArray facets = getJsonElements(url)
         def dfs = []
         facets.each {
@@ -368,8 +368,6 @@ class WebServicesService {
     def JSONElement getJsonElements(String url) {
         log.debug "(internal) getJson URL = " + url
         def conn = new URL(url).openConnection()
-        //JSONObject.NULL.metaClass.asBoolean = {-> false}
-
         try {
             conn.setConnectTimeout(10000)
             conn.setReadTimeout(50000)

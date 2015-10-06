@@ -26,7 +26,7 @@ var baseFacetChart = {
     width: 600,
     height: 450,
     chartArea: {left:0, top:30, width:"90%", height: "70%"},
-    is3D: true,
+    is3D: false,
     titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
     sliceVisibilityThreshold: 0,
     legend: {position: "right"},
@@ -580,7 +580,7 @@ var facetChartGroup = {
 
         // make request
         $.ajax({
-            url: urlConcat(url, "/occurrences/search.json?pageSize=0&flimit=200&q=") + options.query + facets,
+            url: urlConcat(url, "/occurrences/search.json?pageSize=0&flimit=200&q=") + options.query + facets + "&fsort=index",
             dataType: 'jsonp',
             error: function() {
                 cleanUp(); // TODO:
@@ -652,7 +652,7 @@ var loadAndDrawFacetCharts = function (options) {
 
     // make request
     $.ajax({
-        url: urlConcat(url, "/occurrences/search.json?pageSize=0&q=") + options.query + "&facets=" + facets,
+        url: urlConcat(url, "/occurrences/search.json?pageSize=0&q=") + options.query + "&facets=" + facets + "&fsort=index",
         dataType: 'jsonp',
         error: function() {
             cleanUp(); // TODO:
@@ -685,7 +685,7 @@ var taxonomyPieChartOptions = {
     width: 480,
     height: 350,
     chartArea: {left:0, top:30, width:"100%", height: "70%"},
-    is3D: true,
+    is3D: false,
     titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
     sliceVisibilityThreshold: 0,
     legend: "right"
@@ -696,7 +696,7 @@ var genericChartOptions = {
     width: 480,
     height: 350,
     chartArea: {left:0, top:30, width:"100%", height: "70%"},
-    is3D: true,
+    is3D: false,
     titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
     sliceVisibilityThreshold: 0,
     legend: "right",
@@ -726,7 +726,7 @@ var chartLabels = {
 // asynchronous transforms are applied after the chart is drawn, ie the chart is drawn with the original values
 // then redrawn when the ajax call for transform data returns
 var asyncTransforms = {
-// facet data now has entitiy names in label
+// facet data now has entity names in label
 //    collection_uid: {method: 'lookupEntityName', param: 'collection'},
 //    institution_uid: {method: 'lookupEntityName', param: 'institution'},
 //    data_resource_uid: {method: 'lookupEntityName', param: 'dataResource'}
@@ -751,9 +751,13 @@ function loadFacetCharts(chartOptions) {
 
     var chartsDiv = $('#' + (chartOptions.targetDivId ? chartOptions.targetDivId : 'charts'));
     chartsDiv.append($("<span>Loading charts...</span>"));
+
+    console.log('loadFacetCharts');
+    console.log(chartOptions);
+
     var query = chartOptions.query ? chartOptions.query : buildQueryString(chartOptions.instanceUid);
     $.ajax({
-        url: urlConcat(biocacheServicesUrl, "/occurrences/search.json?pageSize=0&q=") + query,
+        url: urlConcat(biocacheServicesUrl, "/occurrences/search.json?pageSize=0&q=") + query + "&fsort=index",
         dataType: 'jsonp',
         error: function() {
             cleanUp();
@@ -819,7 +823,6 @@ function buildGenericFacetChart(name, data, query, chartsDiv, chartOptions) {
     var individualOptions = individualChartOptions[name] ? individualChartOptions[name] : {};
     // merge generic, individual and user options
     opts = $.extend(true, {}, opts, individualOptions, chartOptions[name]);
-    //Dumper.alert(opts);
 
     // optionally transform the data
     var xformedData = data;
@@ -861,11 +864,16 @@ function buildGenericFacetChart(name, data, query, chartsDiv, chartOptions) {
     // specify the type (for css tweaking)
     $container.addClass('chart-' + opts.chartType);
 
+    console.log('Loading chart');
+    console.log(opts);
+
     // create the chart
     var chart;
     switch (opts.chartType) {
         case 'column': chart = new google.visualization.ColumnChart(document.getElementById(name)); break;
         case 'bar': chart = new google.visualization.BarChart(document.getElementById(name)); break;
+        case 'line': chart = new google.visualization.LineChart(document.getElementById(name)); break;
+        case 'scatter': chart = new google.visualization.ScatterChart(document.getElementById(name)); break;
         default: chart = new google.visualization.PieChart(document.getElementById(name)); break;
     }
 
@@ -884,7 +892,6 @@ function buildGenericFacetChart(name, data, query, chartsDiv, chartOptions) {
             var id = dataTable.getValue(chart.getSelection()[0].row,0);
 
             // build the facet query
-            //var facetQuery = name + ":" + id;
             var facetQuery;
 
             if (id.indexOf(name) != -1) {
@@ -908,7 +915,7 @@ function buildGenericFacetChart(name, data, query, chartsDiv, chartOptions) {
 
             // show the records
             document.location = urlConcat(biocacheWebappUrl,"/occurrences/search?q=") + query +
-            "&fq=" + facetQuery;
+            "&fq=" + facetQuery ;
         });
     }
 }
@@ -919,7 +926,7 @@ function transformDecadeData(data) {
     var transformedData = [];
     $.each(data, function(i,obj) {
         if (obj.label == 'before') {
-            transformedData.splice(0,0,{label: "before " + firstDecade, count: obj.count});
+            transformedData.splice(0, 0, {label: "before " + firstDecade, count: obj.count});
         }
         else {
             var decade = obj.label.substr(0,4);
@@ -929,6 +936,7 @@ function transformDecadeData(data) {
     });
     return transformedData;
 }
+
 function transformMonthData(data) {
     var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
         monthIdx;
@@ -938,6 +946,7 @@ function transformMonthData(data) {
     });
     return data;
 }
+
 function transformFqData(data) {
     $.each(data, function(i,obj) {
         // substitute label for fq data if present
@@ -1006,7 +1015,6 @@ function lookupEntityNameFromUids (chart, table, opts) {
  *----------- TAXONOMY BREAKDOWN CHARTS USING DIRECT CALLS TO BIO-CACHE SERVICES -----------*
  *------------------------------------------------------------------------------------------*/
 // works for uid-based queries or q/fq general queries
-
 var taxonomyChart = {
     // the base query that defines the full set of records being analysed
     baseQuery: "",

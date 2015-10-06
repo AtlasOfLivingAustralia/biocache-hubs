@@ -33,6 +33,12 @@ class OccurrenceController {
         redirect action: "search"
     }
 
+    def dataResource(SpatialSearchRequestParams requestParams){
+        requestParams.q = "data_resource_uid:" + params.uid
+        def model = list(requestParams)
+        render (view: 'list', model: model)
+    }
+
     /**
      * Perform a full text search
      *
@@ -55,7 +61,11 @@ class OccurrenceController {
         List taxaQueries = (ArrayList<String>) params.list("taxa") // will be list for even one instance
         log.debug "skin.useAlaBie = ${grailsApplication.config.skin.useAlaBie}"
 
-        if (grailsApplication.config.skin.useAlaBie?.toBoolean() && grailsApplication.config.bie.baseUrl && !params.q && taxaQueries && taxaQueries[0]) { // check for list with empty string
+        if (grailsApplication.config.skin.useAlaBie?.toBoolean() &&
+                grailsApplication.config.bie.baseUrl &&
+                !params.q &&
+                taxaQueries &&
+                taxaQueries[0]) { // check for list with empty string
             // taxa query - attempt GUID lookup via BIE
             List guidsForTaxa = webServicesService.getGuidsForTaxa(taxaQueries)
             requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, guidsForTaxa)
@@ -66,7 +76,7 @@ class OccurrenceController {
         }
 
         if (!requestParams.q) {
-            requestParams.q= "*:*"
+            requestParams.q = "*:*"
         }
 
         try {
@@ -81,6 +91,7 @@ class OccurrenceController {
                 dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
                 requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
             }
+
             requestParams.facets = requestedFacets
             def wsStart = System.currentTimeMillis()
             JSONObject searchResults = webServicesService.fullTextSearch(requestParams)
@@ -95,8 +106,9 @@ class OccurrenceController {
                     groupedFacets: postProcessingService.getAllGroupedFacets(groupedFacets, searchResults.facetResults),
                     groupedFacetsMap: facetResultsMap,
                     dynamicFacets: dynamicFacets,
+                    selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: postProcessingService.resultsHaveImages(searchResults),
-                    showSpeciesImages: false, // TODO
+                    showSpeciesImages: false,
                     sort: requestParams.sort,
                     dir: requestParams.dir,
                     userId: authService?.getUserId(),
@@ -114,6 +126,14 @@ class OccurrenceController {
     def taxa(String id) {
         log.debug "taxa search for ${id}"
         redirect(action: "search", params: [q:"lsid:" + id])
+    }
+
+    private def getSelectedResource(query){
+        if(query.contains("data_resource_uid:")){
+            query.replace("data_resource_uid:","")
+        } else {
+            ""
+        }
     }
 
     /**

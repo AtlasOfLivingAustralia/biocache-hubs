@@ -42,6 +42,7 @@
             resourceName: "${grailsApplication.config.skin.orgNameLong}",
             facetLimit: "${grailsApplication.config.facets.limit?:50}",
             queryContext: "${grailsApplication.config.biocache.queryContext}",
+            selectedDataResource: "${selectedDataResource}",
             autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson()?:'{}'},
             zoomOutsideScopedRegion: Boolean("${grailsApplication.config.map.zoomOutsideScopedRegion}"),
             hasMultimedia: ${hasImages?:'false'}, // will be either true or false
@@ -338,7 +339,7 @@
                     </div><!-- end #mapwrapper -->
                     <div id="chartsView" class="tab-pane">
                         <style type="text/css">
-                           #charts div { display: inline-flex; padding-left:20px; }
+                           #charts div { display: inline-flex; padding-left:20px;}
                         </style>
                         <div id="charts" class="row-fluid"></div>
                     </div><!-- end #chartsWrapper -->

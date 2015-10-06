@@ -808,20 +808,25 @@ function loadAllCharts() {
     };
 
     if(dynamicFacets !== undefined){
-        //add the dynamic charts.....
-        for(var i = 0; i < dynamicFacets.length; i++){
-           facetChartOptions.query = facetChartOptions.query + "&facets=" + dynamicFacets[i];
-           facetChartOptions.charts.push(dynamicFacets[i]);
-           facetChartOptions[dynamicFacets[i]] = {};
-           //defaultChartTypes[dynamicFacets[i]] = 'bar';
-           var chartTitle = dynamicFacets[i].substring(0,dynamicFacets[i].length - 2).replace('_', ' ');
-           chartLabels[dynamicFacets[i]] = chartTitle;
-           baseFacetChart.individualChartOptions[dynamicFacets[i]] = { title: chartTitle, facets: [dynamicFacets[i]]}
-        }
+        var chartsConfigUri = BC_CONF.biocacheServiceUrl + "/upload/charts/" + BC_CONF.selectedDataResource + ".json";
+        $.getJSON(chartsConfigUri, function(chartsConfig) {
+            $.each(chartsConfig, function(index, config){
+               if(config.visible) {
+                   facetChartOptions.query = facetChartOptions.query + "&facets=" + config.field;
+                   facetChartOptions.charts.push(config.field);
+                   facetChartOptions[config.field] = {chartType:config.format, width: 900, backgroundColor: {fill:'transparent'}, chartArea: {width: "80%"}, hAxis: {title:'Moisture Index'}, vAxis: {title:'Moisture Index'}};
+                   var chartTitle = config.field.substring(0, config.field.length - 2).replace('_', ' ');
+                   chartLabels[config.field] = chartTitle;
+                   defaultChartTypes[config.field] = config.format;
+                   baseFacetChart.individualChartOptions[config.field] = {title: chartTitle, chartType:config.format, facets: [config.field]}
+               }
+            });
+            loadFacetCharts(facetChartOptions);
+        });
+    } else {
+        loadFacetCharts(facetChartOptions);
     }
-
     taxonomyChart.load(taxonomyChartOptions);
-    loadFacetCharts(facetChartOptions);
 }
 
 /**
