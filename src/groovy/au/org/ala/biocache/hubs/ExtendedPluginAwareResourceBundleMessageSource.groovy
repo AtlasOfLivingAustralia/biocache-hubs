@@ -31,8 +31,12 @@ class ExtendedPluginAwareResourceBundleMessageSource extends PluginAwareResource
      * @return
      */
     Map<String, String> listMessageCodes(Locale locale) {
+        if (!locale) {
+            locale = new Locale("en","us")
+        }
+
         Properties pluginProperties = getMergedPluginProperties(locale).properties
         Properties properties = getMergedProperties(locale).properties
-        return pluginProperties.plus(properties)
+        pluginProperties.plus(properties)
     }
 }

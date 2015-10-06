@@ -189,177 +189,238 @@
                 <div id="SidebarBoxZ" class="span4">
                     <g:render template="recordSidebar" />
                 </div><!-- end div#SidebarBox -->
-                <div id="content2Z" class="span8">
-                    <g:render template="recordCore" />
-                </div><!-- end of div#content2 -->
-            </div>
+                <div class="tabbable span8">
+                    <ul class="nav nav-tabs" data-tabs="tabs">
+                        <li class="active"><a id="t1" href="#content2Z" data-toggle="tab"><g:message code="recordcore.oc.title" default="Records"/></a></li>
+                        <g:if test="${contextualSampleInfo}">
+                            <li><a id="t2" href="#outlierInformation" data-toggle="tab"><g:message code="show.outlierinformation.02.title01" default="Map"/></a></li>
+                        </g:if>
+                        <g:if test="${environmentalSampleInfo}">
+                            <li><a id="t3" href="#environmentalSampleInfo" data-toggle="tab"><g:message code="show.outlierinformation.02.title02" default="Map"/></a></li>
+                        </g:if>
+                        <li><a id="t4" href="#dataQuality" data-toggle="tab"><g:message code="show.dataquality.title" default="Map"/></a></li>
+                    </ul>
+                <div class="tab-content clearfix" style="margin-top: -20px;margin-bottom: 10px;">
 
-            <g:if test="${hasExpertDistribution}">
-                <div id="hasExpertDistribution"  class="additionalData" style="clear:both;padding-top: 20px;">
-                    <h2><g:message code="show.hasexpertdistribution.title" default="Record outside of expert distribution area (shown in red)"/> <a id="expertReport" href="#expertReport">&nbsp;</a></h2>
-                    <script type="text/javascript" src="${request.contextPath}/js/wms2.js"></script>
-                    <script type="text/javascript">
-                        $(document).ready(function() {
-                            var latlng1 = new google.maps.LatLng(${latLngStr});
-                            var mapOptions = {
-                                zoom: 4,
-                                center: latlng1,
-                                scrollwheel: false,
-                                scaleControl: true,
-                                streetViewControl: false,
-                                mapTypeControl: true,
-                                mapTypeControlOptions: {
-                                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                                    mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN ]
-                                },
-                                mapTypeId: google.maps.MapTypeId.ROADMAP
-                            };
+                    <div class="tab-pane active" id="content2Z">
+                        <g:render template="recordCore" />
+                        <g:if test="${hasExpertDistribution}">
+                            <div id="hasExpertDistribution"  class="additionalData" style="clear:both;padding-top: 20px;">
+                                <h2><g:message code="show.hasexpertdistribution.title" default="Record outside of expert distribution area (shown in red)"/> <a id="expertReport" href="#expertReport">&nbsp;</a></h2>
+                                <script type="text/javascript" src="${request.contextPath}/js/wms2.js"></script>
+                                <script type="text/javascript">
+                                    $(document).ready(function() {
+                                        var latlng1 = new google.maps.LatLng(${latLngStr});
+                                        var mapOptions = {
+                                            zoom: 4,
+                                            center: latlng1,
+                                            scrollwheel: false,
+                                            scaleControl: true,
+                                            streetViewControl: false,
+                                            mapTypeControl: true,
+                                            mapTypeControlOptions: {
+                                                style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+                                                mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN ]
+                                            },
+                                            mapTypeId: google.maps.MapTypeId.ROADMAP
+                                        };
 
-                            var distroMap = new google.maps.Map(document.getElementById("expertDistroMap"), mapOptions);
+                                        var distroMap = new google.maps.Map(document.getElementById("expertDistroMap"), mapOptions);
 
-                            var marker1 = new google.maps.Marker({
-                                position: latlng1,
-                                map: distroMap,
-                                title:"Occurrence Location"
-                            });
+                                        var marker1 = new google.maps.Marker({
+                                            position: latlng1,
+                                            map: distroMap,
+                                            title:"Occurrence Location"
+                                        });
 
-                            // Attempt to display expert distribution layer on map
-                            var SpatialUrl = "${spatialPortalUrl}ws/distribution/lsid/${record.processed.classification.taxonConceptID}?callback=?";
-                            $.getJSON(SpatialUrl, function(data) {
+                                        // Attempt to display expert distribution layer on map
+                                        var SpatialUrl = "${spatialPortalUrl}ws/distribution/lsid/${record.processed.classification.taxonConceptID}?callback=?";
+                                        $.getJSON(SpatialUrl, function(data) {
 
-                                if (data.wmsurl) {
-                                    var urlParts = data.wmsurl.split("?");
+                                            if (data.wmsurl) {
+                                                var urlParts = data.wmsurl.split("?");
 
-                                    if (urlParts.length == 2) {
-                                        var baseUrl = urlParts[0] + "?";
-                                        var paramParts = urlParts[1].split("&");
-                                        loadWMS(distroMap, baseUrl, paramParts);
-                                        // adjust bounds for both Aust (centre) and marker
-                                        var AusCentre = new google.maps.LatLng(-27, 133);
-                                        var dataBounds = new google.maps.LatLngBounds();
-                                        dataBounds.extend(AusCentre);
-                                        dataBounds.extend(latlng1);
-                                        distroMap.fitBounds(dataBounds);
-                                    }
+                                                if (urlParts.length == 2) {
+                                                    var baseUrl = urlParts[0] + "?";
+                                                    var paramParts = urlParts[1].split("&");
+                                                    loadWMS(distroMap, baseUrl, paramParts);
+                                                    // adjust bounds for both Aust (centre) and marker
+                                                    var AusCentre = new google.maps.LatLng(-27, 133);
+                                                    var dataBounds = new google.maps.LatLngBounds();
+                                                    dataBounds.extend(AusCentre);
+                                                    dataBounds.extend(latlng1);
+                                                    distroMap.fitBounds(dataBounds);
+                                                }
 
-                                }
-                            });
+                                            }
+                                        });
 
-                            <g:if test="${record.processed.location.coordinateUncertaintyInMeters}">
-                                var radius1 = parseInt('${record.processed.location.coordinateUncertaintyInMeters}');
+                                        <g:if test="${record.processed.location.coordinateUncertaintyInMeters}">
+                                        var radius1 = parseInt('${record.processed.location.coordinateUncertaintyInMeters}');
 
-                                if (!isNaN(radius1)) {
-                                    // Add a Circle overlay to the map.
-                                    circle1 = new google.maps.Circle({
-                                        map: distroMap,
-                                        radius: radius1, // 3000 km
-                                        strokeWeight: 1,
-                                        strokeColor: 'white',
-                                        strokeOpacity: 0.5,
-                                        fillColor: '#2C48A6',
-                                        fillOpacity: 0.2
+                                        if (!isNaN(radius1)) {
+                                            // Add a Circle overlay to the map.
+                                            circle1 = new google.maps.Circle({
+                                                map: distroMap,
+                                                radius: radius1, // 3000 km
+                                                strokeWeight: 1,
+                                                strokeColor: 'white',
+                                                strokeOpacity: 0.5,
+                                                fillColor: '#2C48A6',
+                                                fillOpacity: 0.2
+                                            });
+                                            // bind circle to marker
+                                            circle1.bindTo('center', marker1, 'position');
+                                        }
+                                        </g:if>
                                     });
-                                    // bind circle to marker
-                                    circle1.bindTo('center', marker1, 'position');
-                                }
+                                </script>
+                                <div id="expertDistroMap" style="width:80%;height:400px;margin:20px 20px 10px 0;"></div>
+                            </div>
+                        </g:if>
+
+                        <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts"></script>
+
+                        <div id="userAnnotationsDiv" class="additionalData">
+                            <h2><g:message code="show.userannotationsdiv.title" default="User flagged issues"/><a id="userAnnotations">&nbsp;</a></h2>
+                            <ul id="userAnnotationsList" style="list-style: none; margin:0;"></ul>
+                        </div>
+                    </div><!-- end of div#content2 -->
+
+
+
+                    <div id="outlierInformation" class="tab-pane">
+                            <h3><g:message code="show.outlierinformation.02.title01" default="Additional political boundaries information"/></h3>
+                            <table class="layerIntersections table-striped table-bordered table-condensed">
+                                <tbody>
+                                <g:each in="${contextualSampleInfo}" var="sample" status="vs">
+                                    <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != contextualSampleInfo.get(vs - 1).classification1 && vs != contextualSampleInfo.size() - 1))}">
+                                        <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
+                                    </g:if>
+                                    <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
+                                    <alatag:occurrenceTableRow
+                                            annotate="false"
+                                            section="contextual"
+                                            fieldCode="${sample.layerName}"
+                                            fieldName="${fn}">
+                                        ${sample.value}</alatag:occurrenceTableRow>
+                                </g:each>
+                                </tbody>
+                            </table>
+                    </div>
+                    <div id="environmentalSampleInfo" class="tab-pane">
+
+                            <h3><g:message code="show.outlierinformation.02.title02" default="Environmental sampling for this location"/></h3>
+                            <table class="layerIntersections table-striped table-bordered table-condensed" style="width: 100%;">
+                                <tbody>
+                                <g:each in="${environmentalSampleInfo}" var="sample" status="vs">
+                                    <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != environmentalSampleInfo.get(vs - 1).classification1 && vs != environmentalSampleInfo.size() - 1))}">
+                                        <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
+                                    </g:if>
+                                    <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='More information about this layer'>${sample.layerDisplayName}</a></g:set>
+                                    <alatag:occurrenceTableRow
+                                            annotate="false"
+                                            section="contextual"
+                                            fieldCode="${sample.layerName}"
+                                            fieldName="${fn}">
+                                        ${sample.value} ${(sample.units && !StringUtils.containsIgnoreCase(sample.units,'dimensionless')) ? sample.units : ''}
+                                    </alatag:occurrenceTableRow>
+                                </g:each>
+                                </tbody>
+                            </table>
+                    </div>
+
+
+                    <div id="dataQuality" class="tab-pane"><a name="dataQualityReport"></a>
+                        <div id="dataQualityModal" class="modal hide fade" tabindex="-1" role="dialog">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                <h3><g:message code="show.dataqualitymodal.title" default="Data Quality Details"/></h3>
+                            </div>
+                            <div class="modal-body">
+                                <p><g:message code="show.dataqualitymodal.body" default="loading"/>...</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" data-dismiss="modal"><g:message code="show.dataqualitymodal.button" default="Close"/></button>
+                            </div>
+                        </div>
+                        <table class="dataQualityResults table-striped table-bordered table-condensed" width="100%">
+                            <%--<caption>Details of tests that have been performed for this record.</caption>--%>
+                            <thead>
+                            <tr class="sectionName">
+                                <td class="dataQualityTestName"><g:message code="show.tabledataqualityresultscol01.title" default="Test name"/></td>
+                                <td class="dataQualityTestResult"><g:message code="show.tabledataqualityresultscol02.title" default="Result"/></td>
+                                <%--<th class="dataQualityMoreInfo">More information</th>--%>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <g:set var="testSet" value="${record.systemAssertions.failed}"/>
+                            <g:each in="${testSet}" var="test">
+                                <tr>
+                                    <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
+                                    <td><i class="icon-thumbs-down icon-red"></i> <g:message code="show.tabledataqualityresults.tr01td02" default="Failed"/></td>
+                                    <%--<td>More info</td>--%>
+                                </tr>
+                            </g:each>
+
+                            <g:set var="testSet" value="${record.systemAssertions.warning}"/>
+                            <g:each in="${testSet}" var="test">
+                                <tr>
+                                    <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
+                                    <td><i class="icon-warning-sign"></i> <g:message code="show.tabledataqualityresults.tr02td02" default="Warning"/></td>
+                                    <%--<td>More info</td>--%>
+                                </tr>
+                            </g:each>
+
+                            <g:set var="testSet" value="${record.systemAssertions.passed}"/>
+                            <g:each in="${testSet}" var="test">
+                                <tr>
+                                    <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
+                                    <td><i class="icon-thumbs-up icon-green"></i> <g:message code="show.tabledataqualityresults.tr03td02" default="Passed"/></td>
+                                    <%--<td>More info</td>--%>
+                                </tr>
+                            </g:each>
+
+                            <g:if test="${record.systemAssertions.missing}">
+                                <tr>
+                                    <td colspan="2">
+                                        <a href="javascript:void(0)" id="showMissingPropResult"><g:message code="show.tabledataqualityresults.tr04td02" default="Show/Hide"/>  ${record.systemAssertions.missing.length()} missing properties</a>
+                                    </td>
+                                </tr>
                             </g:if>
-                        });
-                    </script>
-                    <div id="expertDistroMap" style="width:80%;height:400px;margin:20px 20px 10px 0;"></div>
+                            <g:set var="testSet" value="${record.systemAssertions.missing}"/>
+                            <g:each in="${testSet}" var="test">
+                                <tr class="missingPropResult" style="display:none;">
+                                    <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
+                                    <td><i class=" icon-question-sign"></i> <g:message code="show.tabledataqualityresults.tr05td02" default="Missing"/></td>
+                                </tr>
+                            </g:each>
+
+                            <g:if test="${record.systemAssertions.unchecked}">
+                                <tr>
+                                    <td colspan="2">
+                                        <a href="javascript:void(0)" id="showUncheckedTests"><g:message code="show.tabledataqualityresults.tr06td02" default="Show/Hide"/>  ${record.systemAssertions.unchecked.length()} tests that havent been ran</a>
+                                    </td>
+                                </tr>
+                            </g:if>
+                            <g:set var="testSet" value="${record.systemAssertions.unchecked}"/>
+                            <g:each in="${testSet}" var="test">
+                                <tr class="uncheckTestResult" style="display:none;">
+                                    <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
+                                    <td><g:message code="show.tabledataqualityresults.tr07td02" default="Unchecked (lack of data)"/></td>
+                                </tr>
+                            </g:each>
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </g:if>
-
-            <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts"></script>
-
-            <div id="userAnnotationsDiv" class="additionalData">
-                <h2><g:message code="show.userannotationsdiv.title" default="User flagged issues"/><a id="userAnnotations">&nbsp;</a></h2>
-                <ul id="userAnnotationsList" style="list-style: none; margin:0;"></ul>
             </div>
-
-            <div id="dataQuality" class="additionalData"><a name="dataQualityReport"></a>
-                <h2><g:message code="show.dataquality.title" default="Data quality tests"/></h2>
-                <div id="dataQualityModal" class="modal hide fade" tabindex="-1" role="dialog">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">×</button>
-                        <h3><g:message code="show.dataqualitymodal.title" default="Data Quality Details"/></h3>
-                    </div>
-                    <div class="modal-body">
-                        <p><g:message code="show.dataqualitymodal.body" default="loading"/>...</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal"><g:message code="show.dataqualitymodal.button" default="Close"/></button>
-                    </div>
                 </div>
-                <table class="dataQualityResults table-striped table-bordered table-condensed">
-                    <%--<caption>Details of tests that have been performed for this record.</caption>--%>
-                    <thead>
-                        <tr class="sectionName">
-                            <td class="dataQualityTestName"><g:message code="show.tabledataqualityresultscol01.title" default="Test name"/></td>
-                            <td class="dataQualityTestResult"><g:message code="show.tabledataqualityresultscol02.title" default="Result"/></td>
-                            <%--<th class="dataQualityMoreInfo">More information</th>--%>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <g:set var="testSet" value="${record.systemAssertions.failed}"/>
-                        <g:each in="${testSet}" var="test">
-                        <tr>
-                            <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="icon-thumbs-down icon-red"></i> <g:message code="show.tabledataqualityresults.tr01td02" default="Failed"/></td>
-                            <%--<td>More info</td>--%>
-                        </tr>
-                        </g:each>
 
-                        <g:set var="testSet" value="${record.systemAssertions.warning}"/>
-                        <g:each in="${testSet}" var="test">
-                        <tr>
-                            <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="icon-warning-sign"></i> <g:message code="show.tabledataqualityresults.tr02td02" default="Warning"/></td>
-                            <%--<td>More info</td>--%>
-                        </tr>
-                        </g:each>
 
-                        <g:set var="testSet" value="${record.systemAssertions.passed}"/>
-                        <g:each in="${testSet}" var="test">
-                        <tr>
-                            <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="icon-thumbs-up icon-green"></i> <g:message code="show.tabledataqualityresults.tr03td02" default="Passed"/></td>
-                            <%--<td>More info</td>--%>
-                        </tr>
-                        </g:each>
 
-                        <g:if test="${record.systemAssertions.missing}">
-                            <tr>
-                                <td colspan="2">
-                                <a href="javascript:void(0)" id="showMissingPropResult"><g:message code="show.tabledataqualityresults.tr04td02" default="Show/Hide"/>  ${record.systemAssertions.missing.length()} missing properties</a>
-                                </td>
-                            </tr>
-                        </g:if>
-                        <g:set var="testSet" value="${record.systemAssertions.missing}"/>
-                        <g:each in="${testSet}" var="test">
-                        <tr class="missingPropResult" style="display:none;">
-                            <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class=" icon-question-sign"></i> <g:message code="show.tabledataqualityresults.tr05td02" default="Missing"/></td>
-                        </tr>
-                        </g:each>
 
-                        <g:if test="${record.systemAssertions.unchecked}">
-                            <tr>
-                                <td colspan="2">
-                                <a href="javascript:void(0)" id="showUncheckedTests"><g:message code="show.tabledataqualityresults.tr06td02" default="Show/Hide"/>  ${record.systemAssertions.unchecked.length()} tests that havent been ran</a>
-                                </td>
-                            </tr>
-                        </g:if>
-                        <g:set var="testSet" value="${record.systemAssertions.unchecked}"/>
-                        <g:each in="${testSet}" var="test">
-                        <tr class="uncheckTestResult" style="display:none;">
-                            <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><g:message code="show.tabledataqualityresults.tr07td02" default="Unchecked (lack of data)"/></td>
-                        </tr>
-                        </g:each>
-
-                    </tbody>
-                </table>
-            </div>
 
             <div id="outlierFeedback">
                 <g:if test="${record.processed.occurrence.outlierForLayers}">
@@ -535,49 +596,7 @@
 				</g:if>
 			</div>
 
-                <div id="outlierInformation" class="additionalData">
-                    <g:if test="${contextualSampleInfo}">
-                    <h3><g:message code="show.outlierinformation.02.title01" default="Additional political boundaries information"/></h3>
-                    <table class="layerIntersections table-striped table-bordered table-condensed">
-                        <tbody>
-                        <g:each in="${contextualSampleInfo}" var="sample" status="vs">
-                            <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != contextualSampleInfo.get(vs - 1).classification1 && vs != contextualSampleInfo.size() - 1))}">
-                                <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
-                            </g:if>
-                            <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
-                            <alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="contextual"
-                                    fieldCode="${sample.layerName}"
-                                    fieldName="${fn}">
-                            ${sample.value}</alatag:occurrenceTableRow>
-                        </g:each>
-                        </tbody>
-                    </table>
-                    </g:if>
 
-                    <g:if test="${environmentalSampleInfo}">
-                    <h3><g:message code="show.outlierinformation.02.title02" default="Environmental sampling for this location"/></h3>
-                    <table class="layerIntersections table-striped table-bordered table-condensed" >
-                        <tbody>
-                        <g:each in="${environmentalSampleInfo}" var="sample" status="vs">
-                            <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != environmentalSampleInfo.get(vs - 1).classification1 && vs != environmentalSampleInfo.size() - 1))}">
-                                <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
-                            </g:if>
-                            <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='More information about this layer'>${sample.layerDisplayName}</a></g:set>
-                            <alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="contextual"
-                                    fieldCode="${sample.layerName}"
-                                    fieldName="${fn}">
-                                ${sample.value} ${(sample.units && !StringUtils.containsIgnoreCase(sample.units,'dimensionless')) ? sample.units : ''}
-                            </alatag:occurrenceTableRow>
-                        </g:each>
-                        </tbody>
-                    </table>
-                    </g:if>
-                </div>
-            </div>
 
             <div id="processedVsRawView" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="processedVsRawViewLabel" aria-hidden="true"><!-- BS modal div -->
                 <div class="modal-header">
@@ -602,6 +621,29 @@
                 <div class="modal-footer">
                     <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.processedvsrawview.button.close" default="Close"/></button>
                 </div>
+            </div>
+        </g:if>
+
+        <g:if test="${contacts}">
+            <div id="contactCuratorView" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="contactCuratorViewLabel" aria-hidden="true"><!-- BS modal div -->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="contactCuratorViewLabel"><g:message code="show.contactcuratorview.title" default="Contact curator"/></h3>
+            </div>
+            <div class="modal-body">
+                <p><g:message code="show.contactcuratorview.message" default="For more details and to report issues about this record, please contact a person mentioned below."></g:message> </p>
+                <g:each in="${contacts}" var="c">
+                    <address>
+                        <strong>${c.contact.firstName} ${c.contact.lastName} <g:if test="${c.primaryContact}"><span class="primaryContact">*</span></g:if> </strong><br>
+                        ${c.role}<br>
+                        <g:if test="${c.contact.phone}"><abbr title="Phone">P:</abbr> ${c.contact.phone} <br></g:if>
+                        <g:if test="${c.contact.email}"><abbr title="Email">E:</abbr> <alatag:emailLink email="${c.contact.email}"><g:message code="show.contactcuratorview.emailtext" default="email this contact"></g:message> </alatag:emailLink> <br></g:if>
+                    </address>
+                </g:each>
+                <p><span class="primaryContact"><b>*</b></span> <g:message code="show.contactcuratorview.primarycontact" default="Primary Contact"></g:message> </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.processedvsrawview.button.close" default="Close"/></button>
             </div>
         </g:if>
 

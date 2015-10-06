@@ -28,6 +28,7 @@
     <meta name="section" content="yourArea"/>
     <title><g:message code="eya.title01" default="Explore Your Area"/> | <g:message code="eya.title02" default="Atlas of Living Australia"/></title>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <g:render template="/layouts/global"/>
     <r:require modules="exploreYourArea, qtip"/>
     <script type="text/javascript">
         // Global variables for yourAreaMap.js
@@ -47,7 +48,7 @@
     </script>
 </head>
 <body class="nav-locations explore-your-area">
-<div id="header" class="heading-bar">
+<div id="header" class="heading-bar" style="margin-top: 45px">
     <g:if test="${grailsApplication.config.skin.layout == 'ala'}">
         <div id="breadcrumb">
             <ol class="breadcrumb">

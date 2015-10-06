@@ -64,11 +64,10 @@ class WebServicesService {
                 }
             }
 
-            if (facetLabelsMap.containsKey(item.name)) {
+            if (facetLabelsMap && facetLabelsMap.containsKey(item.name)) {
                 item.name = facetLabelsMap.get(item.name)
             }
         }
-
         json
     }
 
@@ -196,6 +195,18 @@ class WebServicesService {
         getJsonElements(url)
     }
 
+    @Cacheable('collectoryCache')
+    def JSONArray getCollectionContact(String id){
+        def url = "${grailsApplication.config.collections.baseUrl}/ws/collection/${id.encodeAsURL()}/contact.json"
+        getJsonElements(url)
+    }
+
+    @Cacheable('collectoryCache')
+    def JSONArray getDataresourceContact(String id){
+        def url = "${grailsApplication.config.collections.baseUrl}/ws/dataResource/${id.encodeAsURL()}/contact.json"
+        getJsonElements(url)
+    }
+
     @Cacheable('longTermCache')
     def Map getLayersMetaData() {
         Map layersMetaMap = [:]
@@ -244,7 +255,7 @@ class WebServicesService {
 
         List encodedQueries = taxaQueries.collect { it.encodeAsURL() } // URL encode params
 
-        def url = grailsApplication.config.bie.baseUrl + "/ws/guid/batch?q=" + encodedQueries.join("&q=")
+        def url = grailsApplication.config.bieService.baseUrl + "/guid/batch?q=" + encodedQueries.join("&q=")
         JSONObject guidsJson = getJsonElements(url)
 
         taxaQueries.each { key ->

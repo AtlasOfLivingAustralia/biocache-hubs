@@ -48,6 +48,7 @@ body.nav-about #nav-site .navbar-inner .nav > li.nav-about > a {
 }
 
 #content #headingBar {
+    margin-top: 45px;
     margin-left: 0;
     margin-bottom: 10px;
     min-height: 55px;

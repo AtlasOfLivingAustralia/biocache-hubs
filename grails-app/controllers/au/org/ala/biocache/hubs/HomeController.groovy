@@ -19,7 +19,7 @@ class HomeController {
 
     def facetsCacheService
 
-    def index() {
+    def index() throws Exception {
         log.debug "Home controller index page"
         addCommonModel()
     }

@@ -15,6 +15,7 @@
 
 package au.org.ala.biocache.hubs
 import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -132,9 +133,15 @@ class OccurrenceController {
             if (record) {
                 JSONObject compareRecord = webServicesService.getCompareRecord(id)
                 JSONObject collectionInfo = null
+                JSONArray contacts = null
 
                 if (record.processed.attribution.collectionUid) {
                     collectionInfo = webServicesService.getCollectionInfo(record.processed.attribution.collectionUid)
+                    contacts = webServicesService.getCollectionContact(record.processed.attribution.collectionUid)
+                }
+
+                if(record.raw.attribution.dataResourceUid && (contacts == null)){
+                    contacts = webServicesService.getDataresourceContact(record.raw.attribution.dataResourceUid)
                 }
 
                 List groupedAssertions = postProcessingService.getGroupedAssertions(webServicesService.getUserAssertions(id), webServicesService.getQueryAssertions(id), userId)
@@ -149,6 +156,7 @@ class OccurrenceController {
                         collectionLogo: collectionInfo?.institutionLogoUrl,
                         collectionInstitution: collectionInfo?.institution,
                         isCollectionAdmin: false, // TODO implement this
+                        contacts: contacts,
                         queryAssertions: null, // TODO implement this
                         duplicateRecordDetails: webServicesService.getDuplicateRecordDetails(record),
                         dataResourceCodes: facetsCacheService.getFacetNamesFor("data_resource_uid"), // TODO move string value to config file

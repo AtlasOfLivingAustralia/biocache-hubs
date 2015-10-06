@@ -14,7 +14,7 @@
         </tr>
         </tbody>
     </table>
-    <b><g:message code="advancedsearch.title02" default="Find records for ANY of the following taxa (matched/processed taxon concepts)"/></b>
+    %{--<b><g:message code="advancedsearch.title02" default="Find records for ANY of the following taxa (matched/processed taxon concepts)"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
         <tbody>
@@ -29,7 +29,7 @@
             </tr>
         </g:each>
         </tbody>
-    </table>
+    </table>--}%
     <b><g:message code="advancedsearch.title03" default="Find records that specify the following scientific name (verbatim/unprocessed name)"/></b>
     <table border="0" width="100" cellspacing="2" class="compact">
         <thead/>
@@ -110,13 +110,100 @@
             <td>
                 <select class="state" name="state" id="state">
                     <option value=""><g:message code="advancedsearch.table06col02.option.label" default="-- select a state/territory --"/></option>
-                    <g:each var="state" in="${request.getAttribute("state")}">
+                    %{--<g:each var="state" in="${request.getAttribute("state")}">
                         <option value="${state.key}">${state.value}</option>
-                    </g:each>
+                    </g:each>--}%
+                    <option disabled>─────España─────</option>
+                    <option value="Álava">Álava</option>
+                    <option value="Albacete">Albacete</option>
+                    <option value="Alicante">Alicante</option>
+                    <option value="Almería">Almería</option>
+                    <option value="Asturias">Asturias</option>
+                    <option value="Ávila">Ávila</option>
+                    <option value="Badajoz">Badajoz</option>
+                    <option value="Baleares">Baleares</option>
+                    <option value="Barcelona">Barcelona</option>
+                    <option value="Burgo">Burgos</option>
+                    <option value="Cáceres">Cáceres</option>
+                    <option value="Cádiz">Cádiz</option>
+                    <option value="Cantabria">Cantabria</option>
+                    <option value="Castellón">Castellón</option>
+                    <option value="Ceuta">Ceuta</option>
+                    <option value="Ciudad Real">Ciudad Real</option>
+                    <option value="Córdoba">Córdoba</option>
+                    <option value="Cuenca">Cuenca</option>
+                    <option value="Gerona">Gerona</option>
+                    <option value="Granada">Granada</option>
+                    <option value="Guadalajara">Guadalajara</option>
+                    <option value="Guipúzcoa">Guipúzcoa</option>
+                    <option value="Huelva">Huelva</option>
+                    <option value="Huesca">Huesca</option>
+                    <option value="Jaén">Jaén</option>
+                    <option value="La Coruña">La Coruña</option>
+                    <option value="La Rioja">La Rioja</option>
+                    <option value="Las Palmas">Las Palmas</option>
+                    <option value="León">León</option>
+                    <option value="Lérida">Lérida</option>
+                    <option value="Lugo">Lugo</option>
+                    <option value="Madrid">Madrid</option>
+                    <option value="Málaga">Málaga</option>
+                    <option value="Melilla">Melilla</option>
+                    <option value="Murcia">Murcia</option>
+                    <option value="Navarra">Navarra</option>
+                    <option value="Orense">Orense</option>
+                    <option value="Palencia">Palencia</option>
+                    <option value="Pontevedra">Pontevedra</option>
+                    <option value="Salamanca">Salamanca</option>
+                    <option value="Santa Cruz de Tenerife">Santa Cruz de Tenerife</option>
+                    <option value="Segovia">Segovia</option>
+                    <option value="Sevilla">Sevilla</option>
+                    <option value="Soria">Soria</option>
+                    <option value="Tarragona">Tarragona</option>
+                    <option value="Teruel">Teruel</option>
+                    <option value="Toledo">Toledo</option>
+                    <option value="Valencia">Valencia</option>
+                    <option value="Valladolid">Valladolid</option>
+                    <option value="Vizcaya">Vizcaya</option>
+                    <option value="Zamora">Zamora</option>
+                    <option value="Zaragoza">Zaragoza</option>
+                    <option disabled>─────Portugal─────</option>
+                    <option disabled>─────Distritos─────</option>
+                    <option value="Acores">Acores</option>
+                    <option value="Aveiro">Aveiro</option>
+                    <option value="Beja">Beja</option>
+                    <option value="Braga">Braga</option>
+                    <option value="Braganca">Braganca</option>
+                    <option value="Castelo Branco">Castelo Branco</option>
+                    <option value="Coimbra">Coimbra</option>
+                    <option value="Évora">Évora</option>
+                    <option value="Faro">Faro</option>
+                    <option value="Guarda">Guarda</option>
+                    <option value="Leiria">Leiria</option>
+                    <option value="Lisboa">Lisboa</option>
+                    <option value="Madeira">Madeira</option>
+                    <option value="Portalegre">Portalegre</option>
+                    <option value="Porto">Porto</option>
+                    <option value="Santarém">Santarém</option>
+                    <option value="Setúbal">Setúbal</option>
+                    <option value="Viana do Castelo">Viana do Castelo</option>
+                    <option value="Vila Real">Vila Real</option>
+                    <option value="Viseu">Viseu</option>
+                    <option disabled>─────Provincias tradicionales─────</option>
+                    <option value="Alto Alentejo">Alto Alentejo</option>
+                    <option value="Algarve">Algarve</option>
+                    <option value="Baixo Alentejo">Baixo Alentejo</option>
+                    <option value="Beira Alta">Beira Alta</option>
+                    <option value="Beira Baixa">Beira Baixa</option>
+                    <option value="Beira Litoral">Beira Litoral</option>
+                    <option value="Douro Litoral">Douro Litoral</option>
+                    <option value="Estremadura">Estremadura</option>
+                    <option value="Minho">Minho</option>
+                    <option value="Ribadetejo">Ribadetejo</option>
+                    <option value="Trás os Montes">Trás os Montes</option>
                 </select>
             </td>
         </tr>
-        <g:set var="autoPlaceholder" value="start typing and select from the autocomplete drop-down list"/>
+        %{--}<g:set var="autoPlaceholder" value="start typing and select from the autocomplete drop-down list"/>
         <g:if test="${request.getAttribute("cl1048") && request.getAttribute("cl1048").size() > 1}">
         <tr>
             <td class="labels"><abbr title="Interim Biogeographic Regionalisation of Australia">IBRA</abbr> <g:message code="advancedsearch.table06col03.title" default="region"/></td>
@@ -155,7 +242,7 @@
                 </select>
             </td>
         </tr>
-        </g:if>
+        </g:if>--}%
         </tbody>
     </table>
     <g:if test="${request.getAttribute("type_status") && request.getAttribute("type_status").size() > 1}">
@@ -204,8 +291,8 @@
             <tr>
                 <td class="labels"><g:message code="advancedsearch.dataset.col.label" default="dataset name"/></td>
                 <td>
-                    <select class="dataset" name="dataset" id="dataset">
-                        <option value=""><g:message code="advancedsearch.dataset.select.default" default="-- select a dataset --"/></option>
+                    <select class="dataset bscombobox" name="dataset" id="dataset">
+                        <option value=""></option>
                         <g:each var="region" in="${request.getAttribute("data_resource_uid")}">
                             <option value="${region.key}">${region.value}</option>
                         </g:each>
@@ -257,3 +344,9 @@
     &nbsp;&nbsp;
     <input type="reset" value="Clear all" id="clearAll" class="btn" onclick="$('input#solrQuery').val(''); $('input.clear_taxon').click(); return true;"/>
 </form>
+<r:script>
+    $(document).ready(function() {
+        $('.bscombobox').combobox({bsVersion: '2'});
+    });
+
+</r:script>

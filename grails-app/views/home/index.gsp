@@ -17,7 +17,7 @@
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <title><g:message code="home.index.title" default="Search for records"/> | ${hubDisplayName}</title>
     <script src="http://maps.google.com/maps/api/js?v=3.5&sensor=false"></script>
-    <r:require modules="jquery, leaflet, mapCommon, searchMap"/>
+    <r:require modules="jquery, leaflet, mapCommon, searchMap, bootstrapCombobox"/>
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <r:require module="bieAutocomplete"/>
     </g:if>
@@ -276,8 +276,8 @@
                 <ul class="nav nav-tabs" id="searchTabs">
                     <li><a id="t1" href="#simpleSearch" data-toggle="tab"><g:message code="home.index.navigator01" default="Simple search"/></a></li>
                     <li><a id="t2" href="#advanceSearch" data-toggle="tab"><g:message code="home.index.navigator02" default="Advanced search"/></a></li>
-                    <li><a id="t3" href="#taxaUpload" data-toggle="tab"><g:message code="home.index.navigator03" default="Batch taxon search"/></a></li>
-                    <li><a id="t4" href="#catalogUpload" data-toggle="tab"><g:message code="home.index.navigator04" default="Catalogue number search"/></a></li>
+                    <!--<li><a id="t3" href="#taxaUpload" data-toggle="tab"><g:message code="home.index.navigator03" default="Batch taxon search"/></a></li>
+                    <li><a id="t4" href="#catalogUpload" data-toggle="tab"><g:message code="home.index.navigator04" default="Catalogue number search"/></a></li>-->
                     <li><a id="t5" href="#spatialSearch" data-toggle="tab"><g:message code="home.index.navigator05" default="Spatial search"/></a></li>
                 </ul>
             </div>
