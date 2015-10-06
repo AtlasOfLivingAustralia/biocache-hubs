@@ -1,41 +1,17 @@
 language: groovy
-
 jdk:
 - oraclejdk7
-
+sudo: false
 branches:
   only:
   - master
-
-sudo: false
-
 before_install:
-- rm -rf ~/.gvm
-- curl -s get.gvmtool.net > ~/install_gvm.sh
-- chmod 775 ~/install_gvm.sh
-- ~/install_gvm.sh
-- echo "gvm_auto_answer=true" > ~/.gvm/etc/config
-- source ~/.gvm/bin/gvm-init.sh
-- GRAILS_VERSION=`grep '^\s*app.grails.version' application.properties | sed -e 's/^\s*app\.grails\.version=//g' | tr -d "\r"`
-- echo "GRAILS_VERSION:$GRAILS_VERSION"
-- gvm install grails $GRAILS_VERSION || true
-
-before_script:
-- GRAILS_VERSION_NUMBER=`echo $GRAILS_VERSION | sed -e 's/\.[0-9]*$//g' -e 's/\.//g' | tr -d "\r"`
-- echo "GRAILS_VERSION_NUMBER:$GRAILS_VERSION_NUMBER"
-- GRAILS_SETTINGS_FILE="travis_grails_settings_new.groovy"
-- if [ "$GRAILS_VERSION_NUMBER" -lt "23" ]; then GRAILS_SETTINGS_FILE="travis_grails_settings_old.groovy"; fi;
-- echo "GRAILS_SETTINGS_FILE:$GRAILS_SETTINGS_FILE"
-- mkdir -p ~/.grails; wget -q -O ~/.grails/settings.groovy https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/$GRAILS_SETTINGS_FILE
-- MAVEN_REPO="ala-repo-snapshot"
-- APP_VERSION=`grep '^\s*def\s*version' *GrailsPlugin.groovy | sed -e 's/^.*= *"//g' | sed -e 's/".*$//g' | tr -d "\r"`
-- echo $APP_VERSION | grep -q "\-SNAPSHOT"; if [ "$?" = "1" ]; then MAVEN_REPO="ala-repo-release"; fi;
-- echo "APP_VERSION:$APP_VERSION"
-- echo "MAVEN_REPO:$MAVEN_REPO"
-
+ - wget -q https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/ala_common.sh
+ - chmod +x ala_common.sh
+ - source ./ala_common.sh
+ - ala_travis_grails_setup_env
 script:
-- grails clean && grails refresh-dependencies --non-interactive && grails prod maven-install --non-interactive && grails prod maven-deploy --repository=$MAVEN_REPO --non-interactive
-
+ - ala_travis_grails_build
 env:
   global:
   - secure: fwa7jtwNL/MNa3+iI+r0jrGwnQcC8fYtgH9vbOT3x9MHo0b2K2CCTq+io+U2iDhFpDt1Tee49ZqL38aQV+/Q7oW9OddRCBhpPafLwvIeAeEAzYVfZzYj0M5QfomqhQfFqaeBlsDGWLmfqs+Qa56acG/5AXvy2bdIBkx8eobxKHw=
