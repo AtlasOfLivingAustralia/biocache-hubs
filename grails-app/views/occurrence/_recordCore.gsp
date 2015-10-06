@@ -211,9 +211,8 @@
 </alatag:occurrenceTableRow>
 <!-- ALA user id -->
 <g:if test="${record.raw.occurrence.userId}">
-    <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="userId" fieldNameIsMsgCode="true" fieldName="ALA User">
-        <!-- ${fieldsMap.put("userId", true)} -->
-        <a href="http://sightings.ala.org.au/spotter/${record.raw.occurrence.userId}">${record.alaUserName}</a>
+    <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="userId" fieldNameIsMsgCode="true" fieldName="Atlas User">
+        <a href="${grailsApplication.config.sightings.baseUrl}/spotter/${record.raw.occurrence.userId}">${record.alaUserName}</a>
     </alatag:occurrenceTableRow>
 </g:if>
 <!-- Record Number -->
@@ -278,7 +277,15 @@
 <!-- Type Status -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="typeStatus" fieldName="Type status">
     ${fieldsMap.put("typeStatus", true)}
-    ${record.raw.identification.typeStatus}
+    <g:if test="${record.processed.identification.typeStatus}">
+        <span style="text-transform: capitalize;">${record.processed.identification.typeStatus}</span>
+    </g:if>
+    <g:else>
+        ${record.raw.identification.typeStatus}
+    </g:else>
+    <g:if test="${record.processed.identification.typeStatus && record.raw.identification.typeStatus && (record.processed.identification.typeStatus.toLowerCase() != record.raw.identification.typeStatus.toLowerCase())}">
+        <br/><span class="originalValue"><g:message code="recordcore.st.01" default="Supplied as"/> "${record.raw.identification.typeStatus}"</span>
+    </g:if>
 </alatag:occurrenceTableRow>
 <!-- Identification Qualifier -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identificationQualifier" fieldName="Identification qualifier">
@@ -822,7 +829,7 @@
 <!-- Coordinate Uncertainty -->
 <alatag:occurrenceTableRow annotate="false" section="geospatial" fieldCode="coordinateUncertaintyInMeters" fieldName="Coordinate uncertainty in metres">
     ${fieldsMap.put("coordinateUncertaintyInMeters", true)}
-    <g:if test="${record.raw.location.decimalLatitude || record.raw.location.decimalLongitude}">
+    <g:if test="${record.processed.location.coordinateUncertaintyInMeters}">
         ${record.processed.location.coordinateUncertaintyInMeters ? record.processed.location.coordinateUncertaintyInMeters : 'Unknown'}
     </g:if>
 </alatag:occurrenceTableRow>

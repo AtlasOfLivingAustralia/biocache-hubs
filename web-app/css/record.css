@@ -36,6 +36,10 @@ div.recordHeader {
     margin: 0;
 }
 
+#headingBar{
+    margin-top: 50px;
+}
+
 div#occurrenceMap {
     height: 300px;
     margin-top: 5px;
@@ -299,4 +303,8 @@ div.audiojs div.time {
 /*#outlierFeedback h3 {color: #718804; }*/
 #outlierFeedback #outlierInformation #inferredOccurrenceDetails {
     margin-bottom: 20px;
+}
+
+.primaryContact{
+    color: orange;
 }

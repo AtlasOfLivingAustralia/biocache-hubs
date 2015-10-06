@@ -44,9 +44,10 @@ skin.taxaLinks.identifier = "guid"  // "guid" or "name". Only used if skin.useAl
 
 // web services
 bie.baseUrl = "http://bie.ala.org.au"
+bieService.baseUrl = "http://bie.ala.org.au/ws"
 //bie.autocompleteHints.fq = "kingdom:Plantae"  // optional
 collectory.baseUrl = "http://collections.ala.org.au"
-logger.baseUrl = "http://logger.ala.org.au/service"
+//logger.baseUrl = "http://logger.ala.org.au/service"
 biocache.apiKey = "api-key-to-use"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
@@ -59,6 +60,8 @@ collections.baseUrl = "http://collections.ala.org.au"
 images.baseUrl = "http://images.ala.org.au"
 images.viewerUrl = "http://images.ala.org.au/image/viewer?imageId="
 images.metadataUrl = "http://images.ala.org.au/image/details?imageId="
+
+sightings.baseUrl = "http://sightings.ala.org.au"
 
 // For sandbox environment
 //spatial.params = "&dynamic=true&ws=http%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=http%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"

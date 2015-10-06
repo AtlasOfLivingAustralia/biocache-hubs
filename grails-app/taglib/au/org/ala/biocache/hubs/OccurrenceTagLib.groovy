@@ -635,13 +635,16 @@ class OccurrenceTagLib {
      *
      * at top of taglib
      */
+    /**
     def getLoggerReasons = { attrs ->
         webServicesService.getLoggerReasons()
     }
+    **/
 
     /**
      * Get the appropriate sourceId for the current hub
      */
+    /**
     def getSourceId = { attrs ->
         def skin = grailsApplication.config.skin.layout?.toUpperCase()
         def sources = webServicesService.getLoggerSources()
@@ -651,6 +654,7 @@ class OccurrenceTagLib {
             }
         }
     }
+    **/
 
     /**
      * Display an outage banner
@@ -734,5 +738,26 @@ class OccurrenceTagLib {
             mb.meta(name:it, content: g.meta(name:it))
         }
         mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
+    }
+
+    /**
+     * A little bit of email scrambling for dumb scrappers.
+     *
+     * Uses email attribute as email if present else uses the body.
+     * If no attribute and the body is not an email address then nothing is shown.
+     *
+     * @attrs email the address to decorate
+     * @body the text to use as the link text
+     */
+    def emailLink = { attrs, body ->
+        def strEncodedAtSign = "(SPAM_MAIL@ALA.ORG.AU)"
+        String email = attrs.email
+        if (!email)
+            email = body().toString()
+        int index = email.indexOf('@')
+        if (index > 0) {
+            email = email.replaceAll("@", strEncodedAtSign)
+            out << "<span class='link under' onclick=\"return sendEmail('${email}')\">${body()}</span>"
+        }
     }
 }

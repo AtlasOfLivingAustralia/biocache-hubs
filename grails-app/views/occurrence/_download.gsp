@@ -31,21 +31,29 @@
             <input type="hidden" name="url" id="downloadChecklistUrl" value="${biocacheServiceUrl}/occurrences/facets/download"/>
             <input type="hidden" name="url" id="downloadFieldGuideUrl" value="${request.contextPath}/occurrences/fieldguide/download"/>
             <input type="hidden" name="extra" id="extraFields" value="${grailsApplication.config.biocache.downloads.extra}"/>
-            <input type="hidden" name="sourceTypeId" id="sourceTypeId" value="${alatag.getSourceId()}"/>
+            <input type="hidden" name="sourceTypeId" id="sourceTypeId" value="0"/>
 
             <fieldset>
                 <div><label for="email"><g:message code="download.downloadform.label01" default="Email"/></label>
                     <input type="text" name="email" id="email" value="${request.remoteUser}" size="30"  />
                 </div>
                 <div><label for="filename"><g:message code="download.downloadform.label02" default="Filename"/></label>
-                    <input type="text" name="filename" id="filename" value="data" size="30"  />
+                    <input type="text" name="filename" id="filename" value="<g:message code="download.downloadform.filename" default="data"/>" size="30"  />
                 </div>
                 <div><label for="reasonTypeId" style="vertical-align: top"><g:message code="download.downloadform.label03" default="Download reason"/> *</label>
                     <select name="reasonTypeId" id="reasonTypeId">
                         <option value="">-- <g:message code="download.downloadformreasontypeid.option" default="select a reason"/> --</option>
-                        <g:each var="it" in="${alatag.getLoggerReasons()}">
-                            <option value="${it.id}">${it.name}</option>
-                        </g:each>
+                        <option value="0"><g:message code="download.downloadformreason.label00"/></option>
+                        <option value="1"><g:message code="download.downloadformreason.label01"/></option>
+                        <option value="2"><g:message code="download.downloadformreason.label02"/></option>
+                        <option value="3"><g:message code="download.downloadformreason.label03"/></option>
+                        <option value="4"><g:message code="download.downloadformreason.label04"/></option>
+                        <option value="5"><g:message code="download.downloadformreason.label05"/></option>
+                        <option value="6"><g:message code="download.downloadformreason.label06"/></option>
+                        <option value="7"><g:message code="download.downloadformreason.label07"/></option>
+                        <option value="8"><g:message code="download.downloadformreason.label08"/></option>
+                        <option value="9"><g:message code="download.downloadformreason.label09"/></option>
+                        <option value="10"><g:message code="download.downloadformreason.label10"/></option>
                     </select>
                 </div>
 

@@ -342,7 +342,7 @@ function validateForm_taxaquery()
                             </div>
                         </g:if>
                         <div id="searchNavBar" class="pagination">
-                            <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}" params="${[taxa:params.taxa, q:params.q, fq:params.fq, wkt:params.wkt, lat:params.lat, lon:params.lon, radius:params.radius]}"/>
+                            <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}" omitLast="true" params="${[taxa:params.taxa, q:params.q, fq:params.fq, wkt:params.wkt, lat:params.lat, lon:params.lon, radius:params.radius]}"/>
                         </div>
                     </div><!--end solrResults-->
                     <div id="mapView" class="tab-pane">
