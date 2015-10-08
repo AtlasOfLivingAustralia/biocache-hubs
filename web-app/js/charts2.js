@@ -12,6 +12,15 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
+/**
+ * Load Spring i18n messages into JS
+ */
+jQuery.i18n.properties({
+    name: 'messages',
+    path: BC_CONF.contextPath + '/messages/i18n/',
+    mode: 'map',
+    language: BC_CONF.locale
+});
 /*------------------------------------------------------------------------------------------*
  *---------------- FACET BREAKDOWN CHARTS USING THE MODULE PATTERN -------------------------*
  *------------------------------------------------------------------------------------------*/
@@ -35,43 +44,43 @@ var baseFacetChart = {
     backgroundColor: {fill:'transparent'},
     // defaults for individual facet charts
     individualChartOptions: {
-        state_conservation: {chartArea: {left:60, height: "58%"}, title: 'By state conservation status'},
+        state_conservation: {chartArea: {left:60, height: "58%"}, title: jQuery.i18n.prop('charts2.js.stateconservationstatus')},
         occurrence_year: {chartArea: {left:60, height: "55%"}, requestFacetName: 'decade'},
         decade: {chartArea: {left:60, height: "55%"}, responseFacetName: 'occurrence_year'},
         year: {width: 600},
-        month: {width: 600},
+        month: { width: 600, title: jQuery.i18n.prop('charts2.js.month')},
         institution_uid: {chartArea: {left: 0, width: "100%"}},
-        collection_uid: {chartArea: {left: 0, width: "100%"}},
-        species_group: {title: 'By higher-level group', ignore: ['Animals'], chartType: 'column',
+        collection_uid: {chartArea: {left: 0, width: "100%"}, title: jQuery.i18n.prop('charts2.js.collection')},
+        species_group: {title: jQuery.i18n.prop('charts2.js.higherlevelgroup'), ignore: ['Animals'], chartType: 'column',
             width: 450, chartArea: {left:60, height:"58%"},
             vAxis: {minValue: 0, textPosition:'in', gridlines:{color: '#ddd', count: 4}},
             colors: ['#108628'], reverseCategories:true, hAxis:{slantedTextAngle:60}},
-        state: {ignore: ['Unknown1']},
-        type_status: {title: 'By type status (as % of all type specimens)', ignore: ['notatype']},
-        el895: {hAxis: {title:'Moisture Index'}},
-        el882: {hAxis: {title:'mm'}, chartArea: {width: "65%"}},
-        el889: {hAxis: {title:'mm'}},
-        el887: {hAxis: {title:'MJ/m2/day'}},
-        el865: {hAxis: {title:'Moisture Index'}},
-        el894: {hAxis: {title:'MJ/m2/day'}},
-        el895Outliers: {hAxis: {title:'Moisture Index'}, chartArea: {width: "65%"}, facets: ['el895'], facetLabels: ['Precipitation'], singleFacetName : 'el895', avoidTitlePrefix:true},
-        el882Outliers: {hAxis: {title:'mm'}, chartType: "scatter", chartArea: {width: "65%"}, facets: ['el882'], facetLabels: ['Precipitation'], singleFacetName : 'el882', avoidTitlePrefix:true},
-        el889Outliers: {hAxis: {title:'mm'}, chartArea: {width: "65%"}, facets: ['el889'], facetLabels: ['Precipitation'], singleFacetName : 'el889', avoidTitlePrefix:true},
-        el887Outliers: {hAxis: {title:'MJ/m2/day'}, chartArea: {width: "65%"}, facets: ['el887'], facetLabels: ['Precipitation'], singleFacetName : 'el887', avoidTitlePrefix:true},
-        el865Outliers: {hAxis: {title:'Moisture Index'}, chartArea: {width: "65%"}, facets: ['el865'], facetLabels: ['Precipitation'], singleFacetName : 'el865', avoidTitlePrefix:true},
-        el894Outliers: {hAxis: {title:'MJ/m2/day'}, chartArea: {width: "65%"}, facets: ['el894'], facetLabels: ['Precipitation'], singleFacetName : 'el894', avoidTitlePrefix:true},
-        el895OutliersCumm: {hAxis: {title:'Moisture Index'}, chartArea: {width: "65%"}, facets: ['el895'], facetLabels: ['Precipitation'], singleFacetName : 'el895', avoidTitlePrefix:true},
-        el882OutliersCumm: {hAxis: {title:'mm'}, chartArea: {width: "65%"}, facets: ['el882'], facetLabels: ['Precipitation'], singleFacetName : 'el882', avoidTitlePrefix:true},
-        el889OutliersCumm: {hAxis: {title:'mm'}, chartArea: {width: "65%"}, facets: ['el889'], facetLabels: ['Precipitation'], singleFacetName : 'el889', avoidTitlePrefix:true},
-        el887OutliersCumm: {hAxis: {title:'MJ/m2/day'}, chartArea: {width: "65%"}, facets: ['el887'], facetLabels: ['Precipitation'], singleFacetName : 'el887', avoidTitlePrefix:true},
-        el865OutliersCumm: {hAxis: {title:'Moisture Index'}, chartArea: {width: "65%"}, facets: ['el865'], facetLabels: ['Precipitation'], singleFacetName : 'el865', avoidTitlePrefix:true},
-        el894OutliersCumm: {hAxis: {title:'MJ/m2/day'}, chartArea: {width: "65%"}, facets: ['el894'], facetLabels: ['Precipitation'], singleFacetName : 'el894', avoidTitlePrefix:true},
-        radiation: {hAxis: {title:'MJ/m2/day'}, chartArea: {width: "65%"}, facets: ['el887','el894'],
-            facetLabels: ['seasonality (Bio23)','warmest quarter (Bio26)']},
-        precipitation: {hAxis: {title:'mm'}, chartArea: {width: "65%"}, facets: ['el882','el889'],
-            facetLabels: ['seasonality (Bio15)','driest quarter (Bio17)']},
-        moisture: {hAxis: {title:'Moisture Index'}, chartArea: {width: "65%"}, facets: ['el895','el865'],
-            facetLabels: ['lowest period (Bio30)','highest quarter mean (Bio32)']}
+        state: {title: jQuery.i18n.prop('charts2.js.state'), ignore: ['Unknown1']},
+        type_status: {title: jQuery.i18n.prop('charts2.js.typestatus'), ignore: ['notatype']},
+        el895: {hAxis: {title: jQuery.i18n.prop('charts2.js.moistureindex')}},
+        el882: {hAxis: {title: jQuery.i18n.prop('charts2.js.mm')}, chartArea: {width: "65%"}},
+        el889: {hAxis: {title: jQuery.i18n.prop('charts2.js.mm')}},
+        el887: {hAxis: {title: jQuery.i18n.prop('charts2.js.mjm2day')}},
+        el865: {hAxis: {title: jQuery.i18n.prop('charts2.js.moistureindex')}},
+        el894: {hAxis: {title: jQuery.i18n.prop('charts2.js.mjm2day')}},
+        el895Outliers: {hAxis: {title: jQuery.i18n.prop('charts2.js.moistureindex')}, chartArea: {width: "65%"}, facets: ['el895'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el895', avoidTitlePrefix:true},
+        el882Outliers: {hAxis: {title: jQuery.i18n.prop('charts2.js.mm')}, chartType: "scatter", chartArea: {width: "65%"}, facets: ['el882'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el882', avoidTitlePrefix:true},
+        el889Outliers: {hAxis: {title: jQuery.i18n.prop('charts2.js.mm')}, chartArea: {width: "65%"}, facets: ['el889'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el889', avoidTitlePrefix:true},
+        el887Outliers: {hAxis: {title: jQuery.i18n.prop('charts2.js.mjm2day')}, chartArea: {width: "65%"}, facets: ['el887'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el887', avoidTitlePrefix:true},
+        el865Outliers: {hAxis: {title: jQuery.i18n.prop('charts2.js.moistureindex')}, chartArea: {width: "65%"}, facets: ['el865'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el865', avoidTitlePrefix:true},
+        el894Outliers: {hAxis: {title: jQuery.i18n.prop('charts2.js.mjm2day')}, chartArea: {width: "65%"}, facets: ['el894'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el894', avoidTitlePrefix:true},
+        el895OutliersCumm: {hAxis: {title: jQuery.i18n.prop('charts2.js.moistureindex')}, chartArea: {width: "65%"}, facets: ['el895'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el895', avoidTitlePrefix:true},
+        el882OutliersCumm: {hAxis: {title: jQuery.i18n.prop('charts2.js.mm')}, chartArea: {width: "65%"}, facets: ['el882'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el882', avoidTitlePrefix:true},
+        el889OutliersCumm: {hAxis: {title: jQuery.i18n.prop('charts2.js.mm')}, chartArea: {width: "65%"}, facets: ['el889'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el889', avoidTitlePrefix:true},
+        el887OutliersCumm: {hAxis: {title: jQuery.i18n.prop('charts2.js.mjm2day')}, chartArea: {width: "65%"}, facets: ['el887'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el887', avoidTitlePrefix:true},
+        el865OutliersCumm: {hAxis: {title: jQuery.i18n.prop('charts2.js.moistureindex')}, chartArea: {width: "65%"}, facets: ['el865'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el865', avoidTitlePrefix:true},
+        el894OutliersCumm: {hAxis: {title: jQuery.i18n.prop('charts2.js.mjm2day')}, chartArea: {width: "65%"}, facets: ['el894'], facetLabels: [jQuery.i18n.prop('charts2.js.precipitation')], singleFacetName : 'el894', avoidTitlePrefix:true},
+        radiation: {hAxis: {title: jQuery.i18n.prop('charts2.js.mjm2day')}, chartArea: {width: "65%"}, facets: ['el887','el894'],
+            facetLabels: [jQuery.i18n.prop('charts2.js.seasonalitybio23'),jQuery.i18n.prop('charts2.js.warmestquarter')]},
+        precipitation: {hAxis: {title: jQuery.i18n.prop('charts2.js.mm')}, chartArea: {width: "65%"}, facets: ['el882','el889'],
+            facetLabels: [jQuery.i18n.prop('charts2.js.seasonalitybio15'),jQuery.i18n.prop('charts2.js.driestquarterbio17')]},
+        moisture: {hAxis: {title: jQuery.i18n.prop('charts2.js.moistureindex')}, chartArea: {width: "65%"}, facets: ['el895','el865'],
+            facetLabels: [jQuery.i18n.prop('charts2.js.lowestperiodbio30'),jQuery.i18n.prop('charts2.js.highestquartermeanbio32')]}
     },
     getChartTypeOptions: function (name) {
         if (this.individualChartOptions[name] !== undefined) {
@@ -82,32 +91,35 @@ var baseFacetChart = {
     },
     // these override the facet names in chart titles
     chartLabels: {
-        institution_uid: 'institution',
-        data_resource_uid: 'data set',
-        assertions: 'data assertion',
-        biogeographic_region: 'biogeographic region',
-        occurrence_year: 'decade',
-        el895: 'Moisture Index - lowest period (Bio30)',
-        el895Outliers: 'Moisture Index - lowest period (Bio30)',
-        el895OutliersCumm: 'Moisture Index - lowest period (Bio30)',
-        el882: 'Precipitation - seasonality (Bio15)',
-        el882Outliers: 'Precipitation - seasonality (Bio15) - Outliers',
-        el882OutliersCumm: 'Precipitation - seasonality (Bio15) - Outliers (Cumulative)',
-        el889: 'Precipitation - driest quarter (Bio17)',
-        el889Outliers: 'Precipitation - driest quarter (Bio17) - Outliers',
-        el889OutliersCumm: 'Precipitation - driest quarter (Bio17) - Outliers (Cumulative)',
-        el887: 'Radiation - seasonality (Bio23)',
-        el887Outliers: 'Radiation - seasonality (Bio23) - Outliers',
-        el887OutliersCumm: 'Radiation - seasonality (Bio23) - Outliers (Cumulative)',
-        el865: 'Moisture Index - highest quarter mean (Bio32)',
-        el865Outliers: 'Moisture Index - highest quarter mean (Bio32) - Outliers',
-        el865OutliersCumm: 'Moisture Index - highest quarter mean (Bio32) - Outliers (Cumulative)',
-        el894: 'Radiation - warmest quarter (Bio26)',
-        el894Outliers: 'Radiation - warmest quarter (Bio26) - Outliers',
-        el894OutliersCumm: 'Radiation - warmest quarter (Bio26) - Outliers (Cumulative)',
-        radiation: 'Radiation',
-        precipitation: 'Precipitation',
-        moisture: 'Moisture'
+        institution_uid: jQuery.i18n.prop('charts2.js.institution'),
+        collection_uid:jQuery.i18n.prop('charts2.js.collection'),
+        month: jQuery.i18n.prop('charts2.js.month'),
+        species_group: jQuery.i18n.prop('charts2.js.higherlevelgroup'),
+        data_resource_uid: jQuery.i18n.prop('charts2.js.dataset'),
+        assertions: jQuery.i18n.prop('charts2.js.dataassertion'),
+        biogeographic_region: jQuery.i18n.prop('charts2.js.biogeographicregion'),
+        occurrence_year: jQuery.i18n.prop('charts2.js.decade'),
+        el895: jQuery.i18n.prop('charts2.js.bio30'),
+        el895Outliers: jQuery.i18n.prop('charts2.js.bio30.Outliers'),
+        el895OutliersCumm: jQuery.i18n.prop('charts2.js.bio30.OutliersCumm'),
+        el882: jQuery.i18n.prop('charts2.js.bio15'),
+        el882Outliers: jQuery.i18n.prop('charts2.js.bio15.Outliers'),
+        el882OutliersCumm: jQuery.i18n.prop('charts2.js.bio15.OutliersCumm'),
+        el889: jQuery.i18n.prop('charts2.js.bio17'),
+        el889Outliers: jQuery.i18n.prop('charts2.js.bio17.Outliers'),
+        el889OutliersCumm: jQuery.i18n.prop('charts2.js.bio17.OutliersCumm'),
+        el887: jQuery.i18n.prop('charts2.js.bio23'),
+        el887Outliers: jQuery.i18n.prop('charts2.js.bio23.Outliers'),
+        el887OutliersCumm: jQuery.i18n.prop('charts2.js.bio23.OutliersCumm'),
+        el865: jQuery.i18n.prop('charts2.js.bio32'),
+        el865Outliers: jQuery.i18n.prop('charts2.js.bio32.Outliers'),
+        el865OutliersCumm: jQuery.i18n.prop('charts2.js.bio32.OutliersCumm'),
+        el894: jQuery.i18n.prop('charts2.js.bio26'),
+        el894Outliers: jQuery.i18n.prop('charts2.js.bio26.Outliers'),
+        el894OutliersCumm: jQuery.i18n.prop('charts2.js.bio26.OutliersCumm'),
+        radiation:  jQuery.i18n.prop('charts2.js.radiation'),
+        precipitation: jQuery.i18n.prop('charts2.js.precipitation'),
+        moisture: jQuery.i18n.prop('charts2.js.moisture')
     },
     // select the properties that need to be passed to the chart library
     googleChartOptions: function() {
@@ -124,7 +136,7 @@ var baseFacetChart = {
     },
     name: '',
     chartLabel: function () { return this.chartLabels[this.name] ? this.chartLabels[this.name] : this.name;},
-    title: function () { return "By " + this.chartLabel();},
+    title: function () { return jQuery.i18n.prop('charts2.js.by') + " " + this.chartLabel();},
     transformData: function (data) {
         if (this.syncTransforms[this.name]) {
             return this.syncTransforms[this.name].apply(null, [data]);
@@ -137,7 +149,7 @@ var baseFacetChart = {
             var transformedData = [];
             $.each(data, function(i,obj) {
                 if (obj.label === 'before') {
-                    transformedData.splice(0,0,{label: "before " + firstDecade, count: obj.count});
+                    transformedData.splice(0,0,{label:  jQuery.i18n.prop('charts2.js.before') + firstDecade, count: obj.count});
                 }
                 else {
                     var decade = obj.label.substr(0,4);
@@ -156,7 +168,7 @@ var baseFacetChart = {
             var transformedData = [];
             $.each(data, function(i,obj) {
                 if (obj.label === 'before') {
-                    transformedData.splice(0,0,{label: "before " + firstDecade, count: obj.count});
+                    transformedData.splice(0,0,{label: jQuery.i18n.prop('charts2.js.before') + firstDecade, count: obj.count});
                 }
                 else {
                     var decade = obj.label.substr(0,4);
@@ -227,7 +239,7 @@ var baseFacetChart = {
         if(options.avoidTitlePrefix !== "undefined" && options.avoidTitlePrefix){
             this.title =  this.chartLabel();
         } else {
-            this.title = "By " + this.chartLabel();
+            this.title = jQuery.i18n.prop('charts2.js.by') + " " + this.chartLabel();
         }
 
         // apply chart-specific and user-defined options and user-defined individual chart options
@@ -583,7 +595,7 @@ var facetChartGroup = {
         });
 
         // show a message while requesting data
-        chartsDiv.append($("<span>Loading charts...</span>"));
+        chartsDiv.append($('<span>' + jQuery.i18n.prop('charts2.js.loadingcharts') + '</span>'));
 
         // make request
         $.ajax({
@@ -655,7 +667,7 @@ var loadAndDrawFacetCharts = function (options) {
         chartsDiv = $('#' + (options.chartsDiv ? options.chartsDiv : baseFacetChart.chartsDiv));
 
     // show a message while requesting data
-    chartsDiv.append($("<span>Loading charts...</span>"));
+    chartsDiv.append($('<span>' + jQuery.i18n.prop('charts2.js.loadingcharts') + '</span>'));
 
     // make request
     $.ajax({
@@ -713,22 +725,25 @@ var genericChartOptions = {
 // defaults for individual facet charts
 var individualChartOptions = {
     state_conservation: {chartType: 'column', width: 450, chartArea: {left:60, height: "58%"},
-        title: 'By state conservation status', hAxis: {slantedText: true}},
+        title: jQuery.i18n.prop('charts2.js.stateconservationstatus'), hAxis: {slantedText: true}},
     occurrence_year: {chartType: 'column', width: 450, chartArea: {left:60, height: "65%"}, hAxis: {slantedText: true}},
-    species_group: {title: 'By higher-level group', ignore: ['Animals']},
-    state: {ignore: ['Unknown1']},
-    type_status: {title: 'By type status (as % of all type specimens)', ignore: ['notatype']},
+    species_group: {title: jQuery.i18n.prop('charts2.js.higherlevelgroup'), ignore: ['Animals']},
+    state: {title: jQuery.i18n.prop('charts2.js.state'), ignore: ['Unknown1']},
+    type_status: {title: jQuery.i18n.prop('charts2.js.typestatus'), ignore: ['notatype']},
     assertions: {chartType: 'bar', chartArea: {left:170}}
 };
 
 /*----------------- FACET-BASED CHARTS USING DIRECT CALLS TO BIO-CACHE SERVICES ---------------------*/
 // these override the facet names in chart titles
 var chartLabels = {
-    institution_uid: 'institution',
-    data_resource_uid: 'data set',
-    assertions: 'data assertion',
-    biogeographic_region: 'biogeographic region',
-    occurrence_year: 'decade'
+    institution_uid:  jQuery.i18n.prop('charts2.js.institution'),
+    collection_uid: jQuery.i18n.prop('charts2.js.collection'),
+    data_resource_uid: jQuery.i18n.prop('charts2.js.dataset'),
+    assertions: jQuery.i18n.prop('charts2.js.dataassertion'),
+    biogeographic_region: jQuery.i18n.prop('charts2.js.biogeographicregion'),
+    occurrence_year: jQuery.i18n.prop('charts2.js.decade'),
+    month: jQuery.i18n.prop('charts2.js.month'),
+    species_group: jQuery.i18n.prop('charts2.js.higherlevelgroup')
 }
 // asynchronous transforms are applied after the chart is drawn, ie the chart is drawn with the original values
 // then redrawn when the ajax call for transform data returns
@@ -757,7 +772,8 @@ function loadFacetCharts(chartOptions) {
     if (chartOptions.displayRecordsUrl != undefined) { biocacheWebappUrl = chartOptions.displayRecordsUrl; }
 
     var chartsDiv = $('#' + (chartOptions.targetDivId ? chartOptions.targetDivId : 'charts'));
-    chartsDiv.append($("<span>Loading charts...</span>"));
+    chartsDiv.append($('<span>' + jQuery.i18n.prop('charts2.js.loadingcharts') + '</span>'));
+
     var query = chartOptions.query ? chartOptions.query : buildQueryString(chartOptions.instanceUid);
     $.ajax({
         url: urlConcat(biocacheServicesUrl, "/occurrences/search.json?pageSize=0&q=") + query,
@@ -822,7 +838,7 @@ function buildGenericFacetChart(name, data, query, chartsDiv, chartOptions) {
 
     // resolve the chart options
     var opts = $.extend({}, genericChartOptions);
-    opts.title = "By " + chartLabel;  // default title
+    opts.title = jQuery.i18n.prop('charts2.js.by') + " " + chartLabel;  // default title
     var individualOptions = individualChartOptions[name] ? individualChartOptions[name] : {};
     // merge generic, individual and user options
     opts = $.extend(true, {}, opts, individualOptions, chartOptions[name]);
@@ -837,7 +853,7 @@ function buildGenericFacetChart(name, data, query, chartsDiv, chartOptions) {
     // create the data table
     var dataTable = new google.visualization.DataTable();
     dataTable.addColumn('string', chartLabel);
-    dataTable.addColumn('number','records');
+    dataTable.addColumn('number',jQuery.i18n.prop('charts2.js.records'));
     $.each(xformedData, function(i,obj) {
         // filter any crap
         if (opts == undefined || opts.ignore == undefined || $.inArray(obj.label, opts.ignore) == -1) {
@@ -926,7 +942,7 @@ function transformDecadeData(data) {
     var transformedData = [];
     $.each(data, function(i,obj) {
         if (obj.label == 'before') {
-            transformedData.splice(0,0,{label: "before " + firstDecade, count: obj.count});
+            transformedData.splice(0,0,{label: jQuery.i18n.prop('charts2.js.before') + firstDecade, count: obj.count});
         }
         else {
             var decade = obj.label.substr(0,4);
@@ -1079,10 +1095,10 @@ var taxonomyChart = {
             timeout: 30000,
             complete: function(jqXHR, textStatus) {
                 if (textStatus == 'timeout') {
-                    alert('Sorry - the request was taking too long so it has been cancelled.');
+                    alert(jQuery.i18n.prop('charts2.js.timeout'));
                 }
                 if (textStatus == 'error') {
-                    alert('Sorry - the chart cannot be redrawn due to an error.');
+                    alert(jQuery.i18n.prop('charts2.js.error'));
                 }
                 if (textStatus != 'success') {
                     thisChart.cleanUp();
@@ -1111,7 +1127,7 @@ var taxonomyChart = {
         // resolve the chart options
         var opts = $.extend({}, taxonomyPieChartOptions);
         opts = $.extend(true, opts, this.chartOptions);
-        opts.title = opts.name ? opts.name + " records by " + data.rank : "By " + data.rank;
+        opts.title = opts.name ? opts.name + " records by " + data.rank : jQuery.i18n.prop('charts2.js.by') + " " + data.rank;
 
         // create the outer div that will contain the chart and the additional links
         var $outerContainer = $('#taxa');
@@ -1144,7 +1160,7 @@ var taxonomyChart = {
         // draw the back button / instructions
         var $backLink = $('#backLink');
         if ($backLink.length == 0) {
-            $backLink = $('<div class="link" id="backLink">&laquo; Previous rank</div>').appendTo($outerContainer);  // create it
+            $backLink = $('<div class="link" id="backLink">&laquo;' + jQuery.i18n.prop('charts2.js.previousrank') + '</div>').appendTo($outerContainer);  // create it
             //$backLink.css('position','relative').css('top','-75px');
             $backLink.click(function() {
                 // only act if link was real
@@ -1167,11 +1183,11 @@ var taxonomyChart = {
         }
         if (this.hasState()) {
             // show the prev link
-            $backLink.html("&laquo; Previous rank").addClass('link');
+            $backLink.html("&laquo; " + jQuery.i18n.prop('charts2.js.previousrank')).addClass('link');
         }
         else {
             // show the instruction
-            $backLink.html(jQuery.i18n.prop('charts.js.slicetodrill')).removeClass('link');
+            $backLink.html(jQuery.i18n.prop('charts2.js.slicetodrill')).removeClass('link');
         }
 
         // draw records link
@@ -1186,10 +1202,10 @@ var taxonomyChart = {
 
         // set link text
         if (this.hasState()) {
-            $recordsLink.html('View records for ' + this.rank + ' ' + this.name);
+            $recordsLink.html(jQuery.i18n.prop('charts2.js.viewrecordsfor') + ' ' + this.rank + ' ' + this.name);
         }
         else {
-            $recordsLink.html('View all records');
+            $recordsLink.html(jQuery.i18n.prop('charts2.js.viewallrecords'));
         }
         $container = $("</div>");
         $outerContainer.append($container);
@@ -1268,7 +1284,7 @@ function initTaxonTree(treeOptions) {
 
     var targetDivId = treeOptions.targetDivId ? treeOptions.targetDivId : 'tree';
     var $container = $('#' + targetDivId);
-    var title = treeOptions.title || 'Explore records by taxonomy';
+    var title = treeOptions.title || jQuery.i18n.prop('charts2.js.explorerecords');
     if (treeOptions.title !== "") {
         $container.append($('<h4>' + title + '</h4>'));
     }
@@ -1346,8 +1362,8 @@ function initTaxonTree(treeOptions) {
             },
             checkbox: {override_ui:true},
             contextmenu: {select_node: false, show_at_node: false, items: {
-                records: {label: "Show records", action: function(obj) {showRecords(obj, query);}},
-                bie: {label: "Show information", action: function(obj) {showBie(obj);}},
+                records: {label: function () { return jQuery.i18n.prop('charts2.js.showrecords')}, action: function(obj) {showRecords(obj, query);}},
+                bie: {label: function () { return jQuery.i18n.prop('charts2.js.showinformation')}, action: function(obj) {showBie(obj);}},
                 create: false,
                 rename: false,
                 remove: false,
