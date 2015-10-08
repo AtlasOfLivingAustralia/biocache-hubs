@@ -111,7 +111,6 @@
                     </a>
                     <div class="dropdown-menu" role="menu"> <%--facetOptions--%>
                         <h4><g:message code="list.customisefacetsbutton.div01.title" default="Select the filter categories that you want to appear in the &quot;Refine results&quot; column"/></h4>
-                        <%-- <form:checkboxes path="facets" items="${defaultFacets}" itemValue="key" itemLabel="value" /> --%>
                         <div id="facetCheckboxes">
                         <g:message code="list.facetcheckboxes.label01" default="Select"/>: <a href="#" id="selectAll"><g:message code="list.facetcheckboxes.navigator01" default="All"/></a> | <a href="#" id="selectNone"><g:message code="list.facetcheckboxes.navigator02" default="None"/></a>
                             &nbsp;&nbsp;
@@ -120,17 +119,15 @@
                             <g:set var="resetTitle" value="Restore default settings"/>
                             <button id="resetFacetOptions" class="btn btn-small" title="${resetTitle}"><g:message code="list.facetcheckboxes.button.resetfacetoptions" default="Reset to defaults"/></button>
                             <br/>
-                            %{--<div class="facetsColumn">--}%
-                            <%-- iterate over the groupedFacets, checking the defaultFacets for each entry --%>
-                            <g:set var="count" value="${0}"/>
+                            <%-- iterate over the groupedFacets, checking the default facets for each entry --%>
+                            <g:set var="count" value="0"/>
                             <g:each var="group" in="${groupedFacets}">
                                 <g:if test="${defaultFacets.find { key, value -> group.value.any { it == key} }}">
                                     <div class="facetsColumn">
                                         <div class="facetGroupName"><g:message code="facet.group.${group.key}" default="${group.key}"/></div>
                                         <g:each in="${group.value}" var="facetFromGroup">
-                                        %{--<g:set var="facet" value="${defaultFacets.get(facetFromGroup)}"/>--}%
                                             <g:if test="${defaultFacets.containsKey(facetFromGroup)}">
-                                                <g:set var="count" value="${count+1}"/>
+                                                <g:set var="count" value="${count + 1}"/>
                                                 <input type="checkbox" name="facets" class="facetOpts" value="${facetFromGroup}"
                                                     ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<alatag:message code="facet.${facetFromGroup}"/><br>
                                             </g:if>
@@ -138,18 +135,17 @@
                                     </div>
                                 </g:if>
                             </g:each>
-                            %{--</div>--}%
-                            <g:if test="${false && dynamicFacets}"><!-- INACTIVE - user not able to toggle display of custom fields for now -->
-                                <div class="facetsColumn">
-                                    <h4><g:message code="list.facetcheckboxes.div02.title" default="Custom facets"/></h4>
-                                    <g:each var="facet" in="${dynamicFacets}">
-                                        <input type="checkbox" name="facets" class="facetOpts" value="${facet.name}"
-                                            ${(facet.name) ? 'checked="checked"' : ''}>&nbsp;${facet.displayName}<%--<alatag:formatDynamicFacetName fieldName="${facet.name}"/>--%><br>
-                                    </g:each>
-                                </div>
-                            </g:if>
+                            %{--<g:if test="${dynamicFacets}">--}%
+                                %{--<div class="facetsColumn">--}%
+                                    %{--<div class="facetGroupName"><g:message code="list.facetcheckboxes.div02.title" default="Custom facets"/></div>--}%
+                                    %{--<g:each var="facet" in="${dynamicFacets}">--}%
+                                        %{--<input type="checkbox" name="facets" class="facetOpts" value="${facet.name}"--}%
+                                            %{--${(facet.name) ? 'checked="checked"' : ''}>&nbsp;${facet.displayName}--}%
+                                        %{--<br/>--}%
+                                    %{--</g:each>--}%
+                                %{--</div>--}%
+                            %{--</g:if>--}%
                         </div>
-                        %{--<div class="clearfix"></div>--}%
                     </div>
                 </div>
             </div><!-- /.span3 -->
@@ -339,7 +335,7 @@
                     </div><!-- end #mapwrapper -->
                     <div id="chartsView" class="tab-pane">
                         <style type="text/css">
-                           #charts div { display: inline-flex; padding-left:20px;}
+                           #charts div { display: inline-flex; }
                         </style>
                         <div id="charts" class="row-fluid"></div>
                     </div><!-- end #chartsWrapper -->

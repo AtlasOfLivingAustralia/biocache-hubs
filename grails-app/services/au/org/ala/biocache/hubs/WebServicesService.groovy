@@ -122,7 +122,7 @@ class WebServicesService {
             url = "${grailsApplication.config.biocache.groupedFacetsUrl}"
         }
 
-        Map groupedMap = [:] // LinkedHashMap by default so ordering is maintained
+        Map groupedMap = [ "Custom" : []] // LinkedHashMap by default so ordering is maintained
 
         try {
             JSONArray groupedArray = getJsonElements(url)

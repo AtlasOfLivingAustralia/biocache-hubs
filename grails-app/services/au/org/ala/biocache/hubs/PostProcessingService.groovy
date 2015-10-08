@@ -235,9 +235,8 @@ class PostProcessingService {
      */
     String[] mergeRequestedFacets(List requestedFacets, List customFacets) {
         List customFacetsFlat = customFacets.collect { it.name }
-        log.debug "customFacetsFlat = ${customFacetsFlat}"
-        requestedFacets.addAll(customFacetsFlat)
-        return requestedFacets
+        requestedFacets.addAll(0, customFacetsFlat)
+        requestedFacets
     }
 
     /**
@@ -334,10 +333,18 @@ class PostProcessingService {
      * @param ungroupedFacetsList
      * @return
      */
-    def Map getAllGroupedFacets(Map groupedFacets, def facetResults) {
+    def Map getAllGroupedFacets(Map groupedFacets, def facetResults, dynamicFacets) {
         List ungroupedFacetsList = getUngroupedFacetsList(groupedFacets, getMapOfFacetResults(facetResults))
         def finalGroupedFacets = groupedFacets.clone()
-        finalGroupedFacets.put("Ungrouped", ungroupedFacetsList)
+        def dynamicFacetNames = dynamicFacets.collect { it.name }
+        finalGroupedFacets.put("Ungrouped", [])
+        ungroupedFacetsList.each { facet ->
+            if(dynamicFacetNames.contains(facet)){
+                finalGroupedFacets.get("Custom").add(facet)
+            } else {
+                finalGroupedFacets.get("Ungrouped").add(facet)
+            }
+        }
         finalGroupedFacets
     }
 

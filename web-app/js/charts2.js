@@ -392,14 +392,10 @@ var baseFacetChart = {
                 // filter any crap
                 //console.log('building datatable -  obj.label: ' + obj.label);
                 if (that.ignore !== "undefined" || $.inArray(obj.label, that.ignore) == -1) {
-                    //console.log('building datatable -  crap filtered');
 
                     if (detectCamelCase(obj.label)) {
                         dataTable.addRow([{v: obj.label, f: capitalise(expandCamelCase(obj.label))}, obj.count, null,null]);
                     } else if (that.column1DataType === 'number') {
-
-                        //console.log('inArray: ' + $.inArray(obj.label, options.outlierValues));
-
                         if (options.highlightedValue !== undefined && obj.label == options.highlightedValue){
                             dataTable.addRow([parseFloat(obj.label), null, null, obj.count]);
                         } else if($.inArray(parseFloat(obj.label), options.outlierValues) >= 0){

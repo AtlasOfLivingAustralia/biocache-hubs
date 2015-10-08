@@ -83,7 +83,9 @@ class OccurrenceController {
             Map defaultFacets = postProcessingService.getAllFacets(webServicesService.getDefaultFacets())
             String[] userFacets = postProcessingService.getFacetsFromCookie(request)
             String[] filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
+
             List dynamicFacets = []
+
             String[] requestedFacets = userFacets ?: filteredFacets
 
             if (grailsApplication.config.facets.includeDynamicFacets?.toBoolean()) {
@@ -93,18 +95,26 @@ class OccurrenceController {
             }
 
             requestParams.facets = requestedFacets
+
             def wsStart = System.currentTimeMillis()
             JSONObject searchResults = webServicesService.fullTextSearch(requestParams)
             def wsTime = (System.currentTimeMillis() - wsStart)
-            Map groupedFacets = webServicesService.getGroupedFacets() // cached
-            Map facetResultsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
+
+            //create a facet lookup map
+            Map groupedFacetsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
+
+            //the configured grouping
+            Map configuredGroupedFacets = webServicesService.getGroupedFacets()
+
+            //grouped facets
+            Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)
 
             [
                     sr: searchResults,
                     searchRequestParams: requestParams,
                     defaultFacets: defaultFacets,
-                    groupedFacets: postProcessingService.getAllGroupedFacets(groupedFacets, searchResults.facetResults),
-                    groupedFacetsMap: facetResultsMap,
+                    groupedFacets: groupedFacets,
+                    groupedFacetsMap: groupedFacetsMap,
                     dynamicFacets: dynamicFacets,
                     selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: postProcessingService.resultsHaveImages(searchResults),
@@ -116,6 +126,7 @@ class OccurrenceController {
                     processingTime: (System.currentTimeMillis() - start),
                     wsTime: wsTime
             ]
+
         } catch (Exception ex) {
             log.warn "Error getting search results: $ex.message", ex
             flash.message = "${ex.message}"

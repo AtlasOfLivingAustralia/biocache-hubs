@@ -531,20 +531,6 @@ $(document).ready(function() {
         language: BC_CONF.locale // default is to use browser specified locale
         //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
     });
-    //alert( "default.paginate.prev = " + jQuery.i18n.prop('default.paginate.prev'));
-
-    // remember state of admin nav (vertical tabs)
-//    $('#adminNav a[data-toggle="tab"]').on('shown', function (e) {
-//        var tab = e.currentTarget.hash;
-//        amplify.store('project-admin-tab-state', tab);
-//    });
-//    var storedAdminTab = amplify.store('project-admin-tab-state');
-//    // restore state if saved
-//    if (storedAdminTab === '') {
-//        $('#permissions-tab').tab('show');
-//    } else {
-//        $(storedAdminTab + "-tab").tab('show');
-//    }
 
     // Show/hide the facet groups
     $('.showHideFacetGroup').click(function(e) {
@@ -810,12 +796,15 @@ function loadAllCharts() {
     if(dynamicFacets !== undefined){
         var chartsConfigUri = BC_CONF.biocacheServiceUrl + "/upload/charts/" + BC_CONF.selectedDataResource + ".json";
         $.getJSON(chartsConfigUri, function(chartsConfig) {
+
             $.each(chartsConfig, function(index, config){
                if(config.visible) {
                    facetChartOptions.query = facetChartOptions.query + "&facets=" + config.field;
                    facetChartOptions.charts.push(config.field);
-                   facetChartOptions[config.field] = {chartType:config.format, width: 900, backgroundColor: {fill:'transparent'}, chartArea: {width: "80%"}, hAxis: {title:'Moisture Index'}, vAxis: {title:'Moisture Index'}};
+
                    var chartTitle = config.field.substring(0, config.field.length - 2).replace('_', ' ');
+                   facetChartOptions[config.field] = {chartType:config.format, width: 900, backgroundColor: {fill:'transparent'}, chartArea: {width: "80%"}, hAxis: {title: chartTitle}};
+
                    chartLabels[config.field] = chartTitle;
                    defaultChartTypes[config.field] = config.format;
                    baseFacetChart.individualChartOptions[config.field] = {title: chartTitle, chartType:config.format, facets: [config.field]}
