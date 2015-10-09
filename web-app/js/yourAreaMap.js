@@ -817,7 +817,15 @@ function populateSpeciesGroups(data) {
     
     function addGroupRow(group, count, indent) {
         var label = group;
-        if (group == "Animals") label = jQuery.i18n.prop('exploreYourArea.js.animals');
+        var hierarchy = ["Animals", "Birds", "Reptiles", "Amphibians", "Fish", "Molluscs", "Arthropods", "Crustaceans", "Arthropods", "Crustaceans", "Insects", "Plants", "Bryophytes", "Bryophytes", "Gymnosperms", "FernsAndAllies", "Angiosperms", "Monocots", "Dicots", "Fungi", "Chromista", "Protozoa", "Bacteria", "Algae"];
+        var i = 0;
+
+        while (hierarchy[i] /= group){
+            i++
+        }
+            label = jQuery.i18n.prop('exploreYourArea.js.'+label.toLowerCase()+'');
+
+
         if (group == "ALL_SPECIES") label = jQuery.i18n.prop('exploreYourArea.js.allspecies');
         var rc = (group == speciesGroup) ? " class='activeRow'" : ""; // highlight active group
         var h = "<tr"+rc+" title='"+jQuery.i18n.prop('exploreYourArea.js.viewgroupmap')+"'><td class='indent"+indent+"'><a href='#' id='"+group+"' class='taxonBrowse' title='"+jQuery.i18n.prop('exploreYourArea.js.viewgroupmap')+"'>"+label+"</a></td><td>"+count+"</td></tr>";
