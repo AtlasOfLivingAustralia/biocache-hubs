@@ -80,6 +80,7 @@ function validateForm_taxaquery()
 <!--
                 <div id="advancedSearchLink"><a href="${g.createLink(uri: '/search')}#tab_advanceSearch"><g:message code="list.advancedsearchlink.navigator" default="Advanced search"/></a></div>
 -->
+                <div id="advancedSearchLink" style="margin-bottom:5px"><span></span></div>
                 <div class="input-append">
 
 <!--
