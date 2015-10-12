@@ -823,7 +823,7 @@ function populateSpeciesGroups(data) {
         while (hierarchy[i] /= group){
             i++
         }
-            label = jQuery.i18n.prop('exploreYourArea.js.'+label.toLowerCase()+'');
+            label = jQuery.i18n.prop('global.hierarchy.'+label.toLowerCase()+'');
 
 
         if (group == "ALL_SPECIES") label = jQuery.i18n.prop('exploreYourArea.js.allspecies');
