@@ -229,17 +229,20 @@
                         </a>
                     </g:else>
                     <br/>
-                    <g:if test="${record.raw.occurrence.photographer}">
-                        <cite><g:message code="show.sidebar03.cite01" default="Photographer"/>: ${record.raw.occurrence.photographer}</cite><br/>
+                    <g:if test="${record.raw.occurrence.photographer || image.metadata?.creator}">
+                        <cite><g:message code="show.sidebar03.cite01" default="Photographer"/>: ${record.raw.occurrence.photographer ?: image.metadata?.creator}</cite><br/>
                     </g:if>
-                    <g:if test="${record.raw.occurrence.rights}">
-                        <cite><g:message code="show.sidebar03.cite02" default="Rights"/>: ${record.raw.occurrence.rights}</cite><br/>
+                    <g:if test="${record.raw.occurrence.rights || image.metadata?.rights}">
+                        <cite><g:message code="show.sidebar03.cite02" default="Rights"/>: ${record.raw.occurrence.rights ?: image.metadata?.rights}</cite><br/>
                     </g:if>
-                    <g:if test="${record.raw.occurrence.rightsholder}">
-                        <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.occurrence.rightsholder}</cite><br/>
+                    <g:if test="${record.raw.occurrence.rightsholder || image.metadata?.rightsholder}">
+                        <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.occurrence.rightsholder ?: image.metadata?.rightsholder}</cite><br/>
                     </g:if>
                     <g:if test="${record.raw.miscProperties.rightsHolder}">
                         <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.miscProperties.rightsHolder}</cite><br/>
+                    </g:if>
+                    <g:if test="${image.metadata?.license}">
+                        <cite><g:message code="show.sidebar03.image.license" default="License"/>: ${image.metadata?.license}</cite><br/>
                     </g:if>
                     <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
                         <a href="${grailsApplication.config.images.metadataUrl}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
