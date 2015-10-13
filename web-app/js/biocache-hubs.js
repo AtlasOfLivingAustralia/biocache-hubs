@@ -6,7 +6,7 @@
  \************************************************************/
 jQuery.i18n.properties({
     name: 'messages',
-    path: BIOCACHE_HUB_CONF.contextPath + '/messages/i18n/',
+    path: BC_CONF.contextPath + '/messages/i18n/',
     mode: 'map',
-    language: BIOCACHE_HUB_CONF.locale // default is to use browser specified locale
+    language: BC_CONF.locale // default is to use browser specified locale
 });
