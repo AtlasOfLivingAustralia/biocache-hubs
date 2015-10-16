@@ -28,14 +28,16 @@ modules = {
     }
 
     searchCore {
-        dependsOn 'jquery, purl'
+        dependsOn 'jquery, purl, jquery_i18n'
         defaultBundle 'search-core'
         resource url:[dir:'css', file:'search.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'css', file:'pagination.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'js', file:'jquery.cookie.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.inview.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.jsonp-2.4.0.min.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs'], disposition: 'head'
+        //resource url:[ dir: 'js',file:'jquery-migrate-1.2.1.min.js', plugin:'biocache-hubs']
+        //resource url:[dir:'js', file:'jquery.i18n.properties-1.0.9.min.js', plugin:'biocache-hubs']
+        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs']
         resource url:[dir:'css/font-awesome-4.1.0/css', file:'font-awesome.min.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
     }
 
