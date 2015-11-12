@@ -151,7 +151,7 @@ public class SearchRequestParams {
         }
 
         if(qc != ""){
-            req.append("&qc=").append(qc);
+            req.append("&qc=").append(URLEncoder.encode(qc, "UTF-8"));
         }
         return req.toString();
     }
