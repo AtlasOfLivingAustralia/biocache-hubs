@@ -94,6 +94,8 @@ from the ALA biocache-service app (no local DB is required for this app).
 
         // Apache proxyPass & cached-resources seems to mangle image URLs in plugins, so we exclude caching it
         application.config.grails.resources.mappers.hashandcache.excludes = ["**/images/*.*","**/eya-images/*.*"]
+        // include fonts in resources
+        application.config.grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*', '/fonts/*']
 
         // Load the "sensible defaults"
         //println "config.skin = ${config.skin}"
