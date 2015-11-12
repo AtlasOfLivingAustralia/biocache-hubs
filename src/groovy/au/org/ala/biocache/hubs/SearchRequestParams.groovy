@@ -79,7 +79,7 @@ public class SearchRequestParams {
         req.append("&pageSize=").append(max?:pageSize);
         req.append("&sort=").append(sort);
         req.append("&dir=").append(dir);
-        req.append("&qc=").append(qc);
+        req.append("&qc=").append(conditionalEncode(qc, encodeParams));
         if (facet && facets?.length > 0) {
             for (String f : facets) {
                 req.append("&facets=").append(conditionalEncode(f, encodeParams));
