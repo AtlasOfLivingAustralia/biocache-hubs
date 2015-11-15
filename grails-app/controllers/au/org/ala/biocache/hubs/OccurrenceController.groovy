@@ -58,6 +58,8 @@ class OccurrenceController {
             requestParams.dir = "desc"
         }
 
+        log.debug "requestParams = ${requestParams}"
+
         List taxaQueries = (ArrayList<String>) params.list("taxa") // will be list for even one instance
         log.debug "skin.useAlaBie = ${grailsApplication.config.skin.useAlaBie}"
 
@@ -136,7 +138,18 @@ class OccurrenceController {
 
     def taxa(String id) {
         log.debug "taxa search for ${id}"
-        redirect(action: "search", params: [q:"lsid:" + id])
+        redirect(action: "list", params: [q:"lsid:" + id])
+    }
+
+    /**
+     * POST from taxa drop-down list of raw taxon names
+     *
+     * @return
+     */
+    def taxaPost() {
+        List rawTaxonGuids = params.list("raw_taxon_guid")
+        def qQuery = "raw_taxon_name:\"" + rawTaxonGuids.join("\" OR raw_taxon_name:\"") + "\""
+        redirect(action: "list", params: [q: qQuery])
     }
 
     private def getSelectedResource(query){
