@@ -119,12 +119,12 @@ class PostProcessingService {
     }
 
    /**
-     * Build a LinkedHashMap form of the facets to display in the cutomise drop down div
+     * Build a LinkedHashMap form of the facets to display in the customise drop down div
      *
      * @param defaultFacets
      * @return LinkedHashMap facetsMap
      */
-   def LinkedHashMap getAllFacets(JSONArray defaultFacets) {
+   def LinkedHashMap getAllFacets(List defaultFacets) {
         LinkedHashMap<String, Boolean> facetsMap = new LinkedHashMap<String, Boolean>()
         List orderedFacets = []
         List facetsToInclude = grailsApplication.config.facets?.include?.split(',') ?: []
@@ -152,7 +152,7 @@ class PostProcessingService {
                 facetsMap.put(it, !facetsToHide.contains(it))
             }
         }
-
+        log.debug "facetsMap =${facetsMap}"
         return facetsMap
    }
 
@@ -371,5 +371,21 @@ class PostProcessingService {
         }
 
         ungroupedFacetsList
+    }
+
+    /**
+     * Extract list of facet fields from the grouped facets Map (json)
+     *
+     * @param groupedFacets
+     * @return
+     */
+    List getListFromGroupedFacets(Map groupedFacets) {
+        List facets = []
+
+        groupedFacets.each { key, value ->
+            facets.addAll(value)
+        }
+
+        facets
     }
 }

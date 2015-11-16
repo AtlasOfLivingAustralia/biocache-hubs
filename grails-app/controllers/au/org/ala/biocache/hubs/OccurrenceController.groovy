@@ -82,7 +82,10 @@ class OccurrenceController {
         }
 
         try {
-            Map defaultFacets = postProcessingService.getAllFacets(webServicesService.getDefaultFacets())
+            //the configured grouping
+            Map configuredGroupedFacets = webServicesService.getGroupedFacets()
+            List listOfGroupedFacets = postProcessingService.getListFromGroupedFacets(configuredGroupedFacets)
+            Map defaultFacets = postProcessingService.getAllFacets(listOfGroupedFacets)
             String[] userFacets = postProcessingService.getFacetsFromCookie(request)
             String[] filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
 
@@ -104,9 +107,6 @@ class OccurrenceController {
 
             //create a facet lookup map
             Map groupedFacetsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
-
-            //the configured grouping
-            Map configuredGroupedFacets = webServicesService.getGroupedFacets()
 
             //grouped facets
             Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)
