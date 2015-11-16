@@ -53,7 +53,8 @@ class OccurrenceTagLib {
     def formatFieldName(fieldName){
         def output
         if (fieldName.endsWith('_s') || fieldName.endsWith('_i') || fieldName.endsWith('_d')) {
-            output = fieldName[0..-2].replaceAll("_", " ")
+            def temp = fieldName[0..-2].replaceAll("_", " ")
+            output = "${alatag.message(code:"facet.${fieldName}", default: temp)}"
         } else if (fieldName.endsWith('_RNG')) {
             output = fieldName[0..-4].replaceAll("_", " ") + " (range)"
         } else {
