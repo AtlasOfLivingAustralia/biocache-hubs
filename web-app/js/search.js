@@ -370,8 +370,8 @@ $(document).ready(function() {
             replace("data_resource_name", "data_resource_uid").
             replace("data_provider_name", "data_provider_uid").
             replace("species_list_name", "species_list_uid").
-            replace("occurrence_year", "decade").
-            replace(/(_[id])$/, "$1_RNG");
+            //replace(/(_[id])$/, "$1_RNG").
+            replace("occurrence_year", "decade");
 
         var displayName = $(link).data("displayname");
         //console.log(facetName, displayName);
@@ -1141,7 +1141,7 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                 $("table#fullFacets tr").not("tr.tableHead").not("#spinnerRow").remove();
             }
             $.each(data.facetResults[0].fieldResult, function(i, el) {
-                //console.log("facet", el);
+                //console.log("0. facet", el);
                 if (el.count > 0) {
                     // surround with quotes: fq value if contains spaces but not for range queries
                     var fqEsc = ((el.label.indexOf(" ") != -1 || el.label.indexOf(",") != -1 || el.label.indexOf("lsid") != -1) && el.label.indexOf("[") != 0)
@@ -1167,11 +1167,6 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                         label = jQuery.i18n.prop("duplication." + label);
                     } else if (facetName.indexOf("taxonomic_issue") != -1 || /^el\d+/.test(label)) {
                         label = jQuery.i18n.prop(label);
-                    } else if (facetName.indexOf("decade") != -1) {
-                        // decade range required
-                        fqEsc = "[" + fqEsc + "+TO+" + fqEsc.replace('0-01-01T00:00:00Z','9-12-31T11:59:59Z') + "]";
-                        encodeFq = false; // uri encoding breaks SOLR range queries for some reason so don't use it
-                        label = fqEsc.substr(1,4) + " - " + fqEsc.substr(1,3) + "9";
                     } else {
                         var code = facetName + "." + label;
                         var i18nLabel = jQuery.i18n.prop(code);
@@ -1180,8 +1175,8 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                         label = (newLabel.indexOf("[") == -1) ? newLabel : label;
                     }
                     facetName = facetName.replace(/_RNG$/,""); // remove range version if present
-                    // console.log("label", label, facetName, el);
-                    var fqParam = (el.fq) ? encodeURIComponent(el.fq) : facetName.replace("decade","occurrence_year") + ":" + ((encodeFq) ? encodeURIComponent(fqEsc) : fqEsc) ;
+                    //console.log("label", label, facetName, el);
+                    var fqParam = (el.fq) ? encodeURIComponent(el.fq) : facetName + ":" + ((encodeFq) ? encodeURIComponent(fqEsc) : fqEsc) ;
                     //var link = BC_CONF.searchString.replace("'", "&apos;") + "&fq=" + fqParam;
                     
                     //NC: 2013-01-16 I changed the link so that the search string is uri encoded so that " characters do not cause issues 
