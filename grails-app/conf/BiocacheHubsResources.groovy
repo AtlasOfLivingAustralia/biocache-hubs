@@ -131,6 +131,7 @@ modules = {
         dependsOn 'jquery, purl'
         resource url:[dir:'css', file:'exploreYourArea.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'css', file:'print-area.css', plugin:'biocache-hubs'], attrs: [ media: 'print' ]
+        resource url:[dir:'js', file:'magellan.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'yourAreaMap.js', plugin:'biocache-hubs']
     }
 

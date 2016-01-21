@@ -89,27 +89,6 @@ $(document).ready(function() {
         }
     );
 
-    // register click event on download button
-//    $("button#download").click(
-//        function(e){
-//            e.preventDefault();
-//            $("#dialog-confirm").dialog('open');
-//        }
-//    );
-
-    // download link
-//    $("#downloadLink").dialogbox({
-//        'hideOnContentClick' : false,
-//        'hideOnOverlayClick': true,
-//        'showCloseButton': true,
-//        'titleShow' : false,
-//        'autoDimensions' : false,
-//        'width': '500',
-//        'height': '400',
-//        'padding': 15,
-//        'margin': 10
-//    });
-
     // QTip tooltips
     $(".tooltips").qtip({
         style: {
@@ -120,31 +99,6 @@ $(document).ready(function() {
             adjust: { x: 6, y: 14 }
         }
     });
-
-    // Configure Dialog box for Download button (JQuery UI)
-//    $("#dialog-confirm").dialog({
-//        resizable: false,
-//        modal: true,
-//        autoOpen: false,
-//        buttons: {
-//            'Download File': function() {
-//                var downloadUrl = EYA_CONF.biocacheServiceUrl + "/explore/group/"+speciesGroup+"/download?lat="+
-//                    $('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"qc="+EYA_CONF.queryContext+
-//                    "&file=data.xls";
-//                window.location.replace(downloadUrl);
-//                $(this).dialog('close');
-//            },
-//            Cancel: function() {
-//                $(this).dialog('close');
-//            }
-//        }
-//    });
-
-    // trigger ajax to load counts for taxa groups (left column)
-    //LoadTaxaGroupCounts();
-
-    // AJAX: get list of species_groups (and counts) for current position
-    //doSpatialSearch();
 
     // Handle back button and saved URLs
     // hash coding: #lat|lng|zoom
@@ -545,12 +499,32 @@ function attemptGeolocation() {
  */
 function geocodeAddress(reverseGeocode) {
     var address = $('input#address').val();
+    var latLng = null;
 
-    if (geocoder && address) {
+    // Check if input contains a comma and try and patch coordinates
+    if (address && address.indexOf(",") > -1 && magellan) {
+        var parts = address.split(",");
+        var lat = magellan(parts[0]).latitude(); //.toDD();
+        var lng = magellan(parts[1]).longitude(); //.toDD();
+        //console.log("magellan", parts, lat, lng);
+
+        if (lat && lng) {
+            latLng = new google.maps.LatLng(lat.toDD(), lng.toDD());
+            updateMarkerAddress("GPS corrdinates: " + lat.toDD() + ", " + lng.toDD());
+            updateMarkerPosition(latLng);
+            // reload map pin, etc
+            initialize();
+            loadRecordsLayer();
+        }
+
+    }
+
+    if (!latLng && geocoder && address) {
         //geocoder.getLocations(address, addAddressToPage);
         geocoder.geocode( {'address': address, region: 'AU'}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 // geocode was successful
+                //console.log('geocodeAddress results', results);
                 updateMarkerAddress(results[0].formatted_address);
                 updateMarkerPosition(results[0].geometry.location);
                 // reload map pin, etc
