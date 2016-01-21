@@ -504,8 +504,8 @@ function geocodeAddress(reverseGeocode) {
     // Check if input contains a comma and try and patch coordinates
     if (address && address.indexOf(",") > -1 && magellan) {
         var parts = address.split(",");
-        var lat = magellan(parts[0]).latitude(); //.toDD();
-        var lng = magellan(parts[1]).longitude(); //.toDD();
+        var lat = magellan(parts[0].trim()).latitude(); //.toDD();
+        var lng = magellan(parts[1].trim()).longitude(); //.toDD();
         //console.log("magellan", parts, lat, lng);
 
         if (lat && lng) {
