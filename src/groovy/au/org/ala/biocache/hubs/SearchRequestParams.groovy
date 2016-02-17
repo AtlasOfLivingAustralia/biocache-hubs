@@ -112,8 +112,10 @@ public class SearchRequestParams {
      */
     public String conditionalEncode(String input, Boolean isEncoded) {
         String output;
-
-        if (isEncoded) {
+        
+        if (input == null) {
+            output = "";
+        } else if (isEncoded) {
             try {
                 output = URIUtil.encodeWithinQuery(input);
             } catch (URIException e) {
