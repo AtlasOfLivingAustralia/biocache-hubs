@@ -55,6 +55,7 @@ biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
 //biocache.groupedFacetsUrl = "${biocache.baseUrl}/search/grouped/facets" // optional - define in hub only
 collections.baseUrl = "http://collections.ala.org.au"
+useDownloadPlugin = ""
 
 // images
 images.baseUrl = "http://images.ala.org.au"

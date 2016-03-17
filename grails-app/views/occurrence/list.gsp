@@ -72,10 +72,18 @@
         <input type="hidden" id="userEmail" value="${userEmail}">
         <input type="hidden" id="lsid" value="${params.lsid}"/>
     </div>
+    <g:if test="${flash.message}">
+        <div id="errorAlert" class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" onclick="$(this).parent().hide()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4>${flash.message}</h4>
+            <p>Please contact <a href="mailto:support@ala.org.au?subject=biocache error" style="text-decoration: underline;">support</a> if this error continues</p>
+        </div>
+    </g:if>
     <g:if test="${errors}">
         <div class="searchInfo searchError">
             <h2 style="padding-left: 10px;"><g:message code="list.01.error" default="Error"/></h2>
             <h4>${errors}</h4>
+            Please contact <a href="mailto:support@ala.org.au?subject=biocache error">support</a> if this error continues
         </div>
     </g:if>
     <g:elseif test="${!sr || sr.totalRecords == 0}">
@@ -156,6 +164,15 @@
                     <div class="alert alert-info" style="margin-left: -30px;">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                         ${flash.message}
+                    </div>
+                </g:if>
+                <g:if test="${grailsApplication.config.useDownloadPlugin?.toBoolean()}">
+                    <div id="downloads" class="btn btn-primary pull-right">
+                        <a href="${g.createLink(uri: '/download')}?searchParams=${sr?.urlParameters?.encodeAsURL()}&targetUri=${(request.forwardURI)}"
+                           class="tooltips newDownload"
+                           title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records"><i
+                                class="fa fa-download"></i>
+                        &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/></a>
                     </div>
                 </g:if>
                 <div id="resultsReturned">
@@ -268,9 +285,14 @@
                     <div class="tab-pane solrResults active" id="recordsView">
                         <div id="searchControls" class="row-fluid">
                             <div class="span4">
-                                <div id="downloads" class="btn btn-small">
-                                    <a href="#download" role="button" data-toggle="modal" class="tooltips" title="Download all ${g.formatNumber(number:sr.totalRecords, format:"#,###,###")} records OR species checklist"><i class="fa fa-download"></i>&nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Downloads"/></a>
-                                </div>
+                                <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
+                                    <div id="downloads" class="btn btn-small">
+                                        <a href="#download" role="button" data-toggle="modal" class="tooltips"
+                                           title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records OR species checklist"><i
+                                                class="fa fa-download"></i>&nbsp;&nbsp;<g:message
+                                                code="list.downloads.navigator" default="Downloads"/></a>
+                                    </div>
+                                </g:if>
                                 <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
                                     <div id="alerts" class="btn btn-small">
                                         <a href="#alert" role="button" data-toggle="modal" class="tooltips" title="Get email alerts for this search"><i class="fa fa-bell"></i>&nbsp;&nbsp;<g:message code="list.alerts.navigator" default="Alerts"/></a>

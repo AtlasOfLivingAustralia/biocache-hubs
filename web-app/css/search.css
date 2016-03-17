@@ -427,6 +427,13 @@ div#currentFilter {
     font-weight: bold;
     color: inherit;
 }
+
+#downloads a.newDownload {
+    font-size: 14px;
+    font-weight: normal;
+    padding-left: 6px;
+    padding-right: 9px;
+}
 #downloads a:hover, #alerts a:hover, #mapView .btn a:hover {
     text-decoration: none;
 }
