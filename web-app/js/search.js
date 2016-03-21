@@ -46,10 +46,6 @@ $(document).ready(function() {
         species: false
     };
 
-    // work-around for intitialIndex & history being mutually exclusive
-    if (BC_CONF.defaultListView && !window.location.hash) {
-        window.location.hash = BC_CONF.defaultListView; // used for avh, etc
-    }
 
     // initialise BS tabs
     $('a[data-toggle="tab"]').on('shown', function(e) {
@@ -77,6 +73,11 @@ $(document).ready(function() {
     });
 
     var storedSearchTab = amplify.store('search-tab-state');
+
+    // work-around for intitialIndex & history being mutually exclusive
+    if (!storedSearchTab && BC_CONF.defaultListView && !window.location.hash) {
+        window.location.hash = BC_CONF.defaultListView; // used for avh, etc
+    }
 
     // catch hash URIs and trigger tabs
     if (location.hash !== '') {
