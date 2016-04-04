@@ -372,7 +372,7 @@
                         <ul>
                         <g:each in="${metadataForOutlierLayers}" var="layerMetadata">
                             <li>
-                                <a href="${grailsApplication.config.layersservice.url}/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
+                                <a href="${grailsApplication.config.layersservice.url}/layers/view/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
                                 <g:message code="show.outlierinformation.each.label01" default="Notes"/>: ${layerMetadata.notes}<br/>
                                 <g:message code="show.outlierinformation.each.label02" default="Scale"/>: ${layerMetadata.scale}
                             </li>
