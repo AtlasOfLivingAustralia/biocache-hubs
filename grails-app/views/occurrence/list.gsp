@@ -18,7 +18,8 @@
     <title><g:message code="list.title" default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
     %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-    <r:require modules="search, leaflet, slider, qtip, nanoscroller, amplify, moment, mapCommon"/>
+    <r:require modules="search, leaflet, slider, qtip, nanoscroller, amplify, moment, mapCommon, charts"/>
+
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <r:require module="bieAutocomplete"/>
     </g:if>
@@ -356,10 +357,8 @@
                         <div id='envLegend'></div>
                     </div><!-- end #mapwrapper -->
                     <div id="chartsView" class="tab-pane">
-                        <style type="text/css">
-                           #charts div { display: inline-flex; }
-                        </style>
-                        <div id="charts" class="row-fluid"></div>
+                        <g:render template="charts"
+                                  model="[searchString: searchString]"/>
                     </div><!-- end #chartsWrapper -->
                     <g:if test="${showSpeciesImages}">
                         <div id="speciesImages" class="tab-pane">

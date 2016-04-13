@@ -763,60 +763,7 @@ function removeFilter(el) {
  * Load all the charts 
  */
 function loadAllCharts() {
-    // set baseURls...
-    baseFacetChart.biocacheServicesUrl = BC_CONF.biocacheServiceUrl;
-    baseFacetChart.collectionsUrl = BC_CONF.collectoryUrl;
-    baseFacetChart.biocacheWebappUrl = ""; // keep empty so URLs come from the same host
-    //console.log("Loading charts.....");
-    var queryString = BC_CONF.searchString.replace("?q=","");
-    var biocacheServiceUrl = BC_CONF.biocacheServiceUrl; //BC_CONF.biocacheServiceUrl, // "http://ala-macropus.it.csiro.au/biocache-service";
-    
-    var taxonomyChartOptions = {
-        query: queryString,
-        biocacheServicesUrl: biocacheServiceUrl,
-        displayRecordsUrl: BC_CONF.serverName
-    };
-    
-    var facetChartOptions = {
-        query: queryString,
-        charts: ['collection_uid','state','species_group','assertions','type_status','ibra','state_conservation','month','occurrence_year'],
-        collection_uid: {title: 'By collection'},
-        state: {title: 'By state or territory'},
-        species_group: { title: 'By higher-level groups', ignore: ['Animals','Insects','Crustaceans','Angiosperms','Plants']},
-        assertions: {},
-        type_status: {},
-        ibra: {title: 'By IBRA region'},
-        state_conservation: {},
-        occurrence_year:{},
-        Unknown_s:{},
-        month:{chartType: "column"},
-        biocacheServicesUrl: biocacheServiceUrl,
-        displayRecordsUrl: BC_CONF.serverName
-    };
-
-    if(dynamicFacets !== undefined){
-        var chartsConfigUri = BC_CONF.biocacheServiceUrl + "/upload/charts/" + BC_CONF.selectedDataResource + ".json";
-        $.getJSON(chartsConfigUri, function(chartsConfig) {
-
-            $.each(chartsConfig, function(index, config){
-               if(config.visible) {
-                   facetChartOptions.query = facetChartOptions.query + "&facets=" + config.field;
-                   facetChartOptions.charts.push(config.field);
-
-                   var chartTitle = config.field.substring(0, config.field.length - 2).replace('_', ' ');
-                   facetChartOptions[config.field] = {chartType:config.format, width: 900, backgroundColor: {fill:'transparent'}, chartArea: {width: "80%"}, hAxis: {title: chartTitle}};
-
-                   chartLabels[config.field] = chartTitle;
-                   defaultChartTypes[config.field] = config.format;
-                   baseFacetChart.individualChartOptions[config.field] = {title: chartTitle, chartType:config.format, facets: [config.field]}
-               }
-            });
-            loadFacetCharts(facetChartOptions);
-        });
-    } else {
-        loadFacetCharts(facetChartOptions);
-    }
-    taxonomyChart.load(taxonomyChartOptions);
+    var charts = ALA.BiocacheCharts('charts', chartConfig);
 }
 
 /**
