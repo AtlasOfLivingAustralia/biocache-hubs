@@ -14,6 +14,7 @@
             q="${searchString.replace('?q=','')}"
             qc=""
             fq=""
+            autoLoad="false"
     />
 </r:script>
 
