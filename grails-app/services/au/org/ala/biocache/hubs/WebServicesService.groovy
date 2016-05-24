@@ -288,7 +288,8 @@ class WebServicesService {
     @Cacheable('longTermCache')
     def JSONArray getLoggerReasons() {
         def url = "${grailsApplication.config.logger.baseUrl}/logger/reasons"
-        getJsonElements(url)
+        def jsonObj = getJsonElements(url)
+        jsonObj.findAll { !it.deprecated } // skip deprecated reason codes
     }
 
     @Cacheable('longTermCache')
