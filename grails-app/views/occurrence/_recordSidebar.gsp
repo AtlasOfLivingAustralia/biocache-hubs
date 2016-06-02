@@ -198,12 +198,12 @@
         </div>
     </div>
 </g:if>
-<div class="sidebar">
-    <button href="#processedVsRawView" class="btn" id="showRawProcessed" role="button" data-toggle="modal"
-            title="Table showing both original and processed record values">
-        <span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="icon-th"></i> <g:message code="show.sidebar02.showrawprocessed.span" default="Original vs Processed"/></span>
-    </button>
-</div>
+%{--<div class="sidebar">--}%
+    %{--<button href="#processedVsRawView" class="btn" id="showRawProcessed" role="button" data-toggle="modal"--}%
+            %{--title="Table showing both original and processed record values">--}%
+        %{--<span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="icon-th"></i> <g:message code="show.sidebar02.showrawprocessed.span" default="Original vs Processed"/></span>--}%
+    %{--</button>--}%
+%{--</div>--}%
 <g:if test="${contacts && contacts.size()}">
     <div class="sidebar">
         <button href="#contactCuratorView" class="btn" id="showCurator" role="button" data-toggle="modal"
