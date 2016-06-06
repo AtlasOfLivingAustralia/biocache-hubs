@@ -145,45 +145,61 @@
     %{--<g:set var="json" value="${request.contextPath}/occurrences/${record?.raw?.uuid}.json" />--}%
     <g:if test="${record}">
         <g:if test="${record.raw}">
-            <div id="headingBar" class="recordHeader heading-bar">
-                <h1><g:message code="show.headingbar01.title" default="Occurrence record"/>: <span id="recordId">${recordId}</span></h1>
-                <div id="jsonLink">
-                    <g:if test="${isCollectionAdmin}">
-                        <g:set var="admin" value=" - admin"/>
+            <div class="recordHeader" id="headingBar">
+                <div class="side left">
+                    <g:if test="${collectionLogo}">
+                        <div class="sidebar">
+                            <img src="${collectionLogo}" alt="institution logo" id="institutionLogo"/>
+                        </div>
                     </g:if>
-                    <g:if test="${alatag.loggedInUserDisplayname()}">
-                        <g:message code="show.jsonlink.login" default="Logged in as:"/> ${alatag.loggedInUserDisplayname()}
-                    </g:if>
-                    <g:if test="${clubView}">
-                        <div id="clubView"><g:message code="show.clubview.message" default="Showing &quot;Club View&quot;"/></div>
-                    </g:if>
-                    <!-- <a href="${json}">JSON</a> -->
                 </div>
-                <div id="backBtn" class="hide pull-right">
-                    <a href="#" title="Return to search results" class="btn"><g:message code="show.backbtn.navigator" default="Back to search results"/></a>
+                <div class="side right">
+                    <div id="jsonLinkZ">
+                        <g:if test="${isCollectionAdmin}">
+                            <g:set var="admin" value=" - admin"/>
+                        </g:if>
+                        <g:if test="${false && alatag.loggedInUserDisplayname()}">
+                            <g:message code="show.jsonlink.login" default="Logged in as:"/> ${alatag.loggedInUserDisplayname()}
+                        </g:if>
+                        <g:if test="${clubView}">
+                            <div id="clubView"><g:message code="show.clubview.message" default="Showing &quot;Club View&quot;"/></div>
+                        </g:if>
+                    </div>
+                    <div id="backBtn" class=" pull-rightZ">
+                        <a href="#" title="Return to search results" class="btn"><g:message code="show.backbtn.navigator" default="Back to search results"/></a>
+                    </div>
                 </div>
-                <g:if test="${record.raw.classification}">
-                    <h2 id="headingSciName">
-                        <g:if test="${record.processed.classification.scientificName}">
-                            <alatag:formatSciName rankId="${record.processed.classification.taxonRankID}" name="${record.processed.classification.scientificName}"/>
-                            ${record.processed.classification.scientificNameAuthorship}
-                        </g:if>
-                        <g:elseif test="${record.raw.classification.scientificName}">
-                            <alatag:formatSciName rankId="${record.raw.classification.taxonRankID}" name="${record.raw.classification.scientificName}"/>
-                            ${record.raw.classification.scientificNameAuthorship}
-                        </g:elseif>
-                        <g:else>
-                            <i>${record.raw.classification.genus} ${record.raw.classification.specificEpithet}</i>
-                            ${record.raw.classification.scientificNameAuthorship}
-                        </g:else>
-                        <g:if test="${record.processed.classification.vernacularName}">
-                            | ${record.processed.classification.vernacularName}
-                        </g:if>
-                        <g:elseif test="${record.raw.classification.vernacularName}">
-                            | ${record.raw.classification.vernacularName}
-                        </g:elseif>
-                    </h2>
-                </g:if>
+                <div class="centre">
+                    <h1>
+                        <g:message code="show.headingbar01.title" default="Occurrence record"/>
+                        <span id="recordId">${recordId}</span>
+                    </h1>
+                    <g:if test="${record.raw.classification}">
+                        <div id="recordHeadingLine2">
+                            <g:message code="basicOfRecord.${record.processed.occurrence?.basisOfRecord}" default="${record.processed.occurrence?.basisOfRecord}"/>
+                            <g:message code="show.heading.of" default="of"/>
+                            <g:if test="${record.processed.classification.scientificName}">
+                                <alatag:formatSciName rankId="${record.processed.classification.taxonRankID}" name="${record.processed.classification.scientificName}"/>
+                                ${record.processed.classification.scientificNameAuthorship}
+                            </g:if>
+                            <g:elseif test="${record.raw.classification.scientificName}">
+                                <alatag:formatSciName rankId="${record.raw.classification.taxonRankID}" name="${record.raw.classification.scientificName}"/>
+                                ${record.raw.classification.scientificNameAuthorship}
+                            </g:elseif>
+                            <g:else>
+                                <i>${record.raw.classification.genus} ${record.raw.classification.specificEpithet}</i>
+                                ${record.raw.classification.scientificNameAuthorship}
+                            </g:else>
+                            <g:if test="${record.processed.classification.vernacularName}">
+                                | ${record.processed.classification.vernacularName}
+                            </g:if>
+                            <g:elseif test="${record.raw.classification.vernacularName}">
+                                | ${record.raw.classification.vernacularName}
+                            </g:elseif>
+                            <g:message code="show.heading.recordedOn" default="recorded on"/> ${record.processed.event?.eventDate ?: record.raw.event?.eventDate}
+                        </div>
+                    </g:if>
+                </div>
             </div>
             <div class="row-fluid">
                 <div id="SidebarBoxZ" class="span4">
@@ -309,7 +325,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr>
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="icon-thumbs-down icon-red"></i> <g:message code="show.tabledataqualityresults.tr01td02" default="Failed"/></td>
+                            <td><i class="fa fa-thumbs-o-down" style="color:red;"></i> <g:message code="show.tabledataqualityresults.tr01td02" default="Failed"/></td>
                             <%--<td>More info</td>--%>
                         </tr>
                         </g:each>
@@ -318,7 +334,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr>
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="icon-warning-sign"></i> <g:message code="show.tabledataqualityresults.tr02td02" default="Warning"/></td>
+                            <td><i class="fa fa-exclamation-triangle" style="color:orange;"></i> <g:message code="show.tabledataqualityresults.tr02td02" default="Warning"/></td>
                             <%--<td>More info</td>--%>
                         </tr>
                         </g:each>
@@ -327,7 +343,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr>
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="icon-thumbs-up icon-green"></i> <g:message code="show.tabledataqualityresults.tr03td02" default="Passed"/></td>
+                            <td><i class="fa fa-thumbs-o-up" style="color:green;"></i> <g:message code="show.tabledataqualityresults.tr03td02" default="Passed"/></td>
                             <%--<td>More info</td>--%>
                         </tr>
                         </g:each>
@@ -343,7 +359,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr class="missingPropResult" style="display:none;">
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class=" icon-question-sign"></i> <g:message code="show.tabledataqualityresults.tr05td02" default="Missing"/></td>
+                            <td><i class="fa fa-question-circle"></i> <g:message code="show.tabledataqualityresults.tr05td02" default="Missing"/></td>
                         </tr>
                         </g:each>
 
@@ -358,7 +374,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr class="uncheckTestResult" style="display:none;">
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><g:message code="show.tabledataqualityresults.tr07td02" default="Unchecked (lack of data)"/></td>
+                            <td><i class="fa fa-ban"></i> <g:message code="show.tabledataqualityresults.tr07td02" default="Unchecked (lack of data)"/></td>
                         </tr>
                         </g:each>
 
@@ -396,190 +412,190 @@
 
 				<g:if test="${record.processed.occurrence.duplicationStatus}">
 					<div id="inferredOccurrenceDetails">
-              		<a href="#inferredOccurrenceDetails" name="inferredOccurrenceDetails" id="inferredOccurrenceDetails" hidden="true"></a>
-              		<h2><g:message code="show.inferredoccurrencedetails.title" default="Inferred associated occurrence details"/></h2>
-					<p style="margin-top:5px;">
-                        <g:if test="${record.processed.occurrence.duplicationStatus == 'R' }">
-                            <g:message code="show.inferredoccurrencedetails.p01" default="This record has been identified as the representative occurrence in a group of associated occurrences."/>
+                        <a href="#inferredOccurrenceDetails" name="inferredOccurrenceDetails" id="inferredOccurrenceDetails" hidden="true"></a>
+                        <h2><g:message code="show.inferredoccurrencedetails.title" default="Inferred associated occurrence details"/></h2>
+                        <p style="margin-top:5px;">
+                            <g:if test="${record.processed.occurrence.duplicationStatus == 'R' }">
+                                <g:message code="show.inferredoccurrencedetails.p01" default="This record has been identified as the representative occurrence in a group of associated occurrences."/>
+                            </g:if>
+                            <g:else><g:message code="show.inferredoccurrencedetails.p02" default="This record is associated with the representative record."/>
+                            </g:else>
+                            <g:message code="show.inferredoccurrencedetails.p03" default="More information about the duplication detection methods and terminology in use is available here"/>:
+                            <ul>
+                                <li>
+                                <a href="http://code.google.com/p/ala-dataquality/wiki/INFERRED_DUPLICATE_RECORD">http://code.google.com/p/ala-dataquality/wiki/INFERRED_DUPLICATE_RECORD</a>
+                                </li>
+                            </ul>
+                        </p>
+                        <g:if test="${duplicateRecordDetails && duplicateRecordDetails.duplicates?.size() > 0}">
+                            <table class="duplicationTable table-striped table-bordered table-condensed" style="border-bottom:none;">
+                                <tr class="sectionName"><td colspan="4"><g:message code="show.table01.title" default="Representative Record"/></td></tr>
+                                <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Record UUID">
+                                <a href="${request.contextPath}/occurrences/${duplicateRecordDetails.uuid}">${duplicateRecordDetails.uuid}</a></alatag:occurrenceTableRow>
+                                <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Data Resource">
+                                <g:set var="dr">${duplicateRecordDetails.rowKey?.substring(0, duplicateRecordDetails.rowKey?.indexOf("|"))}</g:set>
+                                <a href="${collectionsWebappContext}/public/show/${dr}">${dataResourceCodes.get(dr)}</a>
+                                </alatag:occurrenceTableRow>
+                                <g:if test="${duplicateRecordDetails.rawScientificName}">
+                                <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Raw Scientific Name">
+                                    ${duplicateRecordDetails.rawScientificName}</alatag:occurrenceTableRow>
+                                </g:if>
+                                <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Coordinates">
+                                ${duplicateRecordDetails.latLong}</alatag:occurrenceTableRow>
+                                <g:if test="${duplicateRecordDetails.collector }">
+                                    <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Collector">
+                                ${duplicateRecordDetails.collector}</alatag:occurrenceTableRow>
+                                </g:if>
+                                <g:if test="${duplicateRecordDetails.year }">
+                                    <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Year">
+                                ${duplicateRecordDetails.year}</alatag:occurrenceTableRow>
+                                </g:if>
+                                <g:if test="${duplicateRecordDetails.month }">
+                                    <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Month">
+                                ${duplicateRecordDetails.month}</alatag:occurrenceTableRow>
+                                </g:if>
+                                <g:if test="${duplicateRecordDetails.day }">
+                                    <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Day">
+                                ${duplicateRecordDetails.day}</alatag:occurrenceTableRow>
+                                </g:if>
+                                <!-- Loop through all the duplicate records -->
+                                <tr class="sectionName"><td colspan="4"><g:message code="show.table02.title" default="Related records"/></td></tr>
+                                <g:each in="${duplicateRecordDetails.duplicates }" var="dup">
+                                    <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Record UUID">
+                                <a href="${request.contextPath}/occurrences/${dup.uuid}">${dup.uuid}</a></alatag:occurrenceTableRow>
+                                <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Data Resource">
+                                <g:set var="dr">${dup.rowKey.substring(0, dup.rowKey.indexOf("|"))}</g:set>
+                                <a href="${collectionsWebappContext}/public/show/${dr}">${dataResourceCodes.get(dr)}</a>
+                                </alatag:occurrenceTableRow>
+                                <g:if test="${dup.rawScientificName}">
+                                <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Raw Scientific Name">
+                                    ${dup.rawScientificName}</alatag:occurrenceTableRow>
+                                </g:if>
+                                <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Coordinates">
+                                ${dup.latLong}</alatag:occurrenceTableRow>
+                                 <g:if test="${dup.collector }">
+                                    <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Collector">
+                                ${dup.collector}</alatag:occurrenceTableRow>
+                                </g:if>
+                                <g:if test="${dup.year }">
+                                    <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Year">
+                                ${dup.year}</alatag:occurrenceTableRow>
+                                </g:if>
+                                <g:if test="${dup.month }">
+                                    <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Month">
+                                ${dup.month}</alatag:occurrenceTableRow>
+                                </g:if>
+                                <g:if test="${dup.day }">
+                                    <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Day">
+                                ${dup.day}</alatag:occurrenceTableRow>
+                                </g:if>
+                                <g:if test="${dup.dupTypes }">
+                                <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="duplicate"
+                                        fieldName="Comments">
+                                    <g:each in="${dup.dupTypes }" var="dupType">
+                                        <g:message code="duplication.${dupType.id}"/>
+                                        <br>
+                                    </g:each>
+                                    </alatag:occurrenceTableRow>
+                                    <tr class="sectionName"><td colspan="4"></td></tr>
+                                </g:if>
+                                </g:each>
+                            </table>
                         </g:if>
-                        <g:else><g:message code="show.inferredoccurrencedetails.p02" default="This record is associated with the representative record."/>
-                        </g:else>
-                        <g:message code="show.inferredoccurrencedetails.p03" default="More information about the duplication detection methods and terminology in use is available here"/>:
-						<ul>
-							<li>
-							<a href="http://code.google.com/p/ala-dataquality/wiki/INFERRED_DUPLICATE_RECORD">http://code.google.com/p/ala-dataquality/wiki/INFERRED_DUPLICATE_RECORD</a>
-							</li>
-						</ul>
-					</p>
-					<g:if test="${duplicateRecordDetails && duplicateRecordDetails.duplicates?.size() > 0}">
-						<table class="duplicationTable table-striped table-bordered table-condensed" style="border-bottom:none;">
-							<tr class="sectionName"><td colspan="4"><g:message code="show.table01.title" default="Representative Record"/></td></tr>
-							<alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Record UUID">
-                            <a href="${request.contextPath}/occurrences/${duplicateRecordDetails.uuid}">${duplicateRecordDetails.uuid}</a></alatag:occurrenceTableRow>
-                            <alatag:occurrenceTableRow
-        							annotate="false"
-        							section="duplicate"
-        							fieldName="Data Resource">
-        					<g:set var="dr">${duplicateRecordDetails.rowKey?.substring(0, duplicateRecordDetails.rowKey?.indexOf("|"))}</g:set>
-        					<a href="${collectionsWebappContext}/public/show/${dr}">${dataResourceCodes.get(dr)}</a>
-				 			</alatag:occurrenceTableRow>
-                            <g:if test="${duplicateRecordDetails.rawScientificName}">
-			        		<alatag:occurrenceTableRow
-	                				annotate="false"
-	                				section="duplicate"
-	                				fieldName="Raw Scientific Name">
-	        					${duplicateRecordDetails.rawScientificName}</alatag:occurrenceTableRow>
-		        			</g:if>
-                            <alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Coordinates">
-                            ${duplicateRecordDetails.latLong}</alatag:occurrenceTableRow>
-                            <g:if test="${duplicateRecordDetails.collector }">
-                            	<alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Collector">
-                            ${duplicateRecordDetails.collector}</alatag:occurrenceTableRow>
-                            </g:if>
-                            <g:if test="${duplicateRecordDetails.year }">
-                            	<alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Year">
-                            ${duplicateRecordDetails.year}</alatag:occurrenceTableRow>
-                            </g:if>
-                            <g:if test="${duplicateRecordDetails.month }">
-                            	<alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Month">
-                            ${duplicateRecordDetails.month}</alatag:occurrenceTableRow>
-                            </g:if>
-                            <g:if test="${duplicateRecordDetails.day }">
-                            	<alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Day">
-                            ${duplicateRecordDetails.day}</alatag:occurrenceTableRow>
-                            </g:if>
-                            <!-- Loop through all the duplicate records -->
-                            <tr class="sectionName"><td colspan="4"><g:message code="show.table02.title" default="Related records"/></td></tr>
-                            <g:each in="${duplicateRecordDetails.duplicates }" var="dup">
-                            	<alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Record UUID">
-                            <a href="${request.contextPath}/occurrences/${dup.uuid}">${dup.uuid}</a></alatag:occurrenceTableRow>
-                            <alatag:occurrenceTableRow
-        							annotate="false"
-        							section="duplicate"
-        							fieldName="Data Resource">
-        					<g:set var="dr">${dup.rowKey.substring(0, dup.rowKey.indexOf("|"))}</g:set>
-        					<a href="${collectionsWebappContext}/public/show/${dr}">${dataResourceCodes.get(dr)}</a>
-				 			</alatag:occurrenceTableRow>
-                            <g:if test="${dup.rawScientificName}">
-			        		<alatag:occurrenceTableRow
-	                				annotate="false"
-	                				section="duplicate"
-	                				fieldName="Raw Scientific Name">
-	        					${dup.rawScientificName}</alatag:occurrenceTableRow>
-		        			</g:if>
-                            <alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Coordinates">
-                            ${dup.latLong}</alatag:occurrenceTableRow>
-                             <g:if test="${dup.collector }">
-                            	<alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Collector">
-                            ${dup.collector}</alatag:occurrenceTableRow>
-                            </g:if>
-                            <g:if test="${dup.year }">
-                            	<alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Year">
-                            ${dup.year}</alatag:occurrenceTableRow>
-                            </g:if>
-                            <g:if test="${dup.month }">
-                            	<alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Month">
-                            ${dup.month}</alatag:occurrenceTableRow>
-                            </g:if>
-                            <g:if test="${dup.day }">
-                            	<alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Day">
-                            ${dup.day}</alatag:occurrenceTableRow>
-                            </g:if>
-                            <g:if test="${dup.dupTypes }">
-                            <alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="duplicate"
-                                    fieldName="Comments">
-                            	<g:each in="${dup.dupTypes }" var="dupType">
-                            		<g:message code="duplication.${dupType.id}"/>
-                            		<br>
-                            	</g:each>
-                            	</alatag:occurrenceTableRow>
-                            	<tr class="sectionName"><td colspan="4"></td></tr>
-                            </g:if>
-                            </g:each>
-						</table>
-					</g:if>
-					</p>
-				</g:if>
-			</div>
+                        </p>
+                    </g:if>
+                </div>
 
                 <div id="outlierInformation" class="additionalData">
                     <g:if test="${contextualSampleInfo}">
-                    <h3><g:message code="show.outlierinformation.02.title01" default="Additional political boundaries information"/></h3>
-                    <table class="layerIntersections table-striped table-bordered table-condensed">
-                        <tbody>
-                        <g:each in="${contextualSampleInfo}" var="sample" status="vs">
-                            <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != contextualSampleInfo.get(vs - 1).classification1 && vs != contextualSampleInfo.size() - 1))}">
-                                <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
-                            </g:if>
-                            <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
-                            <alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="contextual"
-                                    fieldCode="${sample.layerName}"
-                                    fieldName="${fn}">
-                            ${sample.value}</alatag:occurrenceTableRow>
-                        </g:each>
-                        </tbody>
-                    </table>
+                        <h3 id="contextualSampleInfo"><g:message code="show.outlierinformation.02.title01" default="Additional political boundaries information"/></h3>
+                        <table class="layerIntersections table-striped table-bordered table-condensed">
+                            <tbody>
+                            <g:each in="${contextualSampleInfo}" var="sample" status="vs">
+                                <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != contextualSampleInfo.get(vs - 1).classification1 && vs != contextualSampleInfo.size() - 1))}">
+                                    <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
+                                </g:if>
+                                <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
+                                <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="contextual"
+                                        fieldCode="${sample.layerName}"
+                                        fieldName="${fn}">
+                                ${sample.value}</alatag:occurrenceTableRow>
+                            </g:each>
+                            </tbody>
+                        </table>
                     </g:if>
 
                     <g:if test="${environmentalSampleInfo}">
-                    <h3><g:message code="show.outlierinformation.02.title02" default="Environmental sampling for this location"/></h3>
-                    <table class="layerIntersections table-striped table-bordered table-condensed" >
-                        <tbody>
-                        <g:each in="${environmentalSampleInfo}" var="sample" status="vs">
-                            <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != environmentalSampleInfo.get(vs - 1).classification1 && vs != environmentalSampleInfo.size() - 1))}">
-                                <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
-                            </g:if>
-                            <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='More information about this layer'>${sample.layerDisplayName}</a></g:set>
-                            <alatag:occurrenceTableRow
-                                    annotate="false"
-                                    section="contextual"
-                                    fieldCode="${sample.layerName}"
-                                    fieldName="${fn}">
-                                ${sample.value} ${(sample.units && !StringUtils.containsIgnoreCase(sample.units,'dimensionless')) ? sample.units : ''}
-                            </alatag:occurrenceTableRow>
-                        </g:each>
-                        </tbody>
-                    </table>
+                        <h3 id="environmentalSampleInfo"><g:message code="show.outlierinformation.02.title02" default="Environmental sampling for this location"/></h3>
+                        <table class="layerIntersections table-striped table-bordered table-condensed" >
+                            <tbody>
+                            <g:each in="${environmentalSampleInfo}" var="sample" status="vs">
+                                <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != environmentalSampleInfo.get(vs - 1).classification1 && vs != environmentalSampleInfo.size() - 1))}">
+                                    <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
+                                </g:if>
+                                <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='More information about this layer'>${sample.layerDisplayName}</a></g:set>
+                                <alatag:occurrenceTableRow
+                                        annotate="false"
+                                        section="contextual"
+                                        fieldCode="${sample.layerName}"
+                                        fieldName="${fn}">
+                                    ${sample.value} ${(sample.units && !StringUtils.containsIgnoreCase(sample.units,'dimensionless')) ? sample.units : ''}
+                                </alatag:occurrenceTableRow>
+                            </g:each>
+                            </tbody>
+                        </table>
                     </g:if>
                 </div>
             </div>

@@ -269,9 +269,11 @@ function refreshUserAnnotations(){
         if (data.assertionQueries.length == 0 && data.userAssertions.length == 0) {
             $('#userAnnotationsDiv').hide('slow');
             $('#userAssertionsContainer').hide("slow");
+            $('#userAnnotationsNav').hide("slow");
         } else {
             $('#userAnnotationsDiv').show('slow');
             $('#userAssertionsContainer').show("slow");
+            $('#userAnnotationsNav').show("slow");
         }
         $('#userAnnotationsList').empty();
 
