@@ -325,7 +325,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr>
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="fa fa-thumbs-o-down" style="color:red;"></i> <g:message code="show.tabledataqualityresults.tr01td02" default="Failed"/></td>
+                            <td><i class="fa fa-times-circle" style="color:red;"></i> <g:message code="show.tabledataqualityresults.tr01td02" default="Failed"/></td>
                             <%--<td>More info</td>--%>
                         </tr>
                         </g:each>
@@ -334,7 +334,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr>
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="fa fa-exclamation-triangle" style="color:orange;"></i> <g:message code="show.tabledataqualityresults.tr02td02" default="Warning"/></td>
+                            <td><i class="fa fa-exclamation-circle" style="color:orange;"></i> <g:message code="show.tabledataqualityresults.tr02td02" default="Warning"/></td>
                             <%--<td>More info</td>--%>
                         </tr>
                         </g:each>
@@ -343,7 +343,7 @@
                         <g:each in="${testSet}" var="test">
                         <tr>
                             <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
-                            <td><i class="fa fa-thumbs-o-up" style="color:green;"></i> <g:message code="show.tabledataqualityresults.tr03td02" default="Passed"/></td>
+                            <td><i class="fa fa-check-circle" style="color:green;"></i> <g:message code="show.tabledataqualityresults.tr03td02" default="Passed"/></td>
                             <%--<td>More info</td>--%>
                         </tr>
                         </g:each>

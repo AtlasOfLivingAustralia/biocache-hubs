@@ -191,8 +191,9 @@ $(document).ready(function() {
         html : true,
         content: "Just a test"
     }).click('click', function(e) { e.preventDefault(); });
-
-
+    
+    // add BS tooltip to elements with class "tooltips"
+    $(".tooltips").tooltip();
 
     $(".dataQualityHelpLink").popover({
         html : true,

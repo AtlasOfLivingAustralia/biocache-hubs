@@ -77,11 +77,11 @@
     <li><a href="#userAnnotationsDiv" id="userAnnotationsNav" style="display:none;"><g:message code="show.userannotationsdiv.title" default="User flagged issues"/></a></li>
     <g:if test="${record.systemAssertions && record.processed.attribution.provenance != 'Draft'}">
         <li><a href="#dataQuality"><g:message code="show.dataquality.title" default="Data quality tests"/>
-        (${record.systemAssertions.failed?.size()?:0} <i class="fa fa-thumbs-o-down" style="color:red;"></i>,
-        ${record.systemAssertions.warning?.size()?:0} <i class="fa fa-exclamation-triangle" style="color:orange;"></i>,
-        ${record.systemAssertions.passed?.size()?:0} <i class="fa fa-thumbs-o-up" style="color:green;"></i>,
-        ${record.systemAssertions.missing?.size()?:0} <i class="fa fa-question-circle" style="color:gray;"></i>,
-        ${record.systemAssertions.unchecked?.size()?:0} <i class="fa fa-ban" style="color:gray;"></i>)
+        (${record.systemAssertions.failed?.size()?:0} <i class="fa fa-times-circle tooltips" style="color:red;" title="<g:message code="assertions.failed" default="failed"/>"></i>,
+        ${record.systemAssertions.warning?.size()?:0} <i class="fa fa-exclamation-circle tooltips" style="color:orange;" title="<g:message code="assertions.warnings" default="warning"/>"></i>,
+        ${record.systemAssertions.passed?.size()?:0} <i class="fa fa-check-circle tooltips" style="color:green;" title="<g:message code="assertions.passed" default="passed"/>"></i>,
+        ${record.systemAssertions.missing?.size()?:0} <i class="fa fa-question-circle tooltips" style="color:gray;" title="<g:message code="assertions.missing" default="missing"/>"></i>,
+        ${record.systemAssertions.unchecked?.size()?:0} <i class="fa fa-ban tooltips" style="color:gray;" title="<g:message code="assertions.unchecked" default="unchecked"/>"></i>)
         </a></li>
     </g:if>
     <g:if test="${record.processed.occurrence.outlierForLayers}">
