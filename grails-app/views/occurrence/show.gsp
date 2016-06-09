@@ -196,7 +196,9 @@
                             <g:elseif test="${record.raw.classification.vernacularName}">
                                 | ${record.raw.classification.vernacularName}
                             </g:elseif>
-                            <g:message code="show.heading.recordedOn" default="recorded on"/> ${record.processed.event?.eventDate ?: record.raw.event?.eventDate}
+                            <g:if test="${record.processed.event?.eventDate || record.raw.event?.eventDate}">
+                                <g:message code="show.heading.recordedOn" default="recorded on"/> ${record.processed.event?.eventDate ?: record.raw.event?.eventDate}
+                            </g:if>
                         </div>
                     </g:if>
                 </div>
