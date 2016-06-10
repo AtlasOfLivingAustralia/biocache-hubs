@@ -191,7 +191,7 @@ $(document).ready(function() {
         html : true,
         content: "Just a test"
     }).click('click', function(e) { e.preventDefault(); });
-    
+
     // add BS tooltip to elements with class "tooltips"
     $(".tooltips").tooltip();
 
@@ -230,6 +230,17 @@ $(document).ready(function() {
         $('#backBtn > a').attr('href', lastSearch);
         $('#backBtn').show();
     }
+
+    // hide any DwC sections that are empty
+    $('.occurrenceTable').each(function(i, el) {
+        if (!$(el).find('tr').length) {
+            // hide section
+            $(el).parent().hide();
+            // hide ToC entry
+            var parentId = $(el).parent().attr('id').replace('Table','');
+            $('a[href="#' + parentId + '"]').hide();
+        }
+    });
 
 }); // end JQuery document ready
 
