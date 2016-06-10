@@ -145,7 +145,7 @@
     %{--<g:set var="json" value="${request.contextPath}/occurrences/${record?.raw?.uuid}.json" />--}%
     <g:if test="${record}">
         <g:if test="${record.raw}">
-            <div class="recordHeader" id="headingBar">
+            <div class="recordHeader clearfix" id="headingBar">
                 <div class="side left">
                     <g:if test="${collectionLogo}">
                         <div class="sidebar">

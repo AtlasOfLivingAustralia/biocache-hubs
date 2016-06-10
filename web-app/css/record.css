@@ -107,6 +107,7 @@ h1 span#recordId {
 }
 #institutionLogo {
     max-width: 250px;
+    max-height: 100px;
     padding-right: 15px;
 }
 #recordHeadingLine2 {
