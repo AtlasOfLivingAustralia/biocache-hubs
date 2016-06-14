@@ -577,6 +577,44 @@ $(document).ready(function() {
         $(this).find('.brief, .detail').toggleClass('hide');
     });
 
+
+    var imageId, attribution, recordUrl;
+    // Lightbox
+    $(document).delegate('.thumbImage', 'click', function(event) {
+        event.preventDefault();
+        imageId = $(this).attr('data-image-id');
+        attribution = $(this).find('.meta.detail').html();
+        recordUrl = $(this).attr('href');
+        setDialogSize();
+        $('#imageDialog').modal('show');
+    });
+
+    // show image only after modal dialog is shown. otherwise, image position will be off the viewing area.
+    $('#imageDialog').on('shown.bs.modal',function () {
+        imgvwr.viewImage($("#viewerContainerId"), imageId, {
+            imageServiceBaseUrl: BC_CONF.imageServiceBaseUrl,
+            addSubImageToggle: false,
+            addCalibration: false,
+            addDrawer: false,
+            addCloseButton: true,
+            addAttribution: true,
+            addLikeDislikeButton: true,
+            attribution: attribution,
+            disableLikeDislikeButton: BC_CONF.disableLikeDislikeButton,
+            likeUrl: BC_CONF.likeUrl + '?id=' + imageId,
+            dislikeUrl: BC_CONF.dislikeUrl + '?id=' + imageId,
+            userRatingUrl: BC_CONF.userRatingUrl + '?id=' + imageId,
+            userRatingHelpText: BC_CONF.userRatingHelpText.replace('RECORD_URL', recordUrl)
+        });
+    });
+
+    // set size of modal dialog during a resize
+    $(window).on('resize', setDialogSize)
+    function setDialogSize() {
+        var height = $(window).height()
+        height *= 0.8
+        $("#viewerContainerId").height(height);
+    }
 }); // end JQuery document ready
 
 /**
@@ -829,7 +867,7 @@ function loadImagesInTab() {
 function loadImages(start) {
     start = (start) ? start : 0;
     var imagesJsonUri = BC_CONF.biocacheServiceUrl + "/occurrences/search.json" + BC_CONF.searchString + 
-        "&fq=multimedia:Image&facet=false&pageSize=20&start=" + start + "&sort=first_loaded_date&dir=desc&callback=?";
+        "&fq=multimedia:Image&facet=false&pageSize=20&start=" + start + "&sort=identification_qualifier_s&dir=asc&callback=?";
     $.getJSON(imagesJsonUri, function(data) {
         //console.log("data",data);
         if (data.occurrences) {
@@ -850,6 +888,7 @@ function loadImages(start) {
                 link.attr('href', BC_CONF.contextPath + "/occurrences/"  + el.uuid);
                 link.attr('title', 'click to enlarge');
                 link.attr('data-occurrenceuid', el.uuid);
+                link.attr('data-image-id', el.image);
                 $ImgConTmpl.find('img').attr('src', el.smallImageUrl);
                 // brief metadata
                 var briefHtml = el.raw_scientificName;

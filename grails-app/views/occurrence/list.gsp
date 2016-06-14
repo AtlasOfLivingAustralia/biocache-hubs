@@ -9,6 +9,7 @@
 <g:set var="startPageTime" value="${System.currentTimeMillis()}"/>
 <g:set var="queryDisplay" value="${sr?.queryTitle?:searchRequestParams?.displayString?:''}"/>
 <g:set var="searchQuery" value="${grailsApplication.config.skin.useAlaBie ? 'taxa' : 'q'}"/>
+<g:set var="authService" bean="authService"></g:set>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,7 +19,7 @@
     <title><g:message code="list.title" default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
     %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-    <r:require modules="search, leaflet, slider, qtip, nanoscroller, amplify, moment, mapCommon"/>
+    <r:require modules="search, leaflet, slider, qtip, nanoscroller, amplify, moment, mapCommon, image-viewer"/>
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <r:require module="bieAutocomplete"/>
     </g:if>
@@ -46,7 +47,17 @@
             autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson()?:'{}'},
             zoomOutsideScopedRegion: Boolean("${grailsApplication.config.map.zoomOutsideScopedRegion}"),
             hasMultimedia: ${hasImages?:'false'}, // will be either true or false
-            locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}"
+            locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
+            imageServiceBaseUrl:"${grailsApplication.config.images.baseUrl}",
+            likeUrl: "${createLink(controller: 'imageClient', action: 'likeImage')}",
+            dislikeUrl: "${createLink(controller: 'imageClient', action: 'dislikeImage')}",
+            userRatingUrl: "${createLink(controller: 'imageClient', action: 'userRating')}",
+            disableLikeDislikeButton: ${authService.getUserId() ? false : true},
+            userRatingHelpText: '<div><b>Up vote (<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>) an image:</b>'+
+            ' Image supports the identification of the species or is representative of the species.  Subject is clearly visible including identifying features.<br/><br/>'+
+            '<b>Down vote (<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>) an image:</b>'+
+            ' Image does not support the identification of the species, subject is unclear and identifying features are difficult to see or not visible.<br/><br/>'+
+            'If this image is incorrectly identified please flag an issue on the <a href="RECORD_URL">record</a></div>'
         };
 
         google.load('maps','3.5',{ other_params: "sensor=false" });
@@ -417,6 +428,17 @@
             </div>
         </div>
     </g:else>
+<div id="imageDialog" class="modal fade hide" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="viewerContainerId">
+
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
 <g:if test="${params.benchmarks}">
     <g:set var="endPageTime" value="${System.currentTimeMillis()}"/>
     <div style="color:#ddd;">
