@@ -581,10 +581,13 @@ $(document).ready(function() {
     var imageId, attribution, recordUrl;
     // Lightbox
     $(document).delegate('.thumbImage', 'click', function(event) {
+        var recordLink = '<a href="RECORD_URL">View details of this record</a>'
         event.preventDefault();
         imageId = $(this).attr('data-image-id');
         attribution = $(this).find('.meta.detail').html();
         recordUrl = $(this).attr('href');
+        recordLink = recordLink.replace('RECORD_URL', recordUrl);
+        attribution += '<br>' + recordLink;
         setDialogSize();
         $('#imageDialog').modal('show');
     });
