@@ -63,12 +63,13 @@
                 });
             </g:if>
             <g:if test="${isCollectionAdmin}">
-                $(".confirmVerifyCheck").click(function(e) {
+       /*         $(".confirmVerifyCheck").click(function(e) {
                     $("#verifyAsk").hide();
                     $("#verifyDone").show();
                 });
                 $(".cancelVerify").click(function(e) {
                     //$.fancybox.close(); // TODO fix
+
                 });
                 $(".closeVerify").click(function(e) {
                     //$.fancybox.close(); // TODO fix
@@ -77,8 +78,11 @@
                     $("#verifySpinner").show();
                     var code = "50000";
                     var userDisplayName = '${userDisplayName}';
-                    var recordUuid = '${record.raw.rowKey.encodeAsURL()}';
+                 //   var recordUuid = '${record.raw.rowKey.encodeAsURL()}';
+                    var recordUuid = '${record.raw.uuid}';
                     var comment = $("#verifyComment").val();
+                    var userAssertionStatus = $("#userAssertionStatus").val();
+                    //alert(userAssertionStatus);
                     if (!comment) {
                         alert("Please add a comment");
                         $("#verifyComment").focus();
@@ -87,7 +91,7 @@
                     }
                     // send assertion via AJAX... TODO catch errors
                     $.post("${request.contextPath}/occurrences/assertions/add",
-                            { recordUuid: recordUuid, code: code, comment: comment, userId: OCC_REC.userId, userDisplayName: userDisplayName},
+                            { recordUuid: recordUuid, code: code, comment: comment, userAssertionStatus: userAssertionStatus, userId: OCC_REC.userId, userDisplayName: userDisplayName},
                             function(data) {
                                 // service simply returns status or OK or FORBIDDEN, so assume it worked...
                                 $("#verifyAsk").fadeOut();
@@ -98,7 +102,7 @@
                             }).complete(function() {
                                 $("#verifySpinner").hide();
                             });
-                });
+                }); */
             </g:if>
         }); // end $(document).ready()
 
@@ -629,7 +633,7 @@
         </g:if>
 
         <g:if test="${contacts}">
-            <div id="contactCuratorView" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="contactCuratorViewLabel" aria-hidden="true"><!-- BS modal div -->
+            <p id="contactCuratorView" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="contactCuratorViewLabel" aria-hidden="true"><!-- BS modal div -->
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <h3 id="contactCuratorViewLabel"><g:message code="show.contactcuratorview.title" default="Contact curator"/></h3>
@@ -660,11 +664,79 @@
            <p class="viewMore" style="display:none;">
                <a class="viewMoreLink" href="#"><g:message code="show.userannotationtemplate.p01.navigator" default="View more with this annotation"/></a>
            </p>
+            <br/>
            <p class="deleteAnnotation" style="display:none;">
                <a class="deleteAnnotationButton btn" href="#"><g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/></a>
            </p>
+
+            <br>
+
+            <i id="verificationDetailsText" style="display:none;color: steelblue">User Verification Details</i>
+
+            <ul style="display:none;" class="userVerificationClass">
+                <li id="userVerificationTemplate" class="userVerificationTemplate" style="padding-left:2em;border:solid;border-width:1px;color:steelblue">
+                    <div class="qaStatus"></div>
+                    <div class="comment"></div>
+                    <div class="userDisplayName"></div>
+                    <div class="created"></div>
+                </li>
+            </ul>
+            <br/>
+            <p class="verifyAnnotation" style="display:none;">
+                <a class="verifyAnnotationButton btn"  href="#verifyRecordModal" data-toggle="modal"><g:message code="show.userannotationtemplate.p03.navigator" default="Verify this annotation"/></a>
+            </p>
+
         </li>
         </ul>
+
+
+
+
+
+        <div id="verifyRecordModal" class="modal hide" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true">
+            <div class="modal-header">
+                <h3><g:message code="show.verifyrecord.title" default="Confirmation"/></h3>
+            </div>
+            <div class="modal-body">
+                <div id="verifyAsk">
+                    <g:set var="markedAssertions"/>
+                    <g:if test="!record.processed.geospatiallyKosher">
+                        <g:set var="markedAssertions"><g:message code="show.verifyask.set01" default="geospatially suspect"/></g:set>
+                    </g:if>
+                    <g:if test="!record.processed.taxonomicallyKosher">
+                        <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}<g:message code="show.verifyask.set02" default="taxonomically suspect"/></g:set>
+                    </g:if>
+                    <g:each var="sysAss" in="${record.systemAssertions.failed}">
+                        <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}<g:message code="${sysAss.name}" /></g:set>
+                    </g:each>
+                    <p>
+                        <g:message code="show.verifyrecord.p01" default="Record is marked as"/> <b>${markedAssertions}</b>
+                    </p>
+                    <p style="margin-bottom:10px;">
+                        <g:message code="show.verifyrecord.p02" default="Click the &quot;Confirm&quot; button to verify that this record is correct and that the listed &quot;validation issues&quot; are incorrect/invalid."/>
+                    </p>
+                    <p style="margin-top:20px;">
+                        <label for="userAssertionStatus"><g:message code="show.verifyrecord.p03" default="User Assertion Status:"/></label>
+                        <select name="userAssertionStatus" id="userAssertionStatus">
+                            <g:each in="${verificationCategory}" var="code">
+                                <option value="${code}"><g:message code="show.userAssertionStatus.${code}" default="${code}"/></option>
+                            </g:each>
+                        </select>
+                    </p>
+                    <p><textarea id="verifyComment" rows="3" style="width: 90%"></textarea></p><br>
+                    <button id="confirmVerify" class="btn confirmVerify"><g:message code="show.verifyrecord.btn.confirmverify" default="Confirm"/></button>
+                    <button class="btn cancelVerify"  data-dismiss="modal"><g:message code="show.verifyrecord.btn.cancel" default="Cancel"/></button>
+                    <img src="${request.contextPath}/images/spinner.gif" id="verifySpinner" class="verifySpinner hide" alt="spinner icon"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="verifyDone" style="display:none;">
+                    <g:message code="show.verifydone.message" default="Record successfully verified"/>
+                    <br/>
+                    <button class="btn closeVerify" data-dismiss="modal"><g:message code="show.verifydone.btn.closeverify" default="Close"/></button>
+                </div>
+            </div>
+        </div>
 
         <g:if test="${!record.raw}">
             <div id="headingBar">

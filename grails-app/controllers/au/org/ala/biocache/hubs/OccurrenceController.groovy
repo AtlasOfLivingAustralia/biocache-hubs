@@ -207,13 +207,14 @@ class OccurrenceController {
                         collectionName: collectionInfo?.name,
                         collectionLogo: collectionInfo?.institutionLogoUrl,
                         collectionInstitution: collectionInfo?.institution,
-                        isCollectionAdmin: false, // TODO implement this
+                        isCollectionAdmin: true, // TODO implement this
                         contacts: contacts,
                         queryAssertions: null, // TODO implement this
                         duplicateRecordDetails: webServicesService.getDuplicateRecordDetails(record),
                         dataResourceCodes: facetsCacheService.getFacetNamesFor("data_resource_uid"), // TODO move string value to config file
                         clubView: hasClubView,
                         errorCodes: webServicesService.getErrorCodes(),
+                        verificationCategory: [50001, 50002, 50003],
                         metadataForOutlierLayers: postProcessingService.getMetadataForOutlierLayers(record, layersMetaData),
                         environmentalSampleInfo: postProcessingService.getLayerSampleInfo(ENVIRO_LAYER, record, layersMetaData),
                         contextualSampleInfo: postProcessingService.getLayerSampleInfo(CONTEXT_LAYER, record, layersMetaData),
