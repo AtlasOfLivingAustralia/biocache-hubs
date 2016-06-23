@@ -329,13 +329,6 @@ div.audiojs div.time {
     color: orange;
 }
 
-/* anchor offset for floating header */
-:target:before {
-    content:"";
-    display:block;
-    height:67px; /* fixed header height*/
-    margin:-67px 0 0; /* negative fixed header height */
-}
 #navBox {
     margin-top: 10px;
 }
