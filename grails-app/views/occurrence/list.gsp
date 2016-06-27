@@ -35,6 +35,7 @@
             facetDownloadQuery: "${searchString}${fqParamsSingleQ}",
             queryString: "${queryDisplay.encodeAsJavaScript()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
+            bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
             collectoryUrl: "${grailsApplication.config.collectory.baseUrl}",
             skin: "${grailsApplication.config.skin.layout}",
