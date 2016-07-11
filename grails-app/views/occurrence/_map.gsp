@@ -883,49 +883,7 @@ a.colour-by-legend-toggle {
                 MAP_VAR.map.spin(false);
 
                 if (record.raw) {
-                    var displayHtml = "";
-
-                    // catalogNumber
-                    if(record.raw.occurrence.catalogNumber != null){
-                        displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.raw.occurrence.catalogNumber + '<br />';
-                    } else if(record.processed.occurrence.catalogNumber != null){
-                        displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.processed.occurrence.catalogNumber + '<br />';
-                    }
-
-                    if(record.raw.classification.vernacularName!=null ){
-                        displayHtml += record.raw.classification.vernacularName + '<br />';
-                    } else if(record.processed.classification.vernacularName!=null){
-                        displayHtml += record.processed.classification.vernacularName + '<br />';
-                    }
-
-                    if (record.processed.classification.scientificName) {
-                        displayHtml += formatSciName(record.processed.classification.scientificName, record.processed.classification.taxonRankID)  + '<br />';
-                    } else {
-                        displayHtml += record.raw.classification.scientificName  + '<br />';
-                    }
-
-                    if(record.processed.attribution.institutionName != null){
-                        displayHtml += "${g.message(code:'record.institutionName.label', default: 'Institution')}: " + record.processed.attribution.institutionName + '<br />';
-                    } else if(record.processed.attribution.dataResourceName != null){
-                        displayHtml += "${g.message(code:'record.dataResourceName.label', default: 'Data Resource')}: " + record.processed.attribution.dataResourceName + '<br />';
-                    }
-
-                    if(record.processed.attribution.collectionName != null){
-                        displayHtml += "${g.message(code:'record.collectionName.label', default: 'Collection')}: " + record.processed.attribution.collectionName  + '<br />';
-                    }
-
-                    if(record.raw.occurrence.recordedBy != null){
-                        displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.raw.occurrence.recordedBy + '<br />';
-                    } else if(record.processed.occurrence.recordedBy != null){
-                        displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.processed.occurrence.recordedBy + '<br />';
-                    }
-
-                    if(record.processed.event.eventDate != null){
-                        //displayHtml += "<br/>";
-                        var label = "${g.message(code:'record.eventDate.label', default: 'Event date')}: ";
-                        displayHtml += label + record.processed.event.eventDate;
-                    }
-
+                    var displayHtml = formatPopupHtml(record);
                     $popupClone.find('.recordSummary').html( displayHtml ); // insert into clone
                 } else {
                     // missing record - disable "view record" button and display message
@@ -941,6 +899,61 @@ a.colour-by-legend-toggle {
             }
         });
 
+    }
+
+    function formatPopupHtml(record) {
+        var displayHtml = "";
+
+        // catalogNumber
+        if(record.raw.occurrence.catalogNumber != null){
+            displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.raw.occurrence.catalogNumber + '<br />';
+        } else if(record.processed.occurrence.catalogNumber != null){
+            displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.processed.occurrence.catalogNumber + '<br />';
+        }
+
+        // record or field number
+        if(record.raw.occurrence.recordNumber != null){
+            displayHtml += "${g.message(code:'record.recordNumber.label', default: 'Collecting number')}: " + record.raw.occurrence.recordNumber + '<br />';
+        } else if(record.raw.occurrence.fieldNumber != null){
+            displayHtml += "${g.message(code:'record.fieldNumber.label', default: 'Collecting number')}: " + record.raw.occurrence.fieldNumber + '<br />';
+        }
+
+
+        if(record.raw.classification.vernacularName!=null ){
+            displayHtml += record.raw.classification.vernacularName + '<br />';
+        } else if(record.processed.classification.vernacularName!=null){
+            displayHtml += record.processed.classification.vernacularName + '<br />';
+        }
+
+        if (record.processed.classification.scientificName) {
+            displayHtml += formatSciName(record.processed.classification.scientificName, record.processed.classification.taxonRankID)  + '<br />';
+        } else {
+            displayHtml += record.raw.classification.scientificName  + '<br />';
+        }
+
+        if(record.processed.attribution.institutionName != null){
+            displayHtml += "${g.message(code:'record.institutionName.label', default: 'Institution')}: " + record.processed.attribution.institutionName + '<br />';
+        } else if(record.processed.attribution.dataResourceName != null){
+            displayHtml += "${g.message(code:'record.dataResourceName.label', default: 'Data Resource')}: " + record.processed.attribution.dataResourceName + '<br />';
+        }
+
+        if(record.processed.attribution.collectionName != null){
+            displayHtml += "${g.message(code:'record.collectionName.label', default: 'Collection')}: " + record.processed.attribution.collectionName  + '<br />';
+        }
+
+        if(record.raw.occurrence.recordedBy != null){
+            displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.raw.occurrence.recordedBy + '<br />';
+        } else if(record.processed.occurrence.recordedBy != null){
+            displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.processed.occurrence.recordedBy + '<br />';
+        }
+
+        if(record.processed.event.eventDate != null){
+            //displayHtml += "<br/>";
+            var label = "${g.message(code:'record.eventDate.label', default: 'Event date')}: ";
+            displayHtml += label + record.processed.event.eventDate;
+        }
+
+        return displayHtml;
     }
 
     function getRecordInfo(){

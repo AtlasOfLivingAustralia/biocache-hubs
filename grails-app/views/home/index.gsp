@@ -26,6 +26,7 @@
         var BC_CONF = {
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
+            bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
             autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson()?:'{}'},
             contextPath: "${request.contextPath}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",

@@ -22,7 +22,7 @@ modules = {
     }
 
     searchCore {
-        dependsOn 'jquery, purl'
+        dependsOn 'jquery, purl, fontawesome'
         defaultBundle 'search-core'
         resource url:[dir:'css', file:'search.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'css', file:'pagination.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
@@ -30,7 +30,6 @@ modules = {
         resource url:[dir:'js', file:'jquery.inview.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.jsonp-2.4.0.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs'], disposition: 'head'
-        resource url:[dir:'css', file:'font-awesome.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
     }
 
     search {
@@ -117,8 +116,12 @@ modules = {
         resource url:[dir:'js', file:'moment.min.js', plugin:'biocache-hubs']
     }
 
+    fontawesome {
+        resource url:[dir:'css', file:'font-awesome.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
+    }
+
     show {
-        dependsOn 'jquery'
+        dependsOn 'jquery, fontawesome'
         resource url:[dir:'css', file:'record.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'css', file:'print-record.css', plugin:'biocache-hubs'], attrs: [ media: 'print' ]
         resource url:[dir:'js', file:'audiojs/audio.min.js', plugin:'biocache-hubs'], disposition: 'head', exclude: '*'
