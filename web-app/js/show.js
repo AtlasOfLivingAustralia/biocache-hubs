@@ -30,27 +30,56 @@ $(document).ready(function() {
         var recordUuid = OCC_REC.recordUuid //'${ala:escapeJS(record.raw.rowKey)}';
         if(code!=""){
             $('#assertionSubmitProgress').css({'display':'block'});
-            $.post(OCC_REC.contextPath + "/occurrences/assertions/add",
-                { recordUuid: recordUuid, code: code, comment: comment, userAssertionStatus: 'Open issue', userId: OCC_REC.userId, userDisplayName: userDisplayName},
-                function(data) {
-                    $('#assertionSubmitProgress').css({'display':'none'});
-                    $("#submitSuccess").html("Thanks for flagging the problem!");
-                    $("#issueFormSubmit").hide();
-                    $("input:reset").hide();
-                    $("input#close").show();
-                    //retrieve all assertions
-                    $.get(OCC_REC.contextPath + '/assertions/' + OCC_REC.recordUuid, function(data) { // recordUuid=${record.raw.uuid}
-                        //console.log("data", data);
-                        $('#userAssertions').html(data);
-                        $('#userAssertionsContainer').show("slow");
-                    });
-                    refreshUserAnnotations();
-                    //document.location.reload(true);
+
+            $.get( OCC_REC.contextPath + "/assertions/" + OCC_REC.recordUuid, function(data) {
+                var bPreventAddingIssue = false;
+                for (var i = 0; i < data.userAssertions.length; i++) {
+                    if (data.userAssertions[i].code == 50000) {
+                        data.userAssertions.forEach(function (element) {
+                            if (element.uuid == data.userAssertions[i].relatedUuid && element.code == code) {
+                                bPreventAddingIssue = true;
+                            }
+                        })
+                    }
                 }
-            ).error(function() {
-                    $('#assertionSubmitProgress').css({'display':'none'});
-                    $("#submitSuccess").html("There was problem flagging the issue. Please try again later.");
-                });
+
+                if (bPreventAddingIssue) {
+                    alert("You cannot flag an issue with the same type that has already been verified.");
+                    return;
+                } else {
+
+                    $.post(OCC_REC.contextPath + "/occurrences/assertions/add",
+                        {
+                            recordUuid: recordUuid,
+                            code: code,
+                            comment: comment,
+                            userAssertionStatus: 'Open issue',
+                            userId: OCC_REC.userId,
+                            userDisplayName: userDisplayName
+                        },
+                        function (data) {
+                            $('#assertionSubmitProgress').css({'display': 'none'});
+                            $("#submitSuccess").html("Thanks for flagging the problem!");
+                            $("#issueFormSubmit").hide();
+                            $("input:reset").hide();
+                            $("input#close").show();
+                            //retrieve all assertions
+                            $.get(OCC_REC.contextPath + '/assertions/' + OCC_REC.recordUuid, function (data) { // recordUuid=${record.raw.uuid}
+                                //console.log("data", data);
+                                $('#userAssertions').html(data);
+                                $('#userAssertionsContainer').show("slow");
+                            });
+                            refreshUserAnnotations();
+                            //document.location.reload(true);
+                        }
+                    ).error(function () {
+                        $('#assertionSubmitProgress').css({'display': 'none'});
+                        $("#submitSuccess").html("There was problem flagging the issue. Please try again later.");
+                    });
+                }
+
+            });
+
         } else {
             alert("Please supply a issue type");
         }
@@ -311,6 +340,9 @@ function refreshUserAnnotations(){
         }
         $('#userAnnotationsList').empty();
 
+        var userAssertionStatus = jQuery.i18n.prop("user_assertions." + data.userAssertionStatus);
+        $("#userAssertionStatus").text(userAssertionStatus);
+
         for(var i=0; i < data.assertionQueries.length; i++){
             var $clone = $('#userAnnotationTemplate').clone();
             $clone.find('.issue').text(data.assertionQueries[i].assertionType);
@@ -326,6 +358,8 @@ function refreshUserAnnotations(){
         }
 
         var verifiedAssertions = [];
+        var disableDelete = [];
+        var enableDelete = [];
 
         for(var i = 0; i < data.userAssertions.length; i++){
 
@@ -348,6 +382,9 @@ function refreshUserAnnotations(){
                 }
             } else {
                 verifiedAssertions.push(data.userAssertions[i]);
+                if (disableDelete.indexOf(data.userAssertions[i].relatedUuid) < 0) {
+                    disableDelete.push (data.userAssertions[i].relatedUuid);
+                }
             }
 
             if(OCC_REC.userId == data.userAssertions[i].userId){
@@ -361,7 +398,7 @@ function refreshUserAnnotations(){
             $clone.find('.verifyAnnotation').attr('id', "verifyAnnotations_" + data.userAssertions[i].uuid);
 
             $('#userAnnotationsList').append($clone);
-           // updateVerificationEvents(data.userAssertions[i].uuid, userDisplayName, );
+
         }
 
         var sortedVerifiedAssertion = verifiedAssertions.sort(compareModifiedDate);
@@ -370,40 +407,94 @@ function refreshUserAnnotations(){
            // $clone.find('.verifyAnnotation').css({display:'block'});
             var relatedUuid = sortedVerifiedAssertion[i].relatedUuid;
             var $clone = $('#userVerificationTemplate').clone();
+
             $clone.prop('id', "userVerificationAnnotation_" + sortedVerifiedAssertion[i].uuid);
-            var qaStatusMessage = jQuery.i18n.prop("show.userAssertionStatus." + sortedVerifiedAssertion[i].qaStatus);
-            $clone.find('.qaStatus').text('Annotation Verification Status: ' + qaStatusMessage);
-            $clone.find('.comment').text('Comment: ' + sortedVerifiedAssertion[i].comment);
-            $clone.find('.userDisplayName').text('Verified By: ' + sortedVerifiedAssertion[i].userDisplayName);
-            $clone.find('.created').text('Date verified: ' + (moment(sortedVerifiedAssertion[i].created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));
-            //$('#userAnnotation_' + sortedVerifiedAssertion[i].relatedUuid).append($clone);
-            ($clone).insertAfter('#userAnnotation_' + sortedVerifiedAssertion[i].relatedUuid  +' .userVerificationClass')
+            var qaStatusMessage = jQuery.i18n.prop("user_assertions." + sortedVerifiedAssertion[i].qaStatus);
+            $clone.find('.qaStatus').text(qaStatusMessage);
+            $clone.find('.comment').text(sortedVerifiedAssertion[i].comment);
+            $clone.find('.userDisplayName').text(sortedVerifiedAssertion[i].userDisplayName);
+            $clone.find('.created').text((moment(sortedVerifiedAssertion[i].created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));
+            $clone.css({display:'block'});
+
+            ($clone).insertAfter('#userAnnotation_' + sortedVerifiedAssertion[i].relatedUuid  +' .userVerificationClass .userVerificationTemplate:first')
+
+            updateDeleteVerificationEvents(sortedVerifiedAssertion[i].relatedUuid)
         }
 
-        updateDeleteEvents();
-        updateVerificationEvents();
+        for(var i = 0; i < disableDelete.length; i++) {
+            var $cloneHeader = $('#userVerificationTemplate').clone();
+            $cloneHeader.prop('id', "userVerificationAnnotationHeader_" + disableDelete[i]);
+            $cloneHeader.find('.qaStatus').text("User Verification Status");
+            $cloneHeader.find('.qaStatus').css({fontWeight: 'bold'});
+            $cloneHeader.find('.comment').text("Comment");
+            $cloneHeader.find('.comment').css({fontWeight: 'bold'});
+            $cloneHeader.find('.userDisplayName').text("Verified By");
+            $cloneHeader.find('.userDisplayName').css({fontWeight: 'bold'});
+            $cloneHeader.find('.created').text("Created");
+            $cloneHeader.find('.created').css({fontWeight: 'bold'});
+            $cloneHeader.find('.deleteVerification').html('Delete this Verification');
+            $cloneHeader.find('.deleteVerification').css({fontWeight: 'bold'});
+
+            $cloneHeader.css({display: 'block'});
+            ($cloneHeader).insertAfter('#userAnnotation_' + disableDelete[i] + ' .userVerificationClass .userVerificationTemplate:first')
+        }
+
+
+        for(var i = 0; i < data.userAssertions.length; i++){
+            if ((data.userAssertions[i].code != 50000) && (disableDelete.indexOf(data.userAssertions[i].uuid) < 0)) {
+                enableDelete.push (data.userAssertions[i].uuid);
+            }
+        }
+
+        updateDeleteEvents(enableDelete, disableDelete);
 
     });
 }
 
-function updateDeleteEvents(){
-    $('.deleteAnnotation').off("click");
-    $('.deleteAnnotation').on("click", function(e){
+function updateDeleteVerificationEvents(relatedAssertionId) {
+    $('#userAnnotation_' + relatedAssertionId + ' .deleteVerificationButton').off("click");
+    $('#userAnnotation_' + relatedAssertionId + ' .deleteVerificationButton').on("click", function (e) {
         e.preventDefault();
         var isConfirmed = confirm('Are you sure you want to delete this issue?');
         if (isConfirmed === true) {
-            deleteAssertion(OCC_REC.recordUuid, this.id);
+            deleteAssertion(OCC_REC.recordUuid, this.parentElement.parentElement.id.split('_').pop());
         }
     });
+
 }
 
-function updateVerificationEvents() {
-    $('.verifyAnnotation').off("click");
+function updateDeleteEvents(enableDelete, disableDelete){
 
-    $('.verifyAnnotation').on("click", function(e){
+    for(var i = 0; i < enableDelete.length; i++){
+        $('#userAnnotation_' + enableDelete[i] + ' .deleteAnnotation').off("click");
+        $('#userAnnotation_' + enableDelete[i] + ' .deleteAnnotation').on("click", function (e) {
+            e.preventDefault();
+            var isConfirmed = confirm('Are you sure you want to delete this issue?');
+            if (isConfirmed === true) {
+                deleteAssertion(OCC_REC.recordUuid, this.parentElement.id.split('_').pop());
+            }
+        });
+        updateVerificationEvents(enableDelete[i]);
+    }
+
+    for(var i = 0; i < disableDelete.length; i++){
+        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotationButton').attr('disabled', 'disabled');
+        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotation').off("click");
+        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotation').on("click", function (e) {
+            e.preventDefault();
+        });
+        updateVerificationEvents(disableDelete[i]);
+    }
+
+}
+
+function updateVerificationEvents(assertionId) {
+    $('#userAnnotation_' + assertionId + ' .verifyAnnotation').off("click");
+
+    $('#userAnnotation_' + assertionId + ' .verifyAnnotation').on("click", function(e){
         e.preventDefault();
         $("#verifySpinner").hide();
-        updateConfirmVerificationEvents(OCC_REC.recordUuid, this.parentElement.id.split('_').pop(), OCC_REC.userDisplayName);
+        updateConfirmVerificationEvents(OCC_REC.recordUuid, assertionId, OCC_REC.userDisplayName);
     });
 }
 
@@ -421,7 +512,7 @@ function updateConfirmVerificationEvents(occUuid, assertionUuid, userDisplayName
         $("#verifySpinner").show();
         var code = "50000";
         var comment = $("#verifyComment").val();
-        var userAssertionStatus = $("#userAssertionStatus").val();
+        var userAssertionStatus = $("#userAssertionStatusSelection").val();
         if (!comment) {
             alert("Please add a comment");
             $("#verifyComment").focus();

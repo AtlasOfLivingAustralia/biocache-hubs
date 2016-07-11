@@ -2,6 +2,7 @@ package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 class AssertionsController {
     def webServicesService, authService
@@ -21,7 +22,9 @@ class AssertionsController {
     def assertions(String id) {
         JSONArray userAssertions = webServicesService.getUserAssertions(id)
         JSONArray qualityAssertions = webServicesService.getQueryAssertions(id)
-        Map combined = [userAssertions: userAssertions?:[], assertionQueries: qualityAssertions?:[]]
+        Boolean hasClubView = request.isUserInRole("${grailsApplication.config.clubRoleForHub}")
+        String userAssertionStatus = webServicesService.getRecord(id, hasClubView)?.raw.userAssertionStatus
+        Map combined = [userAssertions: userAssertions?:[], assertionQueries: qualityAssertions?:[], userAssertionStatus: userAssertionStatus?:"" ]
 
         render combined as JSON
     }

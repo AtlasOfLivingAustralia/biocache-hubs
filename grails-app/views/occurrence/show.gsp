@@ -62,48 +62,6 @@
                     document.location.href = '${record.raw.occurrence.occurrenceID}';
                 });
             </g:if>
-            <g:if test="${isCollectionAdmin}">
-       /*         $(".confirmVerifyCheck").click(function(e) {
-                    $("#verifyAsk").hide();
-                    $("#verifyDone").show();
-                });
-                $(".cancelVerify").click(function(e) {
-                    //$.fancybox.close(); // TODO fix
-
-                });
-                $(".closeVerify").click(function(e) {
-                    //$.fancybox.close(); // TODO fix
-                });
-                $(".confirmVerify").click(function(e) {
-                    $("#verifySpinner").show();
-                    var code = "50000";
-                    var userDisplayName = '${userDisplayName}';
-                 //   var recordUuid = '${record.raw.rowKey.encodeAsURL()}';
-                    var recordUuid = '${record.raw.uuid}';
-                    var comment = $("#verifyComment").val();
-                    var userAssertionStatus = $("#userAssertionStatus").val();
-                    //alert(userAssertionStatus);
-                    if (!comment) {
-                        alert("Please add a comment");
-                        $("#verifyComment").focus();
-                        $("#verifySpinner").hide();
-                        return false;
-                    }
-                    // send assertion via AJAX... TODO catch errors
-                    $.post("${request.contextPath}/occurrences/assertions/add",
-                            { recordUuid: recordUuid, code: code, comment: comment, userAssertionStatus: userAssertionStatus, userId: OCC_REC.userId, userDisplayName: userDisplayName},
-                            function(data) {
-                                // service simply returns status or OK or FORBIDDEN, so assume it worked...
-                                $("#verifyAsk").fadeOut();
-                                $("#verifyDone").fadeIn();
-                            }
-                    ).error(function (request, status, error) {
-                                alert("Error verifying record: " + request.responseText);
-                            }).complete(function() {
-                                $("#verifySpinner").hide();
-                            });
-                }); */
-            </g:if>
         }); // end $(document).ready()
 
         function renderOutlierCharts(data){
@@ -300,6 +258,7 @@
 
             <div id="userAnnotationsDiv" class="additionalData">
                 <h2><g:message code="show.userannotationsdiv.title" default="User flagged issues"/><a id="userAnnotations">&nbsp;</a></h2>
+                <h4><g:message code="user.assertion.status" default="User Assertion Status"/>: <i><span id="userAssertionStatus"></span></i></h4>
                 <ul id="userAnnotationsList" style="list-style: none; margin:0;"></ul>
             </div>
 
@@ -633,65 +592,71 @@
         </g:if>
 
         <g:if test="${contacts}">
-            <p id="contactCuratorView" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="contactCuratorViewLabel" aria-hidden="true"><!-- BS modal div -->
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="contactCuratorViewLabel"><g:message code="show.contactcuratorview.title" default="Contact curator"/></h3>
-            </div>
-            <div class="modal-body">
-                <p><g:message code="show.contactcuratorview.message" default="For more details and to report issues about this record, please contact a person mentioned below."></g:message> </p>
-                <g:each in="${contacts}" var="c">
-                    <address>
-                        <strong>${c.contact.firstName} ${c.contact.lastName} <g:if test="${c.primaryContact}"><span class="primaryContact">*</span></g:if> </strong><br>
-                        ${c.role}<br>
-                        <g:if test="${c.contact.phone}"><abbr title="Phone">P:</abbr> ${c.contact.phone} <br></g:if>
-                        <g:if test="${c.contact.email}"><abbr title="Email">E:</abbr> <alatag:emailLink email="${c.contact.email}"><g:message code="show.contactcuratorview.emailtext" default="email this contact"></g:message> </alatag:emailLink> <br></g:if>
-                    </address>
-                </g:each>
-                <p><span class="primaryContact"><b>*</b></span> <g:message code="show.contactcuratorview.primarycontact" default="Primary Contact"></g:message> </p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.processedvsrawview.button.close" default="Close"/></button>
+            <div id="contactCuratorView" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="contactCuratorViewLabel" aria-hidden="true"><!-- BS modal div -->
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="contactCuratorViewLabel"><g:message code="show.contactcuratorview.title" default="Contact curator"/></h3>
+                </div>
+                <div class="modal-body">
+                    <p><g:message code="show.contactcuratorview.message" default="For more details and to report issues about this record, please contact a person mentioned below."></g:message> </p>
+                    <g:each in="${contacts}" var="c">
+                        <address>
+                            <strong>${c.contact.firstName} ${c.contact.lastName} <g:if test="${c.primaryContact}"><span class="primaryContact">*</span></g:if> </strong><br>
+                            ${c.role}<br>
+                            <g:if test="${c.contact.phone}"><abbr title="Phone">P:</abbr> ${c.contact.phone} <br></g:if>
+                            <g:if test="${c.contact.email}"><abbr title="Email">E:</abbr> <alatag:emailLink email="${c.contact.email}"><g:message code="show.contactcuratorview.emailtext" default="email this contact"></g:message> </alatag:emailLink> <br></g:if>
+                        </address>
+                    </g:each>
+                    <p><span class="primaryContact"><b>*</b></span> <g:message code="show.contactcuratorview.primarycontact" default="Primary Contact"></g:message> </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.processedvsrawview.button.close" default="Close"/></button>
+                </div>
             </div>
         </g:if>
 
         <ul style="display:none;">
         <li id="userAnnotationTemplate" class="userAnnotationTemplate well">
-           <h3><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h3>
-           <p class="comment"></p>
-           <p class="hide userDisplayName"></p>
-           <p class="created"></p>
-           <p class="viewMore" style="display:none;">
+            <h3><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h3>
+            <p class="comment"></p>
+            <p class="hide userDisplayName"></p>
+            <p class="created"></p>
+            <p class="viewMore" style="display:none;">
                <a class="viewMoreLink" href="#"><g:message code="show.userannotationtemplate.p01.navigator" default="View more with this annotation"/></a>
-           </p>
-            <br/>
-           <p class="deleteAnnotation" style="display:none;">
-               <a class="deleteAnnotationButton btn" href="#"><g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/></a>
-           </p>
-
-            <br>
-
-            <i id="verificationDetailsText" style="display:none;color: steelblue">User Verification Details</i>
-
-            <ul style="display:none;" class="userVerificationClass">
-                <li id="userVerificationTemplate" class="userVerificationTemplate" style="padding-left:2em;border:solid;border-width:1px;color:steelblue">
-                    <div class="qaStatus"></div>
-                    <div class="comment"></div>
-                    <div class="userDisplayName"></div>
-                    <div class="created"></div>
-                </li>
-            </ul>
-            <br/>
-            <p class="verifyAnnotation" style="display:none;">
-                <a class="verifyAnnotationButton btn"  href="#verifyRecordModal" data-toggle="modal"><g:message code="show.userannotationtemplate.p03.navigator" default="Verify this annotation"/></a>
             </p>
+            <br/>
+            <p class="deleteAnnotation" style="display:block;">
+               <a class="deleteAnnotationButton btn" href="#"><g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/></a>
+            </p>
+            <br/>
+            <div class="container userVerificationClass">
+                <div id="userVerificationTemplate" class="row-fluid userVerificationTemplate" style="display: none">
+                    <g:if test="${isCollectionAdmin}">
+                        <div class="span2 qaStatus"></div>
+                        <div class="span4 comment"></div>
+                        <div class="span2 userDisplayName"></div>
+                        <div class="span2 created"></div>
+                        <div class="span2 deleteVerification"><a class="deleteVerificationButton" style="text-align: right" href="#"><g:message code="show.userannotationtemplate.p04.navigator" default="Delete this verification"/></a>
+                        </div>
+                    </g:if>
+                    <g:if test="${!isCollectionAdmin}">
+                        <div class="span2 qaStatus"></div>
+                        <div class="span6 comment"></div>
+                        <div class="span2 userDisplayName"></div>
+                        <div class="span2 created"></div>
+                    </g:if>
+                </div>
+            </div>
+            <br/>
+            <g:if test="${isCollectionAdmin}">
+                <p class="verifyAnnotation" style="display:none;">
+                    <a class="verifyAnnotationButton btn"  href="#verifyRecordModal" data-toggle="modal"><g:message code="show.userannotationtemplate.p03.navigator" default="Verify this annotation"/></a>
+                </p>
+            </g:if>
 
         </li>
+
         </ul>
-
-
-
-
 
         <div id="verifyRecordModal" class="modal hide" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true">
             <div class="modal-header">
@@ -716,11 +681,11 @@
                         <g:message code="show.verifyrecord.p02" default="Click the &quot;Confirm&quot; button to verify that this record is correct and that the listed &quot;validation issues&quot; are incorrect/invalid."/>
                     </p>
                     <p style="margin-top:20px;">
-                        <label for="userAssertionStatus"><g:message code="show.verifyrecord.p03" default="User Assertion Status:"/></label>
-                        <select name="userAssertionStatus" id="userAssertionStatus">
-                            <g:each in="${verificationCategory}" var="code">
-                                <option value="${code}"><g:message code="show.userAssertionStatus.${code}" default="${code}"/></option>
-                            </g:each>
+                        <label for="userAssertionStatusSelection"><g:message code="show.verifyrecord.p03" default="User Assertion Status:"/></label>
+                        <select name="userAssertionStatusSelection" id="userAssertionStatusSelection">
+                            <option value="50001"><alatag:message code="user_assertions.50001" default="Open issue"/></option>
+                            <option value="50002"><alatag:message code="user_assertions.50002" default="Verified"/></option>
+                            <option value="50003"><alatag:message code="user_assertions.50003" default="Corrected"/></option>
                         </select>
                     </p>
                     <p><textarea id="verifyComment" rows="3" style="width: 90%"></textarea></p><br>

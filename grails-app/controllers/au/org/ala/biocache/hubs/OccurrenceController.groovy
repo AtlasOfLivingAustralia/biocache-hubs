@@ -192,6 +192,18 @@ class OccurrenceController {
                     }
                 }
 
+                String userEmail = authService?.getEmail()
+
+                Boolean isCollectionAdmin = false
+
+                if (contacts != null && contacts.size()> 0) {
+                    for (int i=0; i < contacts.size(); i++ ) {
+                        if (contacts.get(i).editor == true && userEmail.equals(contacts.get(i).contact.email)) {
+                            isCollectionAdmin = true;
+                        }
+                    }
+                }
+
                 List groupedAssertions = postProcessingService.getGroupedAssertions(
                         webServicesService.getUserAssertions(id),
                         webServicesService.getQueryAssertions(id),
@@ -207,14 +219,13 @@ class OccurrenceController {
                         collectionName: collectionInfo?.name,
                         collectionLogo: collectionInfo?.institutionLogoUrl,
                         collectionInstitution: collectionInfo?.institution,
-                        isCollectionAdmin: true, // TODO implement this
+                        isCollectionAdmin: isCollectionAdmin,
                         contacts: contacts,
                         queryAssertions: null, // TODO implement this
                         duplicateRecordDetails: webServicesService.getDuplicateRecordDetails(record),
                         dataResourceCodes: facetsCacheService.getFacetNamesFor("data_resource_uid"), // TODO move string value to config file
                         clubView: hasClubView,
                         errorCodes: webServicesService.getErrorCodes(),
-                        verificationCategory: [50001, 50002, 50003],
                         metadataForOutlierLayers: postProcessingService.getMetadataForOutlierLayers(record, layersMetaData),
                         environmentalSampleInfo: postProcessingService.getLayerSampleInfo(ENVIRO_LAYER, record, layersMetaData),
                         contextualSampleInfo: postProcessingService.getLayerSampleInfo(CONTEXT_LAYER, record, layersMetaData),
