@@ -332,11 +332,11 @@ function refreshUserAnnotations(){
         if (data.assertionQueries.length == 0 && data.userAssertions.length == 0) {
             $('#userAnnotationsDiv').hide('slow');
             $('#userAssertionsContainer').hide("slow");
-            $('#userAnnotationsNav').hide("slow");
+            $('#userAnnotationsNav').css("display","none");
         } else {
             $('#userAnnotationsDiv').show('slow');
             $('#userAssertionsContainer').show("slow");
-            $('#userAnnotationsNav').show("slow");
+            $('#userAnnotationsNav').css("display","block");
         }
         $('#userAnnotationsList').empty();
 
