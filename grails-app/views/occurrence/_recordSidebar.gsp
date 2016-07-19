@@ -1,17 +1,109 @@
-<g:if test="${collectionLogo}">
-    <div class="sidebar">
-        <img src="${collectionLogo}" alt="institution logo" id="institutionLogo"/>
+<g:if test="${isUnderCas && !isReadOnly && record.processed.attribution.provenance != 'Draft'}">
+    <div class="sidebar" style="float:left;">
+        <button class="btn" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="report a problem or suggest a correction for this record">
+            <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="icon-flag"></i> <g:message code="show.button.assertionbutton.span" default="Flag an issue"/></span>
+        </button>
+        <div id="loginOrFlag" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true"><!-- BS modal div -->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="loginOrFlagLabel"><g:message code="show.loginorflag.title" default="Flag an issue"/></h3>
+            </div>
+            <div class="modal-body">
+                <g:if test="${!userId}">
+                    <div style="margin: 20px 0;"><g:message code="show.loginorflag.div01.label" default="Login please:"/>
+                        <a href="${grailsApplication.config.casServerLoginUrl}?service=${serverName}${request.contextPath}/occurrences/${record.raw.uuid}"><g:message code="show.loginorflag.div01.navigator" default="Click here"/></a>
+                    </div>
+                </g:if>
+                <g:else>
+                    <div>
+                        <g:message code="show.loginorflag.div02.label" default="You are logged in as"/>  <strong>${userDisplayName} (${alatag.loggedInUserEmail()})</strong>.
+                        <form id="issueForm">
+                            <p style="margin-top:20px;">
+                                <label for="issue"><g:message code="show.issueform.label01" default="Issue type:"/></label>
+                                <select name="issue" id="issue">
+                                    <g:each in="${errorCodes}" var="code">
+                                        <option value="${code.code}"><g:message code="${code.name}" default="${code.name}"/></option>
+                                    </g:each>
+                                </select>
+                            </p>
+                            <p style="margin-top:30px;">
+                                <label for="issueComment" style="vertical-align:top;"><g:message code="show.issueform.label02" default="Comment:"/></label>
+                                <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
+                            </p>
+                            <p style="margin-top:20px;">
+                                <input id="issueFormSubmit" type="submit" value="<g:message code="show.issueform.button.submit" default="Submit"/>" class="btn" />
+                                <input type="reset" value="<g:message code="show.issueform.button.cancel" default="Cancel"/>" class="btn" onClick="$('#loginOrFlag').modal('hide');"/>
+                                <input type="button" id="close" value="<g:message code="show.issueform.button.close" default="Close"/>" class="btn" style="display:none;"/>
+                                <span id="submitSuccess"></span>
+                            </p>
+                            <p id="assertionSubmitProgress" style="display:none;">
+                                <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" style="display:none;" alt="indicator icon"/>
+                            </p>
+
+                        </form>
+                    </div>
+                </g:else>
+            </div>
+            <div class="hide modal-footer">
+                <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.loginorflag.divbutton" default="Close"/></button>
+            </div>
+        </div>
     </div>
 </g:if>
-
-<g:if test="${record.processed.attribution.provenance != 'Draft'}">
+<g:if test="${contacts && contacts.size()}">
+    <div class="sidebar" style="float:left;">
+        <button href="#contactCuratorView" class="btn" id="showCurator" role="button" data-toggle="modal"
+                title="Contact curator for more details on a record">
+            <span id="contactCuratorSpan" href="#contactCuratorView" title=""><i class="icon-envelope"></i> <g:message code="show.showcontactcurator.span" default="Contact curator"/></span>
+        </button>
+    </div>
+</g:if>
+<div class="clearfix"></div>
+<ul id="navBox" class="nav nav-tabs nav-stacked">
+    <li><a href="#occurrenceDataset"><g:message code="recordcore.occurencedataset.title" default="Dataset"/></a></li>
+    <li><a href="#occurrenceEvent"><g:message code="recordcore.occurenceevent.title" default="Event"/></a></li>
+    <li><a href="#occurrenceTaxonomy"><g:message code="recordcore.occurencetaxonomy.title" default="Taxonomy"/></a></li>
+    <li><a href="#occurrenceGeospatial"><g:message code="recordcore.occurencegeospatial.title" default="Geospatial"/></a></li>
+    <g:if test="${record.raw.miscProperties}">
+        <li><a href="#additionalProperties"><g:message code="recordcore.div.addtionalproperties.title" default="Additional properties"/></a></li>
+    </g:if>
+    <g:if test="${record.images}">
+        <li><a href="#images"><g:message code="show.sidebar03.title" default="Images"/></a></li>
+    </g:if>
+    <g:if test="${record.sounds}">
+        <li><a href="#soundsHeader"><g:message code="show.soundsheader.title" default="Sounds"/></a></li>
+    </g:if>
+    <li><a href="#userAnnotationsDiv" id="userAnnotationsNav" style="display:none;"><g:message code="show.userannotationsdiv.title" default="User flagged issues"/></a></li>
+    <g:if test="${record.systemAssertions && record.processed.attribution.provenance != 'Draft'}">
+        <li><a href="#dataQuality"><g:message code="show.dataquality.title" default="Data quality tests"/>
+        (${record.systemAssertions.failed?.size()?:0} <i class="fa fa-times-circle tooltips" style="color:red;" title="<g:message code="assertions.failed" default="failed"/>"></i>,
+        ${record.systemAssertions.warning?.size()?:0} <i class="fa fa-exclamation-circle tooltips" style="color:orange;" title="<g:message code="assertions.warnings" default="warning"/>"></i>,
+        ${record.systemAssertions.passed?.size()?:0} <i class="fa fa-check-circle tooltips" style="color:green;" title="<g:message code="assertions.passed" default="passed"/>"></i>,
+        ${record.systemAssertions.missing?.size()?:0} <i class="fa fa-question-circle tooltips" style="color:gray;" title="<g:message code="assertions.missing" default="missing"/>"></i>,
+        ${record.systemAssertions.unchecked?.size()?:0} <i class="fa fa-ban tooltips" style="color:gray;" title="<g:message code="assertions.unchecked" default="unchecked"/>"></i>)
+        </a></li>
+    </g:if>
+    <g:if test="${record.processed.occurrence.outlierForLayers}">
+        <li><a href="#outlierInformation"><g:message code="show.outlierinformation.title" default="Outlier information"/></a></li>
+    </g:if>
+    <g:if test="${record.processed.occurrence.duplicationStatus}">
+        <li><a href="#inferredOccurrenceDetails"><g:message code="show.inferredoccurrencedetails.title" default="Inferred associated occurrence details"/></a></li>
+    </g:if>
+    <g:if test="${contextualSampleInfo}">
+        <li><a href="#contextualSampleInfo"><g:message code="show.outlierinformation.02.title01" default="Additional political boundaries information"/></a></li>
+    </g:if>
+    <g:if test="${environmentalSampleInfo}">
+        <li><a href="#environmentalSampleInfo"><g:message code="show.outlierinformation.02.title02" default="Environmental sampling for this location"/></a></li>
+    </g:if>
+</ul>
+<g:if test="${false && record.processed.attribution.provenance != 'Draft'}">
     <div class="sidebar">
         <div id="warnings">
 
             <div id="systemAssertionsContainer" <g:if test="${!record.systemAssertions}">style="display:none"</g:if>>
                 <h3><g:message code="show.systemassertioncontainer.title" default="Data quality tests"/></h3>
 
-                <ul id="systemAssertions">
+                <span id="systemAssertions">
                     <li class="failedTestCount">
                         <g:message code="assertions.failed" default="failed"/>: ${record.systemAssertions.failed?.size()?:0}
                     </li>
@@ -70,7 +162,7 @@
                             </a>
                         </li>
                     </g:if>
-                </ul>
+                </span>
 
                 <!--<p class="half-padding-bottom">Data validation tools identified the following possible issues:</p>-->
                 <g:set var="recordIsVerified" value="false"/>
@@ -95,45 +187,59 @@
         </div>
     </div>
 </g:if>
-<g:if test="${isCollectionAdmin && (record.systemAssertions.failed || record.userAssertions) && ! recordIsVerified}">
+%{--<g:if test="${isCollectionAdmin && (record.systemAssertions.failed || record.userAssertions) && ! recordIsVerified}">
     <div class="sidebar">
-        <button class="btn" id="verifyButton" href="#verifyRecord">
+        <button class="btn" id="verifyButton" href="#verifyRecord" data-toggle="modal">
             <span id="verifyRecordSpan" title=""><g:message code="show.button.verifybtn.span" default="Verify record"/></span>
         </button>
-        <div style="display:none;">
-            <div id="verifyRecord">
-                <h3><g:message code="show.verifyrecord.title" default="Confirmation"/></h3>
-                <div id="verifyAsk">
-                    <g:set var="markedAssertions"/>
-                    <g:if test="!record.processed.geospatiallyKosher">
-                        <g:set var="markedAssertions"><g:message code="show.verifyask.set01" default="geospatially suspect"/></g:set>
-                    </g:if>
-                    <g:if test="!record.processed.taxonomicallyKosher">
-                        <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}<g:message code="show.verifyask.set02" default="taxonomically suspect"/></g:set>
-                    </g:if>
-                    <g:each var="sysAss" in="${record.systemAssertions.failed}">
-                        <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}<g:message code="${sysAss.name}" /></g:set>
-                    </g:each>
-                    <p>
-                        <g:message code="show.verifyrecord.p01" default="Record is marked as"/> <b>${markedAssertions}</b>
-                    </p>
-                    <p style="margin-bottom:10px;">
-                        <g:message code="show.verifyrecord.p02" default="Click the &quot;Confirm&quot; button to verify that this record is correct and that the listed &quot;validation issues&quot; are incorrect/invalid."/>
-                    </p>
-                    <textarea id="verifyComment" rows="3"></textarea><br/>
-                    <button class="btn confirmVerify"><g:message code="show.verifyrecord.btn.confirmverify" default="Confirm"/></button>
-                    <button class="btn cancelVerify"><g:message code="show.verifyrecord.btn.cancel" default="Cancel"/></button>
-                    <img src="${request.contextPath}/images/spinner.gif" id="verifySpinner" class="hide" alt="spinner icon"/>
+
+            <div id="verifyRecord" class="modal hide" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true">
+                <div class="modal-header">
+                    <h3><g:message code="show.verifyrecord.title" default="Confirmation"/></h3>
                 </div>
-                <div id="verifyDone" style="display:none;">
-                    <g:message code="show.verifydone.message" default="Record successfully verified"/>
-                    <br/>
-                    <button class="btn closeVerify"><g:message code="show.verifydone.btn.closeverify" default="Close"/></button>
+                <div class="modal-body">
+                    <div id="verifyAsk">
+                        <g:set var="markedAssertions"/>
+                        <g:if test="!record.processed.geospatiallyKosher">
+                            <g:set var="markedAssertions"><g:message code="show.verifyask.set01" default="geospatially suspect"/></g:set>
+                        </g:if>
+                        <g:if test="!record.processed.taxonomicallyKosher">
+                            <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}<g:message code="show.verifyask.set02" default="taxonomically suspect"/></g:set>
+                        </g:if>
+                        <g:each var="sysAss" in="${record.systemAssertions.failed}">
+                            <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}<g:message code="${sysAss.name}" /></g:set>
+                        </g:each>
+                        <p>
+                            <g:message code="show.verifyrecord.p01" default="Record is marked as"/> <b>${markedAssertions}</b>
+                        </p>
+                        <p style="margin-bottom:10px;">
+                            <g:message code="show.verifyrecord.p02" default="Click the &quot;Confirm&quot; button to verify that this record is correct and that the listed &quot;validation issues&quot; are incorrect/invalid."/>
+                        </p>
+                        <p style="margin-top:20px;">
+                            <label for="userAssertionStatus"><g:message code="show.verifyrecord.p03" default="User Assertion Status:"/></label>
+                            <select name="userAssertionStatus" id="userAssertionStatus">
+                                <g:each in="${verificationCategory}" var="code">
+                                    <option value="${code}"><g:message code="${code}" default="${code}"/></option>
+                                </g:each>
+                            </select>
+                        </p>
+                        <p><textarea id="verifyComment" rows="3" style="width: 90%"></textarea></p><br>
+                        <button class="btn confirmVerify"><g:message code="show.verifyrecord.btn.confirmverify" default="Confirm"/></button>
+                        <button class="btn cancelVerify"  data-dismiss="modal"><g:message code="show.verifyrecord.btn.cancel" default="Cancel"/></button>
+                        <img src="${request.contextPath}/images/spinner.gif" id="verifySpinner" class="hide" alt="spinner icon"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="verifyDone" style="display:none;">
+                        <g:message code="show.verifydone.message" default="Record successfully verified"/>
+                        <br/>
+                        <button class="btn closeVerify" data-dismiss="modal"><g:message code="show.verifydone.btn.closeverify" default="Close"/></button>
+                    </div>
                 </div>
             </div>
-        </div>
+
     </div>
-</g:if>
+</g:if>--}%
 <g:if test="${record.processed.attribution.provenance && record.processed.attribution.provenance == 'Draft'}">
     <div class="sidebar">
         <p class="grey-bg" style="padding:5px; margin-top:15px; margin-bottom:10px;">
@@ -144,115 +250,6 @@
         <button class="btn" id="viewDraftButton" >
             <span id="viewDraftSpan" title="View Draft"><g:message code="show.button.viewdraftbutton.span" default="See draft in Biodiversity Volunteer Portal"/></span>
         </button>
-    </div>
-</g:if>
-<g:if test="${isUnderCas && !isReadOnly && record.processed.attribution.provenance != 'Draft'}">
-    <div class="sidebar">
-        <button class="btn" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="report a problem or suggest a correction for this record">
-            <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="icon-flag"></i> <g:message code="show.button.assertionbutton.span" default="Flag an issue"/></span>
-        </button>
-        <div id="loginOrFlag" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true"><!-- BS modal div -->
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="loginOrFlagLabel"><g:message code="show.loginorflag.title" default="Flag an issue"/></h3>
-            </div>
-            <div class="modal-body">
-                <g:if test="${!userId}">
-                    <div style="margin: 20px 0;"><g:message code="show.loginorflag.div01.label" default="Login please:"/>
-                        <a href="${grailsApplication.config.casServerLoginUrl}?service=${serverName}${request.contextPath}/occurrences/${record.raw.uuid}"><g:message code="show.loginorflag.div01.navigator" default="Click here"/></a>
-                    </div>
-                </g:if>
-                <g:else>
-                    <div>
-                        <g:message code="show.loginorflag.div02.label" default="You are logged in as"/>  <strong>${userDisplayName} (${alatag.loggedInUserEmail()})</strong>.
-                        <form id="issueForm">
-                            <p style="margin-top:20px;">
-                                <label for="issue"><g:message code="show.issueform.label01" default="Issue type:"/></label>
-                                <select name="issue" id="issue">
-                                    <g:each in="${errorCodes}" var="code">
-                                        <option value="${code.code}"><g:message code="${code.name}" default="${code.name}"/></option>
-                                    </g:each>
-                                </select>
-                            </p>
-                            <p style="margin-top:30px;">
-                                <label for="issueComment" style="vertical-align:top;"><g:message code="show.issueform.label02" default="Comment:"/></label>
-                                <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
-                            </p>
-                            <p style="margin-top:20px;">
-                                <input id="issueFormSubmit" type="submit" value="<g:message code="show.issueform.button.submit" default="Submit"/>" class="btn" />
-                                <input type="reset" value="<g:message code="show.issueform.button.cancel" default="Cancel"/>" class="btn" onClick="$('#loginOrFlag').modal('hide');"/>
-                                <input type="button" id="close" value="<g:message code="show.issueform.button.close" default="Close"/>" class="btn" style="display:none;"/>
-                                <span id="submitSuccess"></span>
-                            </p>
-                            <p id="assertionSubmitProgress" style="display:none;">
-                                <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" style="display:none;" alt="indicator icon"/>
-                            </p>
-
-                        </form>
-                    </div>
-                </g:else>
-            </div>
-            <div class="hide modal-footer">
-                <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.loginorflag.divbutton" default="Close"/></button>
-            </div>
-        </div>
-    </div>
-</g:if>
-<div class="sidebar">
-    <button href="#processedVsRawView" class="btn" id="showRawProcessed" role="button" data-toggle="modal"
-            title="Table showing both original and processed record values">
-        <span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="icon-th"></i> <g:message code="show.sidebar02.showrawprocessed.span" default="Original vs Processed"/></span>
-    </button>
-</div>
-<g:if test="${contacts && contacts.size()}">
-    <div class="sidebar">
-        <button href="#contactCuratorView" class="btn" id="showCurator" role="button" data-toggle="modal"
-                title="Contact curator for more details on a record">
-            <span id="contactCuratorSpan" href="#contactCuratorView" title=""><i class="icon-envelope"></i> <g:message code="show.showcontactcurator.span" default="Contact curator"/></span>
-        </button>
-    </div>
-</g:if>
-<g:if test="${record.images}">
-    <div class="sidebar">
-        <h3><g:message code="show.sidebar03.title" default="Images"/></h3>
-        <div id="occurrenceImages" style="margin-top:5px;">
-            <g:each in="${record.images}" var="image">
-                <div style="margin-bottom:10px;">
-                    <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
-                        <a href="${grailsApplication.config.images.viewerUrl}${image.filePath}" target="_blank">
-                            <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;" alt="Click to view this image in a large viewer"/>
-                        </a>
-                    </g:if>
-                    <g:else>
-                        <a href="${image.alternativeFormats.largeImageUrl}" target="_blank">
-                            <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;"/>
-                        </a>
-                    </g:else>
-                    <br/>
-                    <g:if test="${record.raw.occurrence.photographer || image.metadata?.creator}">
-                        <cite><g:message code="show.sidebar03.cite01" default="Photographer"/>: ${record.raw.occurrence.photographer ?: image.metadata?.creator}</cite><br/>
-                    </g:if>
-                    <g:if test="${record.raw.occurrence.rights || image.metadata?.rights}">
-                        <cite><g:message code="show.sidebar03.cite02" default="Rights"/>: ${record.raw.occurrence.rights ?: image.metadata?.rights}</cite><br/>
-                    </g:if>
-                    <g:if test="${record.raw.occurrence.rightsholder || image.metadata?.rightsholder}">
-                        <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.occurrence.rightsholder ?: image.metadata?.rightsholder}</cite><br/>
-                    </g:if>
-                    <g:if test="${record.raw.miscProperties.rightsHolder}">
-                        <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.miscProperties.rightsHolder}</cite><br/>
-                    </g:if>
-                    <g:if test="${image.metadata?.license}">
-                        <cite><g:message code="show.sidebar03.image.license" default="License"/>: ${image.metadata?.license}</cite><br/>
-                    </g:if>
-                    <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
-                        <a href="${grailsApplication.config.images.metadataUrl}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
-                    </g:if>
-                    <g:else>
-                        <a href="${image.alternativeFormats.imageUrl}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator02" default="Original image"/></a>
-                    </g:else>
-                </div>
-            </g:each>
-        </div>
     </div>
 </g:if>
 <g:if test="${record.processed.location.decimalLatitude && record.processed.location.decimalLongitude}">
@@ -313,6 +310,49 @@
         </script>
         <h3><g:message code="show.occurrencemap.title" default="Location of record"/></h3>
         <div id="occurrenceMap" class="google-maps"></div>
+    </div>
+</g:if>
+<g:if test="${record.images}">
+    <div class="sidebar">
+        <h3 id="images"><g:message code="show.sidebar03.title" default="Images"/></h3>
+        <div id="occurrenceImages" style="margin-top:5px;">
+            <g:each in="${record.images}" var="image">
+                <div style="margin-bottom:10px;">
+                    <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
+                        <a href="${grailsApplication.config.images.viewerUrl}${image.filePath}" target="_blank">
+                            <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;" alt="Click to view this image in a large viewer"/>
+                        </a>
+                    </g:if>
+                    <g:else>
+                        <a href="${image.alternativeFormats.largeImageUrl}" target="_blank">
+                            <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;"/>
+                        </a>
+                    </g:else>
+                    <br/>
+                    <g:if test="${record.raw.occurrence.photographer || image.metadata?.creator}">
+                        <cite><g:message code="show.sidebar03.cite01" default="Photographer"/>: ${record.raw.occurrence.photographer ?: image.metadata?.creator}</cite><br/>
+                    </g:if>
+                    <g:if test="${record.raw.occurrence.rights || image.metadata?.rights}">
+                        <cite><g:message code="show.sidebar03.cite02" default="Rights"/>: ${record.raw.occurrence.rights ?: image.metadata?.rights}</cite><br/>
+                    </g:if>
+                    <g:if test="${record.raw.occurrence.rightsholder || image.metadata?.rightsholder}">
+                        <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.occurrence.rightsholder ?: image.metadata?.rightsholder}</cite><br/>
+                    </g:if>
+                    <g:if test="${record.raw.miscProperties.rightsHolder}">
+                        <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.miscProperties.rightsHolder}</cite><br/>
+                    </g:if>
+                    <g:if test="${image.metadata?.license}">
+                        <cite><g:message code="show.sidebar03.image.license" default="License"/>: ${image.metadata?.license}</cite><br/>
+                    </g:if>
+                    <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
+                        <a href="${grailsApplication.config.images.metadataUrl}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
+                    </g:if>
+                    <g:else>
+                        <a href="${image.alternativeFormats.imageUrl}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator02" default="Original image"/></a>
+                    </g:else>
+                </div>
+            </g:each>
+        </div>
     </div>
 </g:if>
 <g:if test="${record.sounds}">

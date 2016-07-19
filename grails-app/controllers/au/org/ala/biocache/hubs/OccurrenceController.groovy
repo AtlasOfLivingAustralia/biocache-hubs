@@ -192,6 +192,18 @@ class OccurrenceController {
                     }
                 }
 
+                String userEmail = authService?.getEmail()
+
+                Boolean isCollectionAdmin = false
+
+                if (contacts != null && contacts.size()> 0) {
+                    for (int i=0; i < contacts.size(); i++ ) {
+                        if (contacts.get(i).editor == true && userEmail.equals(contacts.get(i).contact.email)) {
+                            isCollectionAdmin = true;
+                        }
+                    }
+                }
+
                 List groupedAssertions = postProcessingService.getGroupedAssertions(
                         webServicesService.getUserAssertions(id),
                         webServicesService.getQueryAssertions(id),
@@ -207,7 +219,7 @@ class OccurrenceController {
                         collectionName: collectionInfo?.name,
                         collectionLogo: collectionInfo?.institutionLogoUrl,
                         collectionInstitution: collectionInfo?.institution,
-                        isCollectionAdmin: false, // TODO implement this
+                        isCollectionAdmin: isCollectionAdmin,
                         contacts: contacts,
                         queryAssertions: null, // TODO implement this
                         duplicateRecordDetails: webServicesService.getDuplicateRecordDetails(record),
