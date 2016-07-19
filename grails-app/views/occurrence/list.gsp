@@ -187,7 +187,19 @@
                     </div>
                 </g:if>
                 <div id="resultsReturned">
-                        <span id="returnedText"><strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong> <g:message code="list.resultsretuened.span.returnedtext" default="results for"/></span>
+                    <g:if test="${grailsApplication.config.sandbox.uploadSource && selectedDataResource && selectedDataResource.startsWith('drt')}">
+                        <div class="btn-group pull-right">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <g:message code="list.sandbox.label" /> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" style="width: initial;">
+                                <li><a href="${grailsApplication.config.sandbox.uploadSource}/collectory/submitDataForReview?uid=${selectedDataResource}" title="${message(code: 'list.sandbox.submitData.tooltip')}"><g:message code="list.sandbox.submitData.label" /></a></li>
+                                <li><a href="${grailsApplication.config.sandbox.uploadSource}/collectory/viewMetadata?uid=${selectedDataResource}" title="${message(code: 'list.sandbox.viewMetadata.tooltip')}"><g:message code="list.sandbox.viewMetadata.label" /></a></li>
+                                <li><a href="${grailsApplication.config.sandbox.uploadSource}/dataCheck?reload=${selectedDataResource}" title="${message(code: 'list.sandbox.reloadData.tooltip')}"><g:message code="list.sandbox.reloadData.label" /></a></li>
+                            </ul>
+                        </div>
+                    </g:if>
+                    <span id="returnedText"><strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong> <g:message code="list.resultsretuened.span.returnedtext" default="results for"/></span>
                         <span class="queryDisplay"><strong>${raw(queryDisplay)}</strong></span>&nbsp;&nbsp;
                     %{--<g:set var="hasFq" value="${false}"/>--}%
                     <g:if test="${sr.activeFacetMap?.size() > 0 || params.wkt || params.radius}">
