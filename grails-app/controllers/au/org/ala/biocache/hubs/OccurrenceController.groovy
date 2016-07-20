@@ -18,6 +18,7 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
+import au.org.ala.web.CASRoles
 
 import java.text.SimpleDateFormat
 /**
@@ -196,10 +197,16 @@ class OccurrenceController {
 
                 Boolean isCollectionAdmin = false
 
-                if (contacts != null && contacts.size()> 0) {
-                    for (int i=0; i < contacts.size(); i++ ) {
-                        if (contacts.get(i).editor == true && userEmail.equals(contacts.get(i).contact.email)) {
-                            isCollectionAdmin = true;
+                Boolean userHasRoleAdmin = authService?.userInRole(CASRoles.ROLE_ADMIN)
+
+                if (userHasRoleAdmin) {
+                  isCollectionAdmin = true
+                } else {
+                    if (contacts != null && contacts.size() > 0) {
+                        for (int i = 0; i < contacts.size(); i++) {
+                            if (contacts.get(i).editor == true && userEmail.equals(contacts.get(i).contact.email)) {
+                                isCollectionAdmin = true;
+                            }
                         }
                     }
                 }
