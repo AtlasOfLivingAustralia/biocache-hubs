@@ -112,6 +112,17 @@ class OccurrenceController {
             //grouped facets
             Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)
 
+            //remove qc from active facet map
+            if (params?.qc && searchResults?.activeFacetMap) {
+                def remove = null
+                searchResults?.activeFacetMap.each { k, v ->
+                    if (k + ':' + v?.value == params.qc) {
+                        remove = k
+                    }
+                }
+                if (remove) searchResults?.activeFacetMap?.remove(remove)
+            }
+
             [
                     sr: searchResults,
                     searchRequestParams: requestParams,

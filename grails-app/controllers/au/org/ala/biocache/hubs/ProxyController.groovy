@@ -325,9 +325,22 @@ class ProxyController {
 //        }
         // Handle the path given to the servlet
         stringProxyURL += pathInfo
-        // Handle the query string
-        if(httpServletRequest.getQueryString() != null) {
-            stringProxyURL += "?" + httpServletRequest.getQueryString()
+        // Handle the query string by rebuilding from parameter map. This supports filters that alter parameters.
+        if(httpServletRequest.getParameterMap() != null && httpServletRequest.getParameterMap().size()) {
+            StringBuilder sb = new StringBuilder()
+
+            httpServletRequest.getParameterMap().each { k, v ->
+                def values = v
+                if (!(v instanceof Object[])) {
+                    values = [v]
+                }
+                values.each {
+                    if (sb.length() > 0) sb.append("&")
+                    sb.append(k.toString()).append('=').append(URLEncoder.encode(it.toString(), "UTF-8"))
+                }
+            }
+
+            stringProxyURL += '?' + sb.toString()
         }
 
         return stringProxyURL
