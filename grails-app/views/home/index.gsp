@@ -17,7 +17,7 @@
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <title><g:message code="home.index.title" default="Search for records"/> | ${hubDisplayName}</title>
     <script src="http://maps.google.com/maps/api/js?v=3.5&sensor=false"></script>
-    <r:require modules="jquery, leaflet, mapCommon, searchMap, bootstrapCombobox"/>
+    <r:require modules="jquery, leaflet, leafletPlugins, mapCommon, searchMap, bootstrapCombobox"/>
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <r:require module="bieAutocomplete"/>
     </g:if>
