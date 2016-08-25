@@ -54,11 +54,14 @@
             dislikeUrl: "${createLink(controller: 'imageClient', action: 'dislikeImage')}",
             userRatingUrl: "${createLink(controller: 'imageClient', action: 'userRating')}",
             disableLikeDislikeButton: ${authService.getUserId() ? false : true},
+            addPreferenceButton: ${authService?.userInRole("ROLE_ADMIN")},
             userRatingHelpText: '<div><b>Up vote (<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>) an image:</b>'+
             ' Image supports the identification of the species or is representative of the species.  Subject is clearly visible including identifying features.<br/><br/>'+
             '<b>Down vote (<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>) an image:</b>'+
             ' Image does not support the identification of the species, subject is unclear and identifying features are difficult to see or not visible.<br/><br/>'+
-            'If this image is incorrectly identified please flag an issue on the <a href="RECORD_URL">record</a></div>'
+            'If this image is incorrectly identified please flag an issue on the <a href="RECORD_URL">record</a></div>',
+            savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
+            getPreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}"
         };
 
         google.load('maps','3.5',{ other_params: "sensor=false" });
