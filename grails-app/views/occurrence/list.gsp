@@ -19,7 +19,7 @@
     <title><g:message code="list.title" default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
     %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-    <r:require modules="search, leaflet, slider, qtip, nanoscroller, amplify, moment, mapCommon, image-viewer"/>
+    <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, image-viewer"/>
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <r:require module="bieAutocomplete"/>
     </g:if>
@@ -54,6 +54,7 @@
             dislikeUrl: "${createLink(controller: 'imageClient', action: 'dislikeImage')}",
             userRatingUrl: "${createLink(controller: 'imageClient', action: 'userRating')}",
             disableLikeDislikeButton: ${authService.getUserId() ? false : true},
+            addLikeDislikeButton: ${(grailsApplication.config.addLikeDislikeButton == false) ? false : true},
             addPreferenceButton: ${authService?.userInRole("ROLE_ADMIN")},
             userRatingHelpText: '<div><b>Up vote (<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>) an image:</b>'+
             ' Image supports the identification of the species or is representative of the species.  Subject is clearly visible including identifying features.<br/><br/>'+
@@ -191,18 +192,7 @@
                     </div>
                 </g:if>
                 <div id="resultsReturned">
-                    <g:if test="${grailsApplication.config.sandbox.uploadSource && selectedDataResource && selectedDataResource.startsWith('drt')}">
-                        <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <g:message code="list.sandbox.label" /> <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" style="width: initial;">
-                                <li><a href="${grailsApplication.config.sandbox.uploadSource}/collectory/submitDataForReview?uid=${selectedDataResource}" title="${message(code: 'list.sandbox.submitData.tooltip')}"><g:message code="list.sandbox.submitData.label" /></a></li>
-                                <li><a href="${grailsApplication.config.sandbox.uploadSource}/collectory/viewMetadata?uid=${selectedDataResource}" title="${message(code: 'list.sandbox.viewMetadata.tooltip')}"><g:message code="list.sandbox.viewMetadata.label" /></a></li>
-                                <li><a href="${grailsApplication.config.sandbox.uploadSource}/dataCheck?reload=${selectedDataResource}" title="${message(code: 'list.sandbox.reloadData.tooltip')}"><g:message code="list.sandbox.reloadData.label" /></a></li>
-                            </ul>
-                        </div>
-                    </g:if>
+                    <g:render template="sandboxUploadSourceLinks" model="[dataResourceUid: selectedDataResource]" />
                     <span id="returnedText"><strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong> <g:message code="list.resultsretuened.span.returnedtext" default="results for"/></span>
                         <span class="queryDisplay"><strong>${raw(queryDisplay)}</strong></span>&nbsp;&nbsp;
                     %{--<g:set var="hasFq" value="${false}"/>--}%

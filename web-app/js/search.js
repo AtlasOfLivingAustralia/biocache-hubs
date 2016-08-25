@@ -603,7 +603,7 @@ $(document).ready(function() {
             addDrawer: false,
             addCloseButton: true,
             addAttribution: true,
-            addLikeDislikeButton: true,
+            addLikeDislikeButton: BC_CONF.addLikeDislikeButton,
             addPreferenceButton: BC_CONF.addPreferenceButton,
             preferredImageStatus: preferredImageStatus,
             attribution: attribution,

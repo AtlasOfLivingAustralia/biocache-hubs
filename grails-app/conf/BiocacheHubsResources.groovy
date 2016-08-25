@@ -59,17 +59,29 @@ modules = {
     }
 
     leaflet {
-        defaultBundle 'leaflet'
+        //defaultBundle 'leaflet'
         resource url:[dir:'js/leaflet-0.7.2', file:'leaflet.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
+        resource url:[dir:'js/leaflet-0.7.2', file:'leaflet.js', plugin:'biocache-hubs']
+
+    }
+
+    'leaflet-fullscreen' {
+        dependsOn 'leaflet'
+        defaultBundle 'leafletPlugins'
+        resource url: [plugin: "biocache-hubs", dir: 'js/leaflet', file: 'Control.FullScreen.css']
+        resource url: [plugin: "biocache-hubs", dir: 'js/leaflet', file: 'Control.FullScreen.js']
+    }
+
+    leafletPlugins {
+        dependsOn 'leaflet','leaflet-fullscreen'
+        defaultBundle 'leafletPlugins'
+        resource url:[dir:'js/leaflet-plugins/layer/tile', file:'Google.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.ie.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ], wrapper: { s -> "<!--[if lt IE 8]>$s<![endif]-->" }
-        resource url:[dir:'js/leaflet-0.7.2', file:'leaflet.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/layer/tile', file:'Google.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/spin', file:'spin.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/spin', file:'leaflet.spin.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.min.js', plugin:'biocache-hubs']
-        resource url:[dir:'js/leaflet-plugins/fullscreen', file:'Control.FullScreen.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
-        resource url:[dir:'js/leaflet-plugins/fullscreen', file:'Control.FullScreen.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/draw', file:'leaflet.draw.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'js/leaflet-plugins/draw', file:'leaflet.draw-src.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/wicket', file:'wicket.js', plugin:'biocache-hubs']
