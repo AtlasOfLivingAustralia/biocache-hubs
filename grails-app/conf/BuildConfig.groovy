@@ -6,6 +6,7 @@ grails.project.work.dir = "target/work"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
+//grails.plugin.location.'images-client-plugin' = "../images-client-plugin"
 
 grails.project.fork = [
         test: false,
@@ -54,6 +55,6 @@ grails.project.dependency.resolution = {
         runtime ":jquery:1.8.3"
         runtime ":resources:1.2.1"
 	    runtime ":release:3.0.1"
-        compile ":images-client-plugin:0.7.2-SNAPSHOT"
+        compile ":images-client-plugin:0.7.2"
     }
 }
