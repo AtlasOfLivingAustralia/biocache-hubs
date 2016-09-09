@@ -3,11 +3,16 @@ modules = {
         resource url:[dir:'js', file:'application.js', plugin:'biocache-hubs']
     }
 
-    bootstrap2 {
+    bootstrap {
         dependsOn 'jquery'
         resource url:[dir:'bootstrap/js', file:'bootstrap.js', plugin:'biocache-hubs'], disposition: 'head', exclude: '*'
         resource url:[dir:'bootstrap/css', file:'bootstrap.css', plugin:'biocache-hubs'], attrs:[media:'screen, projection, print']
         resource url:[dir:'bootstrap/css', file:'bootstrap-responsive.css', plugin:'biocache-hubs'], attrs:[media:'screen', id:'responsiveCss'], exclude: '*'
+    }
+
+    //this is unpleasant, but is a fix for plugins referencing both 'bootstrap' and 'bootstrap2'
+    bootstrap2 {
+        dependsOn 'bootstrap'
     }
 
     hubCore {
