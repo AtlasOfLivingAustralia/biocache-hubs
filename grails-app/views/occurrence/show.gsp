@@ -30,7 +30,15 @@
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="search"/>
     <title><g:message code="show.title" default="Record"/>: ${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
-    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+
+
+    <g:if test="${grailsApplication.config.google.apikey}">
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
+    </g:if>
+    <g:else>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    </g:else>
+
     <script type="text/javascript">
         // Global var OCC_REC to pass GSP data to external JS file
         var OCC_REC = {
@@ -46,11 +54,14 @@
                 <g:each var="sds" in="${sensitiveDatasets}"
                    status="s">'${sds}': '${grailsApplication.config.sensitiveDatasets[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
                 </g:each>
-            }
+            },
+            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
         }
 
         // Google charts
-        google.load('maps','3.3',{ other_params: "sensor=false" });
+        if(!OCC_REC.hasGoogleKey) {
+            google.load('maps', '3.3', {other_params: "sensor=false"});
+        }
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
     <r:require modules="show, amplify, moment"/>

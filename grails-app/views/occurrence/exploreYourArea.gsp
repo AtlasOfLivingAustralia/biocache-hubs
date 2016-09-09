@@ -27,7 +27,14 @@
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="yourArea"/>
     <title><g:message code="eya.title01" default="Explore Your Area"/> | <g:message code="eya.title02" default="Atlas of Living Australia"/></title>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+    <g:if test="${grailsApplication.config.google.apikey}">
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
+    </g:if>
+    <g:else>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    </g:else>
+
     <r:require modules="exploreYourArea, qtip"/>
     <script type="text/javascript">
         // Global variables for yourAreaMap.js
@@ -39,7 +46,8 @@
             radius: ${radius},
             speciesPageUrl: "${speciesPageUrl}",
             queryContext: "${queryContext}",
-            locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}"
+            locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
+            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
         }
 
         //make the taxa and rank global variable so that they can be used in the download
