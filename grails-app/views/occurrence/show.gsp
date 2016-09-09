@@ -344,7 +344,7 @@
                         <g:if test="${record.systemAssertions.unchecked}">
                             <tr>
                                 <td colspan="2">
-                                <a href="javascript:void(0)" id="showUncheckedTests"><g:message code="show.tabledataqualityresults.tr06td02" default="Show/Hide"/>  ${record.systemAssertions.unchecked.length()} tests that havent been ran</a>
+                                <a href="javascript:void(0)" id="showUncheckedTests"><g:message code="show.tabledataqualityresults.tr06td02" default="Show/Hide"/>  ${record.systemAssertions.unchecked.length()} tests that have not been run</a>
                                 </td>
                             </tr>
                         </g:if>
@@ -371,7 +371,7 @@
                         <ul>
                         <g:each in="${metadataForOutlierLayers}" var="layerMetadata">
                             <li>
-                                <a href="${grailsApplication.config.layersservice.url}/layers/view/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
+                                <a href="${grailsApplication.config.layersservice.baseUrl}/layers/view/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
                                 <g:message code="show.outlierinformation.each.label01" default="Notes"/>: ${layerMetadata.notes}<br/>
                                 <g:message code="show.outlierinformation.each.label02" default="Scale"/>: ${layerMetadata.scale}
                             </li>
@@ -536,14 +536,14 @@
 
                 <div id="outlierInformation" class="additionalData">
                     <g:if test="${contextualSampleInfo}">
-                        <h3 id="contextualSampleInfo"><g:message code="show.outlierinformation.02.title01" default="Additional political boundaries information"/></h3>
+                        <h3 id="contextualSampleInfo"><g:message code="show.outlierinformation.02.title01" default="Additional geographic & environmental information"/></h3>
                         <table class="layerIntersections table-striped table-bordered table-condensed">
                             <tbody>
                             <g:each in="${contextualSampleInfo}" var="sample" status="vs">
                                 <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != contextualSampleInfo.get(vs - 1).classification1 && vs != contextualSampleInfo.size() - 1))}">
                                     <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
                                 </g:if>
-                                <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
+                                <g:set var="fn"><a href='${grailsApplication.config.layersservice.baseUrl}/layers/view/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
                                 <alatag:occurrenceTableRow
                                         annotate="false"
                                         section="contextual"
