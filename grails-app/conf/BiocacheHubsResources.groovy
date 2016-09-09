@@ -10,6 +10,11 @@ modules = {
         resource url:[dir:'bootstrap/css', file:'bootstrap-responsive.css', plugin:'biocache-hubs'], attrs:[media:'screen', id:'responsiveCss'], exclude: '*'
     }
 
+    //this is unpleasant, but is a fix for plugins referencing both 'bootstrap' and 'bootstrap2'
+    bootstrap2 {
+        dependsOn 'bootstrap'
+    }
+
     hubCore {
         //dependsOn 'bootstrap'
         defaultBundle 'main-core'
