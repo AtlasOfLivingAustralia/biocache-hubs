@@ -3,7 +3,7 @@ modules = {
         resource url:[dir:'js', file:'application.js', plugin:'biocache-hubs']
     }
 
-    bootstrap2 {
+    bootstrap {
         dependsOn 'jquery'
         resource url:[dir:'bootstrap/js', file:'bootstrap.js', plugin:'biocache-hubs'], disposition: 'head', exclude: '*'
         resource url:[dir:'bootstrap/css', file:'bootstrap.css', plugin:'biocache-hubs'], attrs:[media:'screen, projection, print']
@@ -68,7 +68,7 @@ modules = {
     'leaflet-fullscreen' {
         dependsOn 'leaflet'
         defaultBundle 'leafletPlugins'
-        resource url: [plugin: "biocache-hubs", dir: 'js/leaflet', file: 'Control.FullScreen.css']
+            resource url: [plugin: "biocache-hubs", dir: 'js/leaflet', file: 'Control.FullScreen.css']
         resource url: [plugin: "biocache-hubs", dir: 'js/leaflet', file: 'Control.FullScreen.js']
     }
 
