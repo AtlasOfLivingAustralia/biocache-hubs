@@ -58,7 +58,7 @@ from the ALA biocache-service app (no local DB is required for this app).
     // Online location of the plugin's browseable source code.
     def scm = [ url: "https://github.com/AtlasOfLivingAustralia/biocache-hubs" ]
 
-    def loadBefore = ['alaWebTheme']
+    def loadBefore = ['alaBootstrap2']
     def loadAfter = ['dataBinding'] // needed for custom ValueConverter bean
 
     def doWithWebDescriptor = { xml ->
