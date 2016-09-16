@@ -639,7 +639,10 @@
             </p>
             <br/>
             <p class="deleteAnnotation" style="display:block;">
-               <a class="deleteAnnotationButton btn" href="#"><g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/></a>
+                <a class="deleteAnnotationButton btn" href="#"><g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/></a>
+                <span class="deleteAssertionSubmitProgress" style="display:none;">
+                    <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" alt="indicator icon"/>
+                </span>
             </p>
             <br/>
             <div class="container userVerificationClass">
