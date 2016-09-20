@@ -54,7 +54,8 @@ grails.project.dependency.resolution = {
         compile ":build-info:1.2.6"
         runtime ":jquery:1.8.3"
         runtime ":resources:1.2.1"
-	    runtime ":release:3.0.1"
+        runtime ":release:3.0.1"
         compile ":images-client-plugin:0.7.4"
+        compile ':ala-auth:1.3.4'
     }
 }
