@@ -132,6 +132,14 @@ from the ALA biocache-service app (no local DB is required for this app).
                 }
             }
         }
+
+        // check if the "bootstrap' resource is loaded from client app or another plugin
+        def resourceTagLib = application.getClassForName('org.grails.plugin.resource.ResourceTagLib')
+        try {
+            resourceTagLib.require(module: 'bootstrap')
+        } catch (Exception e) {
+            println  "Required resource 'bootstrap' not declared. Ensure the client app has this in their ApplicationResources.groovy file (or a plugin).", e
+        }
     }
 
     def doWithDynamicMethods = { ctx ->
