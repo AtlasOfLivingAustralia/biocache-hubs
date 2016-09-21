@@ -56,6 +56,5 @@ grails.project.dependency.resolution = {
         runtime ":resources:1.2.1"
         runtime ":release:3.0.1"
         compile ":images-client-plugin:0.7.4"
-        compile ':ala-auth:1.3.4'
     }
 }
