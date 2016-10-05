@@ -18,7 +18,7 @@
  */
 jQuery(document).ready(function() {
     // Autocomplete
-    var bieBaseUrl = BC_CONF.bieWebappUrl;
+    var bieBaseUrl = BC_CONF.bieWebServiceUrl;
     var bieParams = { limit: 100 };
     var autoHints = BC_CONF.autocompleteHints; // expects { fq: "kingdom:Plantae" }
     $.extend( bieParams, autoHints ); // merge autoHints into bieParams
@@ -40,6 +40,7 @@ jQuery(document).ready(function() {
         matchSubset: false,
         formatItem: function(row, i, n) {
             return row.matchedNames[0];
+            //return row.name;
         },
         cacheLength: 10,
         minChars: 3,

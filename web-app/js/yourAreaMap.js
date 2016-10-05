@@ -39,12 +39,15 @@ var radiusForZoom = {
 };
 
 // Load Google maps via AJAX API
-google.load("maps", "3.3", {other_params:"sensor=false"});
+if(EYA_CONF !== undefined && !EYA_CONF.hasGoogleKey){
+ google.load("maps", "3.3", {other_params:"sensor=false"});
+}
 
 /**
  * Document onLoad event using JQuery
  */
 $(document).ready(function() {
+
     // initialise Google Geocoder
     geocoder = new google.maps.Geocoder();
 

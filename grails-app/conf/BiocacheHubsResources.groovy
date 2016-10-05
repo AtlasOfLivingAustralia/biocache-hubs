@@ -3,11 +3,11 @@ modules = {
         resource url:[dir:'js', file:'application.js', plugin:'biocache-hubs']
     }
 
+    // 'bootstrap' was removed due to plugin conflict and now needs to be provided by client application
+
+    // this is unpleasant, but is a fix for plugins referencing both 'bootstrap' and 'bootstrap2'
     bootstrap2 {
-        dependsOn 'jquery'
-        resource url:[dir:'bootstrap/js', file:'bootstrap.js', plugin:'biocache-hubs'], disposition: 'head', exclude: '*'
-        resource url:[dir:'bootstrap/css', file:'bootstrap.css', plugin:'biocache-hubs'], attrs:[media:'screen, projection, print']
-        resource url:[dir:'bootstrap/css', file:'bootstrap-responsive.css', plugin:'biocache-hubs'], attrs:[media:'screen', id:'responsiveCss'], exclude: '*'
+        dependsOn 'bootstrap'
     }
 
     hubCore {
@@ -22,14 +22,14 @@ modules = {
     }
 
     searchCore {
-        dependsOn 'jquery, purl'
+        dependsOn 'jquery, purl, fontawesome'
         defaultBundle 'search-core'
         resource url:[dir:'css', file:'search.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'css', file:'pagination.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'js', file:'jquery.cookie.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.inview.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.jsonp-2.4.0.min.js', plugin:'biocache-hubs']
-        resource url:[dir:'css', file:'font-awesome.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
+        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs'], disposition: 'head'
     }
 
     search {
@@ -59,17 +59,29 @@ modules = {
     }
 
     leaflet {
-        defaultBundle 'leaflet'
+        //defaultBundle 'leaflet'
         resource url:[dir:'js/leaflet-0.7.2', file:'leaflet.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
+        resource url:[dir:'js/leaflet-0.7.2', file:'leaflet.js', plugin:'biocache-hubs']
+
+    }
+
+    'leaflet-fullscreen' {
+        dependsOn 'leaflet'
+        defaultBundle 'leafletPlugins'
+        resource url: [plugin: "biocache-hubs", dir: 'js/leaflet', file: 'Control.FullScreen.css']
+        resource url: [plugin: "biocache-hubs", dir: 'js/leaflet', file: 'Control.FullScreen.js']
+    }
+
+    leafletPlugins {
+        dependsOn 'leaflet','leaflet-fullscreen'
+        defaultBundle 'leafletPlugins'
+        resource url:[dir:'js/leaflet-plugins/layer/tile', file:'Google.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.ie.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ], wrapper: { s -> "<!--[if lt IE 8]>$s<![endif]-->" }
-        resource url:[dir:'js/leaflet-0.7.2', file:'leaflet.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/layer/tile', file:'Google.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/spin', file:'spin.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/spin', file:'leaflet.spin.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.min.js', plugin:'biocache-hubs']
-        resource url:[dir:'js/leaflet-plugins/fullscreen', file:'Control.FullScreen.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
-        resource url:[dir:'js/leaflet-plugins/fullscreen', file:'Control.FullScreen.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/draw', file:'leaflet.draw.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'js/leaflet-plugins/draw', file:'leaflet.draw-src.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/wicket', file:'wicket.js', plugin:'biocache-hubs']
@@ -116,11 +128,16 @@ modules = {
         resource url:[dir:'js', file:'moment.min.js', plugin:'biocache-hubs']
     }
 
+    fontawesome {
+        resource url:[dir:'css', file:'font-awesome.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
+    }
+
     show {
-        dependsOn 'jquery'
+        dependsOn 'jquery, fontawesome'
         resource url:[dir:'css', file:'record.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]
         resource url:[dir:'css', file:'print-record.css', plugin:'biocache-hubs'], attrs: [ media: 'print' ]
         resource url:[dir:'js', file:'audiojs/audio.min.js', plugin:'biocache-hubs'], disposition: 'head', exclude: '*'
+        resource url: [dir:'js', file:'jquery.i18n.properties-1.0.9.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'show.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs'], disposition: 'head'
         resource url:[dir:'js', file:'wms2.js', plugin:'biocache-hubs'], disposition: 'head'

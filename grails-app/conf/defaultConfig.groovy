@@ -57,6 +57,9 @@ biocache.ajax.useProxy = false
 collections.baseUrl = "http://collections.ala.org.au"
 useDownloadPlugin = ""
 
+// for images-client-plugin
+image.baseUrl = "http://images.ala.org.au"
+
 // images
 images.baseUrl = "http://images.ala.org.au"
 images.viewerUrl = "http://images.ala.org.au/image/viewer?imageId="
@@ -70,6 +73,8 @@ spatial.baseUrl = "http://spatial.ala.org.au/"
 layersservice.baseUrl = "http://spatial.ala.org.au/ws"
 spatial.params = ""
 test.var = "test"
+// used to link temporary data resources back to an originating sandbox.
+sandbox.uploadSource=''
 
 clubRoleForHub = "ROLE_ADMIN"
 // whether map or list is the default tab to show - empty for list and "mapView" for map

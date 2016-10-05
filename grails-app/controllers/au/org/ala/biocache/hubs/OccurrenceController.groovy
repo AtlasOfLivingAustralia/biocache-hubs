@@ -18,6 +18,7 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
+import au.org.ala.web.CASRoles
 
 import java.text.SimpleDateFormat
 /**
@@ -111,6 +112,17 @@ class OccurrenceController {
             //grouped facets
             Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)
 
+            //remove qc from active facet map
+            if (params?.qc && searchResults?.activeFacetMap) {
+                def remove = null
+                searchResults?.activeFacetMap.each { k, v ->
+                    if (k + ':' + v?.value == params.qc) {
+                        remove = k
+                    }
+                }
+                if (remove) searchResults?.activeFacetMap?.remove(remove)
+            }
+
             [
                     sr: searchResults,
                     searchRequestParams: requestParams,
@@ -192,6 +204,24 @@ class OccurrenceController {
                     }
                 }
 
+                String userEmail = authService?.getEmail()
+
+                Boolean isCollectionAdmin = false
+
+                Boolean userHasRoleAdmin = authService?.userInRole(CASRoles.ROLE_ADMIN)
+
+                if (userHasRoleAdmin) {
+                  isCollectionAdmin = true
+                } else {
+                    if (contacts != null && contacts.size() > 0) {
+                        for (int i = 0; i < contacts.size(); i++) {
+                            if (contacts.get(i).editor == true && userEmail.equals(contacts.get(i).contact.email)) {
+                                isCollectionAdmin = true;
+                            }
+                        }
+                    }
+                }
+
                 List groupedAssertions = postProcessingService.getGroupedAssertions(
                         webServicesService.getUserAssertions(id),
                         webServicesService.getQueryAssertions(id),
@@ -207,7 +237,7 @@ class OccurrenceController {
                         collectionName: collectionInfo?.name,
                         collectionLogo: collectionInfo?.institutionLogoUrl,
                         collectionInstitution: collectionInfo?.institution,
-                        isCollectionAdmin: false, // TODO implement this
+                        isCollectionAdmin: isCollectionAdmin,
                         contacts: contacts,
                         queryAssertions: null, // TODO implement this
                         duplicateRecordDetails: webServicesService.getDuplicateRecordDetails(record),

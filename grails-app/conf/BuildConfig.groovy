@@ -6,6 +6,7 @@ grails.project.work.dir = "target/work"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
+//grails.plugin.location.'images-client-plugin' = "../images-client-plugin"
 //grails.plugin.location.'ala-charts-plugin' = "../ala-charts-plugin"
 
 grails.project.fork = [
@@ -37,7 +38,7 @@ grails.project.dependency.resolution = {
         //    excludes "icu4j","servlet-api","spring-core","spring-context","spring-context-support","spring-beans","spring-web","spring-mvc"
         //}
         //compile "org.tmatesoft.svnkit:svnkit:1.8.5"
-        runtime "commons-httpclient:commons-httpclient:3.1"
+        compile "commons-httpclient:commons-httpclient:3.1"
         runtime "commons-lang:commons-lang:2.6"
         runtime "net.sf.supercsv:super-csv:2.1.0"
     }
@@ -56,5 +57,6 @@ grails.project.dependency.resolution = {
         runtime ":resources:1.2.1"
 	    runtime ":release:3.0.1"
         runtime ":ala-charts-plugin:1.1-SNAPSHOT"
+        compile ":images-client-plugin:0.7.4"
     }
 }
