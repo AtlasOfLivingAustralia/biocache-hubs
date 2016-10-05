@@ -37,7 +37,7 @@
                                 <span id="submitSuccess"></span>
                             </p>
                             <p id="assertionSubmitProgress" style="display:none;">
-                                <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" style="display:none;" alt="indicator icon"/>
+                                <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" alt="indicator icon"/>
                             </p>
 
                         </form>

@@ -20,7 +20,7 @@ import grails.util.Environment
 
 class BiocacheHubsGrailsPlugin {
     // the plugin version
-    def version = "1.1-SNAPSHOT"
+    def version = "1.2-SNAPSHOT"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging
@@ -58,7 +58,7 @@ from the ALA biocache-service app (no local DB is required for this app).
     // Online location of the plugin's browseable source code.
     def scm = [ url: "https://github.com/AtlasOfLivingAustralia/biocache-hubs" ]
 
-    def loadBefore = ['alaWebTheme']
+    def loadBefore = ['alaBootstrap2']
     def loadAfter = ['dataBinding'] // needed for custom ValueConverter bean
 
     def doWithWebDescriptor = { xml ->
@@ -131,6 +131,14 @@ from the ALA biocache-service app (no local DB is required for this app).
                     println  "grails.resources.work.dir (${config.grails.resources.work.dir}) cannot be created, please fix this!"
                 }
             }
+        }
+
+        // check if the "bootstrap' resource is loaded from client app or another plugin
+        def resourceTagLib = application.getClassForName('org.grails.plugin.resource.ResourceTagLib')
+        try {
+            resourceTagLib.require(module: 'bootstrap')
+        } catch (Exception e) {
+            println  "Required resource 'bootstrap' not declared. Ensure the client app has this in their ApplicationResources.groovy file (or a plugin).", e
         }
     }
 

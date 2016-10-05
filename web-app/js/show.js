@@ -471,7 +471,8 @@ function updateDeleteEvents(enableDelete, disableDelete){
             e.preventDefault();
             var isConfirmed = confirm('Are you sure you want to delete this issue?');
             if (isConfirmed === true) {
-                deleteAssertion(OCC_REC.recordUuid, this.parentElement.id.split('_').pop());
+                $('#' + enableDelete[i] + ' .deleteAssertionSubmitProgress').css({'display':'inline'});
+                deleteAssertion(OCC_REC.recordUuid, enableDelete[i]);
             }
         });
         updateVerificationEvents(enableDelete[i]);
@@ -490,7 +491,6 @@ function updateDeleteEvents(enableDelete, disableDelete){
 
 function updateVerificationEvents(assertionId) {
     $('#userAnnotation_' + assertionId + ' .verifyAnnotation').off("click");
-
     $('#userAnnotation_' + assertionId + ' .verifyAnnotation').on("click", function(e){
         e.preventDefault();
         $("#verifySpinner").hide();
