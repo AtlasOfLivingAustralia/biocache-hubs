@@ -21,10 +21,8 @@
     <g:if test="${grailsApplication.config.google.apikey}">
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
     </g:if>
-    <g:else>
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    </g:else>
-    
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
     <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, image-viewer"/>
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <r:require module="bieAutocomplete"/>
