@@ -69,7 +69,7 @@
             getPreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}"
         };
 
-        google.load('maps','3.5',{ other_params: "sensor=false" });
+//        google.load('maps','3.5',{ other_params: "sensor=false" });
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
 </head>
