@@ -810,7 +810,26 @@ function removeFilter(el) {
  * Load all the charts 
  */
 function loadAllCharts() {
-    var charts = ALA.BiocacheCharts('charts', chartConfig);
+    if(dynamicFacets !== undefined){
+        var chartsConfigUri = BC_CONF.biocacheServiceUrl + "/upload/charts/" + BC_CONF.selectedDataResource + ".json";
+        $.getJSON(chartsConfigUri, function(chartsConfig) {
+
+            console.log("Number of dynamic charts to render: " + chartsConfig.length);
+
+            var conf = {}
+
+            $.each(chartsConfig, function(index, config){
+                if(config.visible) {
+                    var type = 'bar'
+                    if (config.format == 'pie') type = 'doughnut'
+                    conf[config.field] = { chartType: type, emptyValueMsg: '', hideEmptyValues: true, title: config.field }}
+            });
+            chartConfig.charts = conf;
+            var charts = ALA.BiocacheCharts('charts', chartConfig);
+        });
+    } else {
+        var charts = ALA.BiocacheCharts('charts', chartConfig);
+    }
 }
 
 /**
