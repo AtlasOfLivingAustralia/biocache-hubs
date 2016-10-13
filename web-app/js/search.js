@@ -806,6 +806,11 @@ function removeFilter(el) {
     window.location.href = window.location.pathname + '?' + paramList.join('&') + window.location.hash +"";
 }
 
+function saveChartConfig(data) {
+    console.log('saving chart config')
+    console.log(data)
+}
+
 /**
  * Load all the charts 
  */
@@ -825,10 +830,20 @@ function loadAllCharts() {
                     conf[config.field] = { chartType: type, emptyValueMsg: '', hideEmptyValues: true, title: config.field }}
             });
             chartConfig.charts = conf;
+
             var charts = ALA.BiocacheCharts('charts', chartConfig);
         });
     } else {
         var charts = ALA.BiocacheCharts('charts', chartConfig);
+    }
+
+    if (true) { //userCharts
+        userChartConfig.chartControlsCallback = saveChartConfig
+
+        //load user charts
+        userChartConfig.charts = {}
+
+        var charts = ALA.BiocacheCharts('userCharts', userChartConfig);
     }
 }
 

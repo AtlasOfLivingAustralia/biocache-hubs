@@ -16,8 +16,21 @@
             fq=""
             autoLoad="false"
     />
+    <charts:biocache
+            biocacheServiceUrl="${alatag.getBiocacheAjaxUrl()}"
+            biocacheWebappUrl="${grailsApplication.config.serverName}${request.contextPath}"
+            q="${searchString.replace('?q=','')}"
+            qc=""
+            fq=""
+            autoLoad="false"
+            chartControls="true"
+            chartVariableName="userChartConfig"
+    />
 </r:script>
 
+<div class="row-fluid" style="padding: 10px; background-color: lightgoldenrodyellow">
+    <div id="userCharts"></div>
+</div>
 <div class="row-fluid">
     <div id="charts"></div>
 </div>
