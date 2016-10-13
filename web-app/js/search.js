@@ -806,11 +806,6 @@ function removeFilter(el) {
     window.location.href = window.location.pathname + '?' + paramList.join('&') + window.location.hash +"";
 }
 
-function saveChartConfig(data) {
-    console.log('saving chart config')
-    console.log(data)
-}
-
 /**
  * Load all the charts 
  */
@@ -838,12 +833,38 @@ function loadAllCharts() {
     }
 
     if (true) { //userCharts
-        userChartConfig.chartControlsCallback = saveChartConfig
-
         //load user charts
-        userChartConfig.charts = {}
+        $.getJSON(BC_CONF.serverName + "/user/chart", function(data) {
+            if ($.map(data, function(n, i) { return i; }).length > 3) {
+                console.log("loading user chart data")
+                console.log(data)
 
-        var charts = ALA.BiocacheCharts('userCharts', userChartConfig);
+                data.chartControlsCallback = saveChartConfig
+                var charts = ALA.BiocacheCharts('userCharts', data);
+            } else {
+                userChartConfig.charts = {}
+                userChartConfig.chartControlsCallback = saveChartConfig
+                var charts = ALA.BiocacheCharts('userCharts', userChartConfig);
+            }
+        })
+    }
+}
+
+function saveChartConfig(data) {
+    console.log("saving user chart data");
+    console.log(data);
+
+    var d = jQuery.extend(true, {}, data);
+    delete d.chartControlsCallback
+
+    if (data) {
+        $.ajax({
+            url: BC_CONF.serverName + "/user/chart",
+            type: "POST",
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(d)
+        })
     }
 }
 

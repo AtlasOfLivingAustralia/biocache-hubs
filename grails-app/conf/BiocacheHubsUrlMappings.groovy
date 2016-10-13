@@ -28,6 +28,9 @@ class BiocacheHubsUrlMappings {
         "/proxy/$path**" (controller: 'proxy'){
             action = [GET:'doGet']
         }
+        "/user/$type" (controller: 'user'){
+            action = [POST:'set', GET:'get']
+        }
         "/"(redirect: [uri:"/search"])
         "/$controller/$action?/$id?"{
             constraints {
