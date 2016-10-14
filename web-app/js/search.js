@@ -839,6 +839,11 @@ function loadAllCharts() {
                 console.log("loading user chart data")
                 console.log(data)
 
+                //do not display user charts by default
+                $.map(data.charts, function (value, key) {
+                    value.hideOnce = true;
+                });
+
                 data.chartControlsCallback = saveChartConfig
                 var charts = ALA.BiocacheCharts('userCharts', data);
             } else {
