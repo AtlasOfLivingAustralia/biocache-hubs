@@ -30,7 +30,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="help"/>
-    <title>${shortName} - Help</title>
+    <title>Help | ${fullName}</title>
     <r:require modules="help"/>
 </head>
 
