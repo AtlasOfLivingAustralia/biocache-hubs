@@ -845,6 +845,15 @@ function loadAllCharts() {
                 });
 
                 data.chartControlsCallback = saveChartConfig
+
+                //set current context
+                data.biocacheServiceUrl = userChartConfig.biocacheServiceUrl;
+                data.biocacheWebappUrl = userChartConfig.biocacheWebappUrl;
+                data.query = userChartConfig.query;
+                data.queryContext = userChartConfig.queryContext;
+                data.filter = userChartConfig.filter;
+                data.facetQueries = userChartConfig.facetQueries;
+
                 var charts = ALA.BiocacheCharts('userCharts', data);
             } else {
                 userChartConfig.charts = {}
