@@ -869,7 +869,11 @@ function saveChartConfig(data) {
     console.log(data);
 
     var d = jQuery.extend(true, {}, data);
+    
+    //remove unnecessary data
     delete d.chartControlsCallback
+    $.each (d.charts, function(key, value) { if (value.slider) delete value.slider; });
+    $.each (d.charts, function(key, value) { if (value.datastructure) delete value.datastructure});
 
     if (data) {
         $.ajax({
