@@ -834,28 +834,39 @@ function loadAllCharts() {
 
     if (true) { //userCharts
         //load user charts
-        $.getJSON(BC_CONF.serverName + "/user/chart", function(data) {
-            if ($.map(data, function(n, i) { return i; }).length > 3) {
-                console.log("loading user chart data")
-                console.log(data)
+        $.ajax({
+            dataType: "json",
+            url: BC_CONF.serverName + "/user/chart",
+            success: function(data) {
+                if ($.map(data, function (n, i) {
+                        return i;
+                    }).length > 3) {
+                    console.log("loading user chart data")
+                    console.log(data)
 
-                //do not display user charts by default
-                $.map(data.charts, function (value, key) {
-                    value.hideOnce = true;
-                });
+                    //do not display user charts by default
+                    $.map(data.charts, function (value, key) {
+                        value.hideOnce = true;
+                    });
 
-                data.chartControlsCallback = saveChartConfig
+                    data.chartControlsCallback = saveChartConfig
 
-                //set current context
-                data.biocacheServiceUrl = userChartConfig.biocacheServiceUrl;
-                data.biocacheWebappUrl = userChartConfig.biocacheWebappUrl;
-                data.query = userChartConfig.query;
-                data.queryContext = userChartConfig.queryContext;
-                data.filter = userChartConfig.filter;
-                data.facetQueries = userChartConfig.facetQueries;
+                    //set current context
+                    data.biocacheServiceUrl = userChartConfig.biocacheServiceUrl;
+                    data.biocacheWebappUrl = userChartConfig.biocacheWebappUrl;
+                    data.query = userChartConfig.query;
+                    data.queryContext = userChartConfig.queryContext;
+                    data.filter = userChartConfig.filter;
+                    data.facetQueries = userChartConfig.facetQueries;
 
-                var charts = ALA.BiocacheCharts('userCharts', data);
-            } else {
+                    var charts = ALA.BiocacheCharts('userCharts', data);
+                } else {
+                    userChartConfig.charts = {}
+                    userChartConfig.chartControlsCallback = saveChartConfig
+                    var charts = ALA.BiocacheCharts('userCharts', userChartConfig);
+                }
+            },
+            error: function (data) {
                 userChartConfig.charts = {}
                 userChartConfig.chartControlsCallback = saveChartConfig
                 var charts = ALA.BiocacheCharts('userCharts', userChartConfig);
