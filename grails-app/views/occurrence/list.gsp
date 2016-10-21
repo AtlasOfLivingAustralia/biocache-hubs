@@ -289,7 +289,12 @@
                     <ul class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a id="t1" href="#recordsView" data-toggle="tab"><g:message code="list.link.t1" default="Records"/></a></li>
                         <li><a id="t2" href="#mapView" data-toggle="tab"><g:message code="list.link.t2" default="Map"/></a></li>
-                        <li><a id="t3" href="#chartsView" data-toggle="tab"><g:message code="list.link.t3" default="Charts"/></a></li>
+                        <plugin:isAvailable name="alaChartsPlugin">
+                            <li><a id="t3" href="#chartsView" data-toggle="tab"><g:message code="list.link.t3" default="Charts"/></a></li>
+                            <g:if test="${grailsApplication.config.userCharts && grailsApplication.config.userCharts.toBoolean()}">
+                                <li><a id="t6" href="#userChartsView" data-toggle="tab"><g:message code="list.link.t6" default="Custom Charts"/></a></li>
+                            </g:if>
+                        </plugin:isAvailable>
                         <g:if test="${showSpeciesImages}">
                             <li><a id="t4" href="#speciesImages" data-toggle="tab"><g:message code="list.link.t4" default="Species images"/></a></li>
                         </g:if>
@@ -372,10 +377,18 @@
                         />
                         <div id='envLegend'></div>
                     </div><!-- end #mapwrapper -->
-                    <div id="chartsView" class="tab-pane">
-                        <g:render template="charts"
-                                  model="[searchString: searchString]"/>
-                    </div><!-- end #chartsWrapper -->
+                    <plugin:isAvailable name="alaChartsPlugin">
+                        <div id="chartsView" class="tab-pane">
+                            <g:render template="charts"
+                                      model="[searchString: searchString]"/>
+                        </div><!-- end #chartsWrapper -->
+                        <g:if test="${grailsApplication.config.userCharts && grailsApplication.config.userCharts?.toBoolean()}">
+                            <div id="userChartsView" class="tab-pane">
+                                <g:render template="userCharts"
+                                          model="[searchString: searchString]"/>
+                            </div><!-- end #chartsWrapper -->
+                        </g:if>
+                    </plugin:isAvailable>
                     <g:if test="${showSpeciesImages}">
                         <div id="speciesImages" class="tab-pane">
                             <h3><g:message code="list.speciesimages.title" default="Representative images of species"/></h3>

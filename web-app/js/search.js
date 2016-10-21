@@ -59,7 +59,7 @@ $(document).ready(function() {
             //console.log("tab2 FIRST");
             initialiseMap();
             tabsInit.map = true; // only initialise once!
-        } else if (id == "t3" && !tabsInit.charts) {
+        } else if ((id == "t3" || id == "t6") && !tabsInit.charts) {
             // trigger charts load
             loadAllCharts();
             tabsInit.charts = true; // only initialise once!
