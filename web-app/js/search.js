@@ -42,6 +42,7 @@ $(document).ready(function() {
     var tabsInit = {
         map: false,
         charts: false,
+        userCharts: false,
         images: false,
         species: false
     };
@@ -59,10 +60,14 @@ $(document).ready(function() {
             //console.log("tab2 FIRST");
             initialiseMap();
             tabsInit.map = true; // only initialise once!
-        } else if ((id == "t3" || id == "t6") && !tabsInit.charts) {
+        } else if (id == "t3" && !tabsInit.charts) {
             // trigger charts load
-            loadAllCharts();
+            loadDefaultCharts();
             tabsInit.charts = true; // only initialise once!
+        } else if (id == "t6" && !tabsInit.userCharts) {
+            // trigger charts load
+            loadUserCharts();
+            tabsInit.userCharts = true; // only initialise once!
         } else if (id == "t4" && !tabsInit.species) {
             loadSpeciesInTab(0, "common");
             tabsInit.species = true;
@@ -807,22 +812,28 @@ function removeFilter(el) {
 }
 
 /**
- * Load all the charts 
+ * Load the default charts
  */
-function loadAllCharts() {
-    if(dynamicFacets !== undefined){
+function loadDefaultCharts() {
+    if (dynamicFacets) {
         var chartsConfigUri = BC_CONF.biocacheServiceUrl + "/upload/charts/" + BC_CONF.selectedDataResource + ".json";
-        $.getJSON(chartsConfigUri, function(chartsConfig) {
+        $.getJSON(chartsConfigUri, function (chartsConfig) {
 
             console.log("Number of dynamic charts to render: " + chartsConfig.length);
 
             var conf = {}
 
-            $.each(chartsConfig, function(index, config){
-                if(config.visible) {
+            $.each(chartsConfig, function (index, config) {
+                if (config.visible) {
                     var type = 'bar'
                     if (config.format == 'pie') type = 'doughnut'
-                    conf[config.field] = { chartType: type, emptyValueMsg: '', hideEmptyValues: true, title: config.field }}
+                    conf[config.field] = {
+                        chartType: type,
+                        emptyValueMsg: '',
+                        hideEmptyValues: true,
+                        title: config.field
+                    }
+                }
             });
             chartConfig.charts = conf;
 
@@ -831,8 +842,14 @@ function loadAllCharts() {
     } else {
         var charts = ALA.BiocacheCharts('charts', chartConfig);
     }
+}
 
-    if (true) { //userCharts
+/**
+ * Load the user charts
+ */
+function loadUserCharts() {
+
+    if (userChartConfig) { //userCharts
         //load user charts
         $.ajax({
             dataType: "json",
