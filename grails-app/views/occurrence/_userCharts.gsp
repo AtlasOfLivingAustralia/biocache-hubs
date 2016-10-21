@@ -18,6 +18,11 @@
         background-color: #f5f5f5;
         padding: 8px;
     }
+    .hint {
+        display: inline-block;
+        margin-left: 7px;
+        color: silver;
+    }
 </style>
 
 <r:script>
