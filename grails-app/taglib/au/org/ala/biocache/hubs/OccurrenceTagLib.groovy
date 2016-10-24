@@ -196,63 +196,66 @@ class OccurrenceTagLib {
 
         mb.ul(class:'facets nano-content') {
             facetResult.fieldResult.each { fieldResult ->
-                // Catch specific facets fields
-                if (fieldResult.fq) {
-                    // biocache-service has provided a fq field in the fieldResults list
-                    li {
-                        a(      href:"?${queryParam}&fq=${fieldResult.fq?.encodeAsURL()}",
-                                class: "tooltips",
-                                title: linkTitle
-                        ) {
-                            span(class:"fa fa-square-o"){
-                                mkp.yieldUnescaped("&nbsp;")
-                            }
-                            span(class:"facet-item") {
-                                mkp.yield( alatag.message(code: fieldResult.label?:'unknown'))
-                                addCounts(fieldResult.count)
+
+                if(fieldResult.count > 0) {
+                    // Catch specific facets fields
+                    if (fieldResult.fq) {
+                        // biocache-service has provided a fq field in the fieldResults list
+                        li {
+                            a(href: "?${queryParam}&fq=${fieldResult.fq?.encodeAsURL()}",
+                                    class: "tooltips",
+                                    title: linkTitle
+                            ) {
+                                span(class: "fa fa-square-o") {
+                                    mkp.yieldUnescaped("&nbsp;")
+                                }
+                                span(class: "facet-item") {
+                                    mkp.yield(alatag.message(code: fieldResult.label ?: 'unknown'))
+                                    addCounts(fieldResult.count)
+                                }
+
                             }
 
                         }
+                    } else if (facetResult.fieldName.startsWith("occurrence_") && facetResult.fieldResult && facetResult.fieldResult.size() > 1) {
+                        // decade date range a special case
+                        def decade = processDecadeLabel(facetResult.fieldName, facetResult.fieldResult?.get(1)?.label, fieldResult.label)
 
-                    }
-                } else if (facetResult.fieldName.startsWith("occurrence_") && facetResult.fieldResult && facetResult.fieldResult.size() > 1 ) {
-                    // decade date range a special case
-                    def decade = processDecadeLabel(facetResult.fieldName, facetResult.fieldResult?.get(1)?.label, fieldResult.label)
+                        li {
+                            a(href: "?${queryParam}&fq=${decade.fq}",
+                                    class: "tooltips",
+                                    title: linkTitle
+                            ) {
+                                span(class: "fa fa-square-o") {
+                                    mkp.yieldUnescaped("&nbsp;")
+                                }
+                                span(class: "facet-item") {
+                                    mkp.yieldUnescaped("${decade.label}")
+                                    addCounts(fieldResult.count)
+                                }
+                            }
 
-                    li {
-                        a(      href:"?${queryParam}&fq=${decade.fq}",
-                                class: "tooltips",
-                                title: linkTitle
-                        ) {
-                            span(class:"fa fa-square-o"){
-                                mkp.yieldUnescaped("&nbsp;")
-                            }
-                            span(class:"facet-item") {
-                                mkp.yieldUnescaped("${decade.label}")
-                                addCounts(fieldResult.count)
-                            }
                         }
-
-                    }
-                } else {
-                    def label = alatag.message(code: facetResult.fieldName + "." + fieldResult.label, default: '') ?: alatag.message(code: fieldResult.label)
-                    def href = "?${queryParam}&fq=${facetResult.fieldName}:"
-                    if(isRangeFilter(fieldResult.label)){
-                        href = href + "${fieldResult.label?.encodeAsURL()}"
                     } else {
-                        href = href + "%22${fieldResult.label?.encodeAsURL()}%22"
-                    }
-                    li {
-                        a(      href:href,
-                                class: "tooltips",
-                                title: linkTitle
-                        ) {
-                            span(class:"fa fa-square-o"){
-                                mkp.yieldUnescaped("&nbsp;")
-                            }
-                            span(class:"facet-item") {
-                                mkp.yield(label)
-                                addCounts(fieldResult.count)
+                        def label = alatag.message(code: facetResult.fieldName + "." + fieldResult.label, default: '') ?: alatag.message(code: fieldResult.label)
+                        def href = "?${queryParam}&fq=${facetResult.fieldName}:"
+                        if (isRangeFilter(fieldResult.label)) {
+                            href = href + "${fieldResult.label?.encodeAsURL()}"
+                        } else {
+                            href = href + "%22${fieldResult.label?.encodeAsURL()}%22"
+                        }
+                        li {
+                            a(href: href,
+                                    class: "tooltips",
+                                    title: linkTitle
+                            ) {
+                                span(class: "fa fa-square-o") {
+                                    mkp.yieldUnescaped("&nbsp;")
+                                }
+                                span(class: "facet-item") {
+                                    mkp.yield(label)
+                                    addCounts(fieldResult.count)
+                                }
                             }
                         }
                     }
@@ -281,7 +284,7 @@ class OccurrenceTagLib {
             output.startYear = "Before "
             output.endDate = firstLabel
             output.endYear = output.endDate?.substring(0, 4)
-        } else {
+        } else if(fqLabel && fqLabel.length() >= 4) {
             output.startDate = fqLabel
             output.startYear = fqLabel.substring(0, 4)
             output.endDate = fqLabel.replace('0-01-01T00:00:00Z','9-12-31T11:59:59Z')

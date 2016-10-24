@@ -17,8 +17,13 @@
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="search"/>
     <title><g:message code="list.title" default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
-    %{--<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>--}%
-    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+
+    <g:if test="${grailsApplication.config.google.apikey}">
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
+    </g:if>
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <g:render template="/layouts/global"/>
     <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, charts, image-viewer"/>
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <r:require module="bieAutocomplete"/>
@@ -59,13 +64,13 @@
             userRatingHelpText: '<div><b>Up vote (<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>) an image:</b>'+
             ' Image supports the identification of the species or is representative of the species.  Subject is clearly visible including identifying features.<br/><br/>'+
             '<b>Down vote (<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>) an image:</b>'+
-            ' Image does not support the identification of the species, subject is unclear and identifying features are difficult to see or not visible.<br/><br/>'+
-            'If this image is incorrectly identified please flag an issue on the <a href="RECORD_URL">record</a></div>',
+            ' Image does not support the identification of the species, subject is unclear and identifying features are difficult to see or not visible.<br/></div>',
             savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
             getPreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}"
         };
 
-        google.load('maps','3.5',{ other_params: "sensor=false" });
+
+//        google.load('maps','3.5',{ other_params: "sensor=false" });
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
 </head>

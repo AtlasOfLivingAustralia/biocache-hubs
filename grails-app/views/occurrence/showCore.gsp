@@ -35,6 +35,7 @@
                 </g:each>
             }
         }
+
     </script>
 
     <r:require modules="show, amplify, moment"/>

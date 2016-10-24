@@ -594,7 +594,10 @@ $(document).ready(function() {
         attribution = $(this).find('.meta.detail').html();
         recordUrl = $(this).attr('href');
         recordLink = recordLink.replace('RECORD_URL', recordUrl);
-        attribution += '<br>' + recordLink;
+        var flagIssueLink = '<a href="RECORD_URL">record.</a>';
+        flagIssueLink = flagIssueLink.replace('RECORD_URL', recordUrl);
+        attribution += '<br>' + recordLink +
+                       '<br><br>If this image is incorrectly<br>identified please flag an<br>issue on the ' + flagIssueLink +'<br>';
         setDialogSize();
         $('#imageDialog').modal('show');
     });

@@ -32,7 +32,19 @@
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             queryContext: "${grailsApplication.config.biocache.queryContext}"
         }
-
+        /*
+         Leaflet, a JavaScript library for mobile-friendly interactive maps. http://leafletjs.com
+         (c) 2010-2013, Vladimir Agafonkin
+         (c) 2010-2011, CloudMade
+         */
+        /* Load Spring i18n messages into JS
+         */
+        jQuery.i18n.properties({
+         name: 'messages',
+         path: BC_CONF.contextPath + '/messages/i18n/',
+         mode: 'map',
+         language: BC_CONF.locale
+        });
         $(document).ready(function() {
 
             var mapInit = false;
@@ -83,17 +95,6 @@
                 } else {
                     alert("Please paste a valid WKT string"); // TODO i18n this
                 }
-            });
-
-            /**
-             * Load Spring i18n messages into JS
-             */
-            jQuery.i18n.properties({
-                name: 'messages',
-                path: '${request.contextPath}/messages/i18n/',
-                mode: 'map',
-                language: '${request.locale}' // default is to use browser specified locale
-                //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
             });
 
         }); // end $(document).ready()
@@ -238,7 +239,7 @@
                     callback: destroyHelpTooltip // hide help tooltip when mouse over the tools
                 }
                 $('.leaflet-draw-toolbar a').tooltip(opts);
-                $('.leaflet-draw-toolbar').first().attr('title','Start by choosing a tool').tooltip({placement:'right'}).tooltip('show');
+                $('.leaflet-draw-toolbar').first().attr('title',jQuery.i18n.prop('advancedsearch.js.choosetool')).tooltip({placement:'right'}).tooltip('show');
             });
 
             // Hide help tooltip on first click event
