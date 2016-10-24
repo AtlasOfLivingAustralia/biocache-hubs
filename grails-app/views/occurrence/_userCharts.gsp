@@ -13,18 +13,6 @@
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<style type="text/css">
-    .chart-add {
-        background-color: #f5f5f5;
-        padding: 8px;
-    }
-    .hint {
-        display: inline-block;
-        margin-left: 7px;
-        color: silver;
-    }
-</style>
-
 <r:script>
     <charts:biocache
             biocacheServiceUrl="${alatag.getBiocacheAjaxUrl()}"
