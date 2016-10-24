@@ -62,10 +62,14 @@
         if(!OCC_REC.hasGoogleKey) {
             google.load('maps', '3.3', {other_params: "sensor=false"});
         }
-        google.load("visualization", "1", {packages:["corechart"]});
+        //google.load("visualization", "1", {packages:["corechart"]});
+
+
     </script>
+    <g:render template="/layouts/global"/>
     <r:require modules="show, amplify, moment"/>
     <r:script disposition="head">
+
         $(document).ready(function() {
             <g:if test="${record.processed.attribution.provenance == 'Draft'}">\
                 // draft view button\
@@ -111,6 +115,7 @@
             facetChartGroup.loadAndDrawFacetCharts(facetChartOptions);
             //console.log('Finished the drawing...' + chartName);
         }
+
     </r:script>
 
 </head>

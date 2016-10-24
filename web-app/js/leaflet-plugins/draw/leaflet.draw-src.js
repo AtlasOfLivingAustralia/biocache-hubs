@@ -6,103 +6,115 @@
 	http://leafletjs.com
 	https://github.com/jacobtoye
 */
+
+/**
+ ************************************************************\
+ * i18n
+ \************************************************************/
+jQuery.i18n.properties({
+	name: 'messages',
+	path: BC_CONF.contextPath + '/messages/i18n/',
+	mode: 'map',
+	language: BC_CONF.locale // default is to use browser specified locale
+});
+
 (function (window, document, undefined) {/*
  * Leaflet.draw assumes that you have already included the Leaflet library.
  */
 
 L.drawVersion = '0.2.4-dev';
 
-L.drawLocal = {
-	draw: {
-		toolbar: {
-			actions: {
-				title: 'Cancel drawing',
-				text: 'Cancel'
-			},
-			undo: {
-				title: 'Delete last point drawn',
-				text: 'Delete last point'
-			},
-			buttons: {
-				polyline: 'Draw a polyline',
-				polygon: 'Draw a polygon',
-				rectangle: 'Draw a rectangle',
-				circle: 'Draw a circle',
-				marker: 'Draw a marker'
-			}
-		},
-		handlers: {
-			circle: {
-				tooltip: {
-					start: 'Click and drag to draw circle.'
-				}
-			},
-			marker: {
-				tooltip: {
-					start: 'Click map to place marker.'
-				}
-			},
-			polygon: {
-				tooltip: {
-					start: 'Click to start drawing shape.',
-					cont: 'Click to continue drawing shape.',
-					end: 'Click first point to close this shape.'
-				}
-			},
-			polyline: {
-				error: '<strong>Error:</strong> shape edges cannot cross!',
-				tooltip: {
-					start: 'Click to start drawing line.',
-					cont: 'Click to continue drawing line.',
-					end: 'Click last point to finish line.'
-				}
-			},
-			rectangle: {
-				tooltip: {
-					start: 'Click and drag to draw rectangle.'
-				}
-			},
-			simpleshape: {
-				tooltip: {
-					end: 'Release mouse to finish drawing.'
-				}
-			}
-		}
-	},
-	edit: {
-		toolbar: {
-			actions: {
-				save: {
-					title: 'Save changes.',
-					text: 'Save'
+	L.drawLocal = {
+		draw: {
+			toolbar: {
+				actions: {
+					title: jQuery.i18n.prop('advancedsearch.js.map.canceldrawing'),
+					text: jQuery.i18n.prop('advancedsearch.js.map.cancel')
 				},
-				cancel: {
-					title: 'Cancel editing, discards all changes.',
-					text: 'Cancel'
+				undo: {
+					title: jQuery.i18n.prop('advancedsearch.js.map.deletepointdrawn'),
+					text: jQuery.i18n.prop('advancedsearch.js.map.deletepoint')
+				},
+				buttons: {
+					polyline: 'Draw a polyline',
+					polygon: jQuery.i18n.prop('advancedsearch.js.map.polygon'),
+					rectangle: jQuery.i18n.prop('advancedsearch.js.map.rectangle'),
+					circle: jQuery.i18n.prop('advancedsearch.js.map.circle'),
+					marker: 'Draw a marker'
 				}
 			},
-			buttons: {
-				edit: 'Edit layers.',
-				editDisabled: 'No layers to edit.',
-				remove: 'Delete layers.',
-				removeDisabled: 'No layers to delete.'
+			handlers: {
+				circle: {
+					tooltip: {
+						start: jQuery.i18n.prop('advancedsearch.js.map.circle.tooltip')
+					}
+				},
+				marker: {
+					tooltip: {
+						start: 'Click map to place marker.'
+					}
+				},
+				polygon: {
+					tooltip: {
+						start: jQuery.i18n.prop('advancedsearch.js.map.clicktostart'),
+						cont: jQuery.i18n.prop('advancedsearch.js.map.clicktocontinue'),
+						end: jQuery.i18n.prop('advancedsearch.js.map.clickfirst')
+					}
+				},
+				polyline: {
+					error: '<strong>'+jQuery.i18n.prop('advancedsearch.js.map.error1')+'</strong> '+jQuery.i18n.prop('advancedsearch.js.map.error2'),
+					tooltip: {
+						start: jQuery.i18n.prop('advancedsearch.js.map.polyline.tooltip.start'),
+						cont: jQuery.i18n.prop('advancedsearch.js.map.polyline.tooltip.cont'),
+						end: jQuery.i18n.prop('advancedsearch.js.map.polyline.tooltip.end')
+					}
+				},
+				rectangle: {
+					tooltip: {
+						start: jQuery.i18n.prop('advancedsearch.js.map.rectangleguide')
+					}
+				},
+				simpleshape: {
+					tooltip: {
+						end: jQuery.i18n.prop('advancedsearch.js.map.finish')
+					}
+				}
 			}
 		},
-		handlers: {
-			edit: {
-				tooltip: {
-					text: 'Drag handles, or marker to edit feature.',
-					subtext: 'Click cancel to undo changes.'
+		edit: {
+			toolbar: {
+				actions: {
+					save: {
+						title: jQuery.i18n.prop('advancedsearch.js.map.save.title'),
+						text: jQuery.i18n.prop('advancedsearch.js.map.save.text')
+					},
+					cancel: {
+						title: jQuery.i18n.prop('advancedsearch.js.map.cancel.title'),
+						text: jQuery.i18n.prop('advancedsearch.js.map.cancel.text')
+					}
+				},
+				buttons: {
+					edit: jQuery.i18n.prop('advancedsearch.js.map.edit'),
+					editDisabled: jQuery.i18n.prop('advancedsearch.js.map.noedit'),
+					remove: jQuery.i18n.prop('advancedsearch.js.map.remove'),
+					removeDisabled: jQuery.i18n.prop('advancedsearch.js.map.nodelete')
 				}
 			},
-			remove: {
-				tooltip: {
-					text: 'Click on a feature to remove'
+			handlers: {
+				edit: {
+					tooltip: {
+						text: jQuery.i18n.prop('advancedsearch.js.map.edit.tooltip.text'),
+						subtext: jQuery.i18n.prop('advancedsearch.js.map.edit.tooltip.subtext')
+					}
+				},
+				remove: {
+					tooltip: {
+						text: jQuery.i18n.prop('advancedsearch.js.map.remove.tooltip')
+					}
 				}
 			}
 		}
-	}
-};
+	};
 
 
 L.Draw = {};

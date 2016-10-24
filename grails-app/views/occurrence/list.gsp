@@ -21,8 +21,9 @@
     <g:if test="${grailsApplication.config.google.apikey}">
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
     </g:if>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <g:render template="/layouts/global"/>
     <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, image-viewer"/>
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <r:require module="bieAutocomplete"/>
@@ -67,6 +68,7 @@
             savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
             getPreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}"
         };
+
 
 //        google.load('maps','3.5',{ other_params: "sensor=false" });
         google.load("visualization", "1", {packages:["corechart"]});
