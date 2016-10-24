@@ -27,13 +27,13 @@
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="yourArea"/>
     <title><g:message code="eya.title01" default="Explore Your Area"/> | <g:message code="eya.title02" default="Atlas of Living Australia"/></title>
-
-    <g:if test="${grailsApplication.config.google.apikey}">
+    %{--}<g:if test="${grailsApplication.config.google.apikey}">
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
     </g:if>
     <g:else>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    </g:else>
+    </g:else>--}%
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <g:render template="/layouts/global"/>
     <r:require modules="exploreYourArea, qtip"/>
     <script type="text/javascript">
