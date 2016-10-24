@@ -8002,6 +8002,20 @@ L.Map.include({
 	}
 });
 
+	/*
+	 Leaflet, a JavaScript library for mobile-friendly interactive maps. http://leafletjs.com
+	 (c) 2010-2013, Vladimir Agafonkin
+	 (c) 2010-2011, CloudMade
+	 */
+	/* Load Spring i18n messages into JS
+	 */
+	jQuery.i18n.properties({
+		name: 'messages',
+		path: BC_CONF.contextPath + '/messages/i18n/',
+		mode: 'map',
+		language: BC_CONF.locale
+	});
+
 
 /*
  * L.Control.Zoom is used for the default zoom buttons on the map.
@@ -8011,9 +8025,9 @@ L.Control.Zoom = L.Control.extend({
 	options: {
 		position: 'topleft',
 		zoomInText: '+',
-		zoomInTitle: 'Zoom in',
+		zoomInTitle: jQuery.i18n.prop('advancedsearch.js.map.zoomin'),
 		zoomOutText: '-',
-		zoomOutTitle: 'Zoom out'
+		zoomOutTitle: jQuery.i18n.prop('advancedsearch.js.map.zoomout')
 	},
 
 	onAdd: function (map) {

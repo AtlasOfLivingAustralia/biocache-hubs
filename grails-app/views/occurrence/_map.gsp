@@ -151,6 +151,7 @@ a.colour-by-legend-toggle {
 }
 
 </style>
+<g:render template="/layouts/global"/>
 
 <div style="margin-bottom: 10px">
     <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
@@ -1087,7 +1088,6 @@ a.colour-by-legend-toggle {
       link.click();
       return false;
     }
-
 </r:script>
 <div class="hide">
     <div class="popupRecordTemplate">
