@@ -36,11 +36,11 @@ L.drawVersion = '0.2.4-dev';
 					text: jQuery.i18n.prop('advancedsearch.js.map.deletepoint')
 				},
 				buttons: {
-					polyline: 'Draw a polyline',
+					polyline: jQuery.i18n.prop('advancedsearch.js.map.polyline'),
 					polygon: jQuery.i18n.prop('advancedsearch.js.map.polygon'),
 					rectangle: jQuery.i18n.prop('advancedsearch.js.map.rectangle'),
 					circle: jQuery.i18n.prop('advancedsearch.js.map.circle'),
-					marker: 'Draw a marker'
+					marker: jQuery.i18n.prop('advancedsearch.js.map.marker')
 				}
 			},
 			handlers: {
@@ -51,7 +51,7 @@ L.drawVersion = '0.2.4-dev';
 				},
 				marker: {
 					tooltip: {
-						start: 'Click map to place marker.'
+						start: jQuery.i18n.prop('advancedsearch.js.map.marker.tooltip.start')
 					}
 				},
 				polygon: {
