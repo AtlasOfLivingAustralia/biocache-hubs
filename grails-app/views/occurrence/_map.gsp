@@ -151,7 +151,6 @@ a.colour-by-legend-toggle {
 }
 
 </style>
-<g:render template="/layouts/global"/>
 
 <div style="margin-bottom: 10px">
     <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">

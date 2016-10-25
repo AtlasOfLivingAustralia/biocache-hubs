@@ -23,16 +23,7 @@
     </g:if>
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <g:render template="/layouts/global"/>
-    <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, charts, image-viewer"/>
-    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
-        <r:require module="bieAutocomplete"/>
-    </g:if>
     <script type="text/javascript">
-        // single global var for app conf settings
-        <g:set var="fqParamsSingleQ" value="${(params.fq) ? ' AND ' + params.list('fq')?.join(' AND ') : ''}"/>
-        <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
-        <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
         var BC_CONF = {
             contextPath: "${request.contextPath}",
             serverName: "${grailsApplication.config.serverName}${request.contextPath}",
@@ -68,6 +59,17 @@
             savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
             getPreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}"
         };
+    </script>
+    <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, charts, image-viewer"/>
+    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
+        <r:require module="bieAutocomplete"/>
+    </g:if>
+    <script type="text/javascript">
+        // single global var for app conf settings
+        <g:set var="fqParamsSingleQ" value="${(params.fq) ? ' AND ' + params.list('fq')?.join(' AND ') : ''}"/>
+        <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
+        <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
+
 
 
 //        google.load('maps','3.5',{ other_params: "sensor=false" });
