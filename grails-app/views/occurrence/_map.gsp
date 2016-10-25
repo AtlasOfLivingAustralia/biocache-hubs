@@ -159,17 +159,17 @@ a.colour-by-legend-toggle {
         <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
         <div id="spatialPortalBtn" class="btn btn-small" style="margin-bottom: 2px;">
             <a id="spatialPortalLink" class="tooltips"
-               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="Continue analysis in ALA Spatial Portal">
+               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="${alatag.message(code:"map.spatialPortalBtn.btn.tooltip", default:"Download image file (single colour mode)")}">
                 <i class="fa fa-map-marker"></i>&nbsp&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
         </div>
     </g:if>
     <div id="downloadMaps" class="btn btn-small" style="margin-bottom: 2px;">
-        <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
+        <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="${alatag.message(code:"map.downloadmaps.btn.tooltip", default:"Download image file (single colour mode)")}">
             <i class="fa fa-download"></i>&nbsp&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
     </div>
     <g:if test="${params.wkt}">
         <div id="downloadWKT" class="btn btn-small" style="margin-bottom: 2px;">
-            <a href="#downloadWKT" role="button" class="tooltips" title="Download WKT file" onclick="downloadPolygon(); return false;">
+            <a href="#downloadWKT" role="button" class="tooltips" title="${alatag.message(code:"map.downloadwkt.btn.tooltip", default:"Download WKT file")}" onclick="downloadPolygon(); return false;">
                 <i class="icon icon-stop"></i>&nbsp&nbsp;<g:message code="map.downloadwkt.btn.label" default="Download WKT"/></a>
         </div>
     </g:if>
@@ -234,7 +234,7 @@ a.colour-by-legend-toggle {
 
 <div id="template" style="display:none">
     <div class="colourbyTemplate">
-        <a class="colour-by-legend-toggle colour-by-control tooltips" href="#" title="Map legend - click to expand"><i class="fa fa-list-ul fa-lg"></i></a>
+        <a class="colour-by-legend-toggle colour-by-control tooltips" href="#" title="${g.message(code:"map.legend", default:"Map legend - click to expand")}"><i class="fa fa-list-ul fa-lg"></i></a>
         <form class="leaflet-control-layers-list">
             <div class="leaflet-control-layers-overlays">
                 <div style="overflow:auto; max-height:400px;">
@@ -612,7 +612,7 @@ a.colour-by-legend-toggle {
                  addGridLegendItem();
              } else {
                 //update the legend
-                $('.legendTable').html('<tr><td>Loading legend....</td></tr>');
+                $('.legendTable').html('<tr><td>' + ${alatag.message(code:"map.loadinglegend", default:"Loading legend...")} + '</td></tr>');
                 $.ajax({
                     url: "${request.contextPath}/occurrence/legend" + MAP_VAR.query + "&cm=" + colourByFacet + "&type=application/json",
                     success: function(data) {
