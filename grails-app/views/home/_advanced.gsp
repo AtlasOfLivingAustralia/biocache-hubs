@@ -53,7 +53,16 @@
                 <select class="species_group" name="species_group" id="species_group">
                     <option value=""><g:message code="advancedsearch.table04col01.option.label" default="-- select a species group --"/></option>
                     <g:each var="group" in="${request.getAttribute("species_group")}">
-                        <option value="${group.key}">${group.value}</option>
+                        ${group.key}
+                        <g:if test="(${group.key} != '*'">
+                            <g:each var="hierarchy" in="${[['Animals', 'Birds', 'Reptiles', 'Amphibians', 'Fish', 'Molluscs', 'Arthropods', 'Crustaceans', 'Arthropods', 'Insects', 'Plants', 'Bryophytes', 'Gymnosperms', 'FernsAndAllies', 'Angiosperms', 'Monocots', 'Dicots', 'Fungi', 'Chromista', 'Protozoa', 'Algae', '']]}">
+                                <g:if test="${group.value} == ${hierarchy.value}">
+                                    <option value="${group.key}">
+                                        <g:message code="global.hierarchy.${group.value.toLowerCase()}"/>
+                                    </option>
+                                </g:if>
+                            </g:each>
+                        </g:if>
                     </g:each>
                 </select>
             </td>
@@ -170,7 +179,14 @@
                     <select class="type_status" name="type_status" id="type_status">
                         <option value=""><g:message code="advancedsearch.table07col01.option.label" default="-- select a type status --"/></option>
                         <g:each var="type" in="${request.getAttribute("type_status")}">
-                            <option value="${type.key}">${type.value}</option>
+                            <g:each var="t_status" in="${[['allolectotype', 'allotype', 'allotype|lectotype', 'allotype|paratype', 'cotype', 'cotype|lectotype', 'cotype|paralectotype', 'cotype|paratype', 'cotype|type', 'epitype', 'hapantotype', 'holotype', 'holotype|allotype', 'holotype|isotype', 'holotype|lectotype', 'holotype|neotype', 'holotype|paratype', 'holotype|syntype', 'holotype|syntype|lectotype', 'holotype|syntype|paralectotype', 'holotype|syntype|type', 'holotype|type', 'iconotype', 'isolectotype', 'isoneotype','isotype','isotype|lectotype','lectotype','lectotype|paralectotype','lectotype|syntype','lectotype|syntype|paralectotype','lectotype|type','neotype','neotype|holotype','neotype|paratype','neotype|syntype|lectotype','paralectotype|paratype','paralectotype|syntype','paralectotype|type','paralectotype|type|paratype','paraneotype','paratype','paratypes','paratype|allotype','paratype|cotype','paratype|holotype','paratype|lectotype','paratype|syntype','paratype|topotype','paratype|type','plastoholotype','syntype','syntype|allotype','syntype|allotype|paratype','syntype|cotype','syntype|holotype','syntype|holotype|lectotype','syntype|holotype|paratype','syntype|lectotype','syntype|lectotype|holotype','syntype|lectotype|paralectotype','syntype|lectotype|type','syntype|paralectotype','syntype|paralectotype|type','syntype|paratype','syntype|type','topotype','type','type|cotype','type|holotype','type|holotype|lectotype','type|lectotype','type|lectotype|paralectotype','type|paralectotype','type|syntype','type|syntype|paralectotype']]}">
+                                <g:if test="${type.value} == it">
+                                    <option value="${type.key}">
+                                        <g:message code="global.typestatus.${type.value.toLowerCase()}"/>
+                                    </option>
+                                </g:if>
+                            </g:each>
+                        %{--<option value="${type.key}">${type.value}</option>--}%
                         </g:each>
                     </select>
                 </td>
@@ -189,7 +205,16 @@
                     <select class="basis_of_record" name="basis_of_record" id="basis_of_record">
                         <option value=""><g:message code="advancedsearch.table08col01.option.label" default="-- select a basis of record --"/></option>
                         <g:each var="bor" in="${request.getAttribute("basis_of_record")}">
-                            <option value="${bor.key}"><g:message code="${bor.value}"/></option>
+                            <g:each var="basisOfRecord" in="${[['FossilSpecimen', 'GenomicDNA', 'MaterialSample', 'Occurrence', 'HumanObservation', 'Image', 'Literature', 'LivingSpecimen', 'MachineObservation', 'NomenclaturalChecklist', 'PreservedSpecimen', 'Sound']]}">
+                                <g:if test="${bor.value.trim()} == it">
+                                    ${bor.value.trim()}
+                                    <option value="${bor.key}">
+                                        <g:message code="global.basisofrecord.${bor.value.trim()}"/>
+                                    </option>
+                                </g:if>
+                            </g:each>
+
+                        %{--}<option value="${bor.key}"><g:message code="${bor.value}"/></option>--}%
                         </g:each>
                     </select>
                 </td>
@@ -256,7 +281,7 @@
     </table>
     <input type="submit" value=<g:message code="advancedsearch.button.submit" default="Search"/> class="btn btn-primary" />
     &nbsp;&nbsp;
-    <input type="reset" value="Clear all" id="clearAll" class="btn" onclick="$('input#solrQuery').val(''); $('input.clear_taxon').click(); return true;"/>
+    <input type="reset" value=<g:message code="advancedsearch.button.clearAll" default="Clear all"/> id="clearAll" class="btn" onclick="$('input#solrQuery').val(''); $('input.clear_taxon').click(); return true;"/>
 </form>
 <r:script>
     $(document).ready(function() {
