@@ -27,6 +27,7 @@
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="yourArea"/>
     <title><g:message code="eya.title01" default="Explore Your Area"/> | <g:message code="eya.title02" default="Atlas of Living Australia"/></title>
+
     %{--}<g:if test="${grailsApplication.config.google.apikey}">
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
     </g:if>
@@ -41,7 +42,7 @@
         var EYA_CONF = {
             contextPath: "${request.contextPath}",
             biocacheServiceUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}",
-            imagesUrlPrefix: "${request.contextPath}/static/js/eya-images",
+            imagesUrlPrefix: "../js/eya-images",
             zoom: ${zoom},
             radius: ${radius},
             speciesPageUrl: "${speciesPageUrl}",
@@ -50,6 +51,7 @@
             hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
         }
 
+        google.load('maps','3.5',{ other_params: "sensor=false" });
         //make the taxa and rank global variable so that they can be used in the download
         var taxa = ["*"], rank = "*";
     </script>
@@ -101,7 +103,7 @@
                     <span id="recordsGroupText"><g:message code="eya.searchform.a.viewallrecords.02" default="all"/></span>  <g:message code="eya.searchform.a.viewallrecords.03" default="records"/></a>
             </span>
             <span class="pad">
-                <a href="#download" role="button" data-toggle="modal" class="btn btn-small tooltips" title="Download all records OR species checklist">
+                <a href="#download" role="button" data-toggle="modal" class="btn btn-small tooltips" title="${alatag.message(code:"eya.searchform.a.downloads.title", default:"Download all records OR species checklist")}">
                     <i class="icon-download"></i> <g:message code="eya.searchform.a.downloads" default="Downloads"/></a>
             </span>
         </div>
@@ -130,10 +132,10 @@
                     <thead class="fixedHeader">
                     <tr>
                         <th class="speciesIndex">&nbsp;&nbsp;</th>
-                        <th class="sciName"><a href="0" id="speciesSort" data-sort="taxa" title="sort by taxa"><g:message code="eya.table.02.th01" default="Species"/></a>
+                        <th class="sciName"><a href="0" id="speciesSort" data-sort="taxa" title="${alatag.message(code:"eya.table.02.th01.title", default:"sort by taxa")}"><g:message code="eya.table.02.th01" default="Species"/></a>
                             <span id="sortSeparator">:</span>
-                            <a href="0" id="commonSort" data-sort="common" title="sort by common name"><g:message code="eya.table.02.th01.a" default="Common Name"/></a></th>
-                        <th class="rightCounts"><a href="0" data-sort="count" title="sort by record count"><g:message code="eya.table.02.th02" default="Records"/></a></th>
+                            <a href="0" id="commonSort" data-sort="common" title="${alatag.message(code:"eya.table.02.th01.a.title", default:"sort by common name")}"><g:message code="eya.table.02.th01.a" default="Common Name"/></a></th>
+                        <th class="rightCounts"><a href="0" data-sort="count" title="${alatag.message(code:"eya.table.02.th02.count", default:"sort by record count")}"><g:message code="eya.table.02.th02" default="Records"/></a></th>
                     </tr>
                     </thead>
                     <tbody class="scrollContent">
