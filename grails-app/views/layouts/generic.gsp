@@ -9,7 +9,6 @@
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 
     <title><g:layoutTitle /></title>
-    <g:render template="/layouts/global"/>
     <r:require modules="jquery, jquery_migration, bootstrap2, hubCore" />
     <style type="text/css">
     body {

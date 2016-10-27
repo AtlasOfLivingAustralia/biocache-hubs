@@ -23,8 +23,6 @@ modules = {
         resource url: [dir:'css', file:'base.css', plugin: 'biocache-hubs'],attrs: [ media: 'all' ]
         resource url: [dir:'css', file:'bootstrapAdditions.css', plugin: 'biocache-hubs'],attrs: [ media: 'all' ]
         resource url: [dir:'js', file:'jquery.autocomplete.js', plugin:'biocache-hubs'], disposition: 'head'
-        resource url:[dir:'js', file:'biocache-hubs.js', plugin:'biocache-hubs']
-        //resource url: [dir:'js', file:'jquery.i18n.properties-1.0.9.js', plugin:'biocache-hubs']
         resource url: [dir:'js', file:'html5.js', plugin:'biocache-hubs'], wrapper: { s -> "<!--[if lt IE 9]>$s<![endif]-->" }, disposition: 'head'
     }
 
@@ -81,7 +79,7 @@ modules = {
     }
 
     leafletPlugins {
-        dependsOn 'leaflet','leaflet-fullscreen'
+        dependsOn 'leaflet,leaflet-fullscreen, jquery_i18n'
         defaultBundle 'leafletPlugins'
         resource url:[dir:'js/leaflet-plugins/layer/tile', file:'Google.js', plugin:'biocache-hubs']
         resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ]

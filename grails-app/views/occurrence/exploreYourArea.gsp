@@ -35,7 +35,6 @@
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     </g:else>--}%
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <g:render template="/layouts/global"/>
     <r:require modules="exploreYourArea, qtip"/>
     <script type="text/javascript">
         // Global variables for yourAreaMap.js

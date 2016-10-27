@@ -22,7 +22,7 @@
         <r:require module="bieAutocomplete"/>
     </g:if>
     <r:script>
-        // global var for GSP tags/vars to be passed into JS functions
+        // global var for GSP tags/vars to be passed into JS functions GG
         var BC_CONF = {
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",

@@ -1,5 +1,4 @@
 <%@ page import="au.org.ala.biocache.hubs.FacetsName; org.apache.commons.lang.StringUtils" contentType="text/html;charset=UTF-8" %>
-<g:render template="/layouts/global"/>
 <form name="advancedSearchForm" id="advancedSearchForm" action="${request.contextPath}/advancedSearch" method="POST">
     <input type="text" id="solrQuery" name="q" style="position:absolute;left:-9999px;" value="${params.q}"/>
     <input type="hidden" name="nameType" value="matched_name_children"/>
@@ -58,7 +57,8 @@
                             <g:each var="hierarchy" in="${[['Animals', 'Birds', 'Reptiles', 'Amphibians', 'Fish', 'Molluscs', 'Arthropods', 'Crustaceans', 'Arthropods', 'Insects', 'Plants', 'Bryophytes', 'Gymnosperms', 'FernsAndAllies', 'Angiosperms', 'Monocots', 'Dicots', 'Fungi', 'Chromista', 'Protozoa', 'Algae', '']]}">
                                 <g:if test="${group.value} == ${hierarchy.value}">
                                     <option value="${group.key}">
-                                        <g:message code="global.hierarchy.${group.value.toLowerCase()}"/>
+                                        <g:if test="${group.key} == '*'"><g:message code="${group.value}"/></g:if>
+                                        <g:else><g:message code="global.hierarchy.${group.value.toLowerCase()}"/></g:else>
                                     </option>
                                 </g:if>
                             </g:each>
@@ -182,7 +182,8 @@
                             <g:each var="t_status" in="${[['allolectotype', 'allotype', 'allotype|lectotype', 'allotype|paratype', 'cotype', 'cotype|lectotype', 'cotype|paralectotype', 'cotype|paratype', 'cotype|type', 'epitype', 'hapantotype', 'holotype', 'holotype|allotype', 'holotype|isotype', 'holotype|lectotype', 'holotype|neotype', 'holotype|paratype', 'holotype|syntype', 'holotype|syntype|lectotype', 'holotype|syntype|paralectotype', 'holotype|syntype|type', 'holotype|type', 'iconotype', 'isolectotype', 'isoneotype','isotype','isotype|lectotype','lectotype','lectotype|paralectotype','lectotype|syntype','lectotype|syntype|paralectotype','lectotype|type','neotype','neotype|holotype','neotype|paratype','neotype|syntype|lectotype','paralectotype|paratype','paralectotype|syntype','paralectotype|type','paralectotype|type|paratype','paraneotype','paratype','paratypes','paratype|allotype','paratype|cotype','paratype|holotype','paratype|lectotype','paratype|syntype','paratype|topotype','paratype|type','plastoholotype','syntype','syntype|allotype','syntype|allotype|paratype','syntype|cotype','syntype|holotype','syntype|holotype|lectotype','syntype|holotype|paratype','syntype|lectotype','syntype|lectotype|holotype','syntype|lectotype|paralectotype','syntype|lectotype|type','syntype|paralectotype','syntype|paralectotype|type','syntype|paratype','syntype|type','topotype','type','type|cotype','type|holotype','type|holotype|lectotype','type|lectotype','type|lectotype|paralectotype','type|paralectotype','type|syntype','type|syntype|paralectotype']]}">
                                 <g:if test="${type.value} == it">
                                     <option value="${type.key}">
-                                        <g:message code="global.typestatus.${type.value.toLowerCase()}"/>
+                                        <g:if test="${type.key} == '*'"><g:message code="${type.value}"/></g:if>
+                                        <g:else><g:message code="global.typestatus.${type.value.toLowerCase()}"/></g:else>
                                     </option>
                                 </g:if>
                             </g:each>
@@ -209,7 +210,8 @@
                                 <g:if test="${bor.value.trim()} == it">
                                     ${bor.value.trim()}
                                     <option value="${bor.key}">
-                                        <g:message code="global.basisofrecord.${bor.value.trim()}"/>
+                                        <g:if test="${bor.key} == '*'">${bor.value.trim()} <g:message code="${bor.value}"/></g:if>
+                                        <g:else><g:message code="global.basisofrecord.${bor.value.trim()}"/></g:else>
                                     </option>
                                 </g:if>
                             </g:each>
