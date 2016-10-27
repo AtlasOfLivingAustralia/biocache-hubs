@@ -23,11 +23,6 @@
     </g:if>
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <g:render template="/layouts/global"/>
-    <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, image-viewer"/>
-    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
-        <r:require module="bieAutocomplete"/>
-    </g:if>
     <script type="text/javascript">
         // single global var for app conf settings
         <g:set var="fqParamsSingleQ" value="${(params.fq) ? ' AND ' + params.list('fq')?.join(' AND ') : ''}"/>
@@ -70,9 +65,14 @@
         };
 
 
-//        google.load('maps','3.5',{ other_params: "sensor=false" });
+        //        google.load('maps','3.5',{ other_params: "sensor=false" });
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
+    <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, image-viewer"/>
+    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
+        <r:require module="bieAutocomplete"/>
+    </g:if>
+
 </head>
 
 <body class="occurrence-search">
@@ -134,7 +134,7 @@
             <!-- facet column -->
             <div class="span3">
                 <div id="customiseFacetsButton" class="btn-group">
-                    <a class="btn btn-small dropdown-toggle tooltips" data-toggle="dropdown" href="#" title="Customise the contents of this column">
+                    <a class="btn btn-small dropdown-toggle tooltips" data-toggle="dropdown" href="#" title="${alatag.message(code:"search.filter.customise.tooltip",default:"Customise the contents of this column")}">
                         <i class="fa fa-cog"></i>&nbsp;&nbsp;<g:message code="search.filter.customise"/>
                         <span class="caret"></span>
                     </a>
@@ -145,7 +145,7 @@
                             &nbsp;&nbsp;
                             <button  id="updateFacetOptions" class="btn btn-primary btn-small"><g:message code="list.facetcheckboxes.button.updatefacetoptions" default="Update"/></button>
                             &nbsp;&nbsp;
-                            <g:set var="resetTitle" value="Restore default settings"/>
+                            <g:set var="resetTitle" value="${alatag.message(code:"list.facetcheckboxes.resettitle",default:"Restore default settings")}"/>
                             <button id="resetFacetOptions" class="btn btn-small" title="${resetTitle}"><g:message code="list.facetcheckboxes.button.resetfacetoptions" default="Reset to defaults"/></button>
                             <br/>
                             <%-- iterate over the groupedFacets, checking the default facets for each entry --%>
@@ -158,7 +158,7 @@
                                             <g:if test="${defaultFacets.containsKey(facetFromGroup)}">
                                                 <g:set var="count" value="${count + 1}"/>
                                                 <input type="checkbox" name="facets" class="facetOpts" value="${facetFromGroup}"
-                                                    ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<alatag:message code="facet.${facetFromGroup}"/><br>
+                                                    ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<g:message code="facet.${facetFromGroup}"/><br>
                                             </g:if>
                                         </g:each>
                                     </div>
@@ -212,7 +212,7 @@
                             </g:each>
                             <g:if test="${params.wkt}"><%-- WKT spatial filter   --%>
                                 <g:set var="spatialType" value="${params.wkt =~ /^\w+/}"/>
-                                <a href="${alatag.getQueryStringForWktRemove()}" class="btn btn-mini tooltips" title="Click to remove this filter">Spatial filter: ${spatialType[0]}
+                                <a href="${alatag.getQueryStringForWktRemove()}" class="btn btn-mini tooltips" title="${alatag.message(code:"title.filter.remove", default:"Click to remove this filter")}"><g:message code="list.filter.spatialtype" default="Spatial filter:"/> ${spatialType[0]}
                                     <span class="closeX">×</span>
                                 </a>
                             </g:if>
@@ -294,7 +294,12 @@
                     <ul class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a id="t1" href="#recordsView" data-toggle="tab"><g:message code="list.link.t1" default="Records"/></a></li>
                         <li><a id="t2" href="#mapView" data-toggle="tab"><g:message code="list.link.t2" default="Map"/></a></li>
-                        <li><a id="t3" href="#chartsView" data-toggle="tab"><g:message code="list.link.t3" default="Charts"/></a></li>
+                        <plugin:isAvailable name="alaChartsPlugin">
+                            <li><a id="t3" href="#chartsView" data-toggle="tab"><g:message code="list.link.t3" default="Charts"/></a></li>
+                            <g:if test="${grailsApplication.config.userCharts && grailsApplication.config.userCharts.toBoolean()}">
+                                <li><a id="t6" href="#userChartsView" data-toggle="tab"><g:message code="list.link.t6" default="Custom Charts"/></a></li>
+                            </g:if>
+                        </plugin:isAvailable>
                         <g:if test="${showSpeciesImages}">
                             <li><a id="t4" href="#speciesImages" data-toggle="tab"><g:message code="list.link.t4" default="Species images"/></a></li>
                         </g:if>
@@ -310,7 +315,7 @@
                                 <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
                                     <div id="downloads" class="btn btn-small">
                                         <a href="#download" role="button" data-toggle="modal" class="tooltips"
-                                           title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records OR species checklist"><i
+                                           title="${alatag.message(code:"list.download.button.tooltip1", default:"Download all")} ${g.formatNumber(number:sr.totalRecords, format:"#,###,###")} ${alatag.message(code:"list.download.button.tooltip2", default:"records OR species checklist")}"><i
                                                 class="fa fa-download"></i>&nbsp;&nbsp;<g:message
                                                 code="list.downloads.navigator" default="Downloads"/></a>
                                     </div>
@@ -377,12 +382,18 @@
                         />
                         <div id='envLegend'></div>
                     </div><!-- end #mapwrapper -->
-                    <div id="chartsView" class="tab-pane">
-                        <style type="text/css">
-                           #charts div { display: inline-flex; }
-                        </style>
-                        <div id="charts" class="row-fluid"></div>
-                    </div><!-- end #chartsWrapper -->
+                    <plugin:isAvailable name="alaChartsPlugin">
+                        <div id="chartsView" class="tab-pane">
+                            <g:render template="charts"
+                                      model="[searchString: searchString]"/>
+                        </div><!-- end #chartsWrapper -->
+                        <g:if test="${grailsApplication.config.userCharts && grailsApplication.config.userCharts?.toBoolean()}">
+                            <div id="userChartsView" class="tab-pane">
+                                <g:render template="userCharts"
+                                          model="[searchString: searchString]"/>
+                            </div><!-- end #chartsWrapper -->
+                        </g:if>
+                    </plugin:isAvailable>
                     <g:if test="${showSpeciesImages}">
                         <div id="speciesImages" class="tab-pane">
                             <h3><g:message code="list.speciesimages.title" default="Representative images of species"/></h3>
