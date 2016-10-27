@@ -42,6 +42,7 @@ $(document).ready(function() {
     var tabsInit = {
         map: false,
         charts: false,
+        userCharts: false,
         images: false,
         species: false
     };
@@ -61,8 +62,12 @@ $(document).ready(function() {
             tabsInit.map = true; // only initialise once!
         } else if (id == "t3" && !tabsInit.charts) {
             // trigger charts load
-            loadAllCharts();
+            loadDefaultCharts();
             tabsInit.charts = true; // only initialise once!
+        } else if (id == "t6" && !tabsInit.userCharts) {
+            // trigger charts load
+            loadUserCharts();
+            tabsInit.userCharts = true; // only initialise once!
         } else if (id == "t4" && !tabsInit.species) {
             loadSpeciesInTab(0, "common");
             tabsInit.species = true;
@@ -810,63 +815,107 @@ function removeFilter(el) {
 }
 
 /**
- * Load all the charts 
+ * Load the default charts
  */
-function loadAllCharts() {
-    // set baseURls...
-    baseFacetChart.biocacheServicesUrl = BC_CONF.biocacheServiceUrl;
-    baseFacetChart.collectionsUrl = BC_CONF.collectoryUrl;
-    baseFacetChart.biocacheWebappUrl = ""; // keep empty so URLs come from the same host
-    //console.log("Loading charts.....");
-    var queryString = BC_CONF.searchString.replace("?q=","");
-    var biocacheServiceUrl = BC_CONF.biocacheServiceUrl; //BC_CONF.biocacheServiceUrl, // "http://ala-macropus.it.csiro.au/biocache-service";
-    
-    var taxonomyChartOptions = {
-        query: queryString,
-        biocacheServicesUrl: biocacheServiceUrl,
-        displayRecordsUrl: BC_CONF.serverName
-    };
-    
-    var facetChartOptions = {
-        query: queryString,
-        charts: ['collection_uid','state','species_group','assertions','type_status','ibra','state_conservation','month','occurrence_year'],
-        collection_uid: {title: 'By collection'},
-        state: {title: 'By state or territory'},
-        species_group: { title: 'By higher-level groups', ignore: ['Animals','Insects','Crustaceans','Angiosperms','Plants']},
-        assertions: {},
-        type_status: {},
-        ibra: {title: 'By IBRA region'},
-        state_conservation: {},
-        occurrence_year:{},
-        Unknown_s:{},
-        month:{chartType: "column"},
-        biocacheServicesUrl: biocacheServiceUrl,
-        displayRecordsUrl: BC_CONF.serverName
-    };
-
-    if(dynamicFacets !== undefined){
+function loadDefaultCharts() {
+    if (dynamicFacets) {
         var chartsConfigUri = BC_CONF.biocacheServiceUrl + "/upload/charts/" + BC_CONF.selectedDataResource + ".json";
-        $.getJSON(chartsConfigUri, function(chartsConfig) {
+        $.getJSON(chartsConfigUri, function (chartsConfig) {
 
-            $.each(chartsConfig, function(index, config){
-               if(config.visible) {
-                   facetChartOptions.query = facetChartOptions.query + "&facets=" + config.field;
-                   facetChartOptions.charts.push(config.field);
+            console.log("Number of dynamic charts to render: " + chartsConfig.length);
 
-                   var chartTitle = config.field.substring(0, config.field.length - 2).replace('_', ' ');
-                   facetChartOptions[config.field] = {chartType:config.format, width: 900, backgroundColor: {fill:'transparent'}, chartArea: {width: "80%"}, hAxis: {title: chartTitle}};
+            var conf = {}
 
-                   chartLabels[config.field] = chartTitle;
-                   defaultChartTypes[config.field] = config.format;
-                   baseFacetChart.individualChartOptions[config.field] = {title: chartTitle, chartType:config.format, facets: [config.field]}
-               }
+            $.each(chartsConfig, function (index, config) {
+                if (config.visible) {
+                    var type = 'bar'
+                    if (config.format == 'pie') type = 'doughnut'
+                    conf[config.field] = {
+                        chartType: type,
+                        emptyValueMsg: '',
+                        hideEmptyValues: true,
+                        title: config.field
+                    }
+                }
             });
-            loadFacetCharts(facetChartOptions);
+            chartConfig.charts = conf;
+
+            var charts = ALA.BiocacheCharts('charts', chartConfig);
         });
     } else {
-        loadFacetCharts(facetChartOptions);
+        var charts = ALA.BiocacheCharts('charts', chartConfig);
     }
-    taxonomyChart.load(taxonomyChartOptions);
+}
+
+/**
+ * Load the user charts
+ */
+function loadUserCharts() {
+
+    if (userChartConfig) { //userCharts
+        //load user charts
+        $.ajax({
+            dataType: "json",
+            url: BC_CONF.serverName + "/user/chart",
+            success: function(data) {
+                if ($.map(data, function (n, i) {
+                        return i;
+                    }).length > 3) {
+                    console.log("loading user chart data")
+                    console.log(data)
+
+                    //do not display user charts by default
+                    $.map(data.charts, function (value, key) {
+                        value.hideOnce = true;
+                    });
+
+                    data.chartControlsCallback = saveChartConfig
+
+                    //set current context
+                    data.biocacheServiceUrl = userChartConfig.biocacheServiceUrl;
+                    data.biocacheWebappUrl = userChartConfig.biocacheWebappUrl;
+                    data.query = userChartConfig.query;
+                    data.queryContext = userChartConfig.queryContext;
+                    data.filter = userChartConfig.filter;
+                    data.facetQueries = userChartConfig.facetQueries;
+
+                    var charts = ALA.BiocacheCharts('userCharts', data);
+                } else {
+                    userChartConfig.charts = {}
+                    userChartConfig.chartControlsCallback = saveChartConfig
+                    var charts = ALA.BiocacheCharts('userCharts', userChartConfig);
+                }
+            },
+            error: function (data) {
+                userChartConfig.charts = {}
+                userChartConfig.chartControlsCallback = saveChartConfig
+                var charts = ALA.BiocacheCharts('userCharts', userChartConfig);
+            }
+        })
+    }
+}
+
+function saveChartConfig(data) {
+    console.log("saving user chart data");
+    console.log(data);
+
+    var d = jQuery.extend(true, {}, data);
+
+    //remove unnecessary data
+    delete d.chartControlsCallback
+    $.each (d.charts, function(key, value) { if (value.slider) delete value.slider; });
+    $.each (d.charts, function(key, value) { if (value.datastructure) delete value.datastructure});
+    $.each (d.charts, function(key, value) { if (value.chart) delete value.chart});
+
+    if (data) {
+        $.ajax({
+            url: BC_CONF.serverName + "/user/chart",
+            type: "POST",
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(d)
+        })
+    }
 }
 
 /**
