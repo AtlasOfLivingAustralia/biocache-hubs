@@ -426,7 +426,7 @@
                                             section="duplicate"
                                             fieldName="Data Resource">
                                     <g:set var="dr">${duplicateRecordDetails.rowKey?.substring(0, duplicateRecordDetails.rowKey?.indexOf("|"))}</g:set>
-                                    <a href="${collectionsWebappContext}/public/show/${dr}">${dataResourceCodes.get(dr)}</a>
+                                    <a href="${collectionsWebappContext}/public/show/${dr}">${dataResourceCodes?.get(dr)}</a>
                                     </alatag:occurrenceTableRow>
                                 </g:if>
                                 <g:if test="${duplicateRecordDetails.rawScientificName}">
@@ -487,7 +487,7 @@
                                                 section="duplicate"
                                                 fieldName="Data Resource">
                                             <g:set var="dr">${dup.rowKey.substring(0, dup.rowKey.indexOf("|"))}</g:set>
-                                            <a href="${collectionsWebappContext}/public/show/${dr}">${dataResourceCodes.get(dr)}</a>
+                                            <a href="${collectionsWebappContext}/public/show/${dr}">${dataResourceCodes?.get(dr)}</a>
                                         </alatag:occurrenceTableRow>
                                     </g:if>
                                     <g:if test="${dup.rawScientificName}">
