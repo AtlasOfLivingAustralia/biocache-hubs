@@ -29,9 +29,9 @@
  */
 jQuery.i18n.properties({
     name: 'messages',
-    path: BC_CONF.contextPath + '/messages/i18n/',
+    path: EYA_CONF.contextPath + '/messages/i18n/',
     mode: 'map',
-    language: BC_CONF.locale // default is to use browser specified locale
+    language: EYA_CONF.locale // default is to use browser specified locale
     //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
 });
 
@@ -49,11 +49,10 @@ var radiusForZoom = {
 };
 
 // Load Google maps via AJAX API
-if(EYA_CONF != undefined && !EYA_CONF.hasGoogleKey){
-    google.load("maps", "3.3", {other_params:"sensor=false"});
+if(EYA_CONF !== undefined && !EYA_CONF.hasGoogleKey){
+ google.load("maps", "3.3", {other_params:"sensor=false"});
 }
 
-geocoder = new google.maps.Geocoder();
 /**
  * Document onLoad event using JQuery
  */
@@ -63,7 +62,7 @@ $(document).ready(function(event) {
     geocoder = new google.maps.Geocoder();
 
     // Catch page events...
-
+    
     // Register events for the species_group column
     $('#taxa-level-0 tbody tr').live("mouseover mouseout", function() {
         // mouse hover on groups
@@ -255,7 +254,7 @@ function loadMap() {
     markerInfowindow = new google.maps.InfoWindow({
         content: '<div class="infoWindow">marker address</div>' // gets updated by geocodePosition()
     });
-
+    
     google.maps.event.addListener(marker, 'click', function(event) {
         if (lastInfoWindow) lastInfoWindow.close();
         markerInfowindow.setPosition(event.latLng);
@@ -300,11 +299,11 @@ function loadMap() {
         loadGroups();
         map.panTo(marker.getPosition());
     });
-
+    
     google.maps.event.addListener(map, 'zoom_changed', function() {
         loadRecordsLayer();
     });
-
+    
     if (!points || points.length == 0) {
         //$('#taxa-level-0 tbody td:first').click(); // click on "all species" group
         loadRecordsLayer();
@@ -334,7 +333,7 @@ function geocodePosition(pos) {
 /**
  * Update the "address" hidden input and display span
  */
-function updateMarkerAddress(str) {
+ function updateMarkerAddress(str) {
     $('#markerAddress').empty().html(str);
     $('#location').val(str);
     $('#dialog-confirm code').html(str); // download popup text
@@ -409,7 +408,7 @@ function loadNewGeoJsonData(data) {
     } else {
         infoWindows = [];
     }
-
+    
     $.each(data.features, function (i, n) {
         var latLng1 = new google.maps.LatLng(n.geometry.coordinates[1], n.geometry.coordinates[0]);
         var iconUrl = EYA_CONF.imagesUrlPrefix+"/circle-"+n.properties.color.replace('#','')+".png";
@@ -443,8 +442,8 @@ function loadNewGeoJsonData(data) {
             fqParam = "&fq=species_group:" + speciesGroup;
         }
         var content = '<div class="infoWindow">' + jQuery.i18n.prop('exploreYourArea.js.numberrecords') + ' '+n.properties.count+'<br/>'+
-            '<a href="'+ EYA_CONF.contextPath +'/occurrences/search?q='+solrQuery+fqParam+
-            '&lat='+n.geometry.coordinates[1]+'&lon='+n.geometry.coordinates[0]+'&radius=0.05">' + jQuery.i18n.prop('exploreYourArea.js.listrecords') + '</a></div>';
+                '<a href="'+ EYA_CONF.contextPath +'/occurrences/search?q='+solrQuery+fqParam+
+                '&lat='+n.geometry.coordinates[1]+'&lon='+n.geometry.coordinates[0]+'&radius=0.05">' + jQuery.i18n.prop('exploreYourArea.js.listrecords') + '</a></div>';
         infoWindows[i] = new google.maps.InfoWindow({
             content: content,
             maxWidth: 200,
@@ -457,7 +456,7 @@ function loadNewGeoJsonData(data) {
             lastInfoWindow = infoWindows[i]; // keep reference to current infoWindow
         });
     });
-
+    
 }
 
 /**
@@ -467,7 +466,7 @@ function attemptGeolocation() {
     // HTML5 GeoLocation
     if (navigator && navigator.geolocation) {
         //console.log("trying to get coords with navigator.geolocation...");  
-        function getMyPostion(position) {
+        function getMyPostion(position) {  
             //alert('coords: '+position.coords.latitude+','+position.coords.longitude);
             //console.log('geolocation request accepted');
             $('#mapCanvas').empty();
@@ -475,7 +474,7 @@ function attemptGeolocation() {
             //LoadTaxaGroupCounts();
             initialize();
         }
-
+        
         function positionWasDeclined() {
             //console.log('geolocation request declined or errored');
             $('#mapCanvas').empty();
@@ -648,9 +647,9 @@ function processSpeciesJsonData(data, appendResults) {
                     ' species profile</a> | ';
             }
             speciesInfo = speciesInfo + '<a href="'+ EYA_CONF.contextPath +'/occurrences/search?q=taxon_name:%22'+data[i].name+
-                '%22&lat='+$('input#latitude').val()+'&lon='+$('input#longitude').val()+'&radius='+$('select#radius').val()+'" title="'+
-                recsTitle+'"><img src="'+ EYA_CONF.imagesUrlPrefix + '/database_go.png" '+
-                'alt="search list icon" style="margin-bottom:-3px;" class="no-rounding"/> '+ jQuery.i18n.prop('exploreYourArea.js.recordlist') +'</a></div>';
+                    '%22&lat='+$('input#latitude').val()+'&lon='+$('input#longitude').val()+'&radius='+$('select#radius').val()+'" title="'+
+                    recsTitle+'"><img src="'+ EYA_CONF.imagesUrlPrefix + '/database_go.png" '+
+                    'alt="search list icon" style="margin-bottom:-3px;" class="no-rounding"/> '+ jQuery.i18n.prop('exploreYourArea.js.recordlist') +'</a></div>';
             tr = tr + speciesInfo;
             // add number of records
             tr = tr + '</td><td class="rightCounts">'+data[i].count+' </td></tr>';
@@ -666,7 +665,7 @@ function processSpeciesJsonData(data, appendResults) {
             $('#rightList tbody').append('<tr id="loadMoreSpecies"><td>&nbsp;</td><td colspan="2"><a href="'+newStart+
                 '" data-sort="'+sortOrder+'">'+ jQuery.i18n.prop('exploreYourArea.js.morespecies') +'</a></td></tr>');
         }
-
+        
     } else if (appendResults) {
         // do nothing
     } else {
@@ -776,7 +775,7 @@ function loadGroups() {
         facets: "species_group",
         qc: EYA_CONF.queryContext
     }
-
+    
     $.getJSON(url, params, function(data) {
         if (data) {
             populateSpeciesGroups(data);
@@ -789,11 +788,11 @@ function loadGroups() {
  */
 function populateSpeciesGroups(data) {
     if (data.length > 0) {
-        $("#taxa-level-0 tbody").empty(); // clear existing values
+         $("#taxa-level-0 tbody").empty(); // clear existing values
         $.each(data, function (i, n) {
             addGroupRow(n.name, n.speciesCount, n.level)
         });
-
+        
         // Dynamically set height of #taxaDiv (to match containing div height)
         var tableHeight = $('#taxa-level-0').height();
         $('.tableContainer').height(tableHeight+2);
@@ -801,7 +800,7 @@ function populateSpeciesGroups(data) {
         $('#rightList tbody').height(tbodyHeight);
         $('#taxa-level-0 tbody tr.activeRow').click();
     }
-
+    
     function addGroupRow(group, count, indent) {
         var label = group;
         var hierarchy = ["Animals", "Birds", "Reptiles", "Amphibians", "Fish", "Molluscs", "Arthropods", "Crustaceans", "Arthropods", "Crustaceans", "Insects", "Plants", "Bryophytes", "Bryophytes", "Gymnosperms", "FernsAndAllies", "Angiosperms", "Monocots", "Dicots", "Fungi", "Chromista", "Protozoa", "Bacteria", "Algae"];
@@ -810,7 +809,7 @@ function populateSpeciesGroups(data) {
         while (hierarchy[i] /= group){
             i++
         }
-        label = jQuery.i18n.prop('global.hierarchy.'+label.toLowerCase()+'');
+            label = jQuery.i18n.prop('global.hierarchy.'+label.toLowerCase()+'');
 
 
         if (group == "ALL_SPECIES") label = jQuery.i18n.prop('exploreYourArea.js.allspecies');
