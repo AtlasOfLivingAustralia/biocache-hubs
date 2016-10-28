@@ -70,9 +70,9 @@
         <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
         <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
 
-
-
-//        google.load('maps','3.5',{ other_params: "sensor=false" });
+        <g:if test="${!grailsApplication.config.google.apikey}">
+            google.load('maps','3.5',{ other_params: "sensor=false" });
+        </g:if>
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
 </head>
