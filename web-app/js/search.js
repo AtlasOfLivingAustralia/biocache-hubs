@@ -583,14 +583,13 @@ $(document).ready(function() {
     });
 
 
-    var imageId, attribution, recordUrl, scientificName, preferredImageStatus;
+    var imageId, attribution, recordUrl, scientificName;
     // Lightbox
     $(document).delegate('.thumbImage', 'click', function(event) {
         var recordLink = '<a href="RECORD_URL">View details of this record</a>'
         event.preventDefault();
         imageId = $(this).attr('data-image-id');
-        scientificName = $(this).attr('scientific-name');
-        preferredImageStatus = $(this).attr('preferredImageStatus');
+        scientificName = $(this).attr('data-scientific-name');
         attribution = $(this).find('.meta.detail').html();
         recordUrl = $(this).attr('href');
         recordLink = recordLink.replace('RECORD_URL', recordUrl);
@@ -604,7 +603,7 @@ $(document).ready(function() {
 
     // show image only after modal dialog is shown. otherwise, image position will be off the viewing area.
     $('#imageDialog').on('shown.bs.modal',function () {
-        imgvwr.viewImage($("#viewerContainerId"), imageId, scientificName, preferredImageStatus, {
+        imgvwr.viewImage($("#viewerContainerId"), imageId, scientificName, undefined, {
             imageServiceBaseUrl: BC_CONF.imageServiceBaseUrl,
             addSubImageToggle: false,
             addCalibration: false,
@@ -613,7 +612,6 @@ $(document).ready(function() {
             addAttribution: true,
             addLikeDislikeButton: BC_CONF.addLikeDislikeButton,
             addPreferenceButton: BC_CONF.addPreferenceButton,
-            preferredImageStatus: preferredImageStatus,
             attribution: attribution,
             disableLikeDislikeButton: BC_CONF.disableLikeDislikeButton,
             likeUrl: BC_CONF.likeUrl + '?id=' + imageId,
@@ -926,10 +924,6 @@ function loadImagesInTab() {
 }
 
 function loadImages(start) {
-    var preferredSpeciesImageListUrl = BC_CONF.getPreferredSpeciesListUrl; // + "/ws/speciesListItem/getPreferredSpeciesImage";
-    $.getJSON(preferredSpeciesImageListUrl, function(data) {
-
-        var preferredSpeciesImageList = data;
 
         start = (start) ? start : 0;
         var imagesJsonUri = BC_CONF.biocacheServiceUrl + "/occurrences/search.json" + BC_CONF.searchString +
@@ -955,17 +949,8 @@ function loadImages(start) {
                     link.attr('title', 'click to enlarge');
                     link.attr('data-occurrenceuid', el.uuid);
                     link.attr('data-image-id', el.image);
-                    link.attr('scientific-name', el.raw_scientificName);
-                    link.attr('preferredImageStatus', false);
-                    for (i = 0; i < preferredSpeciesImageList.length; i++) {
-                        if (preferredSpeciesImageList[i].name == el.raw_scientificName &&
-                            preferredSpeciesImageList[i].imageId == el.image) {
-                            link.attr('preferredImageStatus', true);
-                            break;
-                        }
-                    }
-
-
+                    link.attr('data-scientific-name', el.raw_scientificName);
+                    
                     $ImgConTmpl.find('img').attr('src', el.smallImageUrl);
                     // brief metadata
                     var briefHtml = el.raw_scientificName;
@@ -984,11 +969,11 @@ function loadImages(start) {
                         detailHtml += br + el.dataResourceName;
                     }
                     $ImgConTmpl.find('.detail').html(detailHtml);
-
+    
                     // write to DOM
                     $("#imagesGrid").append($ImgConTmpl.html());
                 });
-
+    
                 if (count + start < data.totalRecords) {
                     //console.log("load more", count, start, count + start, data.totalRecords);
                     $('#imagesGrid').data('count', count + start);
@@ -997,12 +982,11 @@ function loadImages(start) {
                 } else {
                     $("#loadMoreImages").hide();
                 }
-
+    
             }
         }).always(function () {
             $("#loadMoreImages img").hide();
         });
-    });
 }
 
 /**

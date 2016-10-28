@@ -7,7 +7,6 @@ grails.project.target.level = 1.7
 grails.project.source.level = 1.7
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 //grails.plugin.location.'images-client-plugin' = "../images-client-plugin"
-//grails.plugin.location.'ala-charts-plugin' = "../ala-charts-plugin"
 
 grails.project.fork = [
         test: false,
@@ -57,6 +56,6 @@ grails.project.dependency.resolution = {
         runtime ":resources:1.2.1"
         runtime ":release:3.0.1"
         runtime ":ala-charts-plugin:1.2-SNAPSHOT"
-        compile ":images-client-plugin:0.7.6"
+        compile ":images-client-plugin:0.7.7-SNAPSHOT"
     }
 }

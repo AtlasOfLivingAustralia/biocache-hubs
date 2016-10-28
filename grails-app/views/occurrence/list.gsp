@@ -51,13 +51,13 @@
             userRatingUrl: "${createLink(controller: 'imageClient', action: 'userRating')}",
             disableLikeDislikeButton: ${authService.getUserId() ? false : true},
             addLikeDislikeButton: ${(grailsApplication.config.addLikeDislikeButton == false) ? false : true},
-            addPreferenceButton: ${authService?.userInRole("ROLE_ADMIN")},
+            addPreferenceButton: ${authService?.getUserId() ? (authService.getUserForUserId(authService.getUserId())?.roles?.contains("ROLE_ADMIN") ? true : false) : false},
             userRatingHelpText: '<div><b>Up vote (<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>) an image:</b>'+
             ' Image supports the identification of the species or is representative of the species.  Subject is clearly visible including identifying features.<br/><br/>'+
             '<b>Down vote (<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>) an image:</b>'+
             ' Image does not support the identification of the species, subject is unclear and identifying features are difficult to see or not visible.<br/></div>',
             savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
-            getPreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}"
+            getPreferredSpeciesListUrl:  "${grailsApplication.config.speciesList.baseURL}" // "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}"
         };
     </script>
     <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, charts, image-viewer"/>
