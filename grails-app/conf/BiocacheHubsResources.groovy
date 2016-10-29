@@ -34,7 +34,7 @@ modules = {
         resource url:[dir:'js', file:'jquery.cookie.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.inview.min.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'jquery.jsonp-2.4.0.min.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs'], disposition: 'head'
+        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs']
     }
 
     search {
@@ -145,7 +145,7 @@ modules = {
         resource url:[dir:'js', file:'audiojs/audio.min.js', plugin:'biocache-hubs'], disposition: 'head', exclude: '*'
         resource url: [dir:'js', file:'jquery.i18n.properties-1.0.9.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'show.js', plugin:'biocache-hubs']
-        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs'], disposition: 'head'
+        resource url:[dir:'js', file:'charts2.js', plugin:'biocache-hubs']
         resource url:[dir:'js', file:'wms2.js', plugin:'biocache-hubs'], disposition: 'head'
     }
 

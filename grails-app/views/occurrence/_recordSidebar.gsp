@@ -1,6 +1,6 @@
 <g:if test="${isUnderCas && !isReadOnly && record.processed.attribution.provenance != 'Draft'}">
     <div class="sidebar" style="float:left;">
-        <button class="btn" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="report a problem or suggest a correction for this record">
+        <button class="btn" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="${g.message(code: 'show.button.assertionbuton.title', default: 'report a problem or suggest a correction for this record')}">
             <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="icon-flag"></i> <g:message code="show.button.assertionbutton.span" default="Flag an issue"/></span>
         </button>
         <div id="loginOrFlag" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true"><!-- BS modal div -->
@@ -53,7 +53,7 @@
 <g:if test="${contacts && contacts.size()}">
     <div class="sidebar" style="float:left;">
         <button href="#contactCuratorView" class="btn" id="showCurator" role="button" data-toggle="modal"
-                title="Contact curator for more details on a record">
+                title="<g:message code="show.button.contaccurator.title" default="Contact curator for more details on a record"/>">
             <span id="contactCuratorSpan" href="#contactCuratorView" title=""><i class="icon-envelope"></i> <g:message code="show.showcontactcurator.span" default="Contact curator"/></span>
         </button>
     </div>
@@ -266,6 +266,17 @@
         %{--<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>--}%
         <script type="text/javascript">
             $(document).ready(function() {
+                /**
+                 * Load Spring i18n messages into JS
+                 */
+                jQuery.i18n.properties({
+                    name: 'messages',
+                    path: OCC_REC.contextPath + '/messages/i18n/',
+                    mode: 'map',
+                    language: OCC_REC.locale // default is to use browser specified locale
+                    //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
+                });
+
                 var latlng = new google.maps.LatLng(${latLngStr.trim()});
                 var myOptions = {
                     zoom: 5,
@@ -286,7 +297,7 @@
                 var marker = new google.maps.Marker({
                     position: latlng,
                     map: map,
-                    title:"Occurrence Location"
+                    title:jQuery.i18n.prop('show.marklocation')
                 });
 
                 <g:if test="${record.processed.location.coordinateUncertaintyInMeters}">

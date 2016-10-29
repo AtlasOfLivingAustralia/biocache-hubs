@@ -42,7 +42,6 @@ $(document).ready(function() {
     var tabsInit = {
         map: false,
         charts: false,
-        userCharts: false,
         images: false,
         species: false
     };
@@ -62,12 +61,8 @@ $(document).ready(function() {
             tabsInit.map = true; // only initialise once!
         } else if (id == "t3" && !tabsInit.charts) {
             // trigger charts load
-            loadDefaultCharts();
+            loadAllCharts();
             tabsInit.charts = true; // only initialise once!
-        } else if (id == "t6" && !tabsInit.userCharts) {
-            // trigger charts load
-            loadUserCharts();
-            tabsInit.userCharts = true; // only initialise once!
         } else if (id == "t4" && !tabsInit.species) {
             loadSpeciesInTab(0, "common");
             tabsInit.species = true;
@@ -428,7 +423,7 @@ $(document).ready(function() {
             var fqString = "&fq=" + inverseModifier + fq;
             window.location.href = window.location.pathname + BC_CONF.searchString + fqString + hash;
         } else {
-            alert("Please select at least one checkbox.");
+            alert(jQuery.i18n.prop('search.js.option.nochecked'));
         }
     });
 
@@ -586,7 +581,7 @@ $(document).ready(function() {
     var imageId, attribution, recordUrl, scientificName, preferredImageStatus;
     // Lightbox
     $(document).delegate('.thumbImage', 'click', function(event) {
-        var recordLink = '<a href="RECORD_URL">View details of this record</a>'
+        var recordLink = '<a href="RECORD_URL">' + jQuery.i18n.prop('search.js.recordlink') + '</a>'
         event.preventDefault();
         imageId = $(this).attr('data-image-id');
         scientificName = $(this).attr('scientific-name');
@@ -594,10 +589,10 @@ $(document).ready(function() {
         attribution = $(this).find('.meta.detail').html();
         recordUrl = $(this).attr('href');
         recordLink = recordLink.replace('RECORD_URL', recordUrl);
-        var flagIssueLink = '<a href="RECORD_URL">record.</a>';
+        var flagIssueLink = '<a href="RECORD_URL">'+jQuery.i18n.prop('search.js.flagissuelink')+'.</a>';
         flagIssueLink = flagIssueLink.replace('RECORD_URL', recordUrl);
         attribution += '<br>' + recordLink +
-                       '<br><br>If this image is incorrectly<br>identified please flag an<br>issue on the ' + flagIssueLink +'<br>';
+                       '<br><br>' + jQuery.i18n.prop('search.js.imageattribution.01') + '<br>' + jQuery.i18n.prop('search.js.imageattribution.02') + '<br>' + jQuery.i18n.prop('search.js.imageattribution.03') + flagIssueLink + '<br>';
         setDialogSize();
         $('#imageDialog').modal('show');
     });
@@ -815,107 +810,63 @@ function removeFilter(el) {
 }
 
 /**
- * Load the default charts
+ * Load all the charts
  */
-function loadDefaultCharts() {
-    if (dynamicFacets) {
+function loadAllCharts() {
+    // set baseURls...
+    baseFacetChart.biocacheServicesUrl = BC_CONF.biocacheServiceUrl;
+    baseFacetChart.collectionsUrl = BC_CONF.collectoryUrl;
+    baseFacetChart.biocacheWebappUrl = ""; // keep empty so URLs come from the same host
+    //console.log("Loading charts.....");
+    var queryString = BC_CONF.searchString.replace("?q=","");
+    var biocacheServiceUrl = BC_CONF.biocacheServiceUrl; //BC_CONF.biocacheServiceUrl, // "http://ala-macropus.it.csiro.au/biocache-service";
+
+    var taxonomyChartOptions = {
+        query: queryString,
+        biocacheServicesUrl: biocacheServiceUrl,
+        displayRecordsUrl: BC_CONF.serverName
+    };
+
+    var facetChartOptions = {
+        query: queryString,
+        charts: ['collection_uid','state','species_group','assertions','type_status','ibra','state_conservation','month','occurrence_year'],
+        collection_uid: {title: jQuery.i18n.prop('search.js.collection')},
+        state: {title: jQuery.i18n.prop('search.js.state')},
+        species_group: { title: jQuery.i18n.prop('search.js.higherlevelgroup'), ignore: ['Animals','Insects','Crustaceans','Angiosperms','Plants']},
+        assertions: {},
+        type_status: {},
+        ibra: {title: jQuery.i18n.prop('search.js.ibra')},
+        state_conservation: {},
+        occurrence_year:{},
+        Unknown_s:{},
+        month:{chartType: "column"},
+        biocacheServicesUrl: biocacheServiceUrl,
+        displayRecordsUrl: BC_CONF.serverName
+    };
+
+    if(dynamicFacets !== undefined){
         var chartsConfigUri = BC_CONF.biocacheServiceUrl + "/upload/charts/" + BC_CONF.selectedDataResource + ".json";
-        $.getJSON(chartsConfigUri, function (chartsConfig) {
+        $.getJSON(chartsConfigUri, function(chartsConfig) {
 
-            console.log("Number of dynamic charts to render: " + chartsConfig.length);
+            $.each(chartsConfig, function(index, config){
+               if(config.visible) {
+                   facetChartOptions.query = facetChartOptions.query + "&facets=" + config.field;
+                   facetChartOptions.charts.push(config.field);
 
-            var conf = {}
+                   var chartTitle = config.field.substring(0, config.field.length - 2).replace('_', ' ');
+                   facetChartOptions[config.field] = {chartType:config.format, width: 900, backgroundColor: {fill:'transparent'}, chartArea: {width: "80%"}, hAxis: {title: chartTitle}};
 
-            $.each(chartsConfig, function (index, config) {
-                if (config.visible) {
-                    var type = 'bar'
-                    if (config.format == 'pie') type = 'doughnut'
-                    conf[config.field] = {
-                        chartType: type,
-                        emptyValueMsg: '',
-                        hideEmptyValues: true,
-                        title: config.field
-                    }
-                }
+                   chartLabels[config.field] = chartTitle;
+                   defaultChartTypes[config.field] = config.format;
+                   baseFacetChart.individualChartOptions[config.field] = {title: chartTitle, chartType:config.format, facets: [config.field]}
+               }
             });
-            chartConfig.charts = conf;
-
-            var charts = ALA.BiocacheCharts('charts', chartConfig);
+            loadFacetCharts(facetChartOptions);
         });
     } else {
-        var charts = ALA.BiocacheCharts('charts', chartConfig);
+        loadFacetCharts(facetChartOptions);
     }
-}
-
-/**
- * Load the user charts
- */
-function loadUserCharts() {
-
-    if (userChartConfig) { //userCharts
-        //load user charts
-        $.ajax({
-            dataType: "json",
-            url: BC_CONF.serverName + "/user/chart",
-            success: function(data) {
-                if ($.map(data, function (n, i) {
-                        return i;
-                    }).length > 3) {
-                    console.log("loading user chart data")
-                    console.log(data)
-
-                    //do not display user charts by default
-                    $.map(data.charts, function (value, key) {
-                        value.hideOnce = true;
-                    });
-
-                    data.chartControlsCallback = saveChartConfig
-
-                    //set current context
-                    data.biocacheServiceUrl = userChartConfig.biocacheServiceUrl;
-                    data.biocacheWebappUrl = userChartConfig.biocacheWebappUrl;
-                    data.query = userChartConfig.query;
-                    data.queryContext = userChartConfig.queryContext;
-                    data.filter = userChartConfig.filter;
-                    data.facetQueries = userChartConfig.facetQueries;
-
-                    var charts = ALA.BiocacheCharts('userCharts', data);
-                } else {
-                    userChartConfig.charts = {}
-                    userChartConfig.chartControlsCallback = saveChartConfig
-                    var charts = ALA.BiocacheCharts('userCharts', userChartConfig);
-                }
-            },
-            error: function (data) {
-                userChartConfig.charts = {}
-                userChartConfig.chartControlsCallback = saveChartConfig
-                var charts = ALA.BiocacheCharts('userCharts', userChartConfig);
-            }
-        })
-    }
-}
-
-function saveChartConfig(data) {
-    console.log("saving user chart data");
-    console.log(data);
-
-    var d = jQuery.extend(true, {}, data);
-
-    //remove unnecessary data
-    delete d.chartControlsCallback
-    $.each (d.charts, function(key, value) { if (value.slider) delete value.slider; });
-    $.each (d.charts, function(key, value) { if (value.datastructure) delete value.datastructure});
-    $.each (d.charts, function(key, value) { if (value.chart) delete value.chart});
-
-    if (data) {
-        $.ajax({
-            url: BC_CONF.serverName + "/user/chart",
-            type: "POST",
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify(d)
-        })
-    }
+    taxonomyChart.load(taxonomyChartOptions);
 }
 
 /**
@@ -975,9 +926,9 @@ function loadImages(start) {
                     $ImgConTmpl.find('.brief').html(briefHtml);
                     // detail metadata
                     var detailHtml = el.raw_scientificName;
-                    if (el.typeStatus) detailHtml += br + 'Type: ' + el.typeStatus;
-                    if (el.collector) detailHtml += br + 'By: ' + el.collector;
-                    if (el.eventDate) detailHtml += br + 'Date: ' + moment(el.eventDate).format('YYYY-MM-DD');
+                    if (el.typeStatus) detailHtml += br + jQuery.i18n.prop('search.js.type') + ": " + el.typeStatus;
+                    if (el.collector) detailHtml += br + jQuery.i18n.prop('search.js.by') + ": " + el.collector;
+                    if (el.eventDate) detailHtml += br + jQuery.i18n.prop('search.js.date') + ": " + moment(el.eventDate).format('YYYY-MM-DD');
                     if (el.institutionName) {
                         detailHtml += br + el.institutionName;
                     } else {
@@ -1055,7 +1006,7 @@ function loadSpeciesInTab(start, sortField, group) {
     }
 
     if (start == 0) {
-        $("#speciesGallery").empty().before("<div id='loadingSpecies'>Loading... <img src='" + BC_CONF.contextPath + "/images/spinner.gif'/></div>");
+        $("#speciesGallery").empty().before("<div id='loadingSpecies'>" + jQuery.i18n.prop('search.js.loadingspecies') +  " <img src='" + BC_CONF.contextPath + "/images/spinner.gif'/></div>");
         $("#loadMoreSpecies").hide();
     } else {
         $("#loadMoreSpecies img").show();
@@ -1157,7 +1108,7 @@ function loadSpeciesInTab(start, sortField, group) {
                     link = BC_CONF.bieWebappUrl + "/species/"  + md.guid;
                     linkTitle = "Go to ALA species page";
                     rank = " ";
-                    count = " <br/>Record count: " + md.count;
+                    count = " <br/>" + Query.i18n.prop('search.js.recordcount') + ": " + md.count;t
                 } else {
                     link = BC_CONF.contextPath + "/occurrences/"  + md.uuid;
                     linkTitle = "Go to occurrence record";
@@ -1219,7 +1170,7 @@ function loadMoreFacets(facetName, displayName, fsort, foffset) {
     $('table#fullFacets').data('facet', facetName); // data attribute for storing facet field
     $('table#fullFacets').data('label', displayName); // data attribute for storing facet display name
     $('#indexCol a').html(displayName); // table heading
-    $('#indexCol a').attr('title', 'sort by ' + displayName); // table heading
+    $('#indexCol a').attr('title', jQuery.i18n.prop('search.js.loadmorefacets.indexcol.title')+ ' ' + displayName); // table heading
 
     $("a.fsort").qtip({
         style: {
@@ -1323,7 +1274,7 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                 var flimitInt = Number(facetLimit);
                 var loadMore =  "<tr id='loadMore' class=''><td colspan='3'><a href='#index' class='loadMoreValues' data-sort='" +
                     fsort + "' data-foffset='" + (offsetInt + flimitInt) +
-                    "'>Loading " + facetLimit + " more values...</a></td></tr>";
+                    "'>" + jQuery.i18n.prop('search.js.facets') + "" + facetLimit + " " + jQuery.i18n.prop('search.js.morevalues') + "...</a></td></tr>";
                 $("table#fullFacets tbody").append(loadMore);
                 //$("tr#loadMore").fadeIn('slow');
             }
@@ -1345,7 +1296,7 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
             $("tr#loadingRow").remove(); // remove the loading message
             $("tr#loadMore").remove(); // remove the load more records link
             $('#spinnerRow').hide();
-            $("table#fullFacets tbody").append("<tr><td></td><td>[Error: no values returned]</td></tr>");
+            $("table#fullFacets tbody").append("<tr><td></td><td>"+ jQuery.i18n.prop('search.js.error.01') +"</td></tr>");
         }
     });
 }

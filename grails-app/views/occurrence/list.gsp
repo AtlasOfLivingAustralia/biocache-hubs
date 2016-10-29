@@ -17,7 +17,10 @@
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="search"/>
     <title><g:message code="list.title" default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
-
+    <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, image-viewer, jquery_i18n"/>
+    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
+        <r:require module="bieAutocomplete"/>
+    </g:if>
     <g:if test="${grailsApplication.config.google.apikey}">
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
     </g:if>
@@ -68,11 +71,6 @@
         //        google.load('maps','3.5',{ other_params: "sensor=false" });
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
-    <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, image-viewer"/>
-    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
-        <r:require module="bieAutocomplete"/>
-    </g:if>
-
 </head>
 
 <body class="occurrence-search">
@@ -191,7 +189,7 @@
                     <div id="downloads" class="btn btn-primary pull-right">
                         <a href="${g.createLink(uri: '/download')}?searchParams=${sr?.urlParameters?.encodeAsURL()}&targetUri=${(request.forwardURI)}"
                            class="tooltips newDownload"
-                           title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records"><i
+                           title="${alatag.message(code:"list.download.button.tooltip1", default:"Download all")} ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} ${alatag.message(code:"list.download.button.tooltip2", default:"records OR species checklist")}"><i
                                 class="fa fa-download"></i>
                         &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/></a>
                     </div>
@@ -217,7 +215,7 @@
                                 </a>
                             </g:if>
                             <g:elseif test="${params.radius && params.lat && params.lon}">
-                                <a href="${alatag.getQueryStringForRadiusRemove()}" class="btn btn-mini tooltips" title="Click to remove this filter">Spatial filter: CIRCLE
+                                <a href="${alatag.getQueryStringForRadiusRemove()}" class="btn btn-mini tooltips" title="${alatag.message(code:"title.filter.remove", default:"Click to remove this filter")}"><g:message code="list.filter.spatialcircle" default="Spatial filter: CIRCLE:"/>
                                     <span class="closeX">×</span>
                                 </a>
                             </g:elseif>
@@ -294,12 +292,7 @@
                     <ul class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a id="t1" href="#recordsView" data-toggle="tab"><g:message code="list.link.t1" default="Records"/></a></li>
                         <li><a id="t2" href="#mapView" data-toggle="tab"><g:message code="list.link.t2" default="Map"/></a></li>
-                        <plugin:isAvailable name="alaChartsPlugin">
-                            <li><a id="t3" href="#chartsView" data-toggle="tab"><g:message code="list.link.t3" default="Charts"/></a></li>
-                            <g:if test="${grailsApplication.config.userCharts && grailsApplication.config.userCharts.toBoolean()}">
-                                <li><a id="t6" href="#userChartsView" data-toggle="tab"><g:message code="list.link.t6" default="Custom Charts"/></a></li>
-                            </g:if>
-                        </plugin:isAvailable>
+                        <li><a id="t3" href="#chartsView" data-toggle="tab"><g:message code="list.link.t3" default="Charts"/></a></li>
                         <g:if test="${showSpeciesImages}">
                             <li><a id="t4" href="#speciesImages" data-toggle="tab"><g:message code="list.link.t4" default="Species images"/></a></li>
                         </g:if>
@@ -312,14 +305,9 @@
                     <div class="tab-pane solrResults active" id="recordsView">
                         <div id="searchControls" class="row-fluid">
                             <div class="span4">
-                                <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
-                                    <div id="downloads" class="btn btn-small">
-                                        <a href="#download" role="button" data-toggle="modal" class="tooltips"
-                                           title="${alatag.message(code:"list.download.button.tooltip1", default:"Download all")} ${g.formatNumber(number:sr.totalRecords, format:"#,###,###")} ${alatag.message(code:"list.download.button.tooltip2", default:"records OR species checklist")}"><i
-                                                class="fa fa-download"></i>&nbsp;&nbsp;<g:message
-                                                code="list.downloads.navigator" default="Downloads"/></a>
-                                    </div>
-                                </g:if>
+                                <div id="downloads" class="btn btn-small">
+                                    <a href="#download" role="button" data-toggle="modal" class="tooltips" title="${alatag.message(code:"list.download.button.tooltip1", default:"Download all")} ${g.formatNumber(number:sr.totalRecords, format:"#,###,###")} ${alatag.message(code:"list.download.button.tooltip2", default:"records OR species checklist")}"><i class="fa fa-download"></i>&nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Downloads"/></a>
+                                </div>
                                 <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
                                     <div id="alerts" class="btn btn-small">
                                         <a href="#alert" role="button" data-toggle="modal" class="tooltips" title="Get email alerts for this search"><i class="fa fa-bell"></i>&nbsp;&nbsp;<g:message code="list.alerts.navigator" default="Alerts"/></a>
@@ -382,18 +370,12 @@
                         />
                         <div id='envLegend'></div>
                     </div><!-- end #mapwrapper -->
-                    <plugin:isAvailable name="alaChartsPlugin">
-                        <div id="chartsView" class="tab-pane">
-                            <g:render template="charts"
-                                      model="[searchString: searchString]"/>
-                        </div><!-- end #chartsWrapper -->
-                        <g:if test="${grailsApplication.config.userCharts && grailsApplication.config.userCharts?.toBoolean()}">
-                            <div id="userChartsView" class="tab-pane">
-                                <g:render template="userCharts"
-                                          model="[searchString: searchString]"/>
-                            </div><!-- end #chartsWrapper -->
-                        </g:if>
-                    </plugin:isAvailable>
+                    <div id="chartsView" class="tab-pane">
+                        <style type="text/css">
+                           #charts div { display: inline-flex; }
+                        </style>
+                        <div id="charts" class="row-fluid"></div>
+                    </div><!-- end #chartsWrapper -->
                     <g:if test="${showSpeciesImages}">
                         <div id="speciesImages" class="tab-pane">
                             <h3><g:message code="list.speciesimages.title" default="Representative images of species"/></h3>

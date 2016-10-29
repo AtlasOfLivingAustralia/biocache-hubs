@@ -23,7 +23,7 @@
                             <li><alatag:currentFilterItem item="${item}" addCheckBox="${true}"/></li>
                         </g:each>
                         <g:if test="${sr.activeFacetMap?.size() > 1}">
-                            <li><a href="#" class="activeFilter" data-facet="all" title="Click to clear all filters">
+                            <li><a href="#" class="activeFilter" data-facet="all" title="${alatag.message(code:"facets.currentfilter.clearall",default:"Click to clear all filters")}">
                                 <span class="closeX" style="margin-left:7px;">&gt;&nbsp;</span><g:message code="facets.currentfilter.link" default="Clear all"/></a>
                             </li>
                         </g:if>
@@ -36,7 +36,7 @@
         <g:each var="group" in="${groupedFacets}">
             <g:set var="keyCamelCase" value="${group.key.replaceAll(/\s+/,'')}"/>
             <div class="facetGroupName" id="heading_${keyCamelCase}">
-                <a href="#" class="showHideFacetGroup" data-name="${keyCamelCase}"><span class="caret right-caret"></span> <g:message code="facet.group.${group.key}" default="${group.key}"/></a>
+                <a href="#" class="showHideFacetGroup" data-name="${keyCamelCase}"><span class="caret right-caret"></span> <g:message code="facet.group.${group.key}" default="facet.group.${group.key}"/></a>
             </div>
             <div class="facetsGroup hide" id="group_${keyCamelCase}">
                 <g:set var="firstGroup" value="${false}"/>
@@ -54,7 +54,7 @@
                         <g:if test="${facetResult.fieldResult.length() > 0}">
                             <div class="showHide">
                                 <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-displayname="${fieldDisplayName}"
-                                   title="See more options or refine with multiple values"><i class="icon-hand-right"></i> <g:message code="facets.facetfromgroup.link" default="choose more"/>...</a>
+                                   title="${g.message(code:"facets.groupdynamicfacets.link.title",default:"See more options or refine with multiple values")}"><i class="icon-hand-right"></i> <g:message code="facets.facetfromgroup.link" default="choose more"/>...</a>
                             </div>
                         </g:if>
                     </g:if>
@@ -78,7 +78,7 @@
                         <tr class="tableHead">
                             <th>&nbsp;</th>
                             <th id="indexCol" width="80%"><a href="#index" class="fsort" data-sort="index" data-foffset="0"></a></th>
-                            <th style="border-right-style: none;text-align: right;"><a href="#count" class="fsort" data-sort="count" data-foffset="0" title="Sort by record count"><g:message code="facets.multiplefacets.tableth01" default="Count"/></a></th>
+                            <th style="border-right-style: none;text-align: right;"><a href="#count" class="fsort" data-sort="count" data-foffset="0" title="${g.message(code:"facets.multiplefacets.count.title",default:"Sort by record count")}"><g:message code="facets.multiplefacets.tableth01" default="Count"/></a></th>
                         </tr>
                     </thead>
                     <tbody class="scrollContent">

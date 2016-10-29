@@ -176,7 +176,7 @@ class OccurrenceTagLib {
         def facetResult = attrs.facetResult
         def queryParam = attrs.queryParam
         def mb = new MarkupBuilder(out)
-        def linkTitle = "Filter results by ${attrs.fieldDisplayName ?: facetResult.fieldName}"
+        def linkTitle = "${alatag.message(code:"occurrence.facetlinklist",default:"Filter results by")} ${attrs.fieldDisplayName ?: alatag.message(code:"facet.${facetResult.fieldName}")}"
 
         def addCounts = { count ->
             mb.span(class:"facetCount") {
@@ -394,6 +394,7 @@ class OccurrenceTagLib {
      *
      * @attr map REQUIRED
      */
+    //${g.message(code: messageKey)}
     def formatRawVsProcessed = { attrs ->
         def map = attrs.map
         def mb = new MarkupBuilder(out)
@@ -404,10 +405,10 @@ class OccurrenceTagLib {
                     mb.tr() {
                         if (i == 0) {
                             td(class:"noStripe", rowspan:"${group.value.length()}") {
-                                b(group.key)
+                                b(alatag.message(code: "${group.key}"))
                             }
                         }
-                        td(alatag.camelCaseToHuman(text: field.name))
+                        td(alatag.message(code: "${field.name}"))
                         td(field.raw)
                         td(field.processed)
                     }
@@ -496,8 +497,9 @@ class OccurrenceTagLib {
 
         compareRecord.get(group).each { cr ->
             def key = cr.name
-            def label = alatag.message(code:key, default:"")?:alatag.camelCaseToHuman(text: key)?:StringUtils.capitalize(key)
-
+            //def label = alatag.message(code:key, default:"")?:alatag.camelCaseToHuman(text: key)?:StringUtils.capitalize(key)
+            def messageKey = "recordcore." + key.replaceAll("\\s","").toLowerCase();
+            //def label2 = g.message(code: ${messageKey});
             // only output fields not already included (by checking fieldsMap Map) && not in excluded list
             if (!fieldsMap.containsKey(key) && !StringUtils.containsIgnoreCase(exclude, key)) {
                 //def mb = new MarkupBuilder(out)
@@ -510,9 +512,9 @@ class OccurrenceTagLib {
                 } else if (cr.raw && !cr.processed) {
                     tagBody = cr.raw
                 } else {
-                    tagBody = "${cr.processed} <br/><span class='originalValue'>Supplied as ${cr.raw}</span>"
+                    tagBody = "${cr.processed} <br/><span class='originalValue'>${message(code:'recordcore.occurrencedatasetlabel.08')} ${cr.raw}</span>"
                 }
-                output += alatag.occurrenceTableRow(annotate:"true", section:"dataset", fieldCode:"${key}", fieldName:"<span class='dwc'>${label}</span>") {
+                output += alatag.occurrenceTableRow(annotate:"true", section:"dataset", fieldCode:"${key}", fieldName:"${g.message(code: messageKey)}") {
                     tagBody
                 }
             }
@@ -564,7 +566,40 @@ class OccurrenceTagLib {
         mb.div(class:'recordRow', id:occurrence.uuid ) {
             p(class:'rowA') {
                 if (occurrence.taxonRank && occurrence.scientificName) {
-                    span(style:'text-transform: capitalize', occurrence.taxonRank)
+                    def rank
+                    switch(occurrence.taxonRank){
+                        case "species":
+                            rank = message(code: 'facet.species')
+                            break
+                        case "subspecies":
+                            rank = message(code: 'facet.subspecies_name')
+                            break
+                        case "kingdom":
+                            rank = message(code: 'facet.kingdom')
+                            break
+                        case "family":
+                            rank = message(code: 'facet.family')
+                            break
+                        case "class":
+                            rank = message(code: 'facet.class')
+                            break
+                        case "phylum":
+                            rank = message(code: 'facet.phylum')
+                            break
+                        case "order":
+                            rank = message(code: 'facet.order')
+                            break
+                        case "genus":
+                            rank = message(code: 'facet.genus')
+                            break
+                        case "variety":
+                            rank = message(code: 'facet.variety')
+                            break
+                        default:
+                            rank = occurrence.taxonRank
+                            break
+                    }
+                    span(style:'text-transform: capitalize', rank)
                     mkp.yieldUnescaped(":&nbsp;")
                     span(class:'occurrenceNames') {
                         mkp.yieldUnescaped(alatag.formatSciName(rankId:occurrence.taxonRankID?:'6000', name:"${occurrence.scientificName}"))
@@ -580,14 +615,14 @@ class OccurrenceTagLib {
 
                 span(class:'eventAndLocation') {
                     if (occurrence.eventDate) {
-                        outputResultsLabel("Date: ", g.formatDate(date: new Date(occurrence.eventDate), format:"yyyy-MM-dd"), true)
+                        outputResultsLabel("${message(code:'occurrence.date')}: ", g.formatDate(date: new Date(occurrence.eventDate), format:"yyyy-MM-dd"), true)
                     } else if (occurrence.year) {
-                        outputResultsLabel("Year: ", occurrence.year, true)
+                        outputResultsLabel("${message(code:'occurrence.year')}: ", occurrence.year, true)
                     }
                     if (occurrence.stateProvince) {
-                        outputResultsLabel("State: ", alatag.message(code:occurrence.stateProvince), true)
+                        outputResultsLabel("${message(code:'occurrence.state')}: ", alatag.message(code:occurrence.stateProvince), true)
                     } else if (occurrence.country) {
-                        outputResultsLabel("Country: ", alatag.message(code:occurrence.country), true)
+                        outputResultsLabel("${message(code:'occurrence.country')}: ", alatag.message(code:occurrence.country), true)
                     }
                 }
 
@@ -619,16 +654,16 @@ class OccurrenceTagLib {
                 }
             }
             p(class:'rowB') {
-                outputResultsLabel("Institution: ", alatag.message(code:occurrence.institutionName), occurrence.institutionName)
-                outputResultsLabel("Collection: ", alatag.message(code:occurrence.collectionName), occurrence.collectionName)
-                outputResultsLabel("Data&nbsp;Resource: ", alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
-                outputResultsLabel("Basis&nbsp;of&nbsp;record: ", alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
-                outputResultsLabel("Catalog&nbsp;number: ", "${occurrence.raw_collectionCode ? occurrence.raw_collectionCode + ':' : ''}${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber)
+                outputResultsLabel("${message(code:'occurrence.institutionName')}: ", alatag.message(code:occurrence.institutionName), occurrence.institutionName)
+                outputResultsLabel("${message(code:'occurrence.collectionName')}: ", alatag.message(code:occurrence.collectionName), occurrence.collectionName)
+                outputResultsLabel("${message(code:'occurrence.dataResourceName')}: ", alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
+                outputResultsLabel("${message(code:'occurrence.basisOfRecord')}: ", alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
+                outputResultsLabel("${message(code:'occurrence.catalogueNumber')}: ", "${occurrence.raw_collectionCode ? occurrence.raw_collectionCode + ':' : ''}${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber)
                 a(
                         href: g.createLink(url:"${request.contextPath}/occurrences/${occurrence.uuid}"),
                         class:"occurrenceLink",
 //                        style:"margin-left: 15px;",
-                        "View record"
+                        "${message(code:'occurrence.viewrecord')}"
                 )
             }
         }
