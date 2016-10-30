@@ -76,8 +76,8 @@ modules = {
     'leaflet-fullscreen' {
         dependsOn 'leaflet'
         defaultBundle 'leafletPlugins'
-        resource url: [plugin: "biocache-hubs", dir: 'js/leaflet', file: 'Control.FullScreen.css']
-        resource url: [plugin: "biocache-hubs", dir: 'js/leaflet', file: 'Control.FullScreen.js']
+        resource url: [plugin: "biocache-hubs", dir: 'js/leaflet-plugins/fullscreen', file: 'Control.FullScreen.css']
+        resource url: [plugin: "biocache-hubs", dir: 'js/leaflet-plugins/fullscreen', file: 'Control.FullScreen.js']
     }
 
     leafletPlugins {
