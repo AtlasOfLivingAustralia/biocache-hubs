@@ -592,7 +592,7 @@ $(document).ready(function() {
         var flagIssueLink = '<a href="RECORD_URL">'+jQuery.i18n.prop('search.js.flagissuelink')+'.</a>';
         flagIssueLink = flagIssueLink.replace('RECORD_URL', recordUrl);
         attribution += '<br>' + recordLink +
-                       '<br><br>' + jQuery.i18n.prop('search.js.imageattribution.01') + '<br>' + jQuery.i18n.prop('search.js.imageattribution.02') + '<br>' + jQuery.i18n.prop('search.js.imageattribution.03') + flagIssueLink + '<br>';
+                       '<br><br>' + jQuery.i18n.prop('search.js.imageattribution.01') + '<br>' + jQuery.i18n.prop('search.js.imageattribution.02') + '<br>' + jQuery.i18n.prop('search.js.imageattribution.03') + " " + flagIssueLink + '<br>';
         setDialogSize();
         $('#imageDialog').modal('show');
     });
@@ -844,7 +844,8 @@ function loadAllCharts() {
         displayRecordsUrl: BC_CONF.serverName
     };
 
-    if(dynamicFacets !== undefined){
+    //if(dynamicFacets !== undefined){
+    /*if (dynamicFacets){
         var chartsConfigUri = BC_CONF.biocacheServiceUrl + "/upload/charts/" + BC_CONF.selectedDataResource + ".json";
         $.getJSON(chartsConfigUri, function(chartsConfig) {
 
@@ -865,7 +866,8 @@ function loadAllCharts() {
         });
     } else {
         loadFacetCharts(facetChartOptions);
-    }
+    }*/
+    loadFacetCharts(facetChartOptions);
     taxonomyChart.load(taxonomyChartOptions);
 }
 
@@ -903,7 +905,7 @@ function loadImages(start) {
                     //link.attr('id','thumb_' + category + i);
                     link.addClass('thumbImage tooltips');
                     link.attr('href', BC_CONF.contextPath + "/occurrences/" + el.uuid);
-                    link.attr('title', 'click to enlarge');
+                    link.attr('title', jQuery.i18n.prop('search.js.enlargeimg'));
                     link.attr('data-occurrenceuid', el.uuid);
                     link.attr('data-image-id', el.image);
                     link.attr('scientific-name', el.raw_scientificName);
