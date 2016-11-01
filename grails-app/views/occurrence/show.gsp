@@ -185,7 +185,7 @@
                 <div id="content2Z" class="span8">
                     <div class="text-right">
                         <button href="#processedVsRawView" class="btn" id="showRawProcessed" role="button" data-toggle="modal"
-                                title="Table showing both original and processed record values">
+                                title="${g.message(code:'show.processedvsrawview.title',default:'Table showing both original and processed record values')}">
                             <span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="Xicon-th"></i>
                                 <g:message code="show.sidebar02.showrawprocessed.span" default="View original vs processed values"/></span>
                         </button>
