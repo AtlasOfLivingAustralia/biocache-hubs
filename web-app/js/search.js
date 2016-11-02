@@ -816,11 +816,11 @@ function removeFilter(el) {
  * Load the default charts
  */
 function loadDefaultCharts() {
-    if (dynamicFacets) {
+    if (dynamicFacets && dynamicFacets.length > 0) {
         var chartsConfigUri = BC_CONF.biocacheServiceUrl + "/upload/charts/" + BC_CONF.selectedDataResource + ".json";
         $.getJSON(chartsConfigUri, function (chartsConfig) {
 
-            console.log("Number of dynamic charts to render: " + chartsConfig.length);
+            //console.log("Number of dynamic charts to render: " + chartsConfig.length, dynamicFacets);
 
             var conf = {}
 
