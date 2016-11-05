@@ -26,6 +26,8 @@ class WebServicesService {
     public static final String CONTEXTUAL = "Contextual"
     def grailsApplication, facetsCacheServiceBean
 
+    Map cachedGroupedFacets = [:] // keep a copy in case method throws an exception and then blats the saved version
+
     @PostConstruct
     def init(){
         facetsCacheServiceBean = grailsApplication.mainContext.getBean('facetsCacheService')
@@ -139,8 +141,11 @@ class WebServicesService {
                 groupedMap.put(group.title, group.facets.collect { it.field })
             }
 
+            cachedGroupedFacets = deepCopy(groupedMap) // keep a deep copy
+
         } catch (Exception e) {
-            log.debug "$e"
+            log.warn "grouped facets failed to load: $e", e
+            groupedMap = cachedGroupedFacets // fallback to saved copy
         }
 
         groupedMap
@@ -484,5 +489,22 @@ class WebServicesService {
                         "detail: " + conn?.errorStream?.text
             throw new RestClientException(error) // exception will result in no caching as opposed to returning null
         }
+    }
+
+    /**
+     * Standard deep copy implementation
+     *
+     * Taken from http://stackoverflow.com/a/13155429/249327
+     *
+     * @param orig
+     * @return
+     */
+    private def deepCopy(orig) {
+        def bos = new ByteArrayOutputStream()
+        def oos = new ObjectOutputStream(bos)
+        oos.writeObject(orig); oos.flush()
+        def bin = new ByteArrayInputStream(bos.toByteArray())
+        def ois = new ObjectInputStream(bin)
+        return ois.readObject()
     }
 }

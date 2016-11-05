@@ -78,6 +78,10 @@ from the ALA biocache-service app (no local DB is required for this app).
                     timeToLiveSeconds 3600
                 }
                 cache {
+                    name 'shortTermCache' // mostly used for testing
+                    timeToLiveSeconds (60)
+                }
+                cache {
                     name 'collectoryCache'
                     timeToLiveSeconds (3600 * 4)
                 }
