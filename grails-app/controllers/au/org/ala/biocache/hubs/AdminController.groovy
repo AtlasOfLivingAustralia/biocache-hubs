@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.InitBinder
 import java.text.SimpleDateFormat
 
 /**
- * Admin functions - should be protected by login and ROLE_ADMIN or equil.
+ * Admin functions - should be protected by login and ROLE_ADMIN or equiv.
  */
 class AdminController {
     def scaffold = true
