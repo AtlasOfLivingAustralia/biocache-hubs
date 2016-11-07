@@ -24,6 +24,10 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
+        // single global var for app conf settings
+        <g:set var="fqParamsSingleQ" value="${(params.fq) ? ' AND ' + params.list('fq')?.join(' AND ') : ''}"/>
+        <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
+        <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
         var BC_CONF = {
             contextPath: "${request.contextPath}",
             serverName: "${grailsApplication.config.serverName}${request.contextPath}",
@@ -65,11 +69,6 @@
         <r:require module="bieAutocomplete"/>
     </g:if>
     <script type="text/javascript">
-        // single global var for app conf settings
-        <g:set var="fqParamsSingleQ" value="${(params.fq) ? ' AND ' + params.list('fq')?.join(' AND ') : ''}"/>
-        <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
-        <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
-
         <g:if test="${!grailsApplication.config.google.apikey}">
             google.load('maps','3.5',{ other_params: "sensor=false" });
         </g:if>
