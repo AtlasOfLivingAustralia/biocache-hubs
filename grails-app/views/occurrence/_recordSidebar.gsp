@@ -1,7 +1,7 @@
 <g:if test="${isUnderCas && !isReadOnly && record.processed.attribution.provenance != 'Draft'}">
     <div class="sidebar" style="float:left;">
         <button class="btn" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="${g.message(code: 'show.button.assertionbuton.title', default: 'report a problem or suggest a correction for this record')}">
-            <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="icon-flag"></i> <g:message code="show.button.assertionbutton.span" default="Flag an issue"/></span>
+            <span id="loginOrFlagSpan" title="${g.message(code:'show.button.assertionbutton.span')}" class=""><i class="icon-flag"></i> <g:message code="show.button.assertionbutton.span" default="Flag an issue"/></span>
         </button>
         <div id="loginOrFlag" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true"><!-- BS modal div -->
             <div class="modal-header">

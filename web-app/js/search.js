@@ -184,7 +184,7 @@ $(document).ready(function() {
             // reload page
             document.location.reload(true);
         } else {
-            alert("Please select at least 1 filter category to display");
+            alert(jQuery.i18n.prop('search.js.filter.noselectedfacets'));
         }
 
     });

@@ -286,10 +286,10 @@ a.colour-by-legend-toggle {
 
         },
         baseLayers : {
-            "Minimal" : defaultBaseLayer,
-            "Road" :  new L.Google('ROADMAP'),
-            "Terrain" : new L.Google('TERRAIN'),
-            "Satellite" : new L.Google('HYBRID')
+            "${g.message(code: 'map.baselayer.minimal')}" : defaultBaseLayer,
+            "${g.message(code: 'map.baselayer.road')}" :  new L.Google('ROADMAP'),
+            "${g.message(code: 'map.baselayer.terrain')}" : new L.Google('TERRAIN'),
+            "${g.message(code: 'map.baselayer.satellite')}" : new L.Google('HYBRID')
         },
         layerControl : null,
         currentLayers : [],
@@ -612,14 +612,15 @@ a.colour-by-legend-toggle {
                  addGridLegendItem();
              } else {
                 //update the legend
-                $('.legendTable').html('<tr><td>' + ${alatag.message(code:"map.loadinglegend", default:"Loading legend...")} + '</td></tr>');
+                %{--$('.legendTable').html("<tr><td><g:message code="map.loadinglegend" default="Loading legend..."/></td></tr>");--}%
+                $('.legendTable').html("<tr><td><g:message code="map.loadinglegend" default="Loading legend..."/></td></tr>");
                 $.ajax({
                     url: "${request.contextPath}/occurrence/legend" + MAP_VAR.query + "&cm=" + colourByFacet + "&type=application/json",
                     success: function(data) {
                         $('.legendTable').html('');
 
                         $.each(data, function(index, legendDef){
-                            var legItemName = legendDef.name ? legendDef.name : 'Not specified';
+                            var legItemName = legendDef.name ? legendDef.name : jQuery.i18n.prop('global.basisofrecord.NotSpecified');
                             addLegendItem(legItemName, legendDef.red,legendDef.green,legendDef.blue, legendDef );
                         });
 
@@ -671,7 +672,7 @@ a.colour-by-legend-toggle {
                     )
                     .append($('<span>')
                         .addClass('legendItemName')
-                        .html("All records")
+                        .html("${g.message(code:'map.legend.allrecords')}")
                     )
                 )
         );
