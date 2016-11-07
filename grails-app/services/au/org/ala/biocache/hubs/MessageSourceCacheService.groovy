@@ -24,4 +24,15 @@ class MessageSourceCacheService {
 
         messagesMap
     }
+
+    /**
+     * Trigger the message source cache to be reset (different to the @Cacheable cache)
+     * which effectively grabs a new copy from biocache-service (base properties) and then adds to that from the
+     * i18n messages in the local grails app.
+     *
+     * @return
+     */
+    def void clearMessageCache() {
+        messageSource.clearCache()
+    }
 }

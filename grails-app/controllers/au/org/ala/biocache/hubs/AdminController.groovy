@@ -15,7 +15,6 @@
 
 package au.org.ala.biocache.hubs
 
-import grails.plugin.cache.CacheEvict
 import grails.util.Environment
 import org.springframework.beans.propertyeditors.CustomDateEditor
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
@@ -30,6 +29,7 @@ import java.text.SimpleDateFormat
 class AdminController {
     def scaffold = true
     def facetsCacheService, outageService, authService, webServicesService
+    def messageSourceCacheService
     def beforeInterceptor = [action:this.&auth]
 
     /**
@@ -69,6 +69,7 @@ class AdminController {
         message += webServicesService.doClearCollectoryCache()
         message += webServicesService.doClearLongTermCache()
         message += doClearFacetsCache()
+        message += doClearPropertiesCache()
         message
     }
 
@@ -87,9 +88,19 @@ class AdminController {
         redirect(action:'index')
     }
 
+    def clearPropertiesCache() {
+        flash.message = doClearPropertiesCache()
+        redirect(action:'index')
+    }
+
     def doClearFacetsCache() {
         facetsCacheService.clearCache()
         "facetsCache cache cleared\n"
+    }
+
+    def doClearPropertiesCache() {
+        messageSourceCacheService.clearMessageCache()
+        "i18n messages cache cleared\n"
     }
 
     /**

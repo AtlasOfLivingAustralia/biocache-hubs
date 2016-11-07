@@ -60,6 +60,7 @@
             <a href="${g.createLink(action:'clearCollectoryCache')}" class="btn">Clear collectory cache</a>
             <a href="${g.createLink(action:'clearFacetsCache')}" class="btn">Clear facets cache</a>
             <a href="${g.createLink(action:'clearLongTermCache')}" class="btn">Clear long term cache</a>
+            <a href="${g.createLink(action:'clearPropertiesCache')}" class="btn">Clear i18n messages cache</a>
         </div>
     </div>
 </div>
