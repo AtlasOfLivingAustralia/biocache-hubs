@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+ %{-- TODO move to CSS style sheet and reference via application resources --}%
 <style type="text/css">
 
 #leafletMap {
@@ -349,7 +350,8 @@ a.colour-by-legend-toggle {
             fullscreenControl: true,
             fullscreenControlOptions: {
                 position: 'topleft'
-            }
+            },
+            worldCopyJump: true
         });
 
         //add edit drawing toolbar
@@ -817,10 +819,11 @@ a.colour-by-legend-toggle {
             url: MAP_VAR.mappingUrl + "/occurrences/info" + mapQuery + MAP_VAR.removeFqs,
             jsonp: "callback",
             dataType: "jsonp",
+            timeout: 30000,
             data: {
                 zoom: MAP_VAR.map.getZoom(),
-                lat: e.latlng.lat,
-                lon: e.latlng.lng,
+                lat: e.latlng.wrap().lat,
+                lon: e.latlng.wrap().lng,
                 radius: radius,
                 format: "json"
             },
@@ -830,15 +833,16 @@ a.colour-by-legend-toggle {
                 if (response.occurrences && response.occurrences.length > 0) {
 
                     MAP_VAR.recordList = response.occurrences; // store the list of record uuids
-                    MAP_VAR.popupLatlng = e.latlng; // store the coordinates of the mouse click for the popup
+                    MAP_VAR.popupLatlng = e.latlng.wrap(); // store the coordinates of the mouse click for the popup
 
                     // Load the first record details into popup
                     insertRecordInfo(0);
                 }
             },
-            error: function() {
+            error: function(x, t, m) {
                 MAP_VAR.map.spin(false);
-            }
+            },
+
         });
     }
 
