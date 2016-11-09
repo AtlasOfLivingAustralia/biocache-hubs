@@ -1088,7 +1088,12 @@ a.colour-by-legend-toggle {
       var link = document.createElement("a");
       link.download = name;
       link.href = uri;
+      //console.log("downloadPolygon",link);
+      document.body.appendChild(link);
       link.click();
+      // Cleanup the DOM
+      document.body.removeChild(link);
+      delete link;
       return false;
     }
 </r:script>
