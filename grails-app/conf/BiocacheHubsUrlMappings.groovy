@@ -8,7 +8,7 @@ class BiocacheHubsUrlMappings {
         "/occurrences/search"(controller: 'occurrence', action: 'list')
         "/occurrence/search"(controller: 'occurrence', action: 'list')
         "/occurrences/search/taxa"(controller: 'occurrence', action: 'taxaPost')
-        "/occurrences/taxa/$id"(controller: 'occurrence', action: 'taxa')
+        "/occurrences/taxa/$id**"(controller: 'occurrence', action: 'taxa')
         "/occurrences/assertions/add"(controller: 'assertions', action: 'addAssertion')
         "/occurrences/assertions/delete"(controller: 'assertions', action: 'deleteAssertion')
         "/occurrences/index"(controller: 'occurrence', action: 'index')
