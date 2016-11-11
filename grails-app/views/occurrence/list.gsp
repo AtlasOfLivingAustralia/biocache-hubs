@@ -39,6 +39,7 @@
             bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
             collectoryUrl: "${grailsApplication.config.collectory.baseUrl}",
+            alertsUrl: "${grailsApplication.config.alerts.baseUrl}",
             skin: "${grailsApplication.config.skin.layout}",
             defaultListView: "${grailsApplication.config.defaultListView}",
             resourceName: "${grailsApplication.config.skin.orgNameLong}",
@@ -278,7 +279,7 @@
                                    class="btn tooltips" title="Notify me when new annotations (corrections, comments, etc) come online for this search"><g:message code="list.alert.navigator02" default="Get email alerts for new annotations"/></a>
                             </div>
                             <p>&nbsp;</p>
-                            <p><a href="http://alerts.ala.org.au/notification/myAlerts"><g:message code="list.alert.navigator03" default="View your current alerts"/></a></p>
+                            <p><a href="${grailsApplication.config.alerts.baseUrl}/notification/myAlerts"><g:message code="list.alert.navigator03" default="View your current alerts"/></a></p>
                         </div>
                         <div class="modal-footer">
                             <button class="btn" data-dismiss="modal" aria-hidden="true"><g:message code="list.alert.button01" default="Close"/></button>

@@ -502,21 +502,19 @@ $(document).ready(function() {
     });
 
     // Email alert buttons
-    var alertsUrlPrefix = "http://alerts.ala.org.au/ws/";
+    var alertsUrlPrefix = BC_CONF.alertsUrl || "http://alerts.ala.org.au";
     $("a#alertNewRecords, a#alertNewAnnotations").click(function(e) {
         e.preventDefault();
         var query = $("<p>"+BC_CONF.queryString+"</p>").text(); // strips <span> from string
-        var fqueries = [];
-        var fqtext = $("span.activeFq").each(function() { fqueries.push($(this).text()); });
-        if (fqtext) {
-            var fqueryString = fqueries.join("; ");
+        var fqArray = decodeURIComponent(BC_CONF.facetQueries).split('&fq=').filter(function(e){ return e === 0 || e }); // remove empty elements
+        if (fqArray) {
+            var fqueryString = fqArray.join("; ");
             if(fqueryString.length > 0){
                 query += " (" + fqueryString + ")"; // append the fq queries to queryString
             }
         }
-        //console.log("fqueries",fqueries, query);
         var methodName = $(this).data("method");
-        var url = alertsUrlPrefix + methodName + "?";
+        var url = alertsUrlPrefix + "/ws/" + methodName + "?";
         url += "queryDisplayName="+encodeURIComponent(query);
         url += "&baseUrlForWS=" + encodeURIComponent(BC_CONF.biocacheServiceUrl.replace(/\/ws$/,""));
         url += "&baseUrlForUI=" + encodeURIComponent(BC_CONF.serverName);
