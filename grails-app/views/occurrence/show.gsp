@@ -79,42 +79,7 @@
             </g:if>
         }); // end $(document).ready()
 
-        function renderOutlierCharts(data){
-            var chartQuery = null;
 
-            if (OCC_REC.taxonRank  == 'species') {
-                chartQuery = 'species_guid:' + OCC_REC.taxonConceptID.replace(/:/,'\:');
-            } else if (OCC_REC.taxonRank  == 'subspecies') {
-                chartQuery = 'species_guid:' + OCC_REC.taxonConceptID.replace(/:/,'\:');
-            }
-
-            if(chartQuery != null){
-                $.each(data, function() {
-                    drawChart(this.layerId, chartQuery, this.layerId, this.outlierValues, this.recordLayerValue, false);
-                    drawChart(this.layerId, chartQuery, this.layerId, this.outlierValues, this.recordLayerValue, true);
-                })
-            }
-        }
-
-        function drawChart(facetName, biocacheQuery, chartName, outlierValues, valueForThisRecord, cumulative){
-
-            var facetChartOptions = { error: "badQuery", legend: 'right'}
-            facetChartOptions.query = biocacheQuery;
-            facetChartOptions.charts = [chartName];
-            facetChartOptions.width = "75%";
-            facetChartOptions[facetName] = {chartType: 'scatter'};
-            facetChartOptions.biocacheServicesUrl = "${alatag.getBiocacheAjaxUrl()}";
-            facetChartOptions.displayRecordsUrl = "${grailsApplication.config.grails.serverURL}";
-
-            //additional config
-            facetChartOptions.cumulative = cumulative;
-            facetChartOptions.outlierValues = outlierValues;    //retrieved from WS
-            facetChartOptions.highlightedValue = valueForThisRecord;           //retrieved from the record
-
-            //console.log('Start the drawing...' + chartName, facetChartOptions);
-            facetChartGroup.loadAndDrawFacetCharts(facetChartOptions);
-            //console.log('Finished the drawing...' + chartName);
-        }
 
     </r:script>
 
@@ -272,8 +237,6 @@
                 </div>
             </g:if>
 
-            <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts"></script>
-
             <div id="userAnnotationsDiv" class="additionalData">
                 <h2><g:message code="show.userannotationsdiv.title" default="User flagged issues"/><a id="userAnnotations">&nbsp;</a></h2>
                 <h4><g:message code="user.assertion.status" default="User Assertion Status"/>: <i><span id="userAssertionStatus"></span></i></h4>
@@ -391,6 +354,47 @@
                         </p>
                     </div>
                     <div id="charts" style="margin-top:20px;"></div>
+                    <script>
+                        function renderOutlierCharts(data){
+                            var chartQuery = null;
+
+                            if (OCC_REC.taxonRank  == 'species') {
+                                chartQuery = 'species_guid:' + OCC_REC.taxonConceptID.replace(/:/,'\:');
+                            } else if (OCC_REC.taxonRank  == 'subspecies') {
+                                chartQuery = 'species_guid:' + OCC_REC.taxonConceptID.replace(/:/,'\:');
+                            }
+
+                            if(chartQuery != null){
+                                $.each(data, function() {
+                                    drawChart(this.layerId, chartQuery, this.layerId, this.outlierValues, this.recordLayerValue, false);
+                                    drawChart(this.layerId, chartQuery, this.layerId, this.outlierValues, this.recordLayerValue, true);
+                                })
+                            }
+                        }
+
+                        function drawChart(facetName, biocacheQuery, chartName, outlierValues, valueForThisRecord, cumulative){
+
+                            var facetChartOptions = { error: "badQuery", legend: 'right'}
+                            facetChartOptions.query = biocacheQuery;
+                            facetChartOptions.charts = [chartName];
+                            facetChartOptions.width = "75%";
+                            facetChartOptions.chartsDiv = "charts";
+                            facetChartOptions[facetName] = {chartType: 'scatter'};
+                            facetChartOptions.biocacheServicesUrl = "${alatag.getBiocacheAjaxUrl()}";
+                            facetChartOptions.displayRecordsUrl = "${grailsApplication.config.grails.serverURL}";
+
+                            //additional config
+                            facetChartOptions.cumulative = cumulative;
+                            facetChartOptions.outlierValues = outlierValues;    //retrieved from WS
+                            facetChartOptions.highlightedValue = valueForThisRecord;           //retrieved from the record
+
+                            //console.log('Start the drawing...' + chartName;
+                            facetChartGroup.loadAndDrawFacetCharts(facetChartOptions);
+                            //console.log('Finished the drawing...' + chartName);
+                        }
+                    </script>
+                    <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts"></script>
+
                 </g:if>
 
 				<g:if test="${record.processed.occurrence.duplicationStatus}">

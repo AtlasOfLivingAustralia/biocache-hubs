@@ -558,13 +558,13 @@ var facetChartGroup = {
         // the base url for getting the facet data
         var url = (options.biocacheServicesUrl == undefined) ? baseFacetChart.biocacheServicesUrl : options.biocacheServicesUrl,
 
-            facets = "",
+        facets = "",
 
         // calc the target div
-            chartsDiv = $('#' + (options.chartsDiv ? options.chartsDiv : baseFacetChart.chartsDiv)),
+        chartsDiv = $('#' + (options.chartsDiv ? options.chartsDiv : baseFacetChart.chartsDiv)),
 
         // reference to this that we can use in callbacks
-            that = this;
+        that = this;
 
         // build facets list
         $.each(options.charts, function(i,name) {
