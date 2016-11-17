@@ -581,13 +581,16 @@ $(document).ready(function() {
     });
 
 
-    var imageId, attribution, recordUrl, scientificName;
+    var imageId, attribution, recordUrl, scientificName, imageUrl, image;
     // Lightbox
     $(document).delegate('.thumbImage', 'click', function(event) {
+
         var recordLink = '<a href="RECORD_URL">View details of this record</a>'
         event.preventDefault();
         imageId = $(this).attr('data-image-id');
         scientificName = $(this).attr('data-scientific-name');
+        image = $(this).find('img');
+        imageUrl = image.attr('src');
         attribution = $(this).find('.meta.detail').html();
         recordUrl = $(this).attr('href');
         recordLink = recordLink.replace('RECORD_URL', recordUrl);
@@ -612,6 +615,8 @@ $(document).ready(function() {
             addPreferenceButton: BC_CONF.addPreferenceButton,
             attribution: attribution,
             disableLikeDislikeButton: BC_CONF.disableLikeDislikeButton,
+            imageUrl: imageUrl,
+            showOnlyImage: BC_CONF.showOnlyImage,
             likeUrl: BC_CONF.likeUrl + '?id=' + imageId,
             dislikeUrl: BC_CONF.dislikeUrl + '?id=' + imageId,
             userRatingUrl: BC_CONF.userRatingUrl + '?id=' + imageId,

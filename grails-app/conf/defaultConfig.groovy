@@ -115,3 +115,6 @@ suppressIssues = "" // "missingCoordinatePrecision"
 sensitiveDataset.list = ""
 
 table.displayDynamicProperties = false
+
+// flag to set when image service does not exist and image url is known.
+showImageFromUrl = true
