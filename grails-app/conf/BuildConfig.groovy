@@ -57,5 +57,6 @@ grails.project.dependency.resolution = {
         runtime ":release:3.0.1"
         runtime ":ala-charts-plugin:1.2-SNAPSHOT"
         compile ":images-client-plugin:0.7.7-SNAPSHOT"
+        compile ":geoip:0.3.3"
     }
 }

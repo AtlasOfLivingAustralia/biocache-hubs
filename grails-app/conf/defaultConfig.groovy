@@ -86,6 +86,7 @@ dwc.exclude = "dataHubUid,dataProviderUid,institutionUid,year,month,day,modified
 exploreYourArea.lat = "-35.0"
 exploreYourArea.lng = "149.0"
 exploreYourArea.location = "Canberra, ACT"
+exploreYourArea.zoomLevels = [ 1: 14, 5: 12, 10: 11, 50: 9 ]
 
 facets.includeDynamicFacets = "false" // sandbox
 facets.limit = "100"
@@ -111,7 +112,12 @@ map.minimal.subdomains = "abcd"
 //map.mapbox.id = "nickdos.kf2g7gpb" // http://mapbox.com/ Registered by Nick - free to use so anyone can create a new one and add it here
 //map.mapbox.token = "pk.eyJ1Ijoibmlja2RvcyIsImEiOiJ2V2dBdEg0In0.Ep2VyMOaOUnOwN1ZVa9uyQ"
 
+
 suppressIssues = "" // "missingCoordinatePrecision"
 sensitiveDataset.list = ""
 
 table.displayDynamicProperties = false
+// GeoIP plugin conf
+grails.plugin.geoip.data.cache=0
+//grails.plugin.geoip.data.resource = '/data/maxmind/GeoLiteCity.dat'
+grails.plugin.geoip.data.path="/data/${grails.util.Metadata.current.'app.name'}/config/GeoLiteCity.dat"
