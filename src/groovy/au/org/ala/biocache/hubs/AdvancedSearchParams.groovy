@@ -74,7 +74,7 @@ class AdvancedSearchParams {
     private final String QUOTE = "\""
 
     /**
-     * This custom toString method outputs a valid SOLR query (q param value).
+     * This custom toString method outputs a valid /occurrence/search query string.
      *
      * @return q
      */
@@ -126,10 +126,15 @@ class AdvancedSearchParams {
 
         if (taxas) {
             log.debug "taxas = ${taxas} || nameType = ${nameType}"
-            // build up OR'ed taxa query with braces if more than one taxon
-            q.append(" ").append(braces[0]).append(nameType).append(":")
-            q.append(StringUtils.join(taxas, " OR " + nameType + ":")).append(braces[1])
-            log.debug "q = ${q}"
+
+            if (nameType == "taxa") {
+                // special case
+                taxa = StringUtils.join(taxas*.trim(), " OR " ).replaceAll('"','') // remove quotes which break the "taxa=foo bar" query type
+            } else {
+                // build up OR'ed taxa query with braces if more than one taxon
+                q.append(" ").append(braces[0]).append(nameType).append(":")
+                q.append(StringUtils.join(taxas, " OR " + nameType + ":")).append(braces[1])
+            }
         }
 
         // TODO: deprecate this code (?)
@@ -178,20 +183,20 @@ class AdvancedSearchParams {
             q.append(" year:").append(value)
         }
 
-        String finalQuery = ""
+        String encodedQ = q.toString().trim()
+        String encodedTaxa = taxa.trim()
 
-        if (taxa) {
-            String query = URLEncoder.encode(q.toString().replace("?", ""))
-            finalQuery = "taxa=" + taxa + "&q=" + query
-        } else {
-            try {
-                finalQuery = "q=" + URIUtil.encodeWithinQuery(q.toString().trim()); //URLEncoder.encode(q.toString().trim()); // TODO: use non-deprecated version with UTF-8
-            } catch (URIException ex) {
-                log.error("URIUtil error: " + ex.getMessage(), ex)
-                finalQuery = "q=" + q.toString().trim(); // fall back
-            }
+        try {
+            // attempt to do query encoding
+            encodedQ = URIUtil.encodeWithinQuery(q.toString().trim().replaceFirst("?", ""))
+            encodedTaxa = URIUtil.encodeWithinQuery(taxa.trim())
+        } catch (URIException ex) {
+            log.error("URIUtil error: " + ex.getMessage(), ex)
         }
+
+        String finalQuery = ((taxa) ? "taxa=" + encodedTaxa + "&" : "") + ((encodedQ) ? "q=" + encodedQ : "")
         log.debug("query: " + finalQuery)
+
         return finalQuery
     }
 

@@ -67,15 +67,15 @@ class OccurrenceController {
 
         List taxaQueries = (ArrayList<String>) params.list("taxa") // will be list for even one instance
         log.debug "skin.useAlaBie = ${grailsApplication.config.skin.useAlaBie}"
+        log.debug "taxaQueries = ${taxaQueries} || q = ${requestParams.q}"
 
         if (grailsApplication.config.skin.useAlaBie?.toBoolean() &&
-                grailsApplication.config.bie.baseUrl &&
-                !params.q &&
-                taxaQueries &&
-                taxaQueries[0]) { // check for list with empty string
-            // taxa query - attempt GUID lookup via BIE
+                grailsApplication.config.bie.baseUrl && taxaQueries && taxaQueries[0]) {
+            // check for list with empty string
+            // taxa query - attempt GUID lookup
             List guidsForTaxa = webServicesService.getGuidsForTaxa(taxaQueries)
-            requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, guidsForTaxa)
+            def additionalQ = (params.q) ? " AND " + params.q : "" // advanced search form can provide both taxa and q params
+            requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, guidsForTaxa) + additionalQ
         } else if (!params.q && taxaQueries && taxaQueries[0]) {
             // Bypass BIE lookup and pass taxa query in as text
             List emptyGuidList = taxaQueries.clone().collect { it = ""} // list of empty strings, of equal size to taxaQueries
