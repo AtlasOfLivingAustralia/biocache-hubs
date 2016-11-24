@@ -23,7 +23,9 @@ import grails.util.Environment
 
 class OccurrenceTagLib {
     // injected beans
-    def webServicesService, authService, outageService, messageSourceCacheService
+    def authService
+    def webServicesService
+    def messageSourceCacheService
     def userService
 
     //static defaultEncodeAs = 'html'
@@ -713,10 +715,10 @@ class OccurrenceTagLib {
      * Display an outage banner
      */
     def outageBanner = { attrs ->
-        OutageBanner ob = outageService.getOutageBanner()
+        def message = "Outage banner no longer supported - please use ala-admin-plugin tag - <code>&lt;ala:systemMessage/&gt;</code> and remove <code>&lt;alatag:outageBanner/&gt;</code>"
 
-        if (ob.showBanner()) {
-            out << "<div id='outageMessage'>" + ob.message + "</div>"
+        if (message) {
+            out << "<div id='outageMessage'>" + message + "</div>"
         }
     }
 
