@@ -116,6 +116,9 @@
 </div><!--/.navbar -->
 
 <div class="container" id="main-content">
+    <plugin:isAvailable name="alaAdminPlugin">
+        <ala:systemMessage/>
+    </plugin:isAvailable>
     <g:layoutBody />
 </div><!--/.container-->
 
