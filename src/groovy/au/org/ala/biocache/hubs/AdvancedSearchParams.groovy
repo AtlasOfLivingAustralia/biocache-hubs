@@ -188,7 +188,7 @@ class AdvancedSearchParams {
 
         try {
             // attempt to do query encoding
-            encodedQ = URIUtil.encodeWithinQuery(q.toString().trim().replaceFirst("?", ""))
+            encodedQ = URIUtil.encodeWithinQuery(q.toString().trim().replaceFirst("\\?", ""))
             encodedTaxa = URIUtil.encodeWithinQuery(taxa.trim())
         } catch (URIException ex) {
             log.error("URIUtil error: " + ex.getMessage(), ex)
