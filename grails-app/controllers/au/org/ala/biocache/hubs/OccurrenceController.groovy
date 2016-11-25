@@ -292,7 +292,8 @@ class OccurrenceController {
     }
 
     /**
-     * Explore your area page
+     * Explore your area page.
+     * Uses https://dev.maxmind.com/geoip/legacy/install/city/
      *
      * @return
      */
@@ -304,6 +305,7 @@ class OccurrenceController {
 
         if (!(lat && lng)) {
             // try to determine lat/lng from IP address via lookup with MaxMind GeoLiteCity.dat
+            // Download from http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
             def ipAddress = geoIpService.getIpAddress(request)
             def location = geoIpService.getLocation(ipAddress)
             log.debug "IP = ${ipAddress} || location = ${location}"
