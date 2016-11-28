@@ -20,7 +20,6 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
 import au.org.ala.web.CASRoles
-import org.grails.plugin.geoip.GeoIpService
 
 import java.text.SimpleDateFormat
 /**
