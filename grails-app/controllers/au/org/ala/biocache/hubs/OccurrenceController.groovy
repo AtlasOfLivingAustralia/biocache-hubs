@@ -15,13 +15,11 @@
 
 package au.org.ala.biocache.hubs
 
-import com.maxmind.geoip.Location
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
 import au.org.ala.web.CASRoles
-import org.grails.plugin.geoip.GeoIpService
 
 import java.text.SimpleDateFormat
 /**
@@ -30,7 +28,6 @@ import java.text.SimpleDateFormat
 class OccurrenceController {
 
     def webServicesService, facetsCacheService, postProcessingService, authService
-    def GeoIpService geoIpService
     def ENVIRO_LAYER = "el"
     def CONTEXT_LAYER = "cl"
 
@@ -292,34 +289,17 @@ class OccurrenceController {
     }
 
     /**
-     * Explore your area page
+     * Explore your area page.
      *
      * @return
      */
     def exploreYourArea() {
         def radius = params.radius?:5
         Map radiusToZoomLevelMap = grailsApplication.config.exploreYourArea.zoomLevels // zoom levels for the various radius sizes
-        def lat = params.latitude
-        def lng = params.longitude
-
-        if (!(lat && lng)) {
-            // try to determine lat/lng from IP address via lookup with MaxMind GeoLiteCity.dat
-            def ipAddress = geoIpService.getIpAddress(request)
-            def location = geoIpService.getLocation(ipAddress)
-            log.debug "IP = ${ipAddress} || location = ${location}"
-            if (location) {
-                lat = location.latitude
-                lng = location.longitude
-            } else if (grailsApplication.config.exploreYourArea) {
-                // fallback to hard coded default values in config
-                lat = grailsApplication.config.exploreYourArea.lat
-                lng = grailsApplication.config.exploreYourArea.lng
-            }
-        }
 
         [
-                latitude: lat,
-                longitude: lng,
+                latitude: params.latitude?:grailsApplication.config.exploreYourArea.lat,
+                longitude: params.longitude?:grailsApplication.config.exploreYourArea.lng,
                 radius: radius,
                 zoom: radiusToZoomLevelMap.get(radius),
                 location: grailsApplication.config.exploreYourArea.location,
