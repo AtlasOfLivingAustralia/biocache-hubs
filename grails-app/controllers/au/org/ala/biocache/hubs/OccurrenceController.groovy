@@ -214,7 +214,7 @@ class OccurrenceController {
                 if (userHasRoleAdmin) {
                   isCollectionAdmin = true
                 } else {
-                    if (contacts != null && contacts.size() > 0) {
+                    if (userEmail && contacts != null && contacts.size() > 0) {
                         for (int i = 0; i < contacts.size(); i++) {
                             if (contacts.get(i).editor == true && userEmail.equalsIgnoreCase(contacts.get(i).contact.email)) {
                                 isCollectionAdmin = true;
