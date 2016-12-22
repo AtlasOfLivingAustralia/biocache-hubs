@@ -240,9 +240,9 @@ class WebServicesService {
                 subset.units = it.environmentalvalueunits
 
                 if (it.type == ENVIRONMENTAL) {
-                    layersMetaMap.put("el" + it.uid.trim(), subset)
+                    layersMetaMap.put("el" + it.id, subset)
                 } else if (it.type == CONTEXTUAL) {
-                    layersMetaMap.put("cl" + it.uid.trim(), subset)
+                    layersMetaMap.put("cl" + it.id, subset)
                 }
             }
         } catch (RestClientException rce) {
