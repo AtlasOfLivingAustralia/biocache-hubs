@@ -409,7 +409,7 @@ class OccurrenceTagLib {
                                 b(group.key)
                             }
                         }
-                        td(alatag.camelCaseToHuman(text: field.name))
+                        td(alatag.databaseFieldName(text: field.name))
                         td(field.raw)
                         td(field.processed)
                     }
@@ -429,6 +429,19 @@ class OccurrenceTagLib {
         String text = attrs.text
         text = text.replaceAll(/([a-z])([A-Z])/, '$1 $2').toLowerCase().capitalize()
         out << text.replaceAll("_", " ")
+    }
+
+    /**
+     * Database field names align with download field names so they be in i18n with or without .p appended.
+     *
+     * Download field name values in i18n may end with a distinction between raw and processed that occurs after '-'
+     *
+     * @attr text REQUIRED the input text
+     */
+    def databaseFieldName = { attrs ->
+        String text = attrs.text
+        text = alatag.message(code:text, default: alatag.message(code:text + '.p', default:alatag.camelCaseToHuman(text: text)))
+        out << text.replaceAll(/-.*/, '')
     }
 
     /**

@@ -1006,14 +1006,22 @@ a.colour-by-legend-toggle {
                     var mapBounds = MAP_VAR.map.getBounds();
 
                     if (mapBounds && mapBounds.contains(sw) && mapBounds.contains(ne) && dataBounds) {
-                        // data bounds is smaller than all of Aust
-                        //console.log("smaller bounds",dataBounds,mapBounds)
+                        // data bounds is smaller than the default map bounds/view, so zoom into fit data
                         MAP_VAR.map.fitBounds(dataBounds);
 
                         if (MAP_VAR.map.getZoom() > 15) {
                             MAP_VAR.map.setZoom(15);
                         }
+                    } else if (!mapBounds.contains(dataBounds) && !mapBounds.intersects(dataBounds)) {
+                        // if data is not present in the default map bounds/view, then zoom to data
+                        MAP_VAR.map.fitBounds(dataBounds);
+                        if (MAP_VAR.map.getZoom() > 3) {
+                            MAP_VAR.map.setZoom(3);
+                        }
                     } else if (MAP_VAR.zoomOutsideScopedRegion) {
+                        // if data is present in default map view but also outside that area, then zoom to data bounds
+                        // as long as zoomOutsideScopedRegion is true, otherwise keep default zoom/bounds
+
                         // fitBounds is async so we set a one time only listener to detect change
                         MAP_VAR.map.once('zoomend', function() {
                             //console.log("zoomend", MAP_VAR.map.getZoom());
