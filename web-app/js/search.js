@@ -617,8 +617,7 @@ $(document).ready(function() {
             userRatingUrl: BC_CONF.userRatingUrl + '?id=' + imageId,
             userRatingHelpText: BC_CONF.userRatingHelpText.replace('RECORD_URL', recordUrl),
             savePreferredSpeciesListUrl: BC_CONF.savePreferredSpeciesListUrl + '?id=' + imageId + '&scientificName=' + scientificName,
-            getPreferredSpeciesListUrl: BC_CONF.getPreferredSpeciesListUrl,
-            getSpeciesListKvpUrl: BC_CONF.getSpeciesListKvpUrl
+            getPreferredSpeciesListUrl: BC_CONF.getPreferredSpeciesListUrl
         });
     });
 
