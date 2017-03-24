@@ -71,7 +71,7 @@ from the ALA biocache-service app (no local DB is required for this app).
         // EhCache settings
         if (!config.grails.cache.config) {
             config.grails.cache.config = {
-                defaults {1
+                defaults {
                     eternal false
                     overflowToDisk false
                     maxElementsInMemory 10000
@@ -98,7 +98,6 @@ from the ALA biocache-service app (no local DB is required for this app).
 
             config.grails.cache.config = config.grails.cache.config << {
                 defaults {
-                    1
                     eternal false
                     overflowToDisk false
                     maxElementsInMemory 10000
