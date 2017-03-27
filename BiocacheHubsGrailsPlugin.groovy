@@ -70,31 +70,34 @@ from the ALA biocache-service app (no local DB is required for this app).
 
         // EhCache settings
         if (!config.grails.cache.config) {
-            config.grails.cache.config = {
-                defaults {1
-                    eternal false
-                    overflowToDisk false
-                    maxElementsInMemory 10000
-                    timeToLiveSeconds 3600
-                }
-                cache {
-                    name 'shortTermCache' // mostly used for testing
-                    timeToLiveSeconds (60)
-                }
-                cache {
-                    name 'collectoryCache'
-                    timeToLiveSeconds (3600 * 4)
-                }
-                cache {
-                    name 'longTermCache'
-                    timeToLiveSeconds (3600 * 12)
-                }
-                cache {
-                    name 'outageCache'
-                    timeToLiveSeconds (3600 * 24 * 7)
-                }
+            config.grails.cache.config = {}
+        }
+
+        config.grails.cache.config = config.grails.cache.config << {
+            defaults {
+                eternal false
+                overflowToDisk false
+                maxElementsInMemory 10000
+                timeToLiveSeconds 3600
+            }
+            cache {
+                name 'shortTermCache' // mostly used for testing
+                timeToLiveSeconds(60)
+            }
+            cache {
+                name 'collectoryCache'
+                timeToLiveSeconds(3600 * 4)
+            }
+            cache {
+                name 'longTermCache'
+                timeToLiveSeconds(3600 * 12)
+            }
+            cache {
+                name 'outageCache'
+                timeToLiveSeconds(3600 * 24 * 7)
             }
         }
+
 
         // Apache proxyPass & cached-resources seems to mangle image URLs in plugins, so we exclude caching it
         application.config.grails.resources.mappers.hashandcache.excludes = ["**/images/*.*","**/eya-images/*.*"]
