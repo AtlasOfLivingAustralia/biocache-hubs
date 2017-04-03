@@ -122,3 +122,5 @@ table.displayDynamicProperties = false
 grails.plugin.geoip.data.cache=0
 //grails.plugin.geoip.data.resource = '/data/maxmind/GeoLiteCity.dat'
 grails.plugin.geoip.data.path="/data/${grails.util.Metadata.current.'app.name'}/config/GeoLiteCity.dat"
+
+fieldguide.url="http://fieldguide.ala.org.au"
