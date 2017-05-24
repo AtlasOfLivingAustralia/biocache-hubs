@@ -350,11 +350,11 @@ class OccurrenceController {
         //log.info "FG json = " + fg.getJson()
 
         try {
-            JSONElement fgPostObj = webServicesService.postJsonElements("http://fieldguide.ala.org.au/generate", fg.getJson())
+            JSONElement fgPostObj = webServicesService.postJsonElements(grailsApplication.config.fieldguide.url + "/generate", fg.getJson())
             //log.info "fgFileId = ${fgFileId}"
 
             if (fgPostObj.fileId) {
-                response.sendRedirect("http://fieldguide.ala.org.au/guide/"+fgPostObj.fileId)
+                response.sendRedirect(grailsApplication.config.fieldguide.url + "/guide/"+fgPostObj.fileId)
             } else {
                 flash.message = "No field guide found for requested taxa."
                 render view:'../error'
