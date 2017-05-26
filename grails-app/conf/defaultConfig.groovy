@@ -56,6 +56,7 @@ biocache.ajax.useProxy = false
 //biocache.groupedFacetsUrl = "${biocache.baseUrl}/search/grouped/facets" // optional - define in hub only
 collections.baseUrl = "http://collections.ala.org.au"
 alerts.baseUrl = "http://alerts.ala.org.au"
+speciesList.baseURL = "http://lists.ala.org.au"
 useDownloadPlugin = ""
 
 // for images-client-plugin
@@ -124,3 +125,5 @@ grails.plugin.geoip.data.cache=0
 grails.plugin.geoip.data.path="/data/${grails.util.Metadata.current.'app.name'}/config/GeoLiteCity.dat"
 
 fieldguide.url="http://fieldguide.ala.org.au"
+stateConservationListPath = [:] // to prevent NPE - set in ext config
+// example: stateConservationListPath.NewSouthWales = "/speciesListItem/list/dr650"

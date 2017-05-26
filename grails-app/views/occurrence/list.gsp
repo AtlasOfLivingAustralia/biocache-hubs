@@ -191,7 +191,7 @@
                 </g:if>
                 <g:if test="${grailsApplication.config.useDownloadPlugin?.toBoolean()}">
                     <div id="downloads" class="btn btn-primary pull-right">
-                        <a href="${g.createLink(uri: '/download')}?searchParams=${sr?.urlParameters?.encodeAsURL()}&targetUri=${(request.forwardURI)}"
+                        <a href="${g.createLink(uri: '/download')}?searchParams=${sr?.urlParameters?.encodeAsURL()}&targetUri=${(request.forwardURI)}&totalRecords=${sr.totalRecords}"
                            class="tooltips newDownload"
                            title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records"><i
                                 class="fa fa-download"></i>
@@ -288,10 +288,11 @@
                     </div><!-- /#alerts -->
                 </g:if>
 
-                <g:render template="download"/>
-                <div style="display:none">
+                <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
+                    <g:render template="download"/>
+                    <div style="display:none"> </div>
+                </g:if>
 
-                </div>
                 <div class="tabbable">
                     <ul class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a id="t1" href="#recordsView" data-toggle="tab"><g:message code="list.link.t1" default="Records"/></a></li>

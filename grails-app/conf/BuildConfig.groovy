@@ -52,7 +52,7 @@ grails.project.dependency.resolution = {
         compile ":cache-ehcache:1.0.0"
         compile ":rest:0.8"
         compile ":build-info:1.2.6"
-        runtime ":jquery:1.8.3"
+        runtime ":jquery:1.11.1"
         runtime ":resources:1.2.1"
         runtime ":release:3.0.1"
         runtime ":ala-admin-plugin:1.2"

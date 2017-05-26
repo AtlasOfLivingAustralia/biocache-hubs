@@ -206,9 +206,7 @@ class OccurrenceController {
                 }
 
                 String userEmail = authService?.getEmail()
-
                 Boolean isCollectionAdmin = false
-
                 Boolean userHasRoleAdmin = authService?.userInRole(CASRoles.ROLE_ADMIN)
 
                 if (userHasRoleAdmin) {
@@ -229,6 +227,7 @@ class OccurrenceController {
                         userId)
 
                 Map layersMetaData = webServicesService.getLayersMetaData()
+                compareRecord = postProcessingService.augmentRecord(compareRecord) // adds some links to certain fields, etc
 
                 [
                         record: record,
