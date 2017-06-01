@@ -431,7 +431,9 @@ class PostProcessingService {
         modifiedRecord.get("Occurrence")?.each {
             if (it.name == "stateConservation" && stateProvince && statesListsPaths.containsKey(stateKey)) {
                 String statusValue = it.processed ?: it.raw
-                statusValue = statusValue.tokenize(",").unique( false ).join(", ") // remove duplicate values
+                List statusValues = statusValue.tokenize(",").unique( false ) // remove duplicate values
+                statusValue = (statusValues.size() == 2) ? statusValues[1] : statusValues.join(", ") // only show 'sourceStatus' if 2 values are present
+
                 String specieslistUrl = "${grailsApplication.config.speciesList.baseURL}${statesListsPaths[stateKey]}"
                 it.processed = "<a href=\"${specieslistUrl}\" target=\"_lists\">${stateProvince}: ${statusValue}</a>"
             }
