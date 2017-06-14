@@ -262,7 +262,7 @@
             </div>
             <g:set var="postFacets" value="${System.currentTimeMillis()}"/>
             <div id="content2" class="span9">
-                <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
+                <g:if test="${grailsApplication.config.alerts.baseUrl}">
                     <div id="alert" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="alertLabel" aria-hidden="true">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -323,7 +323,7 @@
                                                 code="list.downloads.navigator" default="Downloads"/></a>
                                     </div>
                                 </g:if>
-                                <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
+                                <g:if test="${grailsApplication.config.alerts.baseUrl}">
                                     <div id="alerts" class="btn btn-small">
                                         <a href="#alert" role="button" data-toggle="modal" class="tooltips" title="Get email alerts for this search"><i class="fa fa-bell"></i>&nbsp;&nbsp;<g:message code="list.alerts.navigator" default="Alerts"/></a>
                                     </div>
