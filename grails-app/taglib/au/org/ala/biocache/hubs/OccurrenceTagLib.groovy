@@ -135,12 +135,19 @@ class OccurrenceTagLib {
         def filterLabel = item.value.displayName.replaceFirst(/^\-/, "") // remove leading "-" for exclude searches
         def preFix = (item.value.displayName.startsWith('-')) ? "<span class='excludeFq'>[exclude]</span> " : ""
         def fqLabel = preFix + filterLabel
+        String facetKey = item.key.replaceFirst("\\(","") // remove brace
+        String i18nLabel = alatag.message(code: "facet.${facetKey}", default: "") // i18n lookup
+
+        if (i18nLabel) {
+            // replace with i18n values, if found
+            fqLabel = fqLabel.replaceAll(facetKey, i18nLabel)
+        }
 
         def mb = new MarkupBuilder(out)
         mb.a(   href:"#",
                 class: "${attrs.cssClass} tooltips activeFilter",
                     title: alatag.message(code:"title.filter.remove", default:"Click to remove this filter"),
-                    "data-facet": item.key
+                    "data-facet": facetKey
                     //"data-facet":"${item.key}:${item.value.value.encodeAsURL()}",
                     //onClick:"removeFacet(this); return false;"
             ) {
