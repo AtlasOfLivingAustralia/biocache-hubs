@@ -183,15 +183,16 @@ $(document).ready(function() {
         });
 
         //Check user has selected at least 1 facet
-        if (selectedFacets.length > 0) {
+        if (selectedFacets.length > 0 && selectedFacets.length  <= BC_CONF.maxFacets) {
             // save facets to the user_facets cookie
             $.cookie("user_facets", selectedFacets, { expires: 7 });
             // reload page
             document.location.reload(true);
+        } else if (selectedFacets.length > BC_CONF.maxFacets) {
+            alert("Please select " + BC_CONF.maxFacets + " or less filter categories to display");
         } else {
             alert("Please select at least 1 filter category to display");
         }
-
     });
 
     // reset facet options to default values (clear cookie)

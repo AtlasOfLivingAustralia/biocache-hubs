@@ -513,7 +513,7 @@ function geocodeAddress(reverseGeocode) {
 
         if (lat && lng) {
             latLng = new google.maps.LatLng(lat.toDD(), lng.toDD());
-            updateMarkerAddress("GPS corrdinates: " + lat.toDD() + ", " + lng.toDD());
+            updateMarkerAddress("GPS coordinates: " + lat.toDD() + ", " + lng.toDD());
             updateMarkerPosition(latLng);
             // reload map pin, etc
             initialize();
@@ -524,7 +524,7 @@ function geocodeAddress(reverseGeocode) {
 
     if (!latLng && geocoder && address) {
         //geocoder.getLocations(address, addAddressToPage);
-        geocoder.geocode( {'address': address, region: 'AU'}, function(results, status) {
+        geocoder.geocode( {'address': address, region: EYA_CONF.geocodeRegion}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 // geocode was successful
                 //console.log('geocodeAddress results', results);
