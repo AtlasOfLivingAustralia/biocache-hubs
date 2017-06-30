@@ -393,7 +393,7 @@ $(document).ready(function() {
     $("#downloadFacet").live("click", function(e) {
         var facetName = $("table#fullFacets").data("facet");
         console.log('clicked ' + window.location.href );
-        window.location.href = BC_CONF.biocacheServiceUrl + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName + '&count=true';
+        window.location.href = BC_CONF.biocacheServiceUrl + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName + '&count=true&lookup=true';
     });
 
     // form validation for form#facetRefineForm
