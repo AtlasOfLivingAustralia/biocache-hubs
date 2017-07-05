@@ -5,7 +5,7 @@
             biocacheServiceUrl="${alatag.getBiocacheAjaxUrl()}"
             biocacheWebappUrl="${grailsApplication.config.serverName}${request.contextPath}"
             q="${searchString.replace('?q=','')}"
-            qc=""
+            qc="${grailsApplication.config.biocache.queryContext ?: ''}"
             fq=""
             autoLoad="false"
     />
@@ -14,4 +14,3 @@
 <div class="row-fluid" id="charts">
 
 </div>
-
