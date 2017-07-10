@@ -17,6 +17,7 @@
     <meta name="section" content="search"/>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <title><g:message code="home.index.title" default="Search for records"/> | ${hubDisplayName}</title>
+
     <g:if test="${grailsApplication.config.google.apikey}">
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
     </g:if>
@@ -27,7 +28,7 @@
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <r:require module="bieAutocomplete"/>
     </g:if>
-    <r:script>
+    <r:script disposition='head'>
         // global var for GSP tags/vars to be passed into JS functions
         var BC_CONF = {
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
@@ -38,11 +39,6 @@
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             queryContext: "${grailsApplication.config.biocache.queryContext}"
         }
-        /*
-         Leaflet, a JavaScript library for mobile-friendly interactive maps. http://leafletjs.com
-         (c) 2010-2013, Vladimir Agafonkin
-         (c) 2010-2011, CloudMade
-         */
         /* Load Spring i18n messages into JS
          */
         jQuery.i18n.properties({
@@ -51,6 +47,8 @@
          mode: 'map',
          language: BC_CONF.locale
         });
+    </r:script>
+    <r:script>
         $(document).ready(function() {
 
             var mapInit = false;
