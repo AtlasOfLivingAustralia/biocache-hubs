@@ -929,7 +929,7 @@ function loadImages(start) {
             "&fq=multimedia:Image&facet=false&pageSize=20&start=" + start + "&sort=identification_qualifier_s&dir=asc&callback=?";
         $.getJSON(imagesJsonUri, function (data) {
             //console.log("data",data);
-            if (data.occurrences) {
+            if (data.occurrences && data.occurrences.length > 0) {
                 //var htmlUl = "";
                 if (start == 0) {
                     $("#imagesGrid").html("");
@@ -982,6 +982,8 @@ function loadImages(start) {
                     $("#loadMoreImages").hide();
                 }
     
+            } else {
+                $('#imagesGrid').html('<p>' + jQuery.i18n.prop('list.noimages.available') + '</p>');
             }
         }).always(function () {
             $("#loadMoreImages img").hide();
