@@ -47,6 +47,7 @@
             speciesPageUrl: "${speciesPageUrl}",
             queryContext: "${queryContext}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
+            geocodeRegion: "${grailsApplication.config.geocode.region}",
             hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
         }
 
