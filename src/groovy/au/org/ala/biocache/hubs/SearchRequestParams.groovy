@@ -151,7 +151,7 @@ public class SearchRequestParams {
                 } catch(UnsupportedEncodingException e){}
         }
 
-        if(qc != ""){
+        if(qc){
             req.append("&qc=").append(URLEncoder.encode(qc, "UTF-8"));
         }
         return req.toString();
