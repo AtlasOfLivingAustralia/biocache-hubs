@@ -124,6 +124,11 @@ class OccurrenceController {
                 if (remove) searchResults?.activeFacetMap?.remove(remove)
             }
 
+            def hasImages = postProcessingService.resultsHaveImages(searchResults)
+            if(grailsApplication.config.alwaysshow.imagetab.toBoolean()){
+                hasImages = true
+            }
+
             [
                     sr: searchResults,
                     searchRequestParams: requestParams,
@@ -132,7 +137,7 @@ class OccurrenceController {
                     groupedFacetsMap: groupedFacetsMap,
                     dynamicFacets: dynamicFacets,
                     selectedDataResource: getSelectedResource(requestParams.q),
-                    hasImages: postProcessingService.resultsHaveImages(searchResults),
+                    hasImages: hasImages,
                     showSpeciesImages: false,
                     sort: requestParams.sort,
                     dir: requestParams.dir,
