@@ -16,6 +16,8 @@
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="search"/>
+    <meta name="breadcrumbParent" content="${request.contextPath?:'/'},${message(code:"search.heading.list")}"/>
+    <meta name="breadcrumb" content="${message(code:"list.search.results")}"/>
     <title><g:message code="list.title" default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
 
     <g:if test="${grailsApplication.config.google.apikey}">
