@@ -41,6 +41,7 @@ skin.useAlaBie = false
 skin.useAlaImageService = false
 skin.taxaLinks.baseUrl = "" // "http://bie.ala.org.au/species/" // 3rd party species pages. Leave blank for no links
 skin.taxaLinks.identifier = "guid"  // "guid" or "name". Only used if skin.useAlaBie = false TODO: not implemented
+skin.exploreUrl = "${serverName}"
 
 // web services
 bie.baseUrl = "http://bie.ala.org.au"

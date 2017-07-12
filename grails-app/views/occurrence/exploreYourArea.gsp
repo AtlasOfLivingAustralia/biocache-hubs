@@ -26,6 +26,8 @@
 <head>
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="yourArea"/>
+    <meta name="breadcrumbParent" content="${grailsApplication.config.skin.exploreUrl},${message(code:"eya.parent.title")}"/>
+    <meta name="breadcrumb" content="Explore your area"/>
     <title><g:message code="eya.title01" default="Explore Your Area"/> | <g:message code="eya.title02" default="Atlas of Living Australia"/></title>
 
     <g:if test="${grailsApplication.config.google.apikey}">
