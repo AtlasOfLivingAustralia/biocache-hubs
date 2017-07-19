@@ -132,3 +132,5 @@ fieldguide.url="http://fieldguide.ala.org.au"
 stateConservationListPath = [:] // to prevent NPE - set in ext config
 // example: stateConservationListPath.NewSouthWales = "/speciesListItem/list/dr650"
 alwaysshow.imagetab = false
+
+facets.defaultSelected = "data_resource_uid,taxon_name,year"

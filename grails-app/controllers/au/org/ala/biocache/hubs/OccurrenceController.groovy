@@ -91,6 +91,18 @@ class OccurrenceController {
             String[] userFacets = postProcessingService.getFacetsFromCookie(request)
             String[] filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
 
+            if(!userFacets && grailsApplication.config.facets.defaultSelected){
+                userFacets = grailsApplication.config.facets.defaultSelected.trim().split(",")
+
+                def facetKeys = defaultFacets.keySet()
+                facetKeys.each {
+                    defaultFacets.put(it, false)
+                }
+                userFacets.each {
+                    defaultFacets.put(it, true)
+                }
+            }
+
             List dynamicFacets = []
 
             String[] requestedFacets = userFacets ?: filteredFacets
