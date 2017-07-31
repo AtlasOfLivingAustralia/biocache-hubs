@@ -7,7 +7,7 @@ branches:
   - master
   - data-quality
   - hotfix
-  - grails-jdk-updgrade
+  - grails-jdk-upgrade
 before_install:
  - wget -q https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/ala_common.sh
  - chmod +x ala_common.sh
