@@ -3,8 +3,8 @@ grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.work.dir = "target/work"
-grails.project.target.level = 1.7
-grails.project.source.level = 1.7
+grails.project.target.level = 1.8
+grails.project.source.level = 1.8
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 //grails.plugin.location.'images-client-plugin' = "../images-client-plugin"
 
@@ -43,18 +43,18 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        build(  ":tomcat:7.0.50",
-                ":release:3.0.1",
-                ":rest-client-builder:1.0.3") {
+        build(  ":tomcat:7.0.54",
+                ":release:3.1.1",
+                ":rest-client-builder:2.1.1") {
             export = false
         }
-        compile ':cache:1.1.1'
+        compile ':cache:1.1.8'
         compile ":cache-ehcache:1.0.0"
         compile ":rest:0.8"
         compile ":build-info:1.2.6"
         runtime ":jquery:1.11.1"
-        runtime ":resources:1.2.1"
-        runtime ":release:3.0.1"
+        runtime ":resources:1.2.14"
+        runtime ":release:3.1.1"
         runtime ":ala-admin-plugin:1.2"
         runtime ":ala-charts-plugin:1.2"
         compile ":images-client-plugin:0.7.9"
