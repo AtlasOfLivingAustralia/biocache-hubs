@@ -189,7 +189,7 @@ $(document).ready(function() {
             // reload page
             document.location.reload(true);
         } else if (selectedFacets.length > BC_CONF.maxFacets) {
-            alert("Please select " + BC_CONF.maxFacets + " or less filter categories to display");
+            alert("Maximum filters exceeded, please select " + BC_CONF.maxFacets + " or less filter categories to display. You currently have " + selectedFacets.length + "filters selected");
         } else {
             alert("Please select at least 1 filter category to display");
         }
