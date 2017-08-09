@@ -12,7 +12,7 @@ modules = {
 
     jquery_i18n {
         dependsOn 'jquery_migration'
-        resource url:[dir:'js', file:'jquery.i18n.properties-1.0.9.min.js', plugin:'biocache-hubs']
+        resource url:[dir:'js', file:'jquery.i18n.properties-1.0.9.min.js', plugin:'biocache-hubs'], disposition: 'head'
     }
 
     hubCore {
