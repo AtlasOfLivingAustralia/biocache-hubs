@@ -252,7 +252,7 @@ a.colour-by-legend-toggle {
 </div>
 
 
-<r:script>
+<asset:script type="text/javascript">
 
     //var mbAttr = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, imagery &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
 	//var mbUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
@@ -1104,7 +1104,7 @@ a.colour-by-legend-toggle {
       delete link;
       return false;
     }
-</r:script>
+</asset:script>
 <div class="hide">
     <div class="popupRecordTemplate">
         <div class="multiRecordHeader hide">
@@ -1231,14 +1231,9 @@ a.colour-by-legend-toggle {
     </form>
 </div>
 
-%{--<r:require module="colourPicker"/>--}%
 <script type="text/javascript">
 
     $(document).ready(function(){
-        %{--$('#pcolour').colourPicker({--}%
-            %{--ico:    '${r.resource(dir:'images',file:'jquery.colourPicker.gif', plugin:'biocache-hubs')}',--}%
-            %{--title:    false--}%
-        %{--});--}%
 
         // restrict search to current map bounds/view
         $('#wktFromMapBounds').click(function(e) {

@@ -31,7 +31,8 @@
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="help"/>
     <title>Help | ${fullName}</title>
-    <r:require modules="help"/>
+    <asset:javascript src="help.js" />
+    <asset:stylesheet src="help.css" />
 </head>
 
 <body>

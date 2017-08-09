@@ -59,7 +59,7 @@
             userRatingUrl: "${createLink(controller: 'imageClient', action: 'userRating')}",
             disableLikeDislikeButton: ${authService.getUserId() ? false : true},
             addLikeDislikeButton: ${(grailsApplication.config.addLikeDislikeButton == false) ? false : true},
-            addPreferenceButton: ${imageClient.checkAllowableEditRole()},
+            addPreferenceButton: <imageClient:checkAllowableEditRole/> ,
             userRatingHelpText: '<div><b>Up vote (<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>) an image:</b>'+
             ' Image supports the identification of the species or is representative of the species.  Subject is clearly visible including identifying features.<br/><br/>'+
             '<b>Down vote (<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>) an image:</b>'+
@@ -68,9 +68,29 @@
             getPreferredSpeciesListUrl:  "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}"
         };
     </script>
-    <r:require modules="search, leaflet, leafletPlugins, slider, qtip, nanoscroller, amplify, moment, mapCommon, charts, image-viewer"/>
+
+    <asset:javascript src="search.js" />
+    <asset:javascript src="leafletPlugins.js" />
+    <asset:javascript src="slider.js" />
+    <asset:javascript src="qtip.js"/>
+    <asset:javascript src="nanoscroller.js"/>
+    <asset:javascript src="amplify.js"/>
+    <asset:javascript src="moment.js"/>
+    <asset:javascript src="mapCommon.js"/>
+    <asset:javascript src="ala/ala-charts.js"/>
+    <asset:javascript src="ala/ala-images-client.js"/>
+
+    <asset:stylesheet src="search.css" />
+    <asset:stylesheet src="leafletPlugins.css" />
+    <asset:stylesheet src="slider.css" />
+    <asset:stylesheet src="qtip.css" />
+    <asset:stylesheet src="nanoscroller.css" />
+    <asset:stylesheet src="ala/ala-charts.css" />
+    <asset:stylesheet src="ala/ala-images-client.css" />
+
+
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
-        <r:require module="bieAutocomplete"/>
+        <asset:javascript src="bieAutocomplete.js"/>
     </g:if>
     <script type="text/javascript">
         <g:if test="${!grailsApplication.config.google.apikey}">
@@ -288,7 +308,7 @@
                     <ul class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a id="t1" href="#recordsView" data-toggle="tab"><g:message code="list.link.t1" default="Records"/></a></li>
                         <li><a id="t2" href="#mapView" data-toggle="tab"><g:message code="list.link.t2" default="Map"/></a></li>
-                        <plugin:isAvailable name="alaChartsPlugin">
+                        <plugin:isAvailable name="ala-charts">
                             <li><a id="t3" href="#chartsView" data-toggle="tab"><g:message code="list.link.t3" default="Charts"/></a></li>
                             <g:if test="${grailsApplication.config.userCharts && grailsApplication.config.userCharts.toBoolean()}">
                                 <li><a id="t6" href="#userChartsView" data-toggle="tab"><g:message code="list.link.t6" default="Custom Charts"/></a></li>
@@ -376,7 +396,7 @@
                         />
                         <div id='envLegend'></div>
                     </div><!-- end #mapwrapper -->
-                    <plugin:isAvailable name="alaChartsPlugin">
+                    <plugin:isAvailable name="ala-charts">
                         <div id="chartsView" class="tab-pane">
                             <g:render template="charts"
                                       model="[searchString: searchString]"/>

@@ -12,18 +12,8 @@
 <head>
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <title>Admin Functions | ${grailsApplication.config.skin.orgNameLong}</title>
-    <r:require modules="jquery"/>
-    <style type="text/css">
-        input.form-control {
-            width: 50%;
-        }
-    h2 {
-        margin-top: 20px;
-    }
-    #alaAdmin {
-        margin-top: 20px;
-    }
-</style>
+    <asset:javascript src="jquery.js" />
+    <asset:stylesheet src="admin.css" />
 </head>
 <body>
 <div class="row-fluid">

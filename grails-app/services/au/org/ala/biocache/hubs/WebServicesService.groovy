@@ -171,7 +171,7 @@ class WebServicesService {
      * @param userDisplayName
      * @return Map postResponse
      */
-    def Map addAssertion(String recordUuid, String code, String comment, String userId, String userDisplayName,
+    Map addAssertion(String recordUuid, String code, String comment, String userId, String userDisplayName,
                          String userAssertionStatus, String assertionUuid) {
         Map postBody =  [
                 recordUuid: recordUuid,

@@ -258,9 +258,9 @@
     &nbsp;&nbsp;
     <input type="reset" value="Clear all" id="clearAll" class="btn" onclick="$('input#solrQuery').val(''); $('input.clear_taxon').click(); return true;"/>
 </form>
-<r:script>
+<asset:script type="text/javascript">
     $(document).ready(function() {
         $('.bscombobox').combobox({bsVersion: '2'});
     });
 
-</r:script>
+</asset:script>

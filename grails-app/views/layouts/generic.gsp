@@ -10,35 +10,16 @@
 
     <title><g:layoutTitle /></title>
     <g:render template="/layouts/global"/>
-    <r:require modules="jquery, jquery_migration, bootstrap2, hubCore" />
-    <style type="text/css">
-    body {
-        background-color: #ffffff !important;
-    }
-    #breadcrumb {
-        margin-top: 10px;
-    }
-    #main-content #searchInfoRow #customiseFacetsButton > .dropdown-menu {
-        background-color: #ffffff;
-    }
-    #footer {
-        margin: 20px;
-        padding-top: 10px;
-        border-top: 1px solid #CCC;
-        font-size: 12px;
-    }
-    #content .nav-tabs > li.active > a {
-        background-color: #ffffff;
-    }
-    .nav {
-        margin-top: 20px;
-    }
-    body > #main-content {
-        margin-top: 0px;
-    }
 
-    </style>
-    <r:script disposition='head'>
+    <asset:javascript src="jquery_migration.js"/>
+    <asset:javascript src="bootstrap.js"/>
+    <asset:javascript src="hubCore.js"/>
+
+    <asset:stylesheet src="bootstrap.css" />
+    <asset:stylesheet src="hubCore.css" />
+    <asset:stylesheet src="generic.css" />
+
+    <asset:script type="text/javascript">
         // initialise plugins
         jQuery(function(){
             // autocomplete on navbar search input
@@ -86,8 +67,7 @@
 
             $('.helphover').popover({animation: true, trigger:'hover'});
         });
-    </r:script>
-    <r:layoutResources/>
+    </asset:script>
     <g:layoutHead />
 </head>
 <body class="${pageProperty(name:'body.class')?:'nav-collections'}" id="${pageProperty(name:'body.id')}" onload="${pageProperty(name:'body.onload')}">
@@ -134,6 +114,6 @@
 <br/>
 
 <!-- JS resources-->
-<r:layoutResources/>
+<asset:deferredScripts/>
 </body>
 </html>

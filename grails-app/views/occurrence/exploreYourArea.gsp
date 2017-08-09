@@ -37,7 +37,13 @@
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     </g:else>
     <g:render template="/layouts/global"/>
-    <r:require modules="exploreYourArea, qtip"/>
+
+    <asset:javascript src="exploreYourArea.js"/>
+    <asset:javascript src="qtip.js"/>
+
+    <asset:stylesheet src="exploreYourArea.css" />
+    <asset:stylesheet src="qtip.css" />
+
     <script type="text/javascript">
         // Global variables for yourAreaMap.js
         var EYA_CONF = {

@@ -1,0 +1,10 @@
+//= require leaflet.js
+//= require leaflet-fullscreen.js
+//= require leaflet-plugins/layer/tile/Google.js
+//= require leaflet-plugins/spin/spin.min.js
+//= require leaflet-plugins/spin/leaflet.spin.js
+//= require leaflet-plugins/coordinates/Leaflet.Coordinates-0.1.4.min.js
+//= require leaflet-plugins/draw/leaflet.draw-src.js
+//= require leaflet-plugins/wicket/wicket.js
+//= require leaflet-plugins/wicket/wicket-leaflet.js
+//= require LeafletToWKT.js

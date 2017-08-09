@@ -361,7 +361,7 @@ class OccurrenceController {
         //set the properties of the query
         fg.title = "This document was generated on "+ sdf.format(new Date())
         String serverName = grailsApplication.config.serverName ?: grailsApplication.config.security.cas.appServerName
-        String contextPath = grailsApplication.config.contextPath ?: grailsApplication.config.security.cas.contextPath ?: ""
+        String contextPath = request.contextPath
         fg.link = serverName + contextPath + "/occurrences/search?" + request.getQueryString()
         //log.info "FG json = " + fg.getJson()
 

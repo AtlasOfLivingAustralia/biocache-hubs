@@ -22,7 +22,7 @@
 <g:set var="sensitiveDatasets" value="${sensitiveDatasetRaw?.split(',')}"/>
 <g:set var="userDisplayName" value="${alatag.loggedInUserDisplayname()}"/>
 <g:set var="userId" value="${alatag.loggedInUserId()}"/>
-<g:set var="isUnderCas" value="${(grailsApplication.config.security.cas.casServerName || grailsApplication.config.casServerName) ? true : false}"/>
+<g:set var="isUnderCas" value="${(grailsApplication.config.security.cas.casServerName) ? true : false}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -64,12 +64,16 @@
         }
         //google.load("visualization", "1", {packages:["corechart"]});
 
-
     </script>
     <g:render template="/layouts/global"/>
-    <r:require modules="show, amplify, moment"/>
-    <r:script disposition="head">
 
+    <asset:javascript src="show.js" />
+    <asset:javascript src="amplify.js"/>
+    <asset:javascript src="moment.js"/>
+
+    <asset:stylesheet src="show.css" />
+
+    <asset:script type="text/javascript">
         $(document).ready(function() {
             <g:if test="${record.processed.attribution.provenance == 'Draft'}">\
                 // draft view button\
@@ -79,13 +83,10 @@
             </g:if>
         }); // end $(document).ready()
 
-
-
-    </r:script>
+    </asset:script>
 
 </head>
 <body class="occurrence-record">
-    %{--<g:set var="json" value="${request.contextPath}/occurrences/${record?.raw?.uuid}.json" />--}%
     <g:if test="${record}">
         <g:if test="${record.raw}">
             <div class="recordHeader clearfix" id="headingBar">
@@ -165,7 +166,7 @@
             <g:if test="${hasExpertDistribution}">
                 <div id="hasExpertDistribution"  class="additionalData" style="clear:both;padding-top: 20px;">
                     <h2><g:message code="show.hasexpertdistribution.title" default="Record outside of expert distribution area (shown in red)"/> <a id="expertReport" href="#expertReport">&nbsp;</a></h2>
-                    <script type="text/javascript" src="${request.contextPath}/js/wms2.js"></script>
+                    <asset:javascript src="wms2.js" />
                     <script type="text/javascript">
                         $(document).ready(function() {
                             var latlng1 = new google.maps.LatLng(${latLngStr});

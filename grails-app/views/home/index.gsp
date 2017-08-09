@@ -24,11 +24,22 @@
     <g:else>
         <script src="https://maps.google.com/maps/api/js?v=3.5&sensor=false"></script>
     </g:else>
-    <r:require modules="jquery, leaflet, leafletPlugins, mapCommon, searchMap, bootstrapCombobox"/>
+
+    <!-- Here are the laflet plugins JS -->
+    <asset:javascript src="leafletPlugins.js" />
+    <asset:javascript src="mapCommon.js"/>
+    <asset:javascript src="bootstrapCombobox.js"/>
+
+    <!-- Here are the laflet plugins CSS-->
+    <asset:stylesheet src="leafletPlugins.css" />
+    <asset:stylesheet src="searchMap.css" />
+    <asset:stylesheet src="bootstrapCombobox.css" />
+
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
-        <r:require module="bieAutocomplete"/>
+        <asset:javascript src="bieAutocomplete.js"/>
     </g:if>
-    <r:script disposition='head'>
+
+    <asset:script type="text/javascript">
         // global var for GSP tags/vars to be passed into JS functions
         var BC_CONF = {
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
@@ -47,8 +58,8 @@
          mode: 'map',
          language: BC_CONF.locale
         });
-    </r:script>
-    <r:script>
+    </asset:script>
+    <asset:script type="text/javascript">
         $(document).ready(function() {
 
             var mapInit = false;
@@ -153,7 +164,7 @@
         };
 
         function initialiseMap() {
-            //alert('starting map');
+            alert('starting map');
             if(MAP_VAR.map != null){
                 return;
             }
@@ -264,7 +275,7 @@
             }
         }
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body>

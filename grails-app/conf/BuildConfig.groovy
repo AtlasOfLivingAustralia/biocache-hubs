@@ -7,6 +7,7 @@ grails.project.target.level = 1.8
 grails.project.source.level = 1.8
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 //grails.plugin.location.'images-client-plugin' = "../images-client-plugin"
+//grails.plugin.location.'ala-charts-plugin' = "../ala-charts-plugin"
 
 grails.project.fork = [
         test: false,
@@ -53,10 +54,11 @@ grails.project.dependency.resolution = {
         compile ":rest:0.8"
         compile ":build-info:1.2.6"
         runtime ":jquery:1.11.1"
-        runtime ":resources:1.2.14"
+//        runtime ":resources:1.2.14"
+        compile ":asset-pipeline:2.14.1"
         runtime ":release:3.1.1"
-        runtime ":ala-admin-plugin:1.2"
-        runtime ":ala-charts-plugin:1.2"
-        compile ":images-client-plugin:0.7.9"
+        runtime ":ala-admin-plugin:1.3"
+        runtime ":ala-charts-plugin:1.3-SNAPSHOT"
+        compile ":images-client-plugin:0.7.10-SHAPSHOT"
     }
 }

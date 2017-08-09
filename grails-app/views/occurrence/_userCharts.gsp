@@ -13,7 +13,7 @@
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<r:script>
+<asset:script type="text/javascript">
     <charts:biocache
             biocacheServiceUrl="${alatag.getBiocacheAjaxUrl()}"
             biocacheWebappUrl="${grailsApplication.config.serverName}${request.contextPath}"
@@ -24,7 +24,7 @@
             chartControls="true"
             chartVariableName="userChartConfig"
     />
-</r:script>
+</asset:script>
 
 <div class="row-fluid" id="userCharts">
 

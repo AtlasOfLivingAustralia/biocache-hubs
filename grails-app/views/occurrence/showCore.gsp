@@ -38,7 +38,12 @@
 
     </script>
 
-    <r:require modules="show, amplify, moment"/>
+    <asset:javascript src="show.js" />
+    <asset:javascript src="amplify.js"/>
+    <asset:javascript src="moment.js"/>
+
+    <asset:stylesheet src="show.css" />
+
 </head>
 
 <body>

@@ -299,10 +299,6 @@
         </g:else>
         <br>
         <g:message code="recordcore.iao.03" default="For more information see"/> <a href="#inferredOccurrenceDetails"><g:message code="recordcore.iao.04" default="Inferred associated occurrence details"/></a>
-    <%-- 	        	<c:forEach var="docc" items="${fn:split(record.processed.occurrence.associatedOccurrences, '|')}">
-                        <a href="${request.contextPath}/occurrences/${docc}">${docc}</a>
-                        <br>
-                    </c:forEach> --%>
     </alatag:occurrenceTableRow>
     <g:if test="${record.raw.occurrence.associatedOccurrences }">
         <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="associatedOccurrences" fieldName="Associated Occurrences">
@@ -382,7 +378,6 @@
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="scientificName" fieldName="Scientific name">
     ${fieldsMap.put("taxonConceptID", true)}
     ${fieldsMap.put("scientificName", true)}
-    %{--<g:set var="baseTaxonUrl"><g:if test="${useAla == 'true'}">${bieWebappContext}/species/</g:if><g:else>${request.contextPath}/taxa/</g:else></g:set>--}%
     <g:if test="${taxaLinks.baseUrl && record.processed.classification.taxonConceptID}">
         <a href="${taxaLinks.baseUrl}${record.processed.classification.taxonConceptID}">
     </g:if>
