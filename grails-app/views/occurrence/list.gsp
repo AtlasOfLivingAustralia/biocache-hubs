@@ -21,7 +21,7 @@
     <title><g:message code="list.title" default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
 
     <g:if test="${grailsApplication.config.google.apikey}">
-        <script async defer src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
     </g:if>
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -308,7 +308,7 @@
                     <ul class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a id="t1" href="#recordsView" data-toggle="tab"><g:message code="list.link.t1" default="Records"/></a></li>
                         <li><a id="t2" href="#mapView" data-toggle="tab"><g:message code="list.link.t2" default="Map"/></a></li>
-                        <plugin:isAvailable name="ala-charts">
+                        <plugin:isAvailable name="alaChartsPlugin">
                             <li><a id="t3" href="#chartsView" data-toggle="tab"><g:message code="list.link.t3" default="Charts"/></a></li>
                             <g:if test="${grailsApplication.config.userCharts && grailsApplication.config.userCharts.toBoolean()}">
                                 <li><a id="t6" href="#userChartsView" data-toggle="tab"><g:message code="list.link.t6" default="Custom Charts"/></a></li>
@@ -396,7 +396,7 @@
                         />
                         <div id='envLegend'></div>
                     </div><!-- end #mapwrapper -->
-                    <plugin:isAvailable name="ala-charts">
+                    <plugin:isAvailable name="alaChartsPlugin">
                         <div id="chartsView" class="tab-pane">
                             <g:render template="charts"
                                       model="[searchString: searchString]"/>
