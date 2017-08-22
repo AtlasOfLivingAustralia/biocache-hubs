@@ -30,7 +30,7 @@ auth.admin_role = "ROLE_ADMIN"
 serverName = 'http://dev.ala.org.au:8080'
 
 // skin settings
-organisation.baseUrl = "http://www.ala.org.au"
+organisation.baseUrl = "https://www.ala.org.au"
 skin.layout = "generic"
 skin.fluidLayout = "true"
 skin.orgNameLong = "Generic Portal"
@@ -39,25 +39,25 @@ skin.attribution = ""
 skin.useAlaSpatialPortal = false
 skin.useAlaBie = false
 skin.useAlaImageService = false
-skin.taxaLinks.baseUrl = "" // "http://bie.ala.org.au/species/" // 3rd party species pages. Leave blank for no links
+skin.taxaLinks.baseUrl = "" // "https://bie.ala.org.au/species/" // 3rd party species pages. Leave blank for no links
 skin.taxaLinks.identifier = "guid"  // "guid" or "name". Only used if skin.useAlaBie = false TODO: not implemented
 skin.exploreUrl = "${serverName}"
 
 // web services
-bie.baseUrl = "http://bie.ala.org.au"
-bieService.baseUrl = "http://bie.ala.org.au/ws"
+bie.baseUrl = "https://bie.ala.org.au"
+bieService.baseUrl = "https://bie.ala.org.au/ws"
 //bie.autocompleteHints.fq = "kingdom:Plantae"  // optional
 collectory.baseUrl = "http://collections.ala.org.au"
 logger.baseUrl = "http://logger.ala.org.au/service"
 biocache.apiKey = "api-key-to-use"
-biocache.baseUrl = "http://biocache.ala.org.au/ws"
+biocache.baseUrl = "https://biocache.ala.org.au/ws"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
 biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
 //biocache.groupedFacetsUrl = "${biocache.baseUrl}/search/grouped/facets" // optional - define in hub only
 collections.baseUrl = "http://collections.ala.org.au"
 alerts.baseUrl = "http://alerts.ala.org.au"
-speciesList.baseURL = "http://lists.ala.org.au"
+speciesList.baseURL = "https://lists.ala.org.au"
 useDownloadPlugin = ""
 
 // for images-client-plugin
@@ -68,7 +68,7 @@ images.baseUrl = "http://images.ala.org.au"
 images.viewerUrl = "http://images.ala.org.au/image/viewer?imageId="
 images.metadataUrl = "http://images.ala.org.au/image/details?imageId="
 
-sightings.baseUrl = "http://sightings.ala.org.au"
+sightings.baseUrl = "https://sightings.ala.org.au"
 
 // For sandbox environment
 //spatial.params = "&dynamic=true&ws=http%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=http%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"
@@ -109,10 +109,10 @@ map.defaultZoom
 // 3rd part WMS layer to show on maps. TODO: Allow multiple overlays
 map.overlay.url
 map.overlay.name
-map.minimal.url = "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
-map.minimal.attr = "Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>, imagery &copy; <a href='http://cartodb.com/attributions'>CartoDB</a>"
+map.minimal.url = "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+map.minimal.attr = "Map data &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>, imagery &copy; <a href='https://carto.com/attribution'>CartoDB</a>"
 map.minimal.subdomains = "abcd"
-//map.mapbox.id = "nickdos.kf2g7gpb" // http://mapbox.com/ Registered by Nick - free to use so anyone can create a new one and add it here
+//map.mapbox.id = "nickdos.kf2g7gpb" // https://mapbox.com/ Registered by Nick - free to use so anyone can create a new one and add it here
 //map.mapbox.token = "pk.eyJ1Ijoibmlja2RvcyIsImEiOiJ2V2dBdEg0In0.Ep2VyMOaOUnOwN1ZVa9uyQ"
 
 
@@ -128,7 +128,7 @@ grails.plugin.geoip.data.cache=0
 //grails.plugin.geoip.data.resource = '/data/maxmind/GeoLiteCity.dat'
 grails.plugin.geoip.data.path="/data/${grails.util.Metadata.current.'app.name'}/config/GeoLiteCity.dat"
 
-fieldguide.url="http://fieldguide.ala.org.au"
+fieldguide.url="https://fieldguide.ala.org.au"
 stateConservationListPath = [:] // to prevent NPE - set in ext config
 // example: stateConservationListPath.NewSouthWales = "/speciesListItem/list/dr650"
 alwaysshow.imagetab = false
