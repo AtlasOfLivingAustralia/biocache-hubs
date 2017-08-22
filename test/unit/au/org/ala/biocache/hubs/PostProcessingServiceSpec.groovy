@@ -30,7 +30,7 @@ class PostProcessingServiceSpec extends Specification {
                 NorthernTerritory: "/speciesListItem/list/dr651",
                 Tasmania: "/speciesListItem/list/dr654"
         ]
-        grailsApplication.config.speciesList.baseURL = "http://lists.ala.org.au"
+        grailsApplication.config.speciesList.baseURL = "https://lists.ala.org.au"
         service.grailsApplication = grailsApplication
     }
 
@@ -86,9 +86,9 @@ class PostProcessingServiceSpec extends Specification {
             JSONObject rec3 = JSON.parse(json3)
         expect:
             extractStateConservationValue(rec1) != extractStateConservationValue(service.augmentRecord(rec1))
-            extractStateConservationValue(service.augmentRecord(rec1)) ==  '''<a href="http://lists.ala.org.au/speciesListItem/list/dr652" target="_lists">Queensland: Least concern wildlife</a>'''
+            extractStateConservationValue(service.augmentRecord(rec1)) ==  '''<a href="https://lists.ala.org.au/speciesListItem/list/dr652" target="_lists">Queensland: Least concern wildlife</a>'''
             extractStateConservationValue(rec2) != extractStateConservationValue(service.augmentRecord(rec2))
-            extractStateConservationValue(service.augmentRecord(rec2)) ==  '''<a href="http://lists.ala.org.au/speciesListItem/list/dr650" target="_lists">New South Wales: Critically Endangered</a>'''
+            extractStateConservationValue(service.augmentRecord(rec2)) ==  '''<a href="https://lists.ala.org.au/speciesListItem/list/dr650" target="_lists">New South Wales: Critically Endangered</a>'''
             extractStateConservationValue(rec3) == extractStateConservationValue(service.augmentRecord(rec3))
     }
 
