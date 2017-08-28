@@ -39,6 +39,7 @@ grails.project.dependency.resolution = {
         //}
         //compile "org.tmatesoft.svnkit:svnkit:1.8.5"
         compile "commons-httpclient:commons-httpclient:3.1"
+        compile 'com.maxmind.geoip2:geoip2:2.9.0'
         runtime "commons-lang:commons-lang:2.6"
         runtime "net.sf.supercsv:super-csv:2.1.0"
     }

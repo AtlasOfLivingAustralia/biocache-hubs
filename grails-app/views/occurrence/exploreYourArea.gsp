@@ -38,13 +38,13 @@
     </g:else>
     <g:render template="/layouts/global"/>
 
-    <asset:javascript src="exploreYourArea.js"/>
+    <asset:javascript src="exploreYourArea.js" asset-defer="true"/>
     <asset:javascript src="qtip.js"/>
 
     <asset:stylesheet src="exploreYourArea.css" />
     <asset:stylesheet src="qtip.css" />
 
-    <script type="text/javascript">
+    <asset:script type="text/javascript">
         // Global variables for yourAreaMap.js
         var EYA_CONF = {
             contextPath: "${request.contextPath}",
@@ -61,7 +61,7 @@
 
         //make the taxa and rank global variable so that they can be used in the download
         var taxa = ["*"], rank = "*";
-    </script>
+    </asset:script>
 </head>
 <body class="nav-locations explore-your-area">
 <div id="header" class="heading-bar">
