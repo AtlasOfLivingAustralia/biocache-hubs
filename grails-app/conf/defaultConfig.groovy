@@ -123,10 +123,7 @@ table.displayDynamicProperties = false
 
 geocode.region = "AU"
 
-// GeoIP plugin conf
-grails.plugin.geoip.data.cache=0
-//grails.plugin.geoip.data.resource = '/data/maxmind/GeoLiteCity.dat'
-grails.plugin.geoip.data.path="/data/${grails.util.Metadata.current.'app.name'}/config/GeoLiteCity.dat"
+geopip.database.path="/data/${grails.util.Metadata.current.'app.name'}/config/GeoLite2-City.mmdb"
 
 fieldguide.url="http://fieldguide.ala.org.au"
 stateConservationListPath = [:] // to prevent NPE - set in ext config
