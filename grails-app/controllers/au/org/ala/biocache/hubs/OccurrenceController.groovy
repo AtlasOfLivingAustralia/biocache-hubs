@@ -15,7 +15,6 @@
 
 package au.org.ala.biocache.hubs
 
-import au.org.ala.GeoIpService
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray

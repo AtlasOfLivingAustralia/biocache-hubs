@@ -12,7 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-package au.org.ala
+package au.org.ala.biocache.hubs
 
 import com.maxmind.db.CHMCache
 import com.maxmind.geoip2.DatabaseReader
@@ -58,6 +58,7 @@ class GeoIpService {
 
         try {
             reader = new DatabaseReader.Builder(fileDatabase).withCache(new CHMCache()).build()
+            log.info("Loaded GeoIP Database file  from file [${filePath}].")
         } catch (Exception ex) {
             log.error("Unable to open GeoIp Database [${filePath}]. GeoIpservice will be bypassed.", ex)
         }
