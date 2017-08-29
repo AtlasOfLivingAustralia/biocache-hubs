@@ -44,11 +44,6 @@ var radiusForZoom = {
  */
 $(document).ready(function() {
 
-    // // Load Google maps via AJAX API
-    // if(EYA_CONF !== undefined && !EYA_CONF.hasGoogleKey){
-    //     google.load("maps", "3.3", {other_params:"sensor=false"});
-    // }
-    //
     // initialise Google Geocoder
     geocoder = new google.maps.Geocoder();
 
