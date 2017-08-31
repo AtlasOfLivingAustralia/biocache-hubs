@@ -13,4 +13,4 @@ E.g. to change the header and footer, create a copy of the file `grails-app/view
 
 To load and view you own occurrence record data, you'll need to install and run [**biocache-store**](https://github.com/AtlasOfLivingAustralia/biocache-store) and [**biocache-service**](https://github.com/AtlasOfLivingAustralia/biocache-service) and then configure your app to use your local **biocache-service** by adding/editing the line: `biocache.baseUrl = "http://hostname.acme.org/biocache-service/"`.
 
-A full list of the configuration settings (and their default values) are found in `grails-app/conf/defaultConfig.groovy`.
+A full list of the configuration settings (and their default values) are found in `src/main/groovy/au/org/ala/biocache/hubs/defaultConfig.groovy`.

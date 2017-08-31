@@ -17,7 +17,7 @@ package au.org.ala.biocache.hubs
 
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringUtils
-import org.codehaus.groovy.grails.web.util.WebUtils
+import org.grails.web.util.WebUtils
 import org.springframework.web.servlet.support.RequestContextUtils
 import grails.util.Environment
 
@@ -659,7 +659,7 @@ class OccurrenceTagLib {
     /**
      * Alternative to g.message(code:'foo.bar')
      *
-     * @see org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+     * @see org.grails.plugins.web.taglib.ValidationTagLib
      *
      * @attr code REQUIRED
      * @attr default

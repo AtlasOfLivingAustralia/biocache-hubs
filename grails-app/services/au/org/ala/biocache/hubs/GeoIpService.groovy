@@ -19,7 +19,7 @@ import com.maxmind.geoip2.DatabaseReader
 import com.maxmind.geoip2.exception.AddressNotFoundException
 import com.maxmind.geoip2.model.CityResponse
 import com.maxmind.geoip2.record.Location
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
 import javax.annotation.PostConstruct
 import javax.servlet.http.HttpServletRequest
@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest
  * ala-install ansible playbooks
  * @author Javier Molina
  */
-@Log4j
+@Slf4j
 class GeoIpService {
     DatabaseReader reader
 

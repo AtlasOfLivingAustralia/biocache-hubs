@@ -39,7 +39,7 @@
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     </g:else>
 
-    <script type="text/javascript">
+    <asset:script type="text/javascript">
         // Global var OCC_REC to pass GSP data to external JS file
         var OCC_REC = {
             userId: "${userId}",
@@ -64,7 +64,7 @@
         }
         //google.load("visualization", "1", {packages:["corechart"]});
 
-    </script>
+    </asset:script>
     <g:render template="/layouts/global"/>
 
     <asset:javascript src="show.js" />
@@ -167,7 +167,7 @@
                 <div id="hasExpertDistribution"  class="additionalData" style="clear:both;padding-top: 20px;">
                     <h2><g:message code="show.hasexpertdistribution.title" default="Record outside of expert distribution area (shown in red)"/> <a id="expertReport" href="#expertReport">&nbsp;</a></h2>
                     <asset:javascript src="wms2.js" />
-                    <script type="text/javascript">
+                    <asset:script type="text/javascript">
                         $(document).ready(function() {
                             var latlng1 = new google.maps.LatLng(${latLngStr});
                             var mapOptions = {
@@ -233,7 +233,7 @@
                                 }
                             </g:if>
                         });
-                    </script>
+                    </asset:script>
                     <div id="expertDistroMap" style="width:80%;height:400px;margin:20px 20px 10px 0;"></div>
                 </div>
             </g:if>
@@ -355,7 +355,7 @@
                         </p>
                     </div>
                     <div id="charts" style="margin-top:20px;"></div>
-                    <script>
+                    <asset:script type="text/javascript">
                         function renderOutlierCharts(data){
                             var chartQuery = null;
 
@@ -393,7 +393,7 @@
                             facetChartGroup.loadAndDrawFacetCharts(facetChartOptions);
                             //console.log('Finished the drawing...' + chartName);
                         }
-                    </script>
+                    </asset:script>
                     <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts"></script>
 
                 </g:if>
@@ -665,7 +665,7 @@
             <p class="deleteAnnotation" style="display:block;">
                 <a class="deleteAnnotationButton btn" href="#"><g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/></a>
                 <span class="deleteAssertionSubmitProgress" style="display:none;">
-                    <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" alt="indicator icon"/>
+                    <asset:image file="indicator.gif" alt="indicator icon"/>
                 </span>
             </p>
             <br/>
@@ -750,11 +750,11 @@
             </div>
         </g:if>
         <g:if test="${record.sounds}">
-            <script>
+            <asset:script type="text/javascript">
               audiojs.events.ready(function() {
                 var as = audiojs.createAll();
               });
-            </script>
+            </asset:script>
         </g:if>
     </g:if>
     <g:else>

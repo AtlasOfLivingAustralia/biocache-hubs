@@ -2,8 +2,8 @@ package au.org.ala.biocache.hubs
 
 import au.org.ala.web.UserDetails
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONObject
 
 class AssertionsController {
     def webServicesService, authService
@@ -48,7 +48,7 @@ class AssertionsController {
             Map postResponse = webServicesService.addAssertion(recordUuid, code, comment, userDetails.userId, userDetails.displayName, userAssertionStatus, assertionUuid)
 
             if (postResponse.statusCode == 201) {
-                log.info("****** Called REST service. Assertion should be added" )
+                log.info("Called REST service. Assertion should be added" )
                 render(status: postResponse.statusCode, text:'Assertion added')
             } else {
                 log.error "Unexpected error: ${postResponse.statusCode} (${postResponse.statusCode.class.name}) : ${postResponse.statusMsg}"
@@ -58,7 +58,7 @@ class AssertionsController {
             def errorMsg = (!userDetail) ?
                     "User details not found" :
                     "Required parameters not provided: ${(!recordUuid) ? 'recordUuid' : ''} ${(!code) ? 'code' : ''}"
-            log.warn("****** Unable to add assertions. ${errorMsg}." )
+            log.warn("Unable to add assertions. ${errorMsg}." )
 
             render(status:400, text: errorMsg)
         }
@@ -78,7 +78,7 @@ class AssertionsController {
             Map postResponse = webServicesService.deleteAssertion(recordUuid, assertionUuid)
 
             if (postResponse.statusCode == 200) {
-                log.info("****** Called REST service. Assertion should be deleted" )
+                log.info("Called REST service. Assertion should be deleted" )
                 render(status: postResponse.statusCode, text:'Assertion deleted')
             } else {
                 log.error "Unexpected error: ${postResponse.statusCode} (${postResponse.statusCode.class.name}) : ${postResponse.statusMsg}"
@@ -86,7 +86,7 @@ class AssertionsController {
             }
         } else {
             def errorMsg = "Required parameters not provided: ${(!recordUuid) ? 'recordUuid' : ''} ${(!assertionUuid) ? 'assertionUuid' : ''}"
-            log.warn("****** Unable to add assertions. ${errorMsg}." )
+            log.warn("Unable to add assertions. ${errorMsg}." )
 
             render(status:400, text: errorMsg)
         }

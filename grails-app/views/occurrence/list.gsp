@@ -25,7 +25,7 @@
     </g:if>
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript">
+    <asset:script type="text/javascript">
         // single global var for app conf settings
         <g:set var="fqParamsSingleQ" value="${(params.fq) ? ' AND ' + params.list('fq')?.join(' AND ') : ''}"/>
         <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
@@ -67,7 +67,7 @@
             savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
             getPreferredSpeciesListUrl:  "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}"
         };
-    </script>
+    </asset:script>
 
     <asset:javascript src="search.js" />
     <asset:javascript src="leafletPlugins.js" />
@@ -92,11 +92,11 @@
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
         <asset:javascript src="bieAutocomplete.js"/>
     </g:if>
-    <script type="text/javascript">
+    <asset:script type="text/javascript">
         <g:if test="${!grailsApplication.config.google.apikey}">
             google.load('maps','3.5',{ other_params: "sensor=false" });
         </g:if>
-    </script>
+    </asset:script>
 </head>
 
 <body class="occurrence-search">
@@ -427,7 +427,7 @@
                             <div id="speciesGallery">[<g:message code="list.speciesgallerycontrols.speciesgallery" default="image gallery should appear here"/>]</div>
                             <div id="loadMoreSpecies" style="display:none;">
                                 <button class="btn"><g:message code="list.speciesgallerycontrols.loadmorespecies.button" default="Show more images"/></button>
-                                <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" style="display:none;" alt="indicator icon"/>
+                                <asset:image file="indicator.gif" style="display:none;" alt="indicator icon"/>
                             </div>
                         </div><!-- end #speciesWrapper -->
                     </g:if>
@@ -440,7 +440,7 @@
                             </div>
                             <div id="loadMoreImages" style="display:none;">
                                 <button class="btn"><g:message code="list.speciesgallerycontrols.loadmoreimages.button" default="Show more images"/>
-                                    <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" style="display:none;" alt="indicator icon"/>
+                                    <asset:image file="indicator.gif" style="display:none;" alt="indicator icon"/>
                                 </button>
                             </div>
                             <%-- HTML template used by AJAX code --%>

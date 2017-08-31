@@ -78,7 +78,7 @@
         }
         -->
         </style>
-        <script type="text/javascript">
+        <asset:script type="text/javascript">
 
             $(document).ready(function() {
                 // catch download submit button
@@ -161,7 +161,7 @@
                 return isValid;
             }
 
-        </script>
+        </asset:script>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><g:message code="download.button.close" default="Close"/></button>

@@ -88,7 +88,7 @@
                             <td style="text-align: right; border-right-style: none;"></td>
                         </tr>
                         <tr id="spinnerRow">
-                            <td colspan="3" style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <g:img plugin="biocache-hubs" dir="images" file="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
+                            <td colspan="3" style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image file="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
                         </tr>
                     </tbody>
                 </table>
@@ -126,12 +126,12 @@
         <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="facets.submitfacets.button" default="Close"/></button>
     </div>
 </div>
-<script type="text/javascript">
+<asset:script type="text/javascript">
     var dynamicFacets = new Array();
     <g:each in="${dynamicFacets}" var="dynamicFacet">
         dynamicFacets.push('${dynamicFacet.name}');
     </g:each>
-</script>
+</asset:script>
 <g:if test="${params.benchmarks}">
     <g:set var="endTime" value="${System.currentTimeMillis()}"/>
     ${alatag.logMsg(msg:"End of facets.gsp - " + endTime + " => " + (endTime - startTime))}

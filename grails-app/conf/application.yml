@@ -1,0 +1,10 @@
+---
+grails:
+    profile: web-plugin
+    codegen:
+        defaultPackage: au.org.ala.biocache.hubs
+info:
+    app:
+        name: '@info.app.name@'
+        version: '@info.app.version@'
+        grailsVersion: '@info.app.grailsVersion@'

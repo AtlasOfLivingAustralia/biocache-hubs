@@ -37,7 +37,7 @@
                                 <span id="submitSuccess"></span>
                             </p>
                             <p id="assertionSubmitProgress" style="display:none;">
-                                <g:img plugin="biocache-hubs" dir="images" file="indicator.gif" alt="indicator icon"/>
+                                <asset:image file="indicator.gif" alt="indicator icon"/>
                             </p>
 
                         </form>
@@ -211,7 +211,7 @@
     </g:set>
     <div class="sidebar">
 
-        <script type="text/javascript">
+        <asset:script type="text/javascript">
             $(document).ready(function() {
                 var latlng = new google.maps.LatLng(${latLngStr.trim()});
                 var myOptions = {
@@ -254,7 +254,7 @@
                 }
                 </g:if>
             });
-        </script>
+        </asset:script>
         <h3><g:message code="show.occurrencemap.title" default="Location of record"/></h3>
         <div id="occurrenceMap" class="google-maps"></div>
     </div>

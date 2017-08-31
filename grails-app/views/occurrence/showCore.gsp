@@ -19,7 +19,7 @@
 <head>
     <meta name="layout" content="ajax"/>
     <title>${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
-    <script type="text/javascript">
+    <asset:script type="text/javascript">
         // Global var OCC_REC to pass GSP data to external JS file
         var OCC_REC = {
             userId: "${userId}",
@@ -36,7 +36,7 @@
             }
         }
 
-    </script>
+    </asset:script>
 
     <asset:javascript src="show.js" />
     <asset:javascript src="amplify.js"/>

@@ -16,7 +16,7 @@
 package au.org.ala.biocache.hubs
 
 import org.apache.commons.lang.StringUtils
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONObject
 
 import javax.annotation.PostConstruct
 

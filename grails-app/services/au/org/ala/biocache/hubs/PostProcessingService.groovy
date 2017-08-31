@@ -15,8 +15,8 @@ package au.org.ala.biocache.hubs
 
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.WordUtils
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONObject
 
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest

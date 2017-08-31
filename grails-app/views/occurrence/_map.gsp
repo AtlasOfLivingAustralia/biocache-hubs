@@ -1078,7 +1078,7 @@
     </form>
 </div>
 
-<script type="text/javascript">
+<asset:script type="text/javascript">
 
     $(document).ready(function(){
 
@@ -1130,4 +1130,4 @@
         $('#downloadMap').modal('hide');
         document.location.href = downloadUrl;
     }
-</script>
+</asset:script>

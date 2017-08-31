@@ -17,9 +17,10 @@ package au.org.ala.biocache.hubs
 
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONElement
-import org.codehaus.groovy.grails.web.json.JSONObject
+import groovy.util.logging.Slf4j
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONElement
+import org.grails.web.json.JSONObject
 import au.org.ala.web.CASRoles
 
 import java.text.SimpleDateFormat
@@ -27,6 +28,7 @@ import java.text.SimpleDateFormat
 /**
  * Controller for occurrence searches and records
  */
+@Slf4j
 class OccurrenceController {
 
     def webServicesService, facetsCacheService, postProcessingService, authService
@@ -400,7 +402,7 @@ class OccurrenceController {
             }
         } catch (Exception ex) {
             flash.message = "Error generating field guide PDF. ${ex}"
-            log.error ex, ex
+            log.error ex.message, ex
             render view:'../error'
         }
     }
