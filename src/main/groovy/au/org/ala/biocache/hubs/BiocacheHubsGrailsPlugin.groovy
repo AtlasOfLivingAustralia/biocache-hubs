@@ -62,38 +62,9 @@ from the ALA biocache-service app (no local DB is required for this app).
     }
 
     def doWithSpring = {
+        println("BiocacheHubsGrailsPlugin starting")
+
         def config = application.config
-
-        // EhCache settings
-        if (!config.grails.cache.config) {
-            config.grails.cache.config = {}
-        }
-
-        config.grails.cache.config = config.grails.cache.config << {
-            defaults {
-                eternal false
-                overflowToDisk false
-                maxElementsInMemory 10000
-                timeToLiveSeconds 3600
-            }
-            cache {
-                name 'shortTermCache' // mostly used for testing
-                timeToLiveSeconds(60)
-            }
-            cache {
-                name 'collectoryCache'
-                timeToLiveSeconds(3600 * 4)
-            }
-            cache {
-                name 'longTermCache'
-                timeToLiveSeconds(3600 * 12)
-            }
-            cache {
-                name 'outageCache'
-                timeToLiveSeconds(3600 * 24 * 7)
-            }
-        }
-
 
         // Apache proxyPass & cached-resources seems to mangle image URLs in plugins, so we exclude caching it
         application.config.grails.resources.mappers.hashandcache.excludes = ["**/images/*.*","**/eya-images/*.*"]
@@ -103,12 +74,13 @@ from the ALA biocache-service app (no local DB is required for this app).
         // Load the "sensible defaults"
         //println "config.skin = ${config.skin}"
         def loadConfig = new ConfigSlurper(Environment.current.name).parse(application.classLoader.loadClass("au.org.ala.biocache.hubs.defaultConfig"))
+
         application.config = loadConfig.merge(config) // client app will now override the defaultConfig version
         //application.config.merge(loadConfig) //
         //println "config.security = ${config.security}"
 
         // Custom message source
-        messageSource(ExtendedPluginAwareResourceBundleMessageSource) {
+        customMessageSource(ExtendedPluginAwareResourceBundleMessageSource) {
             basenames = ["WEB-INF/grails-app/i18n/messages","${application.config.biocache.baseUrl}/facets/i18n"] as String[]
             cacheSeconds = (60 * 60 * 6) // 6 hours
             useCodeAsDefaultMessage = false

@@ -36,7 +36,7 @@ class FacetsCacheService {
      */
     @PostConstruct
     def init() {
-        facetsList = grailsApplication.config.facets?.cached?.split(',') ?: []
+        facetsList = grailsApplication.config?.facets?.cached?.split(',') ?: []
     }
 
     /**

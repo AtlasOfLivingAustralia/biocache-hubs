@@ -807,7 +807,7 @@ class OccurrenceTagLib {
 
         mb.meta(name:'grails.env', content: "${Environment.current}")
         metaList.each {
-            mb.meta(name:it, content: g.meta(name:it))
+            mb.meta(name:it, content: g.meta(name: it)?: '' )
         }
         mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
     }

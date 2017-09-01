@@ -9,7 +9,7 @@ import grails.plugin.cache.Cacheable
  * issues with the <g.message> tag (too slow).
  */
 class MessageSourceCacheService {
-    ExtendedPluginAwareResourceBundleMessageSource messageSource // injected with a ExtendedPluginAwareResourceBundleMessageSource (see plugin descriptor file)
+    ExtendedPluginAwareResourceBundleMessageSource customMessageSource // injected with a ExtendedPluginAwareResourceBundleMessageSource (see plugin descriptor file)
 
     @Cacheable('longTermCache')
     def getMessagesMap(Locale locale) {
