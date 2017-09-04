@@ -132,7 +132,7 @@ public class SearchRequestParams implements Validateable{
      * Constructs the params to be returned in the result
      * @return req
      */
-    public String getUrlParams(){
+    String getUrlParams(){
         StringBuilder req = new StringBuilder();
         if(qId != null){
             req.append("?q=qid:").append(qId);

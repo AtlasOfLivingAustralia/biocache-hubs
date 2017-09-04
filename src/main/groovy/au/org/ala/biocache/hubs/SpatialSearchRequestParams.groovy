@@ -32,7 +32,7 @@ class SpatialSearchRequestParams extends SearchRequestParams implements Validate
      * @return
      */
     public String getEncodedParams() {
-        return addSpatialParams(Object.getEncodedParams(), true);
+        return addSpatialParams(super.getEncodedParams(), true);
     }
 
     /**
@@ -57,7 +57,7 @@ class SpatialSearchRequestParams extends SearchRequestParams implements Validate
 
     @Override
     public String getUrlParams(){
-        StringBuilder req = new StringBuilder(Object.getUrlParams());
+        StringBuilder req = new StringBuilder(super.getUrlParams());
         if (lat != null && lon != null && radius != null) {
             req.append("&lat=").append(lat);
             req.append("&lon=").append(lon);

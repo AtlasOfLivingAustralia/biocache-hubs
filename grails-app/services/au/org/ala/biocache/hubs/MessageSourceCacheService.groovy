@@ -18,9 +18,9 @@ class MessageSourceCacheService {
             locale = new Locale("en","us")
         }
 
-        def messagesMap = messageSource.listMessageCodes(locale)
+        def messagesMap = customMessageSource.listMessageCodes(locale)
         log.debug "messagesMap size = ${messagesMap.size()}"
-        log.debug "test: search.facets.heading = ${messageSource.getMessage('search.facets.heading',null, locale)}"
+        log.debug "test: search.facets.heading = ${customMessageSource.getMessage('search.facets.heading',null, locale)}"
 
         messagesMap
     }
@@ -33,6 +33,6 @@ class MessageSourceCacheService {
      * @return
      */
     def void clearMessageCache() {
-        messageSource.clearCache()
+        customMessageSource.clearCache()
     }
 }
