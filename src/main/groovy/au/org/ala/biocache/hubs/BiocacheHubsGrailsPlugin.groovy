@@ -1,4 +1,7 @@
 package au.org.ala.biocache.hubs
+
+import grails.config.Config
+
 /*
  * Copyright (C) 2014 Atlas of Living Australia
  * All Rights Reserved.
@@ -15,6 +18,7 @@ package au.org.ala.biocache.hubs
  */
 import grails.plugins.Plugin
 import grails.util.Environment
+import org.grails.config.PropertySourcesConfig
 
 class BiocacheHubsGrailsPlugin extends Plugin {
     // the version or versions of Grails the plugin is designed for
@@ -61,59 +65,61 @@ from the ALA biocache-service app (no local DB is required for this app).
         // Note this code only gets executed at compile time (not runtime)
     }
 
-    def doWithSpring = {
-        println("BiocacheHubsGrailsPlugin starting")
+    Closure doWithSpring() {
+        { ->
+            println("BiocacheHubsGrailsPlugin starting")
 
-        def config = application.config
+            def config = application.config
 
-        // Apache proxyPass & cached-resources seems to mangle image URLs in plugins, so we exclude caching it
-        application.config.grails.resources.mappers.hashandcache.excludes = ["**/images/*.*","**/eya-images/*.*"]
-        // include fonts in resources
-        application.config.grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*', '/fonts/*']
+            // Apache proxyPass & cached-resources seems to mangle image URLs in plugins, so we exclude caching it
+            application.config.grails.resources.mappers.hashandcache.excludes = ["**/images/*.*", "**/eya-images/*.*"]
+            // include fonts in resources
+            application.config.grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*', '/fonts/*']
 
-        // Load the "sensible defaults"
-        //println "config.skin = ${config.skin}"
-        def loadConfig = new ConfigSlurper(Environment.current.name).parse(application.classLoader.loadClass("au.org.ala.biocache.hubs.defaultConfig"))
+            // Load the "sensible defaults"
+            //println "config.skin = ${config.skin}"
+            def loadConfig =  new ConfigSlurper(Environment.current.name).parse(application.classLoader.loadClass("au.org.ala.biocache.hubs.defaultConfig"))
+            Config defaultConfig = new PropertySourcesConfig(loadConfig)
+            application.config = defaultConfig.merge(config) // client app will now override the defaultConfig version
+            //application.config.merge(loadConfig) //
+            //println "config.security = ${config.security}"
 
-        application.config = loadConfig.merge(config) // client app will now override the defaultConfig version
-        //application.config.merge(loadConfig) //
-        //println "config.security = ${config.security}"
+            // Custom message source
+            customMessageSource(ExtendedPluginAwareResourceBundleMessageSource) {
+                basenames = ["WEB-INF/grails-app/i18n/messages", "${application.config.biocache.baseUrl}/facets/i18n"] as String[]
+                cacheSeconds = (60 * 60 * 6) // 6 hours
+                useCodeAsDefaultMessage = false
+            }
 
-        // Custom message source
-        customMessageSource(ExtendedPluginAwareResourceBundleMessageSource) {
-            basenames = ["WEB-INF/grails-app/i18n/messages","${application.config.biocache.baseUrl}/facets/i18n"] as String[]
-            cacheSeconds = (60 * 60 * 6) // 6 hours
-            useCodeAsDefaultMessage = false
-        }
+            // Define Custom ValueConverter beans (force EN formatting of Floats)
+            "defaultGrailsjava.lang.FloatConverter"(EnglishValueConverter) // for Float
+            defaultGrailsfloatConverter(EnglishValueConverter)             // for float
 
-        // Define Custom ValueConverter beans (force EN formatting of Floats)
-        "defaultGrailsjava.lang.FloatConverter"(EnglishValueConverter) // for Float
-        defaultGrailsfloatConverter(EnglishValueConverter)             // for float
+            println "grails.resources.work.dir = " + config.grails.resources.work.dir
 
-        println  "grails.resources.work.dir = " + config.grails.resources.work.dir
-
-        // check custom resources cache dir for permissions
-        if (config.grails.resources.work.dir) {
-            if (new File(config.grails.resources.work.dir).isDirectory()) {
-                // cache dir exists - check if its writable
-                if (!new File(config.grails.resources.work.dir).canWrite()) {
-                    //grailsConsole.error "grails.resources.work.dir (${config.grails.resources.work.dir}) is NOT WRITABLE, please fix this!"
-                    println  "grails.resources.work.dir (${config.grails.resources.work.dir}) is NOT WRITABLE, please fix this!"
-                }
-            } else {
-                // check we can create the directory
-                if (!new File(config.grails.resources.work.dir).mkdir()) {
-                    println  "grails.resources.work.dir (${config.grails.resources.work.dir}) cannot be created, please fix this!"
+            // check custom resources cache dir for permissions
+            if (config.grails.resources.work.dir) {
+                if (new File(config.grails.resources.work.dir).isDirectory()) {
+                    // cache dir exists - check if its writable
+                    if (!new File(config.grails.resources.work.dir).canWrite()) {
+                        //grailsConsole.error "grails.resources.work.dir (${config.grails.resources.work.dir}) is NOT WRITABLE, please fix this!"
+                        println "grails.resources.work.dir (${config.grails.resources.work.dir}) is NOT WRITABLE, please fix this!"
+                    }
+                } else {
+                    // check we can create the directory
+                    if (!new File(config.grails.resources.work.dir).mkdir()) {
+                        println "grails.resources.work.dir (${config.grails.resources.work.dir}) cannot be created, please fix this!"
+                    }
                 }
             }
-        }
 
-        // check if the "bootstrap' resource is loaded from client app or another plugin
-        def resourceTagLib = application.getClassForName('org.grails.plugin.resource.ResourceTagLib')
-        try {
-            resourceTagLib.require(module: 'bootstrap')
-        } catch (Exception e) {
-            println  "Required resource 'bootstrap' not declared. Ensure the client app has this in their ApplicationResources.groovy file (or a plugin).", e
+            // check if the "bootstrap' resource is loaded from client app or another plugin
+            def resourceTagLib = application.getClassForName('org.grails.plugin.resource.ResourceTagLib')
+            try {
+                resourceTagLib.require(module: 'bootstrap')
+            } catch (Exception e) {
+                println "Required resource 'bootstrap' not declared. Ensure the client app has this in their ApplicationResources.groovy file (or a plugin).", e
+            }
         }
     }
 
