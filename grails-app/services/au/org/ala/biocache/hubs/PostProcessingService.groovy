@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest
  * Service to perform processing of data between the DAO and View layers
  */
 class PostProcessingService {
-    def grailsApplication, messageSource
+    def grailsApplication
 
     /**
      * Determine if the record contains images

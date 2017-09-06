@@ -67,7 +67,7 @@ dependencies {
     compile "net.sf.supercsv:super-csv:2.1.0"
 
     //plugins
-    compile 'org.grails.plugins:cache:4.0.0'
+//    compile 'org.grails.plugins:cache:4.0.0'
     compile 'org.grails.plugins:cache-ehcache:3.0.0.M1'
     compile 'org.grails.plugins:http-builder-helper:1.0.2.ALA'
 

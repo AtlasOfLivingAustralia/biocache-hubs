@@ -30,7 +30,6 @@ import java.text.SimpleDateFormat
  */
 @Slf4j
 class OccurrenceController {
-
     def webServicesService, facetsCacheService, postProcessingService, authService
 
     GeoIpService geoIpService
@@ -73,7 +72,7 @@ class OccurrenceController {
         log.debug "skin.useAlaBie = ${grailsApplication.config.skin.useAlaBie}"
         log.debug "taxaQueries = ${taxaQueries} || q = ${requestParams.q}"
 
-        if (grailsApplication.config.skin.useAlaBie?.toBoolean() &&
+        if (grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean() &&
                 grailsApplication.config.bie.baseUrl && taxaQueries && taxaQueries[0]) {
             // check for list with empty string
             // taxa query - attempt GUID lookup
@@ -98,9 +97,9 @@ class OccurrenceController {
             String[] userFacets = postProcessingService.getFacetsFromCookie(request)
             String[] filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
 
-            if(!userFacets && grailsApplication.config.facets.defaultSelected){
-                userFacets = grailsApplication.config.facets.defaultSelected.trim().split(",")
-
+            final facetsDefaultSelectedConfig = grailsApplication.config.facets.defaultSelected
+            if(!userFacets && facetsDefaultSelectedConfig){
+                userFacets = facetsDefaultSelectedConfig.trim().split(",")
                 def facetKeys = defaultFacets.keySet()
                 facetKeys.each {
                     defaultFacets.put(it, false)
@@ -114,7 +113,7 @@ class OccurrenceController {
 
             String[] requestedFacets = userFacets ?: filteredFacets
 
-            if (grailsApplication.config.facets.includeDynamicFacets?.toBoolean()) {
+            if (grailsApplication.config.facets.includeDynamicFacets?.toString()?.toBoolean()) {
                 // Sandbox only...
                 dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
                 requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
@@ -144,7 +143,7 @@ class OccurrenceController {
             }
 
             def hasImages = postProcessingService.resultsHaveImages(searchResults)
-            if(grailsApplication.config.alwaysshow.imagetab.toBoolean()){
+            if(grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()){
                 hasImages = true
             }
 
