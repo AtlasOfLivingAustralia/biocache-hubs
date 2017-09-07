@@ -29,12 +29,14 @@ var geocoder, map, marker, circle, markerInfowindow, lastInfoWindow, taxon, taxo
 var points = [], infoWindows = [], speciesGroup = "ALL_SPECIES";
 var zoomForRadius = {
     1000: 14,
+    2000: 13,
     5000: 12,
     10000: 11
 };
 var radiusForZoom = {
     11: 10,
     12: 5,
+    13: 2,
     14: 1
 };
 
@@ -505,7 +507,7 @@ function geocodeAddress(reverseGeocode) {
     var latLng = null;
 
     // Check if input contains a comma and try and patch coordinates
-    if (address && address.indexOf(",") > -1 && magellan) {
+    if (!latLng && address && address.indexOf(",") > -1 && magellan) {
         var parts = address.split(",");
         var lat = magellan(parts[0].trim()).latitude(); //.toDD();
         var lng = magellan(parts[1].trim()).longitude(); //.toDD();
