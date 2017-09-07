@@ -44,12 +44,12 @@
     <asset:stylesheet src="exploreYourArea.css" />
     <asset:stylesheet src="qtip.css" />
 
-    <script type="text/javascript">
+    <asset:script type="text/javascript">
         // Global variables for yourAreaMap.js
         var EYA_CONF = {
             contextPath: "${request.contextPath}",
             biocacheServiceUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}",
-            imagesUrlPrefix: "${request.contextPath}/static/js/eya-images",
+            imagesUrlPrefix: '${ raw(asset.assetPath(src: '/eya-images')) }',
             zoom: ${zoom},
             radius: ${radius},
             speciesPageUrl: "${speciesPageUrl}",
@@ -61,7 +61,7 @@
 
         //make the taxa and rank global variable so that they can be used in the download
         var taxa = ["*"], rank = "*";
-    </script>
+    </asset:script>
 </head>
 <body class="nav-locations explore-your-area">
 <div id="header" class="heading-bar">
@@ -101,6 +101,7 @@
                 <g:message code="eya.searchformradius.label01" default="Display records in a"/>
                 <select id="radius" name="radius" class="" style="height:24px;width:auto;line-height:18px;margin-bottom:0;">
                     <option value="1" <g:if test="${radius == 1}">selected</g:if>>1</option>
+                    <option value="2" <g:if test="${radius == 2}">selected</g:if>>2</option>
                     <option value="5" <g:if test="${radius == 5}">selected</g:if>>5</option>
                     <option value="10" <g:if test="${radius == 10}">selected</g:if>>10</option>
                 </select> <g:message code="eya.searchformradius.label02" default="km radius"/>
