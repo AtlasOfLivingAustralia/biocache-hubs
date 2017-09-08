@@ -50,7 +50,7 @@
         var EYA_CONF = {
             contextPath: "${request.contextPath}",
             biocacheServiceUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}",
-            imagesUrlPrefix: "${request.contextPath}/static/js/eya-images",
+            imagesUrlPrefix: "${request.contextPath}/assets/eya-images",
             zoom: ${zoom},
             radius: ${radius},
             speciesPageUrl: "${speciesPageUrl}",

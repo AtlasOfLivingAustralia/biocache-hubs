@@ -341,7 +341,7 @@ class OccurrenceController {
                 latitude: lat,
                 longitude: lng,
                 radius: radius,
-                zoom: radiusToZoomLevelMap.get(radius),
+                zoom: radiusToZoomLevelMap.get(radius?.toString()),
                 location: grailsApplication.config.exploreYourArea.location,
                 speciesPageUrl: grailsApplication.config.bie.baseUrl + "/species/"
         ]

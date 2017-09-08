@@ -26,11 +26,13 @@
     </g:else>
 
     <!-- Here are the laflet plugins JS -->
+    <asset:javascript src="leaflet/leaflet.js" />
     <asset:javascript src="leafletPlugins.js" />
     <asset:javascript src="mapCommon.js"/>
     <asset:javascript src="bootstrapCombobox.js"/>
 
     <!-- Here are the laflet plugins CSS-->
+    <asset:stylesheet src="leaflet/leaflet.css" />
     <asset:stylesheet src="leafletPlugins.css" />
     <asset:stylesheet src="searchMap.css" />
     <asset:stylesheet src="bootstrapCombobox.css" />

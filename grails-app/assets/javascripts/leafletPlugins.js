@@ -1,4 +1,4 @@
-//= require leaflet.js
+// **** = require leaflet.js povided by images plugin
 //= require leaflet-fullscreen.js
 //= require leaflet-plugins/layer/tile/Google.js
 //= require leaflet-plugins/spin/spin.min.js

@@ -23,7 +23,7 @@ class SpatialSearchRequestParams extends SearchRequestParams implements Validate
      */
     @Override
     public String toString() {
-        return addSpatialParams(Object.toString(), false);
+        return addSpatialParams(super.toString(), false);
     }
 
     /**
@@ -49,7 +49,7 @@ class SpatialSearchRequestParams extends SearchRequestParams implements Validate
             req.append("&radius=").append(radius);
         }
         if(wkt != null && wkt.length() >0)
-            req.append("&wkt=").append(Object.conditionalEncode(wkt, encodeParams));
+            req.append("&wkt=").append(conditionalEncode(wkt, encodeParams));
         if(gk)
             req.append("&gk=true");
         return req.toString();

@@ -37,7 +37,7 @@
                                 <span id="submitSuccess"></span>
                             </p>
                             <p id="assertionSubmitProgress" style="display:none;">
-                                <asset:image file="indicator.gif" alt="indicator icon"/>
+                                <asset:image src="indicator.gif" alt="indicator icon"/>
                             </p>
 
                         </form>

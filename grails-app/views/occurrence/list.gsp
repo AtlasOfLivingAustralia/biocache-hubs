@@ -70,6 +70,7 @@
     </asset:script>
 
     <asset:javascript src="search.js" />
+    <asset:javascript src="ala/images-client.js"/>
     <asset:javascript src="leafletPlugins.js" />
     <asset:javascript src="slider.js" />
     <asset:javascript src="qtip.js"/>
@@ -78,18 +79,19 @@
     <asset:javascript src="moment.js"/>
     <asset:javascript src="mapCommon.js"/>
     <asset:javascript src="ala/ala-charts.js"/>
-    <asset:javascript src="ala/ala-images-client.js"/>
+
 
     <asset:stylesheet src="search.css" />
+    <asset:stylesheet src="ala/images-client.css"
     <asset:stylesheet src="leafletPlugins.css" />
     <asset:stylesheet src="slider.css" />
     <asset:stylesheet src="qtip.css" />
     <asset:stylesheet src="nanoscroller.css" />
     <asset:stylesheet src="ala/ala-charts.css" />
-    <asset:stylesheet src="ala/ala-images-client.css" />
+    />
 
 
-    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
+    <g:if test="${grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean()}">
         <asset:javascript src="bieAutocomplete.js"/>
     </g:if>
     <asset:script type="text/javascript">
@@ -163,7 +165,7 @@
                         <span class="caret"></span>
                     </a>
                     <div class="dropdown-menu" role="menu"> <%--facetOptions--%>
-                        <h4><g:message code="list.customisefacetsbutton.div01.title" default="Select the filter categories that you want to appear in the &quot;Refine results&quot; column"/></h4>
+                        <h4><g:message code="list.customisefacetsbutton.div01.title" default="* * Select the filter categories that you want to appear in the &quot;Refine results&quot; column"/></h4>
                         <div id="facetCheckboxes">
                         <g:message code="list.facetcheckboxes.label01" default="Select"/>: <a href="#" id="selectAll"><g:message code="list.facetcheckboxes.navigator01" default="All"/></a> | <a href="#" id="selectNone"><g:message code="list.facetcheckboxes.navigator02" default="None"/></a>
                             &nbsp;&nbsp;
@@ -427,7 +429,7 @@
                             <div id="speciesGallery">[<g:message code="list.speciesgallerycontrols.speciesgallery" default="image gallery should appear here"/>]</div>
                             <div id="loadMoreSpecies" style="display:none;">
                                 <button class="btn"><g:message code="list.speciesgallerycontrols.loadmorespecies.button" default="Show more images"/></button>
-                                <asset:image file="indicator.gif" style="display:none;" alt="indicator icon"/>
+                                <asset:image src="indicator.gif" style="display:none;" alt="indicator icon"/>
                             </div>
                         </div><!-- end #speciesWrapper -->
                     </g:if>
@@ -440,7 +442,7 @@
                             </div>
                             <div id="loadMoreImages" style="display:none;">
                                 <button class="btn"><g:message code="list.speciesgallerycontrols.loadmoreimages.button" default="Show more images"/>
-                                    <asset:image file="indicator.gif" style="display:none;" alt="indicator icon"/>
+                                    <asset:image src="indicator.gif" style="display:none;" alt="indicator icon"/>
                                 </button>
                             </div>
                             <%-- HTML template used by AJAX code --%>

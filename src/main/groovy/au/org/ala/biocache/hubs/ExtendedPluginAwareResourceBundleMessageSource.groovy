@@ -14,8 +14,14 @@
  */
 package au.org.ala.biocache.hubs
 
+import grails.util.CacheEntry
 import org.grails.spring.context.support.PluginAwareResourceBundleMessageSource
+import org.grails.spring.context.support.ReloadableResourceBundleMessageSource
+import org.springframework.beans.factory.annotation.Autowired
 
+import java.util.concurrent.Callable
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 
 /**
  * Extend PluginAwareResourceBundleMessageSource so we can access the (protected)
@@ -23,7 +29,21 @@ import org.grails.spring.context.support.PluginAwareResourceBundleMessageSource
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
-class ExtendedPluginAwareResourceBundleMessageSource extends PluginAwareResourceBundleMessageSource {
+class ExtendedPluginAwareResourceBundleMessageSource extends ReloadableResourceBundleMessageSource {
+
+    /** Cache to hold merged loaded properties per locale */
+    private final ConcurrentMap<Locale, CacheEntry<Properties>> cachedMergedExtendedProperties = new ConcurrentHashMap<Locale, CacheEntry<Properties>>();
+
+
+    private PluginAwareResourceBundleMessageSource messageSource
+
+    @Autowired
+    void setMessageSource(PluginAwareResourceBundleMessageSource messageSource) {
+        this.messageSource = messageSource
+    }
+
+
+
     /**
      * Provide a complete listing of properties for a given locale, as a Map
      * Client app properties override those from this plugin
@@ -32,8 +52,18 @@ class ExtendedPluginAwareResourceBundleMessageSource extends PluginAwareResource
      * @return
      */
     Map<String, String> listMessageCodes(Locale locale) {
-        Properties pluginProperties = getMergedPluginProperties(locale).properties
-        Properties properties = getMergedProperties(locale).properties
-        return pluginProperties.plus(properties)
+        return CacheEntry.getValue(cachedMergedExtendedProperties, locale, cacheMillis, new Callable<Properties>() {
+            @Override
+            public Properties call() throws Exception {
+                Properties pluginProperties = messageSource.getMergedPluginProperties(locale).properties
+                Properties properties = getMergedProperties(locale).properties
+                return pluginProperties.plus(properties)
+            }
+        });
+    }
+
+    @Override
+    protected String getMessageInternal(String code, Object[] args, Locale locale) {
+        return messageSource.getMessageInternal(code, args, locale) ?: super.getMessageInternal(code, args, locale)
     }
 }

@@ -665,7 +665,7 @@
             <p class="deleteAnnotation" style="display:block;">
                 <a class="deleteAnnotationButton btn" href="#"><g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/></a>
                 <span class="deleteAssertionSubmitProgress" style="display:none;">
-                    <asset:image file="indicator.gif" alt="indicator icon"/>
+                    <asset:image src="indicator.gif" alt="indicator icon"/>
                 </span>
             </p>
             <br/>
