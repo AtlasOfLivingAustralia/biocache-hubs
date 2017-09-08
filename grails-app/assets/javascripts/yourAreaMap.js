@@ -206,6 +206,14 @@ $(document).ready(function() {
         }
     });
 
+    //offline download
+    $("#offlineDownloadBtn").bind('click', function(event){
+        event.preventDefault();
+        redirectToOfflineDownload();
+        return false;
+    });
+
+
 }); // end onLoad event
 
 //var proj900913 = new OpenLayers.Projection("EPSG:900913");
@@ -526,7 +534,8 @@ function geocodeAddress(reverseGeocode) {
 
     if (!latLng && geocoder && address) {
         //geocoder.getLocations(address, addAddressToPage);
-        geocoder.geocode( {'address': address, region: EYA_CONF.geocodeRegion}, function(results, status) {
+
+        geocoder.geocode( { 'address': address, 'region': EYA_CONF.geocodeRegion, 'componentRestrictions': {'country' : EYA_CONF.geocodeRegion} }, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 // geocode was successful
                 //console.log('geocodeAddress results', results);
@@ -811,4 +820,28 @@ function bookmarkedSearch(lat, lng, zoom1, group) {
     updateMarkerPosition(new google.maps.LatLng(lat, lng));
     // load map and groups
     initialize();
+}
+
+/**
+ * Redirects to a offline download page.
+ */
+function redirectToOfflineDownload(){
+
+    var downloadUrlPrefix = EYA_CONF.serverURL + "/download?searchParams=";
+
+    var searchParams = $(":input#searchParams").val();
+
+    if (searchParams) {
+        downloadUrlPrefix += searchParams;
+    } else {
+        searchParams = "";
+        // EYA page is JS driven
+        searchParams += "q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val();
+        if (speciesGroup && speciesGroup != "ALL_SPECIES") {
+            searchParams += "&fq=species_group:" + speciesGroup;
+        }
+    }
+
+    var url = downloadUrlPrefix + encodeURIComponent(searchParams) + "&targetUri=" + EYA_CONF.contextPath + "/occurrences/search";
+    window.location.href = url;
 }

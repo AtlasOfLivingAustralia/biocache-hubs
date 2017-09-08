@@ -99,6 +99,9 @@ facets.hide = "genus,order,class,phylum,kingdom,raw_taxon_name,rank,interaction,
 facets.include = "establishment_means,user_assertions,assertion_user_id,name_match_metric,duplicate_type,alau_user_id,raw_datum,raw_sex,life_stage,elevation_d_rng,identified_by,species_subgroup,cl1048"
 facets.cached = "collection_uid,institution_uid,data_resource_uid,data_provider_uid,type_status,basis_of_record,species_group,loan_destination,establishment_means,state_conservation,state,cl1048,cl21,cl966,country,cl959"
 
+// the default set of facets that are enabled
+facets.defaultSelected = "data_resource_uid,taxon_name,year"
+
 map.cloudmade.key = "BC9A493B41014CAABB98F0471D759707"
 map.defaultFacetMapColourBy = "basis_of_record"
 map.pointColour = "df4a21"
@@ -112,25 +115,35 @@ map.overlay.name
 map.minimal.url = "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
 map.minimal.attr = "Map data &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>, imagery &copy; <a href='https://carto.com/attribution'>CartoDB</a>"
 map.minimal.subdomains = "abcd"
+
 //map.mapbox.id = "nickdos.kf2g7gpb" // https://mapbox.com/ Registered by Nick - free to use so anyone can create a new one and add it here
 //map.mapbox.token = "pk.eyJ1Ijoibmlja2RvcyIsImEiOiJ2V2dBdEg0In0.Ep2VyMOaOUnOwN1ZVa9uyQ"
-
 
 suppressIssues = "" // "missingCoordinatePrecision"
 sensitiveDataset.list = ""
 
+//sandbox config
 table.displayDynamicProperties = false
 
+//geocode region used in EYA lookups
 geocode.region = "AU"
 
+//whether or not to use offline downloads from EYA
+eya.downloadsoffline = false
+
 // GeoIP plugin conf
-grails.plugin.geoip.data.cache=0
+grails.plugin.geoip.data.cache = 0
+
 //grails.plugin.geoip.data.resource = '/data/maxmind/GeoLiteCity.dat'
 grails.plugin.geoip.data.path="/data/${grails.util.Metadata.current.'app.name'}/config/GeoLiteCity.dat"
 
+//URL to fieldguide service
 fieldguide.url="https://fieldguide.ala.org.au"
-stateConservationListPath = [:] // to prevent NPE - set in ext config
+
 // example: stateConservationListPath.NewSouthWales = "/speciesListItem/list/dr650"
+stateConservationListPath = [:] // to prevent NPE - set in ext config
+
+//always show image tab - i.e. regardless of whether multimedia facet is selected
 alwaysshow.imagetab = false
 
-facets.defaultSelected = "data_resource_uid,taxon_name,year"
+

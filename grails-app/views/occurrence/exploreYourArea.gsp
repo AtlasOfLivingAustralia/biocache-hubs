@@ -47,6 +47,7 @@
     <asset:script type="text/javascript">
         // Global variables for yourAreaMap.js
         var EYA_CONF = {
+            serverURL: "${grailsApplication.config.grails.serverURL}",
             contextPath: "${request.contextPath}",
             biocacheServiceUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}",
             imagesUrlPrefix: '${ raw(asset.assetPath(src: '/eya-images')) }',
@@ -111,8 +112,14 @@
                     <span id="recordsGroupText"><g:message code="eya.searchform.a.viewallrecords.02" default="all"/></span>  <g:message code="eya.searchform.a.viewallrecords.03" default="records"/></a>
             </span>
             <span class="pad">
-                <a href="#download" role="button" data-toggle="modal" class="btn btn-small tooltips" title="Download all records OR species checklist">
-                    <i class="icon-download"></i> <g:message code="eya.searchform.a.downloads" default="Downloads"/></a>
+                <g:if test="${grailsApplication.config.eya.downloadsoffline}">
+                    <a id="offlineDownloadBtn" role="button" class="btn btn-small " title="Start download...">
+                        <i class="icon-download"></i> <g:message code="eya.searchform.a.downloads" default="Downloads"/></a>
+                </g:if>
+                <g:else>
+                    <a href="#download" role="button" data-toggle="modal" class="btn btn-small tooltips" title="Download all records OR species checklist">
+                        <i class="icon-download"></i> <g:message code="eya.searchform.a.downloads" default="Downloads"/></a>
+                </g:else>
             </span>
         </div>
         <div id="dialog-confirm" title="Continue with download?" style="display: none">
