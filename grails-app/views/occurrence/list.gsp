@@ -78,7 +78,7 @@
     <asset:javascript src="moment.js"/>
     <asset:javascript src="mapCommon.js"/>
     <asset:javascript src="ala/ala-charts.js"/>
-    <asset:javascript src="ala/ala-images-client.js"/>
+    <asset:javascript src="ala/images-client.js"/>
 
     <asset:stylesheet src="search.css" />
     <asset:stylesheet src="leafletPlugins.css" />
@@ -86,7 +86,7 @@
     <asset:stylesheet src="qtip.css" />
     <asset:stylesheet src="nanoscroller.css" />
     <asset:stylesheet src="ala/ala-charts.css" />
-    <asset:stylesheet src="ala/ala-images-client.css" />
+    <asset:stylesheet src="ala/images-client.css" />
 
 
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">

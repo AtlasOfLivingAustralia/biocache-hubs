@@ -4,4 +4,5 @@
  *= require leaflet-plugins/coordinates/Leaflet.Coordinates-0.1.4.css
  // ?? resource url:[dir:'js/leaflet-plugins/coordinates', file:'Leaflet.Coordinates-0.1.4.ie.css', plugin:'biocache-hubs'], attrs: [ media: 'all' ], wrapper: { s -> "<!--[if lt IE 8]>$s<![endif]-->" }
  *= require leaflet-plugins/draw/leaflet.draw.css
+ *= require leaflet-plugins/loading/Control.loading.css
  */

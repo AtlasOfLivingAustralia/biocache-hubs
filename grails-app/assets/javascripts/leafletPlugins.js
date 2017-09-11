@@ -7,4 +7,5 @@
 //= require leaflet-plugins/draw/leaflet.draw-src.js
 //= require leaflet-plugins/wicket/wicket.js
 //= require leaflet-plugins/wicket/wicket-leaflet.js
+//= require leaflet-plugins/loading/Control.loading.js
 //= require LeafletToWKT.js
