@@ -606,6 +606,13 @@ $(document).ready(function() {
 
     // show image only after modal dialog is shown. otherwise, image position will be off the viewing area.
     $('#imageDialog').on('shown.bs.modal',function () {
+
+        if($("#viewerContainerId").width() == 0){
+            //this is a workaround for #viewContainerId having width of zero, which results in the
+            //image not rendering
+            $("#viewerContainerId").width(($('#imageDialog').width() - 50));
+        }
+
         imgvwr.viewImage($("#viewerContainerId"), imageId, scientificName, undefined, {
             imageServiceBaseUrl: BC_CONF.imageServiceBaseUrl,
             addSubImageToggle: false,
