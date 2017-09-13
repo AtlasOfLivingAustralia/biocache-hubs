@@ -82,7 +82,7 @@
 
 
     <asset:stylesheet src="search.css" />
-    <asset:stylesheet src="ala/images-client.css"
+    <asset:stylesheet src="ala/images-client.css" />
     <asset:stylesheet src="leafletPlugins.css" />
     <asset:stylesheet src="slider.css" />
     <asset:stylesheet src="qtip.css" />
