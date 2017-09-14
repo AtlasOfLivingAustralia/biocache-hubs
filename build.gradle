@@ -37,7 +37,7 @@ configurations.all {
 // Inplace plugin config
 
 // Set to true it needed only for development
-boolean inplace = true
+boolean inplace = false
 // Inplace plugins ala-charts-plugin and images-client-plugin are defined in ala-hub cinfiguration
 
 dependencies {

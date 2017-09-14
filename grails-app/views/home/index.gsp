@@ -25,13 +25,13 @@
         <script src="https://maps.google.com/maps/api/js"></script>
     </g:else>
 
-    <!-- Here are the laflet plugins JS -->
+    <!-- Here are the leaflet plugins JS -->
     <asset:javascript src="leaflet/leaflet.js" />
     <asset:javascript src="leafletPlugins.js" />
     <asset:javascript src="mapCommon.js"/>
     <asset:javascript src="bootstrapCombobox.js"/>
 
-    <!-- Here are the laflet plugins CSS-->
+    <!-- Here are the leaflet plugins CSS-->
     <asset:stylesheet src="leaflet/leaflet.css" />
     <asset:stylesheet src="leafletPlugins.css" />
     <asset:stylesheet src="searchMap.css" />
