@@ -260,7 +260,7 @@
 </form>
 <asset:script type="text/javascript">
     $(document).ready(function() {
-        $('.bscombobox').combobox({bsVersion: '2'});
+        $('.bscombobox').combobox({bsVersion: '3'});
     });
 
 </asset:script>
