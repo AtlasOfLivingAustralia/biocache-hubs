@@ -177,7 +177,7 @@ a.taxonBrowse2, a.taxonBrowse2:hover, a.taxonBrowse2:focus {
 #taxaBox p {
     margin-bottom: 5px;
 }
-#searchForm .input-append {
+#searchForm .input-group {
     /*width: 40%;*/
 }
 #searchForm #address {
@@ -216,7 +216,7 @@ button#download {
 #locationInfo #resultsInfo {
     margin: 10px 0;
 }
-#locationInfo .btn-small {
+#locationInfo .btn-sm {
     font-size: 12px;
 }
 #markerAddress {

@@ -105,15 +105,15 @@ form {
     display: block !important;
 }
 
-#content ul.nav-tabs {
-    list-style: none;
-    margin-left: 0;
-}
+/*#content ul.nav-tabs {*/
+    /*list-style: none;*/
+    /*margin-left: 0;*/
+/*}*/
 
-.nav-tabs > li > a {
-    padding-top: 6px;
-    padding-bottom: 6px;
-}
+/*.nav-tabs > li > a {*/
+    /*padding-top: 6px;*/
+    /*padding-bottom: 6px;*/
+/*}*/
 
 #facetWell h3 {
     margin: 0;
@@ -202,23 +202,16 @@ form {
     margin: 3px 6px;
 }
 
-.nav-tabs li a {
-    background-color: #f0f0e8;
-    border: 1px solid #ddd;
-    margin-right: 4px;
-}
+/*.nav-tabs li a {*/
+    /*background-color: #f0f0e8;*/
+    /*border: 1px solid #ddd;*/
+    /*margin-right: 4px;*/
+/*}*/
 
-.tabbable .nav-tabs {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-.tab-content {
-    border-bottom: 1px solid #DDD;
-    border-right: 1px solid #DDD;
-    border-left: 1px solid #DDD;
-    padding: 15px;
-}
+/*.tabbable .nav-tabs {*/
+    /*margin-top: 0;*/
+    /*margin-bottom: 0;*/
+/*}*/
 
 #listMapToggle {
     margin-top: 2px;
@@ -374,7 +367,7 @@ div#currentFilter {
     font-size: 16px;
 }
 
-#resultsReturned .btn-small, #submitFacets .btn-small {
+#resultsReturned .btn btn-default btn-default-sm, #submitFacets .btn btn-default btn-default-sm {
     font-size: 13px;
 }
 #results {
@@ -426,7 +419,7 @@ div#currentFilter {
 #results {
     clear: both;
 }
-#downloads a, #alerts a, #mapView .btn a, #customiseFacetsButton > .btn {
+#downloads a, #alerts a, #mapView .btn btn-default btn-default a, #customiseFacetsButton > .btn btn-default btn-default {
     font-size: 12px;
     font-weight: bold;
     color: inherit;
@@ -438,7 +431,7 @@ div#currentFilter {
     padding-left: 6px;
     padding-right: 9px;
 }
-#downloads a:hover, #alerts a:hover, #mapView .btn a:hover {
+#downloads a:hover, #alerts a:hover, #mapView .btn btn-default btn-default a:hover {
     text-decoration: none;
 }
 
@@ -885,7 +878,7 @@ span.red {
     color:red;
 }
 
-.row-fluid .dropdown-menu {
+.row .dropdown-menu {
     z-index: 2000;
 }
 
@@ -895,7 +888,7 @@ span.red {
     line-height: 2.0em;
 }
 
-.activeFilters .btn {
+.activeFilters .btn btn-default btn-default {
     font-size: 13px;
 }
 
@@ -929,7 +922,7 @@ span.red {
     text-align: right;
 }
 
-.leaflet-popup-content .btn-mini {
+.leaflet-popup-content .btn btn-default btn-default-xs {
     font-size: 12px;
     font-weight: bold;
 }
@@ -993,3 +986,8 @@ span.red {
 #imageDialog .modal-body{overflow-y: hidden;position:static;top:50px;bottom:50px;right:0px;left:0px; max-height:90%;}
 
 #imageDialog .modal-footer {position: absolute;bottom: 0;right: 0;left: 0;}
+
+.simpleSearchNote {
+    font-size: 12px;
+    color: #444;
+}

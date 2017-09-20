@@ -53,7 +53,7 @@ $(document).ready(function() {
 
 
     // initialise BS tabs
-    $('a[data-toggle="tab"]').on('shown', function(e) {
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
         //console.log("this", $(this).attr('id'));
         var id = $(this).attr('id');
         var tab = e.currentTarget.hash.substring(1);
