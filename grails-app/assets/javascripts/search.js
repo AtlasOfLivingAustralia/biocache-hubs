@@ -177,9 +177,9 @@ $(document).ready(function() {
     });
 
     // user selectable facets...
-    $("#updateFacetOptions").live("click",function(e) {
+    $("#updateFacetOptions").click(function(e) {
         e.preventDefault();
-        //alert("about to reload with new facets...");
+        // alert("about to reload with new facets...");
         var selectedFacets = [];
         // iterate over seleted facet options
         $(":input.facetOpts:checked").each(function(i, el) {

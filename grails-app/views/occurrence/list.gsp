@@ -14,27 +14,27 @@
 <html>
 <head>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
-    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
-    <meta name="section" content="search"/>
-    <meta name="breadcrumbParent" content="${request.contextPath ?: '/'},${message(code: "search.heading.list")}"/>
-    <meta name="breadcrumb" content="${message(code: "list.search.results")}"/>
-    <title><g:message code="list.title"
-                      default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message
-            code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
+<meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+<meta name="section" content="search"/>
+<meta name="breadcrumbParent" content="${request.contextPath ?: '/'},${message(code: "search.heading.list")}"/>
+<meta name="breadcrumb" content="${message(code: "list.search.results")}"/>
+<title><g:message code="list.title"
+                  default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message
+        code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
 
-    <g:if test="${grailsApplication.config.google.apikey}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}"
-                type="text/javascript"></script>
-    </g:if>
+<g:if test="${grailsApplication.config.google.apikey}">
+    <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}"
+            type="text/javascript"></script>
+</g:if>
 
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <asset:script type="text/javascript">
-        // single global var for app conf settings
-        <g:set var="fqParamsSingleQ" value="${(params.fq) ? ' AND ' + params.list('fq')?.join(' AND ') : ''}"/>
-        <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
-        <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
-        var BC_CONF = {
-            contextPath: "${request.contextPath}",
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<asset:script type="text/javascript">
+    // single global var for app conf settings
+    <g:set var="fqParamsSingleQ" value="${(params.fq) ? ' AND ' + params.list('fq')?.join(' AND ') : ''}"/>
+    <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
+    <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
+    var BC_CONF = {
+        contextPath: "${request.contextPath}",
             serverName: "${grailsApplication.config.serverName}${request.contextPath}",
             searchString: "${searchString}", //  JSTL var can contain double quotes // .encodeAsJavaScript()
             facetQueries: "${fqParams.encodeAsURL()}",
@@ -64,72 +64,71 @@
             addLikeDislikeButton: ${(grailsApplication.config.addLikeDislikeButton == false) ? false : true},
             addPreferenceButton: <imageClient:checkAllowableEditRole/> ,
             userRatingHelpText: '<div><b>Up vote (<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>) an image:</b>'+
-    ' Image supports the identification of the species or is representative of the species.  Subject is clearly visible including identifying features.<br/><br/>'+
-    '<b>Down vote (<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>) an image:</b>'+
-    ' Image does not support the identification of the species, subject is unclear and identifying features are difficult to see or not visible.<br/>
-    </div>',
+' Image supports the identification of the species or is representative of the species.  Subject is clearly visible including identifying features.<br/><br/>'+
+'<b>Down vote (<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>) an image:</b>'+
+' Image does not support the identification of the species, subject is unclear and identifying features are difficult to see or not visible.<br/></div>',
             savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
             getPreferredSpeciesListUrl:  "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}"
         };
-    </asset:script>
+</asset:script>
 
-    <asset:javascript src="search.js"/>
-    <asset:javascript src="ala/images-client.js"/>
-    <asset:javascript src="leafletPlugins.js"/>
-    <asset:javascript src="slider.js"/>
-    <asset:javascript src="qtip.js"/>
-    <asset:javascript src="nanoscroller.js"/>
-    <asset:javascript src="amplify.js"/>
-    <asset:javascript src="moment.js"/>
-    <asset:javascript src="mapCommon.js"/>
-    <asset:javascript src="ala/ala-charts.js"/>
-
-
-    <asset:stylesheet src="search.css"/>
-    <asset:stylesheet src="ala/images-client.css"/>
-    <asset:stylesheet src="leafletPlugins.css"/>
-    <asset:stylesheet src="slider.css"/>
-    <asset:stylesheet src="qtip.css"/>
-    <asset:stylesheet src="nanoscroller.css"/>
-    <asset:stylesheet src="ala/ala-charts.css"/>
-    />
+<asset:javascript src="search.js"/>
+<asset:javascript src="ala/images-client.js"/>
+<asset:javascript src="leafletPlugins.js"/>
+<asset:javascript src="slider.js"/>
+<asset:javascript src="qtip.js"/>
+<asset:javascript src="nanoscroller.js"/>
+<asset:javascript src="amplify.js"/>
+<asset:javascript src="moment.js"/>
+<asset:javascript src="mapCommon.js"/>
+<asset:javascript src="ala/ala-charts.js"/>
 
 
-    <g:if test="${grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean()}">
-        <asset:javascript src="bieAutocomplete.js"/>
+<asset:stylesheet src="search.css"/>
+<asset:stylesheet src="ala/images-client.css"/>
+<asset:stylesheet src="leafletPlugins.css"/>
+<asset:stylesheet src="slider.css"/>
+<asset:stylesheet src="qtip.css"/>
+<asset:stylesheet src="nanoscroller.css"/>
+<asset:stylesheet src="ala/ala-charts.css"/>
+
+
+<g:if test="${grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean()}">
+    <asset:javascript src="bieAutocomplete.js"/>
+</g:if>
+<asset:script type="text/javascript">
+    <g:if test="${!grailsApplication.config.google.apikey}">
+        google.load('maps','3.5',{ other_params: "sensor=false" });
     </g:if>
-    <asset:script type="text/javascript">
-        <g:if test="${!grailsApplication.config.google.apikey}">
-            google.load('maps','3.5',{ other_params: "sensor=false" });
-        </g:if>
-    </asset:script>
+</asset:script>
 </head>
 
-<body class="occurrence-search">
-    <div id="listHeader" class="row-fluid heading-bar">
-        <div class="span5">
-            <h1><alatag:message code="search.heading.list" default="Search results"/><a name="resultsTop">&nbsp;</a></h1>
+<body class="occurrence-search-">
+    <div id="listHeader" class="heading-bar row">
+        <div class="col-sm-5 col-md-5">
+            <h1><alatag:message code="search.heading.list" default="Search results"></alatag:message><a
+        name="resultsTop">&nbsp;</a></h1>
         </div>
 
-        <div id="searchBoxZ" class="span7 text-right">
-            <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="">
+        <div id="searchBoxZ" class="text-right col-sm-7 col-md-7">
+            <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="form-horizontal">
                 <div id="advancedSearchLink"><a href="${g.createLink(uri: '/search')}#tab_advanceSearch"><g:message
-                        code="list.advancedsearchlink.navigator" default="Advanced search"/></a></div>
+                        code="list.advancedsearchlink.navigator" default="Advanced search"></g:message></a></div>
 
-                <div class="input-append">
-                    <input type="text" id="taxaQuery" name="${searchQuery}" class="input-xlarge"
-                           value="${params.list(searchQuery).join(' OR ')}">
-                    <button type="submit" id="solrSubmit" class="btn"><g:message code="list.advancedsearchlink.button.label"
-                                                                                 default="Quick search"/></button>
+                <div class="input-group pull-right col-sm-7 col-md-7">
+                    <input type="text" id="taxaQuery" name="${searchQuery}" class="form-control"
+                           value="${params.list(searchQuery).join(' OR ')}"/>
+                    <span class="input-group-btn"><button type="submit" id="solrSubmit" class="btn btn-default"><g:message
+                            code="list.advancedsearchlink.button.label" default="Quick search"/></button></span>
                 </div>
             </form>
         </div>
-        <input type="hidden" id="userId" value="${userId}">
-        <input type="hidden" id="userEmail" value="${userEmail}">
-        <input type="hidden" id="lsid" value="${params.lsid}"/>
+        <input type="hidden" id="userId" value="${userId}" class="form-control">
+        <input type="hidden" id="userEmail" value="${userEmail}" class="form-control">
+        <input type="hidden" id="lsid" value="${params.lsid}" class="form-control">
     </div>
     <g:if test="${flash.message}">
-        <div id="errorAlert" class="alert alert-danger alert-dismissible" role="alert">
+        <div id="errorAlert" class="alert alert-danger alert-dismissible alert-dismissable" role="alert">
             <button type="button" class="close" onclick="$(this).parent().hide()" aria-label="Close"><span
                     aria-hidden="true">&times;</span></button>
             <h4>${flash.message}</h4>
@@ -159,7 +158,8 @@
                             class="queryDisplay">${params.taxa}</span></p>
                 </g:else>
                 <p><g:message code="list.02.p03.01" default="Trying search for"/> <a
-                        href="?q=text:${params.taxa}"><g:message code="list.02.p03.02" default="text"/>:${params.taxa}</a>
+                        href="?q=text:${params.taxa}"><g:message code="list.02.p03.02"
+                                                                 default="text"/>:${params.taxa}</a>
                 </p>
             </g:if>
             <g:elseif test="${queryDisplay =~ /text:/ && queryDisplay =~ /\s+/ && !(queryDisplay =~ /\bOR\b/)}">
@@ -177,63 +177,78 @@
     </g:elseif>
     <g:else>
         <!--  first row (#searchInfoRow), contains customise facets button and number of results for query, etc.  -->
-        <div class="row-fluid clearfix" id="searchInfoRow">
+        <div class="clearfix row" id="searchInfoRow">
             <!-- facet column -->
-            <div class="span3">
-                <div id="customiseFacetsButton" class="btn-group">
-                    <a class="btn btn-small dropdown-toggle tooltips" data-toggle="dropdown" href="#"
-                       title="Customise the contents of this column">
-                        <i class="fa fa-cog"></i>&nbsp;&nbsp;<g:message code="search.filter.customise"/>
-                        <span class="caret"></span>
-                    </a>
+            <div class="col-md-3 col-sm-3">
 
-                    <div class="dropdown-menu" role="menu"><%--facetOptions--%>
-                        <h4><g:message code="list.customisefacetsbutton.div01.title"
-                                       default="* * Select the filter categories that you want to appear in the &quot;Refine results&quot; column"/></h4>
+                <!-- Trigger the modal with a button -->
+                <a class="btn tooltips btn-default btn-sm" data-toggle="modal" data-target="#facetConfigDialog" href="#"
+                   title="Customise the contents of this column">
+                    <i class="fa fa-cog"></i>&nbsp;&nbsp;<g:message code="search.filter.customise"/>
+                </a>
 
-                        <div id="facetCheckboxes">
-                            <g:message code="list.facetcheckboxes.label01" default="Select"/>: <a href="#"
-                                                                                                  id="selectAll"><g:message
-                                    code="list.facetcheckboxes.navigator01" default="All"/></a> | <a href="#"
-                                                                                                     id="selectNone"><g:message
-                                    code="list.facetcheckboxes.navigator02" default="None"/></a>
-                            &nbsp;&nbsp;
-                            <button id="updateFacetOptions" class="btn btn-primary btn-small"><g:message
-                                    code="list.facetcheckboxes.button.updatefacetoptions" default="Update"/></button>
-                            &nbsp;&nbsp;
-                            <g:set var="resetTitle" value="Restore default settings"/>
-                            <button id="resetFacetOptions" class="btn btn-small" title="${resetTitle}"><g:message
-                                    code="list.facetcheckboxes.button.resetfacetoptions"
-                                    default="Reset to defaults"/></button>
-                            <br/>
-                        <%-- iterate over the groupedFacets, checking the default facets for each entry --%>
-                            <g:set var="count" value="0"/>
-                            <g:each var="group" in="${groupedFacets}">
-                                <g:if test="${defaultFacets.find { key, value -> group.value.any { it == key } }}">
-                                    <div class="facetsColumn">
-                                        <div class="facetGroupName"><g:message code="facet.group.${group.key}"
-                                                                               default="${group.key}"/></div>
-                                        <g:each in="${group.value}" var="facetFromGroup">
-                                            <g:if test="${defaultFacets.containsKey(facetFromGroup)}">
-                                                <g:set var="count" value="${count + 1}"/>
-                                                <input type="checkbox" name="facets" class="facetOpts"
-                                                       value="${facetFromGroup}"
-                                                    ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<alatag:message
-                                                    code="facet.${facetFromGroup}"/><br>
+                <!-- Modal -->
+                <div id="facetConfigDialog" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title"><g:message code="list.customisefacetsbutton.div01.title"
+                                                                   default="* * Select the filter categories that you want to appear in the &quot;Refine results&quot; column"/></h4>
+                            </div>
+                            <div class="modal-body">
+                                <div id="facetCheckboxes">
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6">
+                                            <g:message code="list.facetcheckboxes.label01" default="Select"/>: <a href="#"
+                                                                                                                  id="selectAll"><g:message
+                                                    code="list.facetcheckboxes.navigator01" default="All"/></a> | <a href="#"
+                                                                                                                     id="selectNone"><g:message
+                                                    code="list.facetcheckboxes.navigator02" default="None"/></a>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <g:set var="resetTitle" value="Restore default settings"/>
+                                            <button id="resetFacetOptions" class="btn btn-default btn-sm pull-right margin-left-5" title="${resetTitle}"><g:message
+                                                    code="list.facetcheckboxes.button.resetfacetoptions"
+                                                    default="Reset to defaults"/></button>
+                                            <button id="updateFacetOptions" class="btn btn-primary btn-sm pull-right"><g:message
+                                                    code="list.facetcheckboxes.button.updatefacetoptions" default="Update"/></button>
+                                        </div>
+                                    </div>
+                                    <div class="row padding-left-1">
+                                        <%-- iterate over the groupedFacets, checking the default facets for each entry --%>
+                                        <g:set var="count" value="0"></g:set>
+                                        <g:each var="group" in="${groupedFacets}">
+                                            <g:if test="${defaultFacets.find { key, value -> group.value.any { it == key } }}">
+                                                <div class="facetsColumn">
+                                                    <div class="facetGroupName"><g:message code="facet.group.${group.key}"
+                                                                                           default="${group.key}"/></div>
+                                                    <g:each in="${group.value}" var="facetFromGroup">
+                                                        <g:if test="${defaultFacets.containsKey(facetFromGroup)}">
+                                                            <g:set var="count" value="${count + 1}"/>
+                                                            <input type="checkbox" name="facets" class="facetOpts"
+                                                                   value="${facetFromGroup}"
+                                                                ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<alatag:message
+                                                                code="facet.${facetFromGroup}"/><br/>
+                                                        </g:if>
+                                                    </g:each>
+                                                </div>
                                             </g:if>
                                         </g:each>
                                     </div>
-                                </g:if>
-                            </g:each>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div><!-- /.span3 -->
             <!-- Results column -->
-            <div class="span9">
+            <div class="col-sm-9 col-md-9">
                 <a name="map" class="jumpTo"></a><a name="list" class="jumpTo"></a>
                 <g:if test="${false && flash.message}"><%-- OFF for now --%>
-                    <div class="alert alert-info" style="margin-left: -30px;">
+                    <div class="alert alert-info alert-dismissable" style="margin-left: -30px;">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                         ${flash.message}
                     </div>
@@ -253,31 +268,31 @@
                                                                     format="#,###,###"/></strong> <g:message
                             code="list.resultsretuened.span.returnedtext" default="results for"/></span>
                     <span class="queryDisplay"><strong>${raw(queryDisplay)}</strong></span>&nbsp;&nbsp;
-                %{--<g:set var="hasFq" value="${false}"/>--}%
+                    %{--<g:set var="hasFq" value="${false}"/>--}%
                     <g:if test="${sr.activeFacetMap?.size() > 0 || params.wkt || params.radius}">
                         <div class="activeFilters">
                             <b><alatag:message code="search.filters.heading" default="Current filters"/></b>:&nbsp;
                             <g:each var="fq" in="${sr.activeFacetMap}">
                                 <g:if test="${fq.key}">
                                     <g:set var="hasFq" value="${true}"/>
-                                    <alatag:currentFilterItem item="${fq}" cssClass="btn btn-mini" addCloseBtn="${true}"/>
+                                    <alatag:currentFilterItem item="${fq}" cssClass="btn btn-xs" addCloseBtn="${true}"/>
                                 </g:if>
                             </g:each>
                             <g:if test="${params.wkt}"><%-- WKT spatial filter   --%>
                                 <g:set var="spatialType" value="${params.wkt =~ /^\w+/}"/>
-                                <a href="${alatag.getQueryStringForWktRemove()}" class="btn btn-mini tooltips"
+                                <a href="${alatag.getQueryStringForWktRemove()}" class="btn tooltips btn-default btn-xs"
                                    title="Click to remove this filter">Spatial filter: ${spatialType[0]}
-                                    <span class="closeX">×</span>
+                                    <span class="closeX">&times;</span>
                                 </a>
                             </g:if>
                             <g:elseif test="${params.radius && params.lat && params.lon}">
-                                <a href="${alatag.getQueryStringForRadiusRemove()}" class="btn btn-mini tooltips"
+                                <a href="${alatag.getQueryStringForRadiusRemove()}" class="btn tooltips btn-default btn-xs"
                                    title="Click to remove this filter">Spatial filter: CIRCLE
-                                    <span class="closeX">×</span>
+                                    <span class="closeX">&times;</span>
                                 </a>
                             </g:elseif>
                             <g:if test="${sr.activeFacetMap?.size() > 1}">
-                                <button class="btn btn-primary btn-mini activeFilter" data-facet="all"
+                                <button class="btn btn-primary activeFilter btn-xs" data-facet="all"
                                         title="Click to clear all filters"><span
                                         class="closeX">&gt;&nbsp;</span><g:message code="list.resultsretuened.button01"
                                                                                    default="Clear all"/></button>
@@ -286,9 +301,9 @@
                     </g:if>
                 <%-- jQuery template used for taxon drop-downs --%>
                     <div class="btn-group hide" id="template">
-                        <a class="btn btn-small" href="" id="taxa_" title="view species page" target="BIE"><g:message
+                        <a class="btn btn-default btn-sm" href="" id="taxa_" title="view species page" target="BIE"><g:message
                                 code="list.resultsretuened.navigator01" default="placeholder"/></a>
-                        <button class="btn btn-small dropdown-toggle" data-toggle="dropdown"
+                        <button class="btn dropdown-toggle btn-default btn-sm" data-toggle="dropdown"
                                 title="click for more info on this query">
                             <span class="caret"></span>
                         </button>
@@ -307,7 +322,7 @@
                                     <div class="refineTaxaSearch">
                                         <g:message code="list.resultsretuened.form.des01"
                                                    default="The result set contains records provided under the following names"/>:
-                                        <input type="submit" class="btn btn-small rawTaxonSumbit"
+                                        <input type="submit" class="btn  btn-default btn-sm rawTaxonSumbit"
                                                value="<g:message code="list.resultsretuened.form.button01"
                                                                  default="Refine search"/>"
                                                title="Restrict results to the selected names">
@@ -323,24 +338,24 @@
             </div><!-- /.span9 -->
         </div><!-- /#searchInfoRow -->
         <!--  Second row - facet column and results column -->
-        <div class="row-fluid" id="content">
-            <div class="span3">
-                <g:render template="facets"/>
+        <div class="row" id="content">
+            <div class="col-sm-3 col-md-3">
+                <g:render template="facets"></g:render>
             </div>
             <g:set var="postFacets" value="${System.currentTimeMillis()}"/>
-            <div id="content2" class="span9">
+            <div id="content2" class="col-sm-9 col-md-9">
                 <g:if test="${grailsApplication.config.alerts.baseUrl}">
                     <div id="alert" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="alertLabel"
                          aria-hidden="true">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 
                             <h3 id="myModalLabel"><g:message code="list.alert.title" default="Email alerts"/></h3>
                         </div>
 
                         <div class="modal-body">
                             <div class="">
-                                <a href="#alertNewRecords" id="alertNewRecords" class="btn tooltips"
+                                <a href="#alertNewRecords" id="alertNewRecords" class="btn tooltips btn-default"
                                    data-method="createBiocacheNewRecordsAlert"
                                    title="Notify me when new records come online for this search"><g:message
                                         code="list.alert.navigator01" default="Get email alerts for new records"/></a>
@@ -350,19 +365,19 @@
                             <div class="">
                                 <a href="#alertNewAnnotations" id="alertNewAnnotations"
                                    data-method="createBiocacheNewAnnotationsAlert"
-                                   class="btn tooltips"
+                                   class="btn tooltips btn-default"
                                    title="Notify me when new annotations (corrections, comments, etc) come online for this search"><g:message
                                         code="list.alert.navigator02" default="Get email alerts for new annotations"/></a>
                             </div>
 
-                            <p>&nbsp;</p>
+                <p>&nbsp;</p>
 
                             <p><a href="${grailsApplication.config.alerts.baseUrl}/notification/myAlerts"><g:message
                                     code="list.alert.navigator03" default="View your current alerts"/></a></p>
                         </div>
 
                         <div class="modal-footer">
-                            <button class="btn" data-dismiss="modal" aria-hidden="true"><g:message
+                            <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message
                                     code="list.alert.button01" default="Close"/></button>
                         </div>
                     </div><!-- /#alerts -->
@@ -404,10 +419,10 @@
 
                 <div class="tab-content clearfix">
                     <div class="tab-pane solrResults active" id="recordsView">
-                        <div id="searchControls" class="row-fluid">
-                            <div class="span4">
+                        <div id="searchControls" class="row">
+                            <div class="col-sm-4 col-md-4">
                                 <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
-                                    <div id="downloads" class="btn btn-small">
+                                    <div id="downloads" class="btn btn-default btn-sm">
                                         <a href="#download" role="button" data-toggle="modal" class="tooltips"
                                            title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records OR species checklist"><i
                                                 class="fa fa-download"></i>&nbsp;&nbsp;<g:message
@@ -415,7 +430,7 @@
                                     </div>
                                 </g:if>
                                 <g:if test="${grailsApplication.config.alerts.baseUrl}">
-                                    <div id="alerts" class="btn btn-small">
+                                    <div id="alerts" class="btn btn-default btn-sm">
                                         <a href="#alert" role="button" data-toggle="modal" class="tooltips"
                                            title="Get email alerts for this search"><i
                                                 class="fa fa-bell"></i>&nbsp;&nbsp;<g:message code="list.alerts.navigator"
@@ -424,8 +439,8 @@
                                 </g:if>
                             </div>
 
-                            <div id="sortWidgets" class="span8">
-                                <span class="hidden-phone"><g:message code="list.sortwidgets.span01"
+                            <div id="sortWidgets" class="col-sm-8 col-md-8">
+                                <span class="hidden-sm"><g:message code="list.sortwidgets.span01"
                                                                       default="per"/></span><g:message
                                     code="list.sortwidgets.span02" default="page"/>:
                                 <select id="per-page" name="per-page" class="input-small">
@@ -480,7 +495,7 @@
                             <div style="color:#ddd;">
                                 <g:message code="list.recordsview.benchmarks.01"
                                            default="list render time"/> = ${(System.currentTimeMillis() - startList)} <g:message
-                                    code="list.recordsview.benchmarks.02" default="ms"/><br>
+                                    code="list.recordsview.benchmarks.02" default="ms"/><br/>
                             </div>
                         </g:if>
                         <div id="searchNavBar" class="pagination">
@@ -540,7 +555,7 @@
                                                                  default="image gallery should appear here"/>]</div>
 
                             <div id="loadMoreSpecies" style="display:none;">
-                                <button class="btn"><g:message code="list.speciesgallerycontrols.loadmorespecies.button"
+                                <button class="btn btn-default"><g:message code="list.speciesgallerycontrols.loadmorespecies.button"
                                                                default="Show more images"/></button>
                                 <asset:image src="indicator.gif" style="display:none;" alt="indicator icon"/>
                             </div>
@@ -556,7 +571,7 @@
                             </div>
 
                             <div id="loadMoreImages" style="display:none;">
-                                <button class="btn"><g:message code="list.speciesgallerycontrols.loadmoreimages.button"
+                                <button class="btn btn-default"><g:message code="list.speciesgallerycontrols.loadmoreimages.button"
                                                                default="Show more images"/>
                                 <asset:image src="indicator.gif" style="display:none;" alt="indicator icon"/>
                                 </button>

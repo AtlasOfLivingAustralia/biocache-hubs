@@ -1,14 +1,14 @@
 <div id="facetWell" class="well well-small">
     <g:set var="startTime" value="${System.currentTimeMillis()}"/>
     ${alatag.logMsg(msg:"Start of facets.gsp - " + startTime)}
-    <h3 class="visible-phone">
+    <h3 class="visible-xs">
         <a href="#" id="toggleFacetDisplay"><i class="icon-chevron-down" id="facetIcon"></i>
             <alatag:message code="search.facets.heading" default="Refine results"/></a>
     </h3>
-    <div class="sidebar hidden-phone">
-        <h3 class="hidden-phone"><alatag:message code="search.facets.heading" default="Refine results"/></h3>
+    <div class="sidebar hidden-xs">
+        <h3 class="hidden-xs"><alatag:message code="search.facets.heading" default="Refine results"/></h3>
     </div>
-    <div class="sidebar hidden-phone" style="clear:both;">
+    <div class="sidebar hidden-xs" style="clear:both;">
         <g:if test="${sr.query}">
             <g:set var="queryStr" value="${params.q ? params.q : searchRequestParams.q}"/>
             <g:set var="paramList" value=""/>

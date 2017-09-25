@@ -71,11 +71,8 @@ form {
 
 #resultsReturned .dropdown-menu {
     padding: 10px 12px;
-    background-color: #fffef7;
-    width: 400px;
-    white-space:normal;
+    width: 450px;
     font-weight: normal;
-    font-size: 12px;
 }
 
 #resultsReturned > span {
@@ -134,16 +131,13 @@ form {
 #listHeader {
     border-bottom: 1px solid #ccc;
     padding-bottom: 5px;
-    /*margin-left: 30px;*/
-    /*padding-left: 0px;*/
-    /*height: 40px;*/
 }
-#listHeader h1 {
-    border: none;
-    margin: 20px 0 5px 0;
-    padding: 0;
-    font-size: 26px;
-}
+/*#listHeader h1 {*/
+    /*border: none;*/
+    /*margin: 20px 0 5px 0;*/
+    /*padding: 0;*/
+    /*font-size: 26px;*/
+/*}*/
 /*#listHeader h1 {*/
     /*width: 40%;*/
     /*float: left;*/
@@ -164,26 +158,26 @@ form {
     /*padding-top:0px; */
 /*}*/
 
-#advancedSearchLink {
+/*#advancedSearchLink {*/
+    /*!*display: block;*!*/
+    /*padding: 0;*/
+/*!*    margin: 0;*!*/
+    /*margin-bottom: 0;*/
+    /*margin-right: 10px;*/
+    /*font-size: 11px;*/
+/*}*/
+/**+html #advancedSearchLink {*/
     /*display: block;*/
-    padding: 0;
-/*    margin: 0;*/
-    margin-bottom: 0;
-    margin-right: 10px;
-    font-size: 11px;
-}
-*+html #advancedSearchLink {
-    display: block;
-    padding: 0;
-    margin-right: 80px;
-    margin-bottom: -6px;
-}
+    /*padding: 0;*/
+    /*margin-right: 80px;*/
+    /*margin-bottom: -6px;*/
+/*}*/
 
-#advancedSearchLink a {
-    font-size: 10px;
-}
+/*#advancedSearchLink a {*/
+    /*font-size: 10px;*/
+/*}*/
 #advancedSearchLink > a {
-    font-size: 11px; 
+    font-size: 12px;
 }
 #solrSearchForm input {
     margin: 0;
@@ -389,7 +383,7 @@ div#currentFilter {
     color: #222;
 }
 #results .rowB {
-    font-size: 12px;
+    font-size: 13px;
     color: #222;
     padding-bottom: 4px;
     border-bottom: 1px solid silver;
@@ -419,18 +413,20 @@ div#currentFilter {
 #results {
     clear: both;
 }
+
 #downloads a, #alerts a, #mapView .btn btn-default btn-default a, #customiseFacetsButton > .btn btn-default btn-default {
-    font-size: 12px;
-    font-weight: bold;
+    /*font-size: 12px;*/
+    /*font-weight: bold;*/
     color: inherit;
 }
 
 #downloads a.newDownload {
-    font-size: 14px;
-    font-weight: normal;
-    padding-left: 6px;
-    padding-right: 9px;
+    /*font-size: 14px;*/
+    /*font-weight: normal;*/
+    /*padding-left: 6px;*/
+    /*padding-right: 9px;*/
 }
+
 #downloads a:hover, #alerts a:hover, #mapView .btn btn-default btn-default a:hover {
     text-decoration: none;
 }
@@ -569,8 +565,12 @@ div#advancedSearch {
 
 div.facetsColumn {
     float: left;
-    width: 230px;
+    width: 245px;
     padding: 4px 0;
+}
+
+.margin-left-5 {
+    margin-left: 5px;
 }
 
 #queryGuid {
