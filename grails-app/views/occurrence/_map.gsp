@@ -241,9 +241,9 @@
         MAP_VAR.map.on('draw:created', function(e) {
             //setup onclick event for this object
             var layer = e.layer;
+            MAP_VAR.drawnItems.addLayer(layer);
             generatePopup(layer, layer._latlng);
             addClickEventForVector(layer);
-            MAP_VAR.drawnItems.addLayer(layer);
         });
 
         //add the default base layer
@@ -275,19 +275,6 @@
             e.stopPropagation();
             return false;
         });
-
-        $('#colourByControl,#recordLayerControl').mouseover(function(e){
-            //console.log('mouseover');
-            MAP_VAR.map.dragging.disable();
-            MAP_VAR.map.off('click', pointLookupClickRegister);
-        });
-
-        $('#colourByControl,#recordLayerControl').mouseout(function(e){
-            //console.log('mouseout');
-            MAP_VAR.map.dragging.enable();
-            MAP_VAR.map.on('click', pointLookupClickRegister);
-        });
-
         $('.hideColourControl').click(function(e){
             //console.log('hideColourControl');
             $('#colourByControl').removeClass('leaflet-control-layers-expanded');
@@ -332,22 +319,34 @@
 
         // display vector from previous wkt search
         var wktFromParams = "${params.wkt}";
+        // duplicate wkt and circle for leaflet's continous world display.
+        var obj = undefined;
+        var objLeft = undefined;
+        var objRight = undefined;
         if (wktFromParams) {
             var wkt = new Wkt.Wkt();
             wkt.read(wktFromParams);
-            var wktObject = wkt.toObject({color: '#bada55'});
-            //addClickEventForVector(wktObject); // can't click on points if this is set
-            //wktObject.editing.enable();
-            wktObject.on('click', pointLookupClickRegister);
-            MAP_VAR.drawnItems.addLayer(wktObject);
-
+            obj = wkt.toObject({color: '#bada55' });
+            objLeft = wkt.toObject({color: '#bada55', translate: {x: -360} });
+            objRight = wkt.toObject({color: '#bada55', translate: {x: 360} });
         } else if (isSpatialRadiusSearch()) {
             // draw circle onto map
-            var circle = L.circle([$.url().param('lat'), $.url().param('lon')], ($.url().param('radius') * 1000), {color: '#bada55'});
-            //console.log("circle", circle);
-            //addClickEventForVector(circle);  // can't click on points if this is set
-            circle.on('click', pointLookupClickRegister);
-            MAP_VAR.drawnItems.addLayer(circle);
+            obj = L.circle([$.url().param('lat'), $.url().param('lon')], ($.url().param('radius') * 1000), {color: '#bada55'});
+            objLeft = L.circle([$.url().param('lat'), $.url().param('lon')] - 360, ($.url().param('radius') * 1000), {color: '#bada55'});
+            objRight = L.circle([$.url().param('lat'), $.url().param('lon')] + 360, ($.url().param('radius') * 1000), {color: '#bada55'});
+        }
+        if (obj) {
+            MAP_VAR.map.addHandler('paramArea', L.PointClickHandler.extend({obj: obj}));
+            MAP_VAR.map.paramArea.enable();
+            MAP_VAR.drawnItems.addLayer(obj);
+
+            MAP_VAR.map.addHandler('paramAreaLeft', L.PointClickHandler.extend({obj: objLeft}));
+            MAP_VAR.map.paramAreaLeft.enable();
+            MAP_VAR.drawnItems.addLayer(objLeft);
+
+            MAP_VAR.map.addHandler('paramAreaRight', L.PointClickHandler.extend({obj: objRight}));
+            MAP_VAR.map.paramAreaRight.enable();
+            MAP_VAR.drawnItems.addLayer(objRight);
         }
 
         MAP_VAR.map.on('draw:edited', function(e) {
@@ -361,7 +360,11 @@
 
         MAP_VAR.recordList = new Array(); // store list of records for popup
 
-        MAP_VAR.map.on('click', pointLookupClickRegister);
+        //MAP_VAR.map.on('click', pointLookupClickRegister);
+        if (MAP_VAR.map === undefined) {
+            MAP_VAR.map.addHandler('paramArea', L.PointClickHandler.extend({obj: MAP_VAR.map}));
+            MAP_VAR.map.paramArea.enable();
+        }
     }
 
     var clickCount = 0;
@@ -1086,11 +1089,11 @@
         $('#wktFromMapBounds').click(function(e) {
             e.preventDefault();
             var b = MAP_VAR.map.getBounds();
-            var wkt = "POLYGON ((" + b.getWest() + " " + b.getNorth() + ", " +
-                    b.getEast()  + " " + b.getNorth() + ", " +
+            var wkt = "POLYGON ((" + b.getWest() + " " + b.getSouth() + ", " +
                     b.getEast()  + " " + b.getSouth() + ", " +
-                    b.getWest()  + " " + b.getSouth() + ", " +
-                    b.getWest() + " " + b.getNorth() + "))";
+                    b.getEast()  + " " + b.getNorth() + ", " +
+                    b.getWest()  + " " + b.getNorth() + ", " +
+                    b.getWest() + " " + b.getSouth() + "))";
             //console.log('wkt', wkt);
             var url = "${g.createLink(uri:'/occurrences/search')}" + MAP_VAR.query + "&wkt=" + encodeURIComponent(wkt);
             //console.log('new url', url);

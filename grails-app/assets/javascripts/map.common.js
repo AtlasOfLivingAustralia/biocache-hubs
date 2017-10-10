@@ -15,14 +15,53 @@
 
 /*  Common map (Leaflet) functions */
 
+// used to generate unique handler name for user drawn areas.
+var areaCounter = 0;
+
 function addClickEventForVector(layer) {
-    layer.on('click', function(e) {
-        generatePopup(layer, e.latlng);
-    });
+    var name = "drawnArea" + areaCounter;
+    areaCounter++;
+
+    MAP_VAR.map.addHandler(name, L.AreaPopupHandler.extend({layer: layer}));
+    MAP_VAR.map[name].enable();
 }
 
+function removeLayer(leaflet_id) {
+    if (MAP_VAR.map._layers[leaflet_id] !== undefined) {
+        var layer = MAP_VAR.map._layers[leaflet_id];
+        MAP_VAR.map.removeLayer(layer);
+    }
+}
+
+L.AreaPopupHandler = L.Handler.extend({
+    layer: null,
+
+    addHooks: function() {
+        L.DomEvent.on(this.layer, 'click', this._generatePopup, this);
+    },
+
+    removeHooks: function() {
+        L.DomEvent.off(this.layer, 'click', this._generatePopup, this);
+    },
+
+    _generatePopup: function(e) {
+        generatePopup(this.layer, e.latlng);
+    }
+});
+
+L.PointClickHandler = L.Handler.extend({
+    obj: null,
+
+    addHooks: function() {
+        L.DomEvent.on(this.obj, 'click', pointLookupClickRegister, this);
+    },
+
+    removeHooks: function() {
+        L.DomEvent.off(this.obj, 'click', pointLookupClickRegister, this);
+    }
+});
+
 function generatePopup(layer, latlng) {
-    //console.log('generatePopup', layer, latlng);
     var params = "";
     if (jQuery.isFunction(layer.getRadius)) {
         // circle
@@ -36,16 +75,17 @@ function generatePopup(layer, latlng) {
     if (latlng == null) {
         latlng = layer.getBounds().getCenter();
     }
-    //console.log('latlng', latlng);
+
     L.popup()
         .setLatLng([latlng.lat, latlng.lng])
         .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
             "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
             "<a id='showOnlyTheseRecords' href='" + BC_CONF.contextPath + "/occurrences/search" +
-            params + "'>" + jQuery.i18n.prop("search.map.popup.linkText") + "</a>")
+            params + "'>" + jQuery.i18n.prop("search.map.popup.linkText") + "</a><br>" +
+            "<a id='removeArea' href='javascript:void(0)' " +
+            "onclick='removeLayer(\"" + layer._leaflet_id + "\");MAP_VAR.map.closePopup()'>" +
+            jQuery.i18n.prop("search.map.popup.removeText") + "</a>")
         .openOn(MAP_VAR.map);
-
-    //layer.openPopup();
 
     getSpeciesCountInArea(params);
     getOccurrenceCountInArea(params);
@@ -55,8 +95,12 @@ function getSpeciesCountInArea(params) {
     speciesCount = -1;
     $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrence/facets.json" + params + "&facets=taxon_name&callback=?",
         function( data ) {
-            var speciesCount = data[0].count;
-            document.getElementById("speciesCountDiv").innerHTML = speciesCount;
+            if (data && data.length > 0 && data[0].count !== undefined) {
+                var speciesCount = data[0].count;
+                document.getElementById("speciesCountDiv").innerHTML = speciesCount;
+            } else {
+                document.getElementById("speciesCountDiv").innerHTML = 0;
+            }
         });
 }
 
@@ -64,9 +108,16 @@ function getOccurrenceCountInArea(params) {
     occurrenceCount = -1;
     $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrences/search.json" + params + "&pageSize=0&facet=off&callback=?",
         function( data ) {
-            var occurrenceCount = data.totalRecords;
+            if (data && data.totalRecords !== undefined) {
+                var occurrenceCount = data.totalRecords;
+                document.getElementById("occurrenceCountDiv").innerHTML = occurrenceCount;
 
-            document.getElementById("occurrenceCountDiv").innerHTML = occurrenceCount;
+                if (occurrenceCount == "0") {
+                    $("#showOnlyTheseRecords").hide()
+                }
+            } else {
+                document.getElementById("occurrenceCountDiv").innerHTML = 0;
+            }
         });
 }
 
