@@ -670,11 +670,11 @@ var loadAndDrawFacetCharts = function (options) {
 
 /***** external services & links *****/
 // an instance of the collections app - used for name lookup services
-var collectionsUrl = "http://collections.ala.org.au";  // should be overridden from config by the calling page
+var collectionsUrl = "https://collections.ala.org.au";  // should be overridden from config by the calling page
 // an instance of the biocache web services app - used for facet and taxonomic breakdowns
-var biocacheServicesUrl = "http://biocache.ala.org.au/ws";  // should be overridden from config by the calling page
+var biocacheServicesUrl = "https://biocache.ala.org.au/ws";  // should be overridden from config by the calling page
 // an instance of a web app - used to display search results
-var biocacheWebappUrl = "http://biocache.ala.org.au";  // should be overridden from config by the calling page
+var biocacheWebappUrl = "https://biocache.ala.org.au";  // should be overridden from config by the calling page
 
 // defaults for taxa chart
 var taxonomyPieChartOptions = {
@@ -1366,7 +1366,7 @@ function showBie(node) {
     var rank = node.attr('rank');
     if (rank == 'kingdoms') return;
     var name = node.attr('id');
-    var sppUrl = "http://bie.ala.org.au/species/" + name;
+    var sppUrl = "https://bie.ala.org.au/species/" + name;
     if (rank != 'species') { sppUrl += "_(" + rank + ")"; }
     document.location.href = sppUrl;
 }

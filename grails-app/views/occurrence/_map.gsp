@@ -102,7 +102,7 @@
 <asset:script type="text/javascript">
 
     //var mbAttr = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, imagery &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
-	//var mbUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+	//var mbUrl = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png';
     var defaultBaseLayer = L.tileLayer("${grailsApplication.config.map.minimal.url}", {
             attribution: "${raw(grailsApplication.config.map.minimal.attr)}",
             subdomains: "${grailsApplication.config.map.minimal.subdomains}",

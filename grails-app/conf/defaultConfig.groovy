@@ -47,16 +47,16 @@ skin.exploreUrl = "${serverName}"
 bie.baseUrl = "https://bie.ala.org.au"
 bieService.baseUrl = "https://bie.ala.org.au/ws"
 //bie.autocompleteHints.fq = "kingdom:Plantae"  // optional
-collectory.baseUrl = "http://collections.ala.org.au"
-logger.baseUrl = "http://logger.ala.org.au/service"
+collectory.baseUrl = "https://collections.ala.org.au"
+logger.baseUrl = "https://logger.ala.org.au/service"
 biocache.apiKey = "api-key-to-use"
 biocache.baseUrl = "https://biocache.ala.org.au/ws"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
 biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
 //biocache.groupedFacetsUrl = "${biocache.baseUrl}/search/grouped/facets" // optional - define in hub only
-collections.baseUrl = "http://collections.ala.org.au"
-alerts.baseUrl = "http://alerts.ala.org.au"
+collections.baseUrl = "https://collections.ala.org.au"
+alerts.baseUrl = "https://alerts.ala.org.au"
 speciesList.baseURL = "https://lists.ala.org.au"
 useDownloadPlugin = ""
 
@@ -73,7 +73,7 @@ sightings.baseUrl = "https://sightings.ala.org.au"
 // For sandbox environment
 //spatial.params = "&dynamic=true&ws=http%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=http%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"
 spatial.baseUrl = "http://spatial.ala.org.au/"
-layersservice.baseUrl = "http://spatial.ala.org.au/ws"
+layersservice.baseUrl = "https://spatial.ala.org.au/ws"
 spatial.params = ""
 test.var = "test"
 // used to link temporary data resources back to an originating sandbox.

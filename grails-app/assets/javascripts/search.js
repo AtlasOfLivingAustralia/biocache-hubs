@@ -507,7 +507,7 @@ $(document).ready(function() {
     });
 
     // Email alert buttons
-    var alertsUrlPrefix = BC_CONF.alertsUrl || "http://alerts.ala.org.au";
+    var alertsUrlPrefix = BC_CONF.alertsUrl || "https://alerts.ala.org.au";
     $("a#alertNewRecords, a#alertNewAnnotations").click(function(e) {
         e.preventDefault();
         var query = $("<p>"+BC_CONF.queryString+"</p>").text(); // strips <span> from string

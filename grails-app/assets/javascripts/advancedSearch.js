@@ -45,7 +45,7 @@ $(document).ready(function() {
     };
     
     //  for taxon concepts
-    $(".name_autocomplete").autocomplete('http://bie.ala.org.au/search/auto.json', {
+    $(".name_autocomplete").autocomplete('https://bie.ala.org.au/search/auto.json', {
         extraParams: {limit:100},
         dataType: 'jsonp',
         parse: function(data) {
@@ -204,7 +204,7 @@ $(document).ready(function() {
             // taxon concepts
             if (fieldName.indexOf("lsid") != -1) {
                 // lsid searches
-                var taxonUri = "http://bie.ala.org.au/species/" + fieldValue + ".json";
+                var taxonUri = "https://bie.ala.org.au/species/" + fieldValue + ".json";
                 //console.log("URL", taxonUri);
                 $.ajax({
                     url: taxonUri,
