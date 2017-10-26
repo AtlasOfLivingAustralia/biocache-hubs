@@ -54,8 +54,12 @@
         </g:else>
         <g:if test="${record.raw.occurrence.institutionCode}">
             ${fieldsMap.put("institutionCode", true)}
-            <g:if test="${record.processed.attribution.institutionName}"><br/></g:if>
-            <span class="originalValue"><g:message code="recordcore.span01" default="Supplied institution code"/> "${record.raw.occurrence.institutionCode}"</span>
+            <g:if test="${record.processed.attribution.institutionName}"><br/>
+                <span class="originalValue"><g:message code="recordcore.span01" default="Supplied institution code"/> "${record.raw.occurrence.institutionCode}"</span>
+            </g:if>
+            <g:else>
+                ${record.raw.occurrence.institutionCode}
+            </g:else>
         </g:if>
     </alatag:occurrenceTableRow>
 <!-- Collection -->
@@ -77,8 +81,12 @@
     </g:if>
     <g:if test="${false && record.raw.occurrence.collectionCode}">
         ${fieldsMap.put("collectionCode", true)}
-        <g:if test="${collectionName || record.processed.attribution.collectionName}"><br/></g:if>
-        <span class="originalValue" style="display:none"><g:message code="recordcore.span02" default="Supplied collection code"/> "${record.raw.occurrence.collectionCode}"</span>
+        <g:if test="${collectionName || record.processed.attribution.collectionName}"><br/>
+            <span class="originalValue" style="display:none"><g:message code="recordcore.span02" default="Supplied collection code"/> "${record.raw.occurrence.collectionCode}"</span>
+        </g:if>
+        <g:else>
+            ${record.raw.occurrence.collectionCode}
+        </g:else>
     </g:if>
 </alatag:occurrenceTableRow>
 <!-- Catalog Number -->
@@ -184,21 +192,7 @@
     ${fieldsMap.put(recordedByField, true)}
     <g:set var="rawRecordedBy" value="${record.raw.occurrence[recordedByField]}"/>
     <g:set var="proRecordedBy" value="${record.processed.occurrence[recordedByField]}"/>
-    <g:if test="${record.processed.occurrence[recordedByField] && record.raw.occurrence[recordedByField] && record.processed.occurrence[recordedByField] == record.raw.occurrence[recordedByField]}">
-            ${proRecordedBy}
-    </g:if>
-    <g:elseif test="${record.processed.occurrence[recordedByField] && record.raw.occurrence[recordedByField]}">
-        ${proRecordedBy}
-        <g:if test="${proRecordedBy != rawRecordedBy}">
-            <br/><span class="originalValue"><g:message code="recordcore.span05" default="Supplied as"/> "${rawRecordedBy}"</span>
-        </g:if>
-    </g:elseif>
-    <g:elseif test="${record.processed.occurrence[recordedByField]}">
-        ${proRecordedBy}
-    </g:elseif>
-    <g:elseif test="${record.raw.occurrence[recordedByField]}">
-        ${rawRecordedBy}
-    </g:elseif>
+    ${rawRecordedBy}
 </alatag:occurrenceTableRow>
 <!-- ALA user id -->
 <g:if test="${record.raw.occurrence.userId}">

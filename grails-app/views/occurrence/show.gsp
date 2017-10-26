@@ -45,7 +45,7 @@
             userId: "${userId}",
             userDisplayName: "${userDisplayName}",
             contextPath: "${request.contextPath}",
-            recordUuid: "${record.raw.uuid}",
+            recordUuid: "${record.raw.uuid ?: record.raw.rowKey}",
             taxonRank: "${record.processed.classification.taxonRank}",
             taxonConceptID: "${record.processed.classification.taxonConceptID}",
             isUnderCas: ${isUnderCas},
@@ -72,6 +72,7 @@
     <asset:javascript src="moment.js"/>
 
     <asset:stylesheet src="show.css" />
+    <asset:stylesheet src="print.css" media="screen, projection" />
 
     <asset:script type="text/javascript">
         $(document).ready(function() {
@@ -731,7 +732,7 @@
                     <p><textarea id="verifyComment" rows="3" style="width: 90%"></textarea></p><br>
                     <button id="confirmVerify" class="btn confirmVerify"><g:message code="show.verifyrecord.btn.confirmverify" default="Confirm"/></button>
                     <button class="btn cancelVerify"  data-dismiss="modal"><g:message code="show.verifyrecord.btn.cancel" default="Cancel"/></button>
-                    <img src="${request.contextPath}/images/spinner.gif" id="verifySpinner" class="verifySpinner hide" alt="spinner icon"/>
+                    <g:img file="spinner.gif" id="verifySpinner" class="verifySpinner hide" alt="spinner icon" />
                 </div>
             </div>
             <div class="modal-footer">
