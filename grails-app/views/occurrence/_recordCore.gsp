@@ -4,6 +4,7 @@
 <g:set var="fieldsMap" value="${[:]}"/>
 <div id="occurrenceDataset">
 <g:render template="sandboxUploadSourceLinks" model="[dataResourceUid: record?.raw?.attribution?.dataResourceUid]" />
+
 <h3><g:message code="recordcore.occurencedataset.title" default="Dataset"/></h3>
 <table class="occurrenceTable table table-bordered table-striped table-condensed" id="datasetTable">
 <!-- Data Provider -->
@@ -321,21 +322,36 @@
     </alatag:occurrenceTableRow>
 <!-- Record Date -->
     <g:set var="occurrenceDateLabel">
-        <g:if test="${StringUtils.containsIgnoreCase(record.processed.occurrence.basisOfRecord, 'specimen')}"><g:message code="recordcore.occurrencedatelabel.01" default="Collecting date"/></g:if>
-        <g:else><g:message code="recordcore.occurrencedatelabel.02" default="Record date"/></g:else>
+        <g:if test="${record.processed.event.eventDate && record.processed.event.eventDateEnd}">
+            <g:message code="recordcore.occurrencedatelabel.startdate" default="Event date start"/>
+        </g:if>
+        <g:elseif test="${StringUtils.containsIgnoreCase(record.processed.occurrence.basisOfRecord, 'specimen')}">
+            <g:message code="recordcore.occurrencedatelabel.01" default="Collecting date"/>
+        </g:elseif>
+        <g:else>
+            <g:message code="recordcore.occurrencedatelabel.02" default="Record date"/>
+        </g:else>
     </g:set>
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="occurrenceDate" fieldName="${occurrenceDateLabel}">
         ${fieldsMap.put("eventDate", true)}
-        <g:if test="${!record.processed.event.eventDate && record.raw.event.eventDate && !record.raw.event.year && !record.raw.event.month && !record.raw.event.day}">
+
+        <g:if test="${record.processed.occurrence.dataGeneralizations == null &&!record.processed.event.eventDate && record.raw.event.eventDate && !record.raw.event.year && !record.raw.event.month && !record.raw.event.day}">
             [<g:message code="recordcore.occurrencedatelabel.03" default="date not supplied"/>]
         </g:if>
+
         <g:if test="${record.processed.event.eventDate}">
             <span class="isoDate">${record.processed.event.eventDate}</span>
         </g:if>
         <g:if test="${!record.processed.event.eventDate && (record.processed.event.year || record.processed.event.month || record.processed.event.day)}">
-            <g:message code="recordcore.occurrencedatelabel.04" default="Year"/>: ${record.processed.event.year},
-            <g:message code="recordcore.occurrencedatelabel.05" default="Month"/>: ${record.processed.event.month},
-            <g:message code="recordcore.occurrencedatelabel.06" default="Day"/>: ${record.processed.event.day}
+            <if test="${record.processed.event.year}">
+                <g:message code="recordcore.occurrencedatelabel.04" default="Year"/>:${record.processed.event.year}
+            </if>
+            <if test="${record.processed.event.month}">
+                <g:message code="recordcore.occurrencedatelabel.05" default="Month"/>:${record.processed.event.month}
+            </if>
+            <if test="${record.processed.event.day}">
+                <g:message code="recordcore.occurrencedatelabel.06" default="Day"/>: "${record.processed.event.day}"
+            </if>
         </g:if>
         <g:if test="${record.processed.event.eventDate && record.raw.event.eventDate && record.raw.event.eventDate != record.processed.event.eventDate}">
             <br/><span class="originalValue"><g:message code="recordcore.occurrencedatelabel.07" default="Supplied date"/> "${record.raw.event.eventDate}"</span>
@@ -352,6 +368,18 @@
             <br/><span class="originalValue"><g:message code="recordcore.occurrencedatelabel.12" default="Supplied date"/> "${record.raw.event.eventDate}"</span>
         </g:elseif>
     </alatag:occurrenceTableRow>
+
+<!-- Information Withheld -->
+    <g:if test="${record.processed.occurrence.dataGeneralizations}">
+    <alatag:occurrenceTableRow annotate="false" section="geospatial" fieldCode="informationWithheld" fieldName="Information withheld">
+    %{--${fieldsMap.put("informationWithheld", true)}--}%
+        <g:if test="${record.raw.occurrence.informationWithheld}">
+            <span class="dataGeneralizations">
+                <g:message code="show.eventinfo.restrictied"/>
+            </span>
+        </g:if>
+    </alatag:occurrenceTableRow>
+    </g:if>
 <!-- Sampling Protocol -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="samplingProtocol" fieldName="Sampling protocol">
         ${fieldsMap.put("samplingProtocol", true)}
@@ -622,7 +650,7 @@
     </alatag:occurrenceTableRow>
 </g:if>
 <g:if test="${record.processed.classification.nameMatchMetric}">
-    <!-- Taxonomic issues -->
+    <!-- Name match metrics -->
     <alatag:occurrenceTableRow annotate="true" section="taxonomy" fieldCode="nameMatchMetric" fieldName="Name match metric">
         <g:message code="${record.processed.classification.nameMatchMetric}" default="${record.processed.classification.nameMatchMetric}"/>
         <br/>
@@ -840,13 +868,21 @@
         ${(clubView) ? 'NOTE: current user has "club view" and thus coordinates are not generalise.' : ''}
     </g:elseif>
 </alatag:occurrenceTableRow>
+
 <!-- Information Withheld -->
 <alatag:occurrenceTableRow annotate="false" section="geospatial" fieldCode="informationWithheld" fieldName="Information withheld">
-    ${fieldsMap.put("informationWithheld", true)}
-    <g:if test="${record.processed.occurrence.informationWithheld}">
-        <span class="dataGeneralizations">${record.processed.occurrence.informationWithheld}</span>
+    <g:if test="${record.raw.occurrence.informationWithheld}">
+        <span class="dataGeneralizations">
+            <g:if test="${record.raw.occurrence.informationWithheld?:"false".toBoolean()}">
+                <g:message code="show.geo.restricted.already" />
+            </g:if>
+            <g:else>
+                <g:message code="show.geo.restricted" />
+            </g:else>
+        </span>
     </g:if>
 </alatag:occurrenceTableRow>
+
 <!-- GeoreferenceVerificationStatus -->
 <alatag:occurrenceTableRow annotate="false" section="geospatial" fieldCode="georeferenceVerificationStatus" fieldName="Georeference verification status">
     ${fieldsMap.put("georeferenceVerificationStatus", true)}
