@@ -48,18 +48,18 @@
 
     <br/>
     <p>The use of ${fullName} is subject to the terms of use outlined below. ${fullName}
-    forms part of the <a href="http://www.ala.org.au/">Atlas of Living Australia</a> (ALA); see the
-        <a href="http://www.ala.org.au/about-the-atlas/terms-of-use/#cy">ALA Terms of Use</a> for additional information.
+    forms part of the <a href="https://www.ala.org.au/">Atlas of Living Australia</a> (ALA); see the
+        <a href="https://www.ala.org.au/about-the-atlas/terms-of-use/#cy">ALA Terms of Use</a> for additional information.
     </p>
     <h2>Copyright
     </h2>
     <p>With the exception of the ${shortName} logo and logos of participating organisations, the images on the Home page, and where otherwise noted, all material presented
-    on this website is provided under a <a href="http://creativecommons.org/licenses/by/3.0/au/">Creative
+    on this website is provided under a <a href="https://creativecommons.org/licenses/by/3.0/au/">Creative
         Commons Attribution 3.0 ${jurisdiction}</a> licence. This allows for re-distribution of the
     data and any derivative works based on the data, provided that the source of the data is acknowledged.
     <p>
         The details of the relevant licence conditions are available on the Creative Commons website (accessible using
-        the links provided) as is the    <a href="http://creativecommons.org/licenses/by/3.0/au/legalcode">full legal code
+        the links provided) as is the    <a href="https://creativecommons.org/licenses/by/3.0/au/legalcode">full legal code
     for the CC BY 3 ${jurisdictionCode} licence</a>.
     </p>
     <p>
@@ -112,7 +112,7 @@
         Information from this service resides on a computer system funded by the Commonwealth, state and territory
         governments of Australia. ${fullName} uses
 
-        <a href="http://www.google.com/intl/en_uk/analytics/index.html">Google Analytics</a>
+        <a href="https://www.google.com/intl/en_uk/analytics/index.html">Google Analytics</a>
 
         to monitor site usage for statistical purposes. The information logged may include: the user's Internet
         protocol (IP) address and top level domain name, the date and time the site was visited, the pages
@@ -126,7 +126,7 @@
     <p>
         In some cases, you may be asked to provide your real name or other identifying or contact details
     &ndash; such personal information will be managed in accordance with the ALA
-        <a href="http://www.ala.org.au/about-the-atlas/terms-of-use/privacy-policy/">Privacy Policy</a>.
+        <a href="https://www.ala.org.au/about-the-atlas/terms-of-use/privacy-policy/">Privacy Policy</a>.
     </p>
     <p>&nbsp;</p>
 

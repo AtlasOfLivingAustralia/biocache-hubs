@@ -12,7 +12,7 @@
     <div class="modal-body">
         <p id="termsOfUseDownload">
             <g:message code="download.termsofusedownload.01" default="By downloading this content you are agreeing to use it in accordance with the Atlas of Living Australia"/>
-            <a href="http://www.ala.org.au/about/terms-of-use/#TOUusingcontent"><g:message code="download.termsofusedownload.02" default="Terms of Use"/></a>
+            <a href="https://www.ala.org.au/about/terms-of-use/#TOUusingcontent"><g:message code="download.termsofusedownload.02" default="Terms of Use"/></a>
             <g:message code="download.termsofusedownload.03" default="and any Data Provider Terms associated with the data download."/>
             <br/><br/>
             <g:message code="download.termsofusedownload.04" default="Please provide the following details before downloading (* required)"/>:

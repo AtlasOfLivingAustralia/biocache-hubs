@@ -105,8 +105,8 @@
 <div id="footer">
     <div class="container-fluid">
         <div class="row-fluid">
-            <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons"><img src="http://i.creativecommons.org/l/by/3.0/88x31.png" width="88" height="31" alt=""></a>
-            <g:message code="generic.footer.link01" default="This site is licensed under a"/> <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="external"><g:message code="generic.footer.link02" default="Creative Commons Attribution 3.0 Australia License"/></a>.
+            <a href="https://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons"><img src="https://i.creativecommons.org/l/by/3.0/88x31.png" width="88" height="31" alt=""></a>
+            <g:message code="generic.footer.link01" default="This site is licensed under a"/> <a href="https://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="external"><g:message code="generic.footer.link02" default="Creative Commons Attribution 3.0 Australia License"/></a>.
             <g:message code="generic.footer.link03" default="Provider content may be covered by other"/> <a href="#terms-of-use" title="Terms of Use"><g:message code="generic.footer.link04" default="Terms of Use"/></a>.
         </div>
     </div>

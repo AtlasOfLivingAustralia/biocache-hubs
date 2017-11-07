@@ -340,7 +340,7 @@ available data for that record.
 <p>
     Clicking on the 'View in Spatial Portal' button will open your result set in the ALA Spatial Portal. The Spatial portal has a wide range of tools for
     performing detailed spatial analysis of your query results (you can also upload your own data set for analysis). A
-    <a href="http://www.ala.org.au/spatial-portal-help/getting-started/">guide for using the spatial analysis tools</a>
+    <a href="https://www.ala.org.au/spatial-portal-help/getting-started/">guide for using the spatial analysis tools</a>
     is available on the ALA website.
 </p>
 <h4>
