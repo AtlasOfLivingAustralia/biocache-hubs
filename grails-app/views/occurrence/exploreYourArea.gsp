@@ -53,6 +53,7 @@
             imagesUrlPrefix: '${ raw(asset.assetPath(src: '/eya-images')) }',
             zoom: ${zoom},
             radius: ${radius},
+            filters: '${raw(grailsApplication.config.exploreYourArea.filters)}',
             speciesPageUrl: "${speciesPageUrl}",
             queryContext: "${queryContext}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",

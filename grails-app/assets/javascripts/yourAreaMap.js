@@ -41,7 +41,7 @@ var radiusForZoom = {
 };
 
 // Load Google maps via AJAX API
-if(EYA_CONF !== undefined && !EYA_CONF.hasGoogleKey){
+if(typeof EYA_CONF != 'undefined' && !EYA_CONF.hasGoogleKey){
  google.load("maps", "3.3", {other_params:"sensor=false"});
 }
 
@@ -372,7 +372,7 @@ function loadRecordsLayer(retry) {
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
         radius: $('#radius').val(),
-        fq: "geospatial_kosher:true",
+        fq: EYA_CONF.filters,
         qc: EYA_CONF.queryContext,
         zoom: zoom
     };
@@ -601,7 +601,7 @@ function groupClicked(el) {
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
         radius: $('#radius').val(),
-        fq: "geospatial_kosher:true",
+        fq: EYA_CONF.filters,
         qc: EYA_CONF.queryContext,
         pageSize: 50
     };
@@ -735,7 +735,7 @@ function processSpeciesJsonData(data, appendResults) {
                 lat: $('#latitude').val(),
                 lon: $('#longitude').val(),
                 radius: $('#radius').val(),
-                fq: "geospatial_kosher:true",
+                fq: EYA_CONF.filters,
                 start: start,
                 common: commonName,
                 sort: sortParam,
@@ -773,7 +773,7 @@ function loadGroups() {
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
         radius: $('#radius').val(),
-        fq: "geospatial_kosher:true",
+        fq: EYA_CONF.filters,
         facets: "species_group",
         qc: EYA_CONF.queryContext
     }

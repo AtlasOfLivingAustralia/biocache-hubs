@@ -90,6 +90,7 @@ exploreYourArea.lat = "-35.0"
 exploreYourArea.lng = "149.0"
 exploreYourArea.location = "Canberra, ACT"
 exploreYourArea.zoomLevels = [ 1: 14, 5: 12, 10: 11, 50: 9 ]
+exploreYourArea.filters = "geospatial_kosher:true AND occurrence_status:present"
 
 facets.includeDynamicFacets = "false" // sandbox
 facets.limit = "100"
