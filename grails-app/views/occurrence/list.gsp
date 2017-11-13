@@ -118,8 +118,9 @@
                 <div class="input-group pull-right col-sm-7 col-md-7">
                     <input type="text" id="taxaQuery" name="${searchQuery}" class="form-control"
                            value="${params.list(searchQuery).join(' OR ')}"/>
-                    <span class="input-group-btn"><button type="submit" id="solrSubmit" class="btn btn-default"><g:message
-                            code="list.advancedsearchlink.button.label" default="Quick search"/></button></span>
+                    <span class="input-group-btn">
+                        <input class="form-control btn btn-default" type="submit" id="solrSubmit" value="${g.message(code:"list.advancedsearchlink.button.label", default:"Quick search")}"/>
+                    </span>
                 </div>
             </form>
         </div>
@@ -275,7 +276,7 @@
                             <g:each var="fq" in="${sr.activeFacetMap}">
                                 <g:if test="${fq.key}">
                                     <g:set var="hasFq" value="${true}"/>
-                                    <alatag:currentFilterItem item="${fq}" cssClass="btn btn-xs" addCloseBtn="${true}"/>
+                                    <alatag:currentFilterItem item="${fq}" cssClass="btn btn-default btn-xs" addCloseBtn="${true}"/>
                                 </g:if>
                             </g:each>
                             <g:if test="${params.wkt}"><%-- WKT spatial filter   --%>

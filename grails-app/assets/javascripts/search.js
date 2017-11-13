@@ -15,6 +15,7 @@
  */
 
 //= require searchCore.js
+//= require jquery.overlayScrollbars.min.js
 //= require_self
 
 // Jquery Document.onLoad equivalent
@@ -545,7 +546,7 @@ $(document).ready(function() {
     $('.showHideFacetGroup').click(function(e) {
         e.preventDefault();
         var name = $(this).data('name');
-        //console.log('search-facets-state-' + name + '=')
+        //console.log('toggle on #group_' + name, $('#group_' + name).is(":visible"))
         $(this).find('span').toggleClass('right-caret');
         $('#group_' + name).slideToggle(600, function() {
             //console.log('showHideFacetGroup',name);
@@ -575,7 +576,8 @@ $(document).ready(function() {
     });
 
     // scroll bars on facet values
-    $(".nano").nanoScroller({ preventPageScrolling: true });
+    $(".nano").nanoScroller({ preventPageScrolling: true, sliderMinHeight: 90 });
+    //$(".nano").overlayScrollbars({  });
 
     // store last search in local storage for a "back button" on record pages
     amplify.store('lastSearch', $.url().attr('relative'));

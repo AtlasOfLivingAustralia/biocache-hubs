@@ -179,9 +179,14 @@ form {
 #advancedSearchLink > a {
     font-size: 12px;
 }
-#solrSearchForm input {
-    margin: 0;
+
+#advanceSearch .control-label {
+    font-weight: normal;
 }
+
+/*#solrSearchForm input {*/
+    /*margin: 0;*/
+/*}*/
 #solrSearchForm > input#taxaQuery {
     display: inline-block;
     margin-top: 2px;
@@ -202,10 +207,9 @@ form {
     /*margin-right: 4px;*/
 /*}*/
 
-/*.tabbable .nav-tabs {*/
-    /*margin-top: 0;*/
-    /*margin-bottom: 0;*/
-/*}*/
+#content2 .nav-tabs > li > a:link {
+    font-size: 15px;
+}
 
 #listMapToggle {
     margin-top: 2px;
@@ -226,6 +230,7 @@ form {
 
 #content .sidebar .subnavlist > ul {
     list-style: none;
+    padding-left: 0px;
     /*list-style-image:url('images/checkbox-unchecked.png');*/
     margin-left: -4px;
     /*max-height: 6.4em;*/
@@ -403,8 +408,8 @@ div#currentFilter {
 
 #searchControls {
 /*    background-color: #E0E0E0;
-    border-top: 2px solid silver;*/
-    border-bottom: 1px solid silver;
+    border-top: 2px solid silver;
+    border-bottom: 1px solid silver;*/
     margin-bottom: 6px;
     padding: 2px 0 10px 0;
     min-height: 22px;
@@ -412,6 +417,7 @@ div#currentFilter {
 
 #results {
     clear: both;
+    border-top: 1px solid silver;
 }
 
 #downloads a, #alerts a, #mapView .btn btn-default btn-default a, #customiseFacetsButton > .btn btn-default btn-default {
@@ -429,6 +435,10 @@ div#currentFilter {
 
 #downloads a:hover, #alerts a:hover, #mapView .btn btn-default btn-default a:hover {
     text-decoration: none;
+}
+
+.nano {
+    height: 91px;
 }
 
 #sortWidgets {
@@ -793,9 +803,14 @@ img.optionsIcon {
 }
 
 #facetWell .caret {
-    margin-top: 8px;
+    margin-top: 0px;
     margin-left: -2px;
     margin-right: 2px;
+    color: #000;
+}
+
+#facetWell {
+    padding: 10px;
 }
 
 #facetWell .right-caret {

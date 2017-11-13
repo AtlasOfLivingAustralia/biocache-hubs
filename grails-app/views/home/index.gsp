@@ -16,6 +16,8 @@
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="search"/>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
+    <meta name="breadcrumb" content="${message(code: "search.heading.list")}"/>
+    <meta name="hideBreadcrumb" content=""/>
     <title><g:message code="home.index.title" default="Search for records"/> | ${hubDisplayName}</title>
 
     <g:if test="${grailsApplication.config.google.apikey}">
@@ -319,8 +321,8 @@
                         <div class="col-sm-9 input-group">
                             <input type="text" class="form-control" name="${searchQuery}" id="taxa"/>
                             <span class="input-group-btn">
-                                <button class="btn btn-default" id="locationSearch"  type="submit"><g:message
-                                        code="home.index.simsplesearch.button" default="Search"/></button>
+                                <input class="form-control btn btn-primary" id="locationSearch"  type="submit"
+                                       value="${g.message(code:"home.index.simsplesearch.button", default:"Search")}"/>
                             </span>
                         </div>
                         <div>
@@ -351,7 +353,7 @@
                                    value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
                             <input type="hidden" name="field" value="raw_name" class="form-control">
                             <input type="submit" name="action"
-                                   value=<g:message code="home.index.taxaupload.button01" default="Search"/> class="btn btn-default" />
+                                   value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
                         </div>
                     </form>
                 </div><!-- end #uploadDiv div -->
@@ -371,7 +373,7 @@
                                    value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
                             <input type="hidden" name="field" value="catalogue_number" class="form-control">
                             <input type="submit" name="action"
-                                   value=<g:message code="home.index.catalogupload.button01" default="Search"/> class="btn btn-default"/>
+                                   value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
                         </div>
                     </form>
                 </div><!-- end #catalogUploadDiv div -->
@@ -401,7 +403,7 @@
                                                           default="Optionally, paste a WKT string: "/></p>
                                             <textarea type="text" id="wktInput"></textarea>
                                             <br/>
-                                            <button class="btn btn-default btn-sm" id="addWkt"><g:message
+                                            <button class="btn btn-primary btn-sm" id="addWkt"><g:message
                                                     code="search.map.wktButtonText" default="Add to map"/></button>
                                         </div>
                                     </div>

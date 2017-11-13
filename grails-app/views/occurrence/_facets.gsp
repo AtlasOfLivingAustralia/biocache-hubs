@@ -1,4 +1,4 @@
-<div id="facetWell" class="well well-small">
+<div id="facetWell" class="well well-sm">
     <g:set var="startTime" value="${System.currentTimeMillis()}"/>
     ${alatag.logMsg(msg:"Start of facets.gsp - " + startTime)}
     <h3 class="visible-xs">
@@ -38,7 +38,7 @@
             <div class="facetGroupName" id="heading_${keyCamelCase}">
                 <a href="#" class="showHideFacetGroup" data-name="${keyCamelCase}"><span class="caret right-caret"></span> <g:message code="facet.group.${group.key}" default="${group.key}"/></a>
             </div>
-            <div class="facetsGroup hide" id="group_${keyCamelCase}">
+            <div class="facetsGroup" id="group_${keyCamelCase}" style="display:none;">
                 <g:set var="firstGroup" value="${false}"/>
                 <g:each in="${group.value}" var="facetFromGroup">
                     <%--  Do a lookup on groupedFacetsMap for the current facet --%>

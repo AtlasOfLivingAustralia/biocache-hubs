@@ -30,21 +30,33 @@
 /*}*/
 
 
-/*#content2 p, #content2 div, #headingBar, #contentBox div {*/
-    /*font-size: 13px;*/
-    /*line-height: 1.5em;*/
-/*}*/
+#content2 p, #content2 div, #headingBar, #contentBox div {
+    font-size: 13px;
+    line-height: 1.5em;
+}
 /*!*#content2 {*!*/
     /*!*width: 720px;*!*/
 /*!*}*!*/
 /*.sidebar {*/
     /*!*width: 210px;*!*/
 /*}*/
-/*a:link, a:visited, #content2 a:link, #content2 a:visited {*/
-    /*!*font-size: 13px;*!*/
-    /*text-decoration: none;*/
-/*!*    color: #005A8E;*!*/
-/*}*/
+a:link, a:visited, #content2 a:link, #content2 a:visited {
+    /*font-size: 13px;*/
+    text-decoration: none;
+/*    color: #005A8E;*/
+}
+
+.btn {
+    padding: 4px 12px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.btn-default {
+    color:#444;
+    background-color:#fff;
+    border-color:#999
+}
 /*a:hover, #content2 a:hover {*/
     /*text-decoration: underline;*/
 /*}*/
@@ -53,9 +65,9 @@
     /*color: #444;*/
     /*font-family: 'Rockwell', arial, helvetica, sans-serif;*/
 /*}*!*/
-/*#nav li a {*/
-    /*font-size: 100%;*/
-/*}*/
+#nav li a {
+    font-size: 14px;
+}
 /*!*#contentBox {*!*/
     /*!*width: 1000px;*!*/
 /*!*}*!*/
@@ -103,33 +115,33 @@
 /*td.labels {*/
     /*width: 170px;*/
 /*}*/
-/*#headingBar {*/
-    /*padding-left: 0px;*/
-    /*margin: 10px 0 20px 0;*/
-/*}*/
-/*#headingBar h1 {*/
-    /*font-size: 200%;*/
-    /*margin-bottom: 10px;*/
-    /*margin-top: 0px;*/
-/*}*/
-/*.sidebar h2 {*/
-    /*font-size: 130%;*/
-    /*margin-top: 10px;*/
-/*}*/
-/*.sidebar h3 {*/
-    /*font-size: 120%;*/
-    /*padding-top: 4px;*/
-/*}*/
-/*.sidebar h4 {*/
-    /*font-size: 100%;*/
-    /*padding: 4px 0;*/
-/*}*/
-/*.sidebar li {*/
-    /*border-bottom: none;*/
-/*}*/
-/*.sidebar li {*/
-    /*font-size: 13px;*/
-/*}*/
+#headingBar {
+    padding-left: 0px;
+    margin: 10px 0 20px 0;
+}
+#headingBar h1 {
+    font-size: 200%;
+    margin-bottom: 10px;
+    margin-top: 0px;
+}
+.sidebar h2 {
+    font-size: 130%;
+    margin-top: 10px;
+}
+.sidebar h3 {
+    font-size: 120%;
+    padding-top: 4px;
+}
+.sidebar h4 {
+    font-size: 100%;
+    padding: 4px 0;
+}
+.sidebar li {
+    border-bottom: none;
+}
+.sidebar li {
+    font-size: 13px;
+}
 
 /*#advancedSearch {*/
     /*display: none;*/

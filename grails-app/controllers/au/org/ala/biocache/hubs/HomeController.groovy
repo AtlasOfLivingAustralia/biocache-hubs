@@ -34,6 +34,7 @@ class HomeController {
         def model = [:]
 
         facetsCacheService.facetsList.each { fn ->
+            log.debug "Getting facet: ${fn}"
             model.put(fn, facetsCacheService.getFacetNamesFor(fn))
         }
 
