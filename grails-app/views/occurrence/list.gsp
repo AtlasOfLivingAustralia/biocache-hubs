@@ -346,41 +346,42 @@
             <g:set var="postFacets" value="${System.currentTimeMillis()}"/>
             <div id="content2" class="col-sm-9 col-md-9">
                 <g:if test="${grailsApplication.config.alerts.baseUrl}">
-                    <div id="alert" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="alertLabel"
+                    <div id="alert" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="alertLabel"
                          aria-hidden="true">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 
-                            <h3 id="myModalLabel"><g:message code="list.alert.title" default="Email alerts"/></h3>
-                        </div>
+                                    <h3 id="myModalLabel"><g:message code="list.alert.title" default="Email alerts"/></h3>
+                                </div>
 
-                        <div class="modal-body">
-                            <div class="">
-                                <a href="#alertNewRecords" id="alertNewRecords" class="btn tooltips btn-default"
-                                   data-method="createBiocacheNewRecordsAlert"
-                                   title="Notify me when new records come online for this search"><g:message
-                                        code="list.alert.navigator01" default="Get email alerts for new records"/></a>
-                            </div>
-                            <br/>
+                                <div class="modal-body">
+                                    <div class="">
+                                        <a href="#alertNewRecords" id="alertNewRecords" class="btn tooltips btn-default"
+                                           data-method="createBiocacheNewRecordsAlert"
+                                           title="Notify me when new records come online for this search"><g:message
+                                                code="list.alert.navigator01" default="Get email alerts for new records"/></a>
+                                    </div>
+                                    <br/>
 
-                            <div class="">
-                                <a href="#alertNewAnnotations" id="alertNewAnnotations"
-                                   data-method="createBiocacheNewAnnotationsAlert"
-                                   class="btn tooltips btn-default"
-                                   title="Notify me when new annotations (corrections, comments, etc) come online for this search"><g:message
-                                        code="list.alert.navigator02" default="Get email alerts for new annotations"/></a>
-                            </div>
-
-                <p>&nbsp;</p>
-
-                            <p><a href="${grailsApplication.config.alerts.baseUrl}/notification/myAlerts"><g:message
-                                    code="list.alert.navigator03" default="View your current alerts"/></a></p>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message
-                                    code="list.alert.button01" default="Close"/></button>
-                        </div>
+                                    <div class="">
+                                        <a href="#alertNewAnnotations" id="alertNewAnnotations"
+                                           data-method="createBiocacheNewAnnotationsAlert"
+                                           class="btn tooltips btn-default"
+                                           title="Notify me when new annotations (corrections, comments, etc) come online for this search"><g:message
+                                                code="list.alert.navigator02" default="Get email alerts for new annotations"/></a>
+                                    </div>
+                                    <p>&nbsp;</p>
+                                    <p><a href="${grailsApplication.config.alerts.baseUrl}/notification/myAlerts"><g:message
+                                            code="list.alert.navigator03" default="View your current alerts"/></a></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message
+                                            code="list.alert.button01" default="Close"/></button>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
                     </div><!-- /#alerts -->
                 </g:if>
 
@@ -431,7 +432,7 @@
                                     </div>
                                 </g:if>
                                 <g:if test="${grailsApplication.config.alerts.baseUrl}">
-                                    <div id="alerts" class="btn btn-default btn-sm">
+                                    <div id="alerts" class="btn btn-default btn-sm ">
                                         <a href="#alert" role="button" data-toggle="modal" class="tooltips"
                                            title="Get email alerts for this search"><i
                                                 class="fa fa-bell"></i>&nbsp;&nbsp;<g:message code="list.alerts.navigator"

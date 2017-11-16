@@ -225,6 +225,8 @@ form {
 .subnavlist > ul {
     margin-left: 7px;
     clear: left;
+    margin-top: 1px;
+    margin-bottom: 1px;
     /*padding-left: 24px;*/
 }
 
@@ -529,7 +531,7 @@ div.recordHeader {
 }
 .showHide a:link, .showHide a:visited  {
     /*color: #005A8E;*/
-    font-size: 11px;
+    font-size: 12px;
     font-weight: normal; /* was bold */
     text-decoration: none;
 }
@@ -953,6 +955,11 @@ span.red {
     margin: 0;
 }
 
+/* Prevent duplicate fullscreen icons showing */
+a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
+    display: none;
+}
+
 /* Gallery styling */
 .imgCon {
     display: inline-block;
@@ -1001,6 +1008,18 @@ span.red {
 #imageDialog .modal-body{overflow-y: hidden;position:static;top:50px;bottom:50px;right:0px;left:0px; max-height:90%;}
 
 #imageDialog .modal-footer {position: absolute;bottom: 0;right: 0;left: 0;}
+
+#main .modal-header h3 {
+    margin-bottom: 0;
+}
+
+.multiple-facet-value {
+    text-align: left;
+}
+
+.multiple-facet-count {
+    text-align: right;
+}
 
 .simpleSearchNote {
     font-size: 12px;
