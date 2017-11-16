@@ -4,15 +4,21 @@
     <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
         <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
         <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
-        <a id="spatialPortalLink" class="btn btn-default btn-sm tooltips"
-           href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="Continue analysis in ALA Spatial Portal">
-            <i class="fa fa-map-marker"></i>&nbsp&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
+        <div id="spatialPortalBtn" class="btn btn-small" style="margin-bottom: 2px;">
+            <a id="spatialPortalLink" class="tooltips"
+               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="Continue analysis in ALA Spatial Portal">
+                <i class="fa fa-map-marker"></i>&nbsp&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
+        </div>
     </g:if>
-    <a href="#downloadMap" role="button" data-toggle="modal" class="btn btn-default btn-sm tooltips" title="Download image file (single colour mode)">
-        <i class="fa fa-download"></i>&nbsp&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
+    <div id="downloadMaps" class="btn btn-small" style="margin-bottom: 2px;">
+        <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
+            <i class="fa fa-download"></i>&nbsp&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
+    </div>
     <g:if test="${params.wkt}">
-        <a href="#downloadWKT" role="button" class="btn btn-default btn-sm tooltips" title="Download WKT file" onclick="downloadPolygon(); return false;">
-            <i class="glyphicon glyphicon-stop"></i>&nbsp&nbsp;<g:message code="map.downloadwkt.btn.label" default="Download WKT"/></a>
+        <div id="downloadWKT" class="btn btn-small" style="margin-bottom: 2px;">
+            <a href="#downloadWKT" role="button" class="tooltips" title="Download WKT file" onclick="downloadPolygon(); return false;">
+                <i class="icon icon-stop"></i>&nbsp&nbsp;<g:message code="map.downloadwkt.btn.label" default="Download WKT"/></a>
+        </div>
     </g:if>
     <%-- <div id="spatialSearchFromMap" class="btn btn-small">
         <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">
@@ -93,10 +99,10 @@
 </div>
 
 
-<asset:script type="text/javascript" >
+<asset:script type="text/javascript">
 
     //var mbAttr = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, imagery &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
-	//var mbUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+	//var mbUrl = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png';
     var defaultBaseLayer = L.tileLayer("${grailsApplication.config.map.minimal.url}", {
             attribution: "${raw(grailsApplication.config.map.minimal.attr)}",
             subdomains: "${grailsApplication.config.map.minimal.subdomains}",
@@ -235,9 +241,9 @@
         MAP_VAR.map.on('draw:created', function(e) {
             //setup onclick event for this object
             var layer = e.layer;
+            MAP_VAR.drawnItems.addLayer(layer);
             generatePopup(layer, layer._latlng);
             addClickEventForVector(layer);
-            MAP_VAR.drawnItems.addLayer(layer);
         });
 
         //add the default base layer
@@ -269,19 +275,6 @@
             e.stopPropagation();
             return false;
         });
-
-        $('#colourByControl,#recordLayerControl').mouseover(function(e){
-            //console.log('mouseover');
-            MAP_VAR.map.dragging.disable();
-            MAP_VAR.map.off('click', pointLookupClickRegister);
-        });
-
-        $('#colourByControl,#recordLayerControl').mouseout(function(e){
-            //console.log('mouseout');
-            MAP_VAR.map.dragging.enable();
-            MAP_VAR.map.on('click', pointLookupClickRegister);
-        });
-
         $('.hideColourControl').click(function(e){
             //console.log('hideColourControl');
             $('#colourByControl').removeClass('leaflet-control-layers-expanded');
@@ -326,22 +319,34 @@
 
         // display vector from previous wkt search
         var wktFromParams = "${params.wkt}";
+        // duplicate wkt and circle for leaflet's continous world display.
+        var obj = undefined;
+        var objLeft = undefined;
+        var objRight = undefined;
         if (wktFromParams) {
             var wkt = new Wkt.Wkt();
             wkt.read(wktFromParams);
-            var wktObject = wkt.toObject({color: '#bada55'});
-            //addClickEventForVector(wktObject); // can't click on points if this is set
-            //wktObject.editing.enable();
-            wktObject.on('click', pointLookupClickRegister);
-            MAP_VAR.drawnItems.addLayer(wktObject);
-
+            obj = wkt.toObject({color: '#bada55' });
+            objLeft = wkt.toObject({color: '#bada55', translate: {x: -360} });
+            objRight = wkt.toObject({color: '#bada55', translate: {x: 360} });
         } else if (isSpatialRadiusSearch()) {
             // draw circle onto map
-            var circle = L.circle([$.url().param('lat'), $.url().param('lon')], ($.url().param('radius') * 1000), {color: '#bada55'});
-            //console.log("circle", circle);
-            //addClickEventForVector(circle);  // can't click on points if this is set
-            circle.on('click', pointLookupClickRegister);
-            MAP_VAR.drawnItems.addLayer(circle);
+            obj = L.circle([$.url().param('lat'), $.url().param('lon')], ($.url().param('radius') * 1000), {color: '#bada55'});
+            objLeft = L.circle([$.url().param('lat'), $.url().param('lon')] - 360, ($.url().param('radius') * 1000), {color: '#bada55'});
+            objRight = L.circle([$.url().param('lat'), $.url().param('lon')] + 360, ($.url().param('radius') * 1000), {color: '#bada55'});
+        }
+        if (obj) {
+            MAP_VAR.map.addHandler('paramArea', L.PointClickHandler.extend({obj: obj}));
+            MAP_VAR.map.paramArea.enable();
+            MAP_VAR.drawnItems.addLayer(obj);
+
+            MAP_VAR.map.addHandler('paramAreaLeft', L.PointClickHandler.extend({obj: objLeft}));
+            MAP_VAR.map.paramAreaLeft.enable();
+            MAP_VAR.drawnItems.addLayer(objLeft);
+
+            MAP_VAR.map.addHandler('paramAreaRight', L.PointClickHandler.extend({obj: objRight}));
+            MAP_VAR.map.paramAreaRight.enable();
+            MAP_VAR.drawnItems.addLayer(objRight);
         }
 
         MAP_VAR.map.on('draw:edited', function(e) {
@@ -355,7 +360,11 @@
 
         MAP_VAR.recordList = new Array(); // store list of records for popup
 
-        MAP_VAR.map.on('click', pointLookupClickRegister);
+        //MAP_VAR.map.on('click', pointLookupClickRegister);
+        if (obj === undefined) {
+            MAP_VAR.map.addHandler('paramArea', L.PointClickHandler.extend({obj: MAP_VAR.map}));
+            MAP_VAR.map.paramArea.enable();
+        }
     }
 
     var clickCount = 0;
@@ -1072,7 +1081,7 @@
     </form>
 </div>
 
-<asset:script type="text/javascript">
+<script type="text/javascript">
 
     $(document).ready(function(){
 
@@ -1080,11 +1089,11 @@
         $('#wktFromMapBounds').click(function(e) {
             e.preventDefault();
             var b = MAP_VAR.map.getBounds();
-            var wkt = "POLYGON ((" + b.getWest() + " " + b.getNorth() + ", " +
-                    b.getEast()  + " " + b.getNorth() + ", " +
+            var wkt = "POLYGON ((" + b.getWest() + " " + b.getSouth() + ", " +
                     b.getEast()  + " " + b.getSouth() + ", " +
-                    b.getWest()  + " " + b.getSouth() + ", " +
-                    b.getWest() + " " + b.getNorth() + "))";
+                    b.getEast()  + " " + b.getNorth() + ", " +
+                    b.getWest()  + " " + b.getNorth() + ", " +
+                    b.getWest() + " " + b.getSouth() + "))";
             //console.log('wkt', wkt);
             var url = "${g.createLink(uri:'/occurrences/search')}" + MAP_VAR.query + "&wkt=" + encodeURIComponent(wkt);
             //console.log('new url', url);
@@ -1124,4 +1133,4 @@
         $('#downloadMap').modal('hide');
         document.location.href = downloadUrl;
     }
-</asset:script>
+</script>
