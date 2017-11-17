@@ -3,49 +3,53 @@
         <button class="btn btn-default" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="report a problem or suggest a correction for this record">
             <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="glyphicon glyphicon-flag"></i> <g:message code="show.button.assertionbutton.span" default="Flag an issue"/></span>
         </button>
-        <div id="loginOrFlag" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true"><!-- BS modal div -->
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="loginOrFlagLabel"><g:message code="show.loginorflag.title" default="Flag an issue"/></h3>
-            </div>
-            <div class="modal-body">
-                <g:if test="${!userId}">
-                    <div style="margin: 20px 0;"><g:message code="show.loginorflag.div01.label" default="Login please:"/>
-                        <a href="${grailsApplication.config.security.cas.loginUrl}?service=${serverName}${request.contextPath}/occurrences/${record.raw.uuid}"><g:message code="show.loginorflag.div01.navigator" default="Click here"/></a>
+        <!-- BS modal div -->
+        <div id="loginOrFlag" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" ><!-- BS modal div -->
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="loginOrFlagLabel"><g:message code="show.loginorflag.title" default="Flag an issue"/></h3>
                     </div>
-                </g:if>
-                <g:else>
-                    <div>
-                        <g:message code="show.loginorflag.div02.label" default="You are logged in as"/>  <strong>${userDisplayName} (${alatag.loggedInUserEmail()})</strong>.
-                        <form id="issueForm">
-                            <p style="margin-top:20px;">
-                                <label for="issue"><g:message code="show.issueform.label01" default="Issue type:"/></label>
-                                <select name="issue" id="issue">
-                                    <g:each in="${errorCodes}" var="code">
-                                        <option value="${code.code}"><g:message code="${code.name}" default="${code.name}"/></option>
-                                    </g:each>
-                                </select>
-                            </p>
-                            <p style="margin-top:30px;">
-                                <label for="issueComment" style="vertical-align:top;"><g:message code="show.issueform.label02" default="Comment:"/></label>
-                                <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
-                            </p>
-                            <p style="margin-top:20px;">
-                                <input id="issueFormSubmit" type="submit" value="<g:message code="show.issueform.button.submit" default="Submit"/>" class="btn btn-default" />
-                                <input type="reset" value="<g:message code="show.issueform.button.cancel" default="Cancel"/>" class="btn btn-default" onClick="$('#loginOrFlag').modal('hide');"/>
-                                <input type="button" id="close" value="<g:message code="show.issueform.button.close" default="Close"/>" class="btn btn-default" style="display:none;"/>
-                                <span id="submitSuccess"></span>
-                            </p>
-                            <p id="assertionSubmitProgress" style="display:none;">
-                                <asset:image src="indicator.gif" alt="indicator icon"/>
-                            </p>
-
-                        </form>
+                    <div class="modal-body">
+                        <g:if test="${!userId}">
+                            <div style="margin: 20px 0;"><g:message code="show.loginorflag.div01.label" default="Login please:"/>
+                                <a href="${grailsApplication.config.security.cas.loginUrl}?service=${serverName}${request.contextPath}/occurrences/${record.raw.uuid}"><g:message code="show.loginorflag.div01.navigator" default="Click here"/></a>
+                            </div>
+                        </g:if>
+                        <g:else>
+                            <div>
+                                <g:message code="show.loginorflag.div02.label" default="You are logged in as"/>  <strong>${userDisplayName} (${alatag.loggedInUserEmail()})</strong>.
+                                <form id="issueForm">
+                                    <p style="margin-top:20px;">
+                                        <label for="issue"><g:message code="show.issueform.label01" default="Issue type:"/></label>
+                                        <select name="issue" id="issue">
+                                            <g:each in="${errorCodes}" var="code">
+                                                <option value="${code.code}"><g:message code="${code.name}" default="${code.name}"/></option>
+                                            </g:each>
+                                        </select>
+                                    </p>
+                                    <p style="margin-top:30px;">
+                                        <label for="issueComment" style="vertical-align:top;"><g:message code="show.issueform.label02" default="Comment:"/></label>
+                                        <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
+                                    </p>
+                                    <p style="margin-top:20px;">
+                                        <input id="issueFormSubmit" type="submit" value="<g:message code="show.issueform.button.submit" default="Submit"/>" class="btn btn-primary" />
+                                        <input type="reset" value="<g:message code="show.issueform.button.cancel" default="Cancel"/>" class="btn btn-default" onClick="$('#loginOrFlag').modal('hide');"/>
+                                        <input type="button" id="close" value="<g:message code="show.issueform.button.close" default="Close"/>" class="btn btn-default" style="display:none;"/>
+                                        <span id="submitSuccess"></span>
+                                    </p>
+                                    <p id="assertionSubmitProgress" style="display:none;">
+                                        <asset:image src="indicator.gif" alt="indicator icon"/>
+                                    </p>
+                                </form>
+                            </div>
+                        </g:else>
                     </div>
-                </g:else>
-            </div>
-            <div class="hide modal-footer">
-                <button class="btn btn-default btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.loginorflag.divbutton" default="Close"/></button>
+                    <div class="hide modal-footer">
+                        <button class="btn btn-default btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.loginorflag.divbutton" default="Close"/></button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -117,6 +117,16 @@ h1 span#recordId {
     line-height: 20px;
 }
 
+#userAnnotationsList h3 {
+    margin: 0;
+}
+
+#userAnnotationsList  {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
 #content2 h3 {
     margin-top: 4px;
 }
@@ -260,12 +270,18 @@ tr.sectionName td {
 }
 
 div.additionalData {
-    margin-left: 20px;
-    margin-top: 20px;
+    /*margin-left: 20px;*/
+    /*margin-top: 20px;*/
+}
+
+#userAnnotationsDiv > h4, #userAnnotationsDiv .well {
+    border: 1px solid #bbb;
+    margin-bottom:-1px;
+    padding: 9px;
 }
 
 .additionalData table {
-    min-width: 80%;
+    /*min-width: 80%;*/
 }
 
 li.userAnnotationTemplate p { padding-top: 1px !important; padding-bottom:1px !important; }

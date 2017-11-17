@@ -240,10 +240,10 @@
             </g:if>
             <div class="row">
                 <div class="col-md-8 col-md-offset-4">
-                    <div id="userAnnotationsDiv" class="additionalDataX">
+                    <div id="userAnnotationsDiv" class="additionalData">
                         <h3><g:message code="show.userannotationsdiv.title" default="User flagged issues"/><a id="userAnnotations">&nbsp;</a></h3>
                         <h4><g:message code="user.assertion.status" default="User Assertion Status"/>: <i><span id="userAssertionStatus"></span></i></h4>
-                        <ul id="userAnnotationsList" style="list-style: none; margin:0;"></ul>
+                        <ul id="userAnnotationsList"></ul>
                     </div>
 
                     <div id="dataQuality" class="additionalDataX"><a name="dataQualityReport"></a>
@@ -639,73 +639,73 @@
         </g:if>
 
         <g:if test="${contacts}">
-            <div id="contactCuratorView" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="contactCuratorViewLabel" aria-hidden="true"><!-- BS modal div -->
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="contactCuratorViewLabel"><g:message code="show.contactcuratorview.title" default="Contact curator"/></h3>
-            </div>
-            <div class="modal-body">
-                <p><g:message code="show.contactcuratorview.message" default="For more details and to report issues about this record, please contact a person mentioned below."></g:message> </p>
-                <g:each in="${contacts}" var="c">
-                    <address>
-                        <strong>${c.contact.firstName} ${c.contact.lastName} <g:if test="${c.primaryContact}"><span class="primaryContact">*</span></g:if> </strong>
-                        <g:if test="${c.role}"><br>${c.role}<br></g:if>
-                        <g:if test="${c.contact.phone}"><abbr title="Phone">P:</abbr> ${c.contact.phone} <br></g:if>
-                        <g:if test="${c.contact.email}"><abbr title="Email">E:</abbr> <alatag:emailLink email="${c.contact.email}"><g:message code="show.contactcuratorview.emailtext" default="email this contact"></g:message> </alatag:emailLink> <br></g:if>
-                    </address>
-                </g:each>
-                <p><span class="primaryContact"><b>*</b></span> <g:message code="show.contactcuratorview.primarycontact" default="Primary Contact"></g:message> </p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-default btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.processedvsrawview.button.close" default="Close"/></button>
-            </div>
+            <!-- BS modal div -->
+            <div id="contactCuratorView" class="modal fade " tabindex="-1" role="dialog" aria-labelledby="contactCuratorViewLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h3 id="contactCuratorViewLabel"><g:message code="show.contactcuratorview.title" default="Contact curator"/></h3>
+                        </div>
+                        <div class="modal-body">
+                            <p><g:message code="show.contactcuratorview.message" default="For more details and to report issues about this record, please contact a person mentioned below."></g:message> </p>
+                            <g:each in="${contacts}" var="c">
+                                <address>
+                                    <strong>${c.contact.firstName} ${c.contact.lastName} <g:if test="${c.primaryContact}"><span class="primaryContact">*</span></g:if> </strong>
+                                    <g:if test="${c.role}"><br>${c.role}<br></g:if>
+                                    <g:if test="${c.contact.phone}"><abbr title="Phone">P:</abbr> ${c.contact.phone} <br></g:if>
+                                    <g:if test="${c.contact.email}"><abbr title="Email">E:</abbr> <alatag:emailLink email="${c.contact.email}"><g:message code="show.contactcuratorview.emailtext" default="email this contact"></g:message> </alatag:emailLink> <br></g:if>
+                                </address>
+                            </g:each>
+                            <p><span class="primaryContact"><b>*</b></span> <g:message code="show.contactcuratorview.primarycontact" default="Primary Contact"></g:message> </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-default btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.processedvsrawview.button.close" default="Close"/></button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </g:if>
 
         <ul style="display:none;">
-        <li id="userAnnotationTemplate" class="userAnnotationTemplate well">
-            <h3><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h3>
-            <p class="comment"></p>
-            <p class="hide userDisplayName"></p>
-            <p class="created"></p>
-            <p class="viewMore" style="display:none;">
-               <a class="viewMoreLink" href="#"><g:message code="show.userannotationtemplate.p01.navigator" default="View more with this annotation"/></a>
-            </p>
-            <br/>
-            <p class="deleteAnnotation" style="display:block;">
-                <a class="deleteAnnotationButton btn btn-default" href="#"><g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/></a>
-                <span class="deleteAssertionSubmitProgress" style="display:none;">
-                    <asset:image src="indicator.gif" alt="indicator icon"/>
-                </span>
-            </p>
-            <br/>
-            <div class="container userVerificationClass">
-                <div id="userVerificationTemplate" class="row userVerificationTemplate" style="display: none">
-                    <g:if test="${isCollectionAdmin}">
-                        <div class="col-md-2 qaStatus"></div>
-                        <div class="col-md-4 comment"></div>
-                        <div class="col-md-2 userDisplayName"></div>
-                        <div class="col-md-2 created"></div>
-                        <div class="col-md-2 deleteVerification"><a class="deleteVerificationButton" style="text-align: right" href="#"><g:message code="show.userannotationtemplate.p04.navigator" default="Delete this verification"/></a>
-                        </div>
-                    </g:if>
-                    <g:if test="${!isCollectionAdmin}">
-                        <div class="col-md-2 qaStatus"></div>
-                        <div class="col-md-6 comment"></div>
-                        <div class="col-md-2 userDisplayName"></div>
-                        <div class="col-md-2 created"></div>
-                    </g:if>
-                </div>
-            </div>
-            <br/>
-            <g:if test="${isCollectionAdmin}">
-                <p class="verifyAnnotation" style="display:none;">
-                    <a class="verifyAnnotationButton btn btn-default"  href="#verifyRecordModal" data-toggle="modal"><g:message code="show.userannotationtemplate.p03.navigator" default="Verify this annotation"/></a>
+            <li id="userAnnotationTemplate" class="userAnnotationTemplate well well-sm">
+                <h4><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h4>
+                <p class="comment"></p>
+                <p class="hide userDisplayName"></p>
+                <p class="created"></p>
+                <p class="viewMore" style="display:none;">
+                   <a class="viewMoreLink" href="#"><g:message code="show.userannotationtemplate.p01.navigator" default="View more with this annotation"/></a>
                 </p>
-            </g:if>
-
-        </li>
-
+                <p class="deleteAnnotation" style="display:block;">
+                    <a class="deleteAnnotationButton btn btn-default" href="#"><g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/></a>
+                    <span class="deleteAssertionSubmitProgress" style="display:none;">
+                        <asset:image src="indicator.gif" alt="indicator icon"/>
+                    </span>
+                </p>
+                <div class="container userVerificationClass">
+                    <div id="userVerificationTemplate" class="row userVerificationTemplate" style="display: none">
+                        <g:if test="${isCollectionAdmin}">
+                            <div class="col-md-2 qaStatus"></div>
+                            <div class="col-md-4 comment"></div>
+                            <div class="col-md-2 userDisplayName"></div>
+                            <div class="col-md-2 created"></div>
+                            <div class="col-md-2 deleteVerification"><a class="deleteVerificationButton" style="text-align: right" href="#"><g:message code="show.userannotationtemplate.p04.navigator" default="Delete this verification"/></a>
+                            </div>
+                        </g:if>
+                        <g:if test="${!isCollectionAdmin}">
+                            <div class="col-md-2 qaStatus"></div>
+                            <div class="col-md-6 comment"></div>
+                            <div class="col-md-2 userDisplayName"></div>
+                            <div class="col-md-2 created"></div>
+                        </g:if>
+                    </div>
+                </div>
+                <g:if test="${isCollectionAdmin}">
+                    <p class="verifyAnnotation" style="display:none;">
+                        <a class="verifyAnnotationButton btn btn-default"  href="#verifyRecordModal" data-toggle="modal"><g:message code="show.userannotationtemplate.p03.navigator" default="Verify this annotation"/></a>
+                    </p>
+                </g:if>
+            </li>
         </ul>
 
         <div id="verifyRecordModal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true">
