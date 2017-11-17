@@ -651,6 +651,7 @@ function reloadWithParam(paramName, paramValue) {
     var fqList = $.url().param('fq'); //$.query.get('fq');
     var sort = $.url().param('sort');
     var dir = $.url().param('dir');
+    var wkt = $.url().param('wkt');
     var pageSize = $.url().param('pageSize');
     var lat = $.url().param('lat');
     var lon = $.url().param('lon');
@@ -685,7 +686,7 @@ function reloadWithParam(paramName, paramValue) {
     }
 
     if (paramName != null && paramValue != null) {
-        paramList.push(paramName + "=" +paramValue);
+        paramList.push(paramName + "=" + paramValue);
     }
     
     if (lat && lon && rad) {
@@ -696,6 +697,10 @@ function reloadWithParam(paramName, paramValue) {
     
     if (taxa) {
         paramList.push("taxa=" + taxa);
+    }
+
+    if (wkt){
+        paramList.push("wkt=" + wkt);
     }
 
     //alert("params = "+paramList.join("&"));
