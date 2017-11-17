@@ -26,7 +26,7 @@
     />
 </asset:script>
 
-<div class="row-fluid" id="userCharts">
+<div class="row" id="userCharts">
 
 </div>
 

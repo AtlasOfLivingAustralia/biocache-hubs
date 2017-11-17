@@ -392,7 +392,7 @@ class OccurrenceTagLib {
                 "data-toggle":"popover",
                 "data-code": attrs.code?:""
         ) {
-            i(class:"icon-question-sign", "")
+            i(class:"glyphicon glyphicon-question-sign", "")
         }
         //def html = "&nbsp;<a href='#' class='dataQualityHelpLink' data-toggle='popover' data-code='${code}'><i class='icon-question-sign'></i></a>"
         //out << html

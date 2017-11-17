@@ -60,7 +60,7 @@ a:link, a:visited, #content2 a:link, #content2 a:visited {
 
 .modal-body {
     max-height: calc(100vh - 200px);
-    overflow-y: auto;
+    overflow: auto;
 }
 
 /*a:hover, #content2 a:hover {*/

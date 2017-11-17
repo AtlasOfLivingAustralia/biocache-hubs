@@ -249,7 +249,7 @@
                         </div>
                     </div>
                 </div>
-            </div><!-- /.span3 -->
+            </div><!-- /.col-md-3 -->
             <!-- Results column -->
             <div class="col-sm-9 col-md-9">
                 <a name="map" class="jumpTo"></a><a name="list" class="jumpTo"></a>
@@ -341,7 +341,7 @@
                         </div>
                     </div>
                 </div>
-            </div><!-- /.span9 -->
+            </div><!-- /.col-md-9 -->
         </div><!-- /#searchInfoRow -->
         <!--  Second row - facet column and results column -->
         <div class="row" id="content">

@@ -62,7 +62,7 @@
                 </div>
 
                 <div style="clear: both; text-align: center;">
-                    <br/><input type="submit" value="<g:message code="download.downloadform.button.submit" default="Start Download"/>" id="downloadStart" class="btn tooltips"/>
+                    <br/><input type="submit" value="<g:message code="download.downloadform.button.submit" default="Start Download"/>" id="downloadStart" class="row btn-default tooltips"/>
                 </div>
 
                 <div style="margin-top:10px;">
@@ -164,6 +164,6 @@
         </asset:script>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><g:message code="download.button.close" default="Close"/></button>
+        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message code="download.button.close" default="Close"/></button>
     </div>
 </div>

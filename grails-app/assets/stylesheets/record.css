@@ -65,7 +65,7 @@ div#occurrenceMap {
 }
 table.occurrenceTable {
     /*border-bottom: 0px !important;*/
-    /*margin: 5px 0 10px 0;*/
+    margin: 5px 0 10px 0;
     /*padding-bottom: 5px;*/
     /*width: 100%;*/
 }
@@ -79,7 +79,11 @@ table.occurrenceTable {
     /*border-bottom: 0px !important;*/
     margin: 5px 0 10px 0;
     /*padding-bottom: 5px;*/
-    /*width: 100%;*/
+    width: 100%;
+}
+
+.glyphicon {
+    margin-right: 4px;
 }
 
 td.annoText {
@@ -102,6 +106,17 @@ h2#headingSciName {
 h1 span#recordId {
     color: #222;
 }
+#main h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 21px;
+    line-height: 40px;
+}
+#main .modal-header h3 {
+    margin: 0;
+    line-height: 20px;
+}
+
 #content2 h3 {
     margin-top: 4px;
 }
@@ -112,6 +127,7 @@ h1 span#recordId {
 }
 #recordHeadingLine2 {
     font-size: 16px;
+    margin-top: 5px;
 }
 #assertionMaker {
     font-size: 110%;
@@ -136,9 +152,9 @@ h1 span#recordId {
 #processedVsRawView {
     font-size: 13px;
     text-align: center;
-    width: 900px;
+    /*width: 900px;*/
     /*margin-top: -300px !important;*/
-    margin-left:  -450px !important;
+    /*margin-left:  -450px !important;*/
 }
 
 #processedVsRawView table {
@@ -327,6 +343,20 @@ div.audiojs div.time {
 
 .primaryContact{
     color: orange;
+}
+
+#navBox.nav-pills > li > a {
+    border-radius: 0;
+    border: 1px solid #ddd;
+    background-color: #f2f2f2;
+}
+
+#navBox.nav-stacked > li {
+    margin-bottom: -1px;
+}
+
+#navBox.nav-stacked > li + li {
+    margin-top: 0;
 }
 
 #navBox {

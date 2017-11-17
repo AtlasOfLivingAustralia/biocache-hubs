@@ -80,24 +80,24 @@
 <form name="searchForm" id="searchForm" class="" action="" method="GET">
     <div class="control-group">
         <label class="control-label" for="address"><h4><g:message code="eya.searchform.label01" default="Enter your location or address"/>:</h4></label>
-        <div class="controls row-fluid">
-            <div class="input-append span5">
-                <input type="text" name="address" id="address" class="span10X">
+        <div class="controls row">
+            <div class="input-append col-md-5">
+                <input type="text" name="address" id="address" class="col-md-10X">
                 <input type="hidden" name="latitude" id="latitude" value="${latitude}"/>
                 <input type="hidden" name="longitude" id="longitude" value="${longitude}"/>
                 <input type="hidden" name="location" id="location" value="${location}"/>
-                <input id="locationSearch" type="submit" class="btn" value="<g:message code="eya.searchform.btn01" default="Search"/>"/>
+                <input id="locationSearch" type="submit" class="btn btn-default" value="<g:message code="eya.searchform.btn01" default="Search"/>"/>
             </div>
-            <div class="span7 help-inline"><g:message code="eya.searchform.des01" default="E.g. a street address, place name, postcode or GPS coordinates (as lat, long)"/></div>
+            <div class="col-md-7 help-inline"><g:message code="eya.searchform.des01" default="E.g. a street address, place name, postcode or GPS coordinates (as lat, long)"/></div>
         </div>
     </div>
-    <div id="locationInfo" class="span12 row-fluid ">
+    <div id="locationInfo" class="col-md-12 row ">
         <g:if test="${true || location}">
             <div id="resultsInfo">
                 <g:message code="eya.searchform.label02" default="Showing records for"/>: <span id="markerAddress">${location}</span>&nbsp;&nbsp<a href="#" id="addressHelp" style="text-decoration: none"><span class="help-container">&nbsp;</span></a>
             </div>
         </g:if>
-        <div class="row-fluid">
+        <div class="row">
             <span class="pad">
                 <g:message code="eya.searchformradius.label01" default="Display records in a"/>
                 <select id="radius" name="radius" class="" style="height:24px;width:auto;line-height:18px;margin-bottom:0;">
@@ -107,11 +107,11 @@
                 </select> <g:message code="eya.searchformradius.label02" default="km radius"/>
             </span>
             <span class="pad">
-                <a href="#" id="viewAllRecords" class="btn btn-small"><i class="icon-list"></i>&nbsp;&nbsp;<g:message code="eya.searchform.a.viewallrecords.01" default="View"/>
+                <a href="#" id="viewAllRecords" class="btn btn-default btn-small"><i class="icon-list"></i>&nbsp;&nbsp;<g:message code="eya.searchform.a.viewallrecords.01" default="View"/>
                     <span id="recordsGroupText"><g:message code="eya.searchform.a.viewallrecords.02" default="all"/></span>  <g:message code="eya.searchform.a.viewallrecords.03" default="records"/></a>
             </span>
             <span class="pad">
-                <a href="#download" role="button" data-toggle="modal" class="btn btn-small tooltips" title="Download all records OR species checklist">
+                <a href="#download" role="button" data-toggle="modal" class="btn btn-default btn-small tooltips" title="Download all records OR species checklist">
                     <i class="icon-download"></i> <g:message code="eya.searchform.a.downloads" default="Downloads"/></a>
             </span>
         </div>
@@ -121,8 +121,8 @@
         </div>
     </div>
 </form>
-<div class="row-fluid">
-    <div class="span7">
+<div class="row">
+    <div class="col-md-7">
         <div id="taxaBox">
             <div id="leftList">
                 <table id="taxa-level-0">
@@ -151,8 +151,8 @@
                 </table>
             </div>
         </div>
-    </div><!-- .span7 -->
-    <div class="span5">
+    </div><!-- .col-md-7 -->
+    <div class="col-md-5">
         <div id="mapCanvas" style="width: 100%; height: 490px;"></div>
         <div style="font-size:11px;width:100%;color:black;height:20px;" class="show-80">
             <table id="cellCountsLegend">
@@ -170,8 +170,8 @@
         <div id="mapTips">
             <b><g:message code="eya.maptips.01" default="Tip"/></b>: <g:message code="eya.maptips.02" default="you can fine-tune the location of the area by dragging the red marker icon"/>
         </div>
-    </div><!-- .span5 -->
-</div><!-- .row-fluid -->
+    </div><!-- .col-md-5 -->
+</div><!-- .row -->
 
 <g:render template="download"/>
 

@@ -14,7 +14,7 @@
         <a href="#downloadWKT" role="button" class="btn btn-default btn-sm tooltips" title="Download WKT file" onclick="downloadPolygon(); return false;">
             <i class="glyphicon glyphicon-stop"></i>&nbsp&nbsp;<g:message code="map.downloadwkt.btn.label" default="Download WKT"/></a>
     </g:if>
-    <%-- <div id="spatialSearchFromMap" class="btn btn-small">
+    <%-- <div id="spatialSearchFromMap" class="btn btn-default btn-small">
         <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">
             <i class="hide icon-share-alt"></i> Restrict search</a>
     </div>
@@ -71,7 +71,7 @@
     </table>
 </div>
 
-<div id="leafletMap" class="span12" style="height:600px;"></div>
+<div id="leafletMap" class="col-md-12" style="height:600px;"></div>
 
 <div id="template" style="display:none">
     <div class="colourbyTemplate">

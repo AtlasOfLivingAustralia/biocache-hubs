@@ -1,7 +1,7 @@
 <g:if test="${isUnderCas && !isReadOnly && record.processed.attribution.provenance != 'Draft'}">
     <div class="sidebar" style="float:left;">
-        <button class="btn" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="report a problem or suggest a correction for this record">
-            <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="icon-flag"></i> <g:message code="show.button.assertionbutton.span" default="Flag an issue"/></span>
+        <button class="btn btn-default" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="report a problem or suggest a correction for this record">
+            <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="glyphicon glyphicon-flag"></i> <g:message code="show.button.assertionbutton.span" default="Flag an issue"/></span>
         </button>
         <div id="loginOrFlag" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true"><!-- BS modal div -->
             <div class="modal-header">
@@ -31,9 +31,9 @@
                                 <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
                             </p>
                             <p style="margin-top:20px;">
-                                <input id="issueFormSubmit" type="submit" value="<g:message code="show.issueform.button.submit" default="Submit"/>" class="btn" />
-                                <input type="reset" value="<g:message code="show.issueform.button.cancel" default="Cancel"/>" class="btn" onClick="$('#loginOrFlag').modal('hide');"/>
-                                <input type="button" id="close" value="<g:message code="show.issueform.button.close" default="Close"/>" class="btn" style="display:none;"/>
+                                <input id="issueFormSubmit" type="submit" value="<g:message code="show.issueform.button.submit" default="Submit"/>" class="btn btn-default" />
+                                <input type="reset" value="<g:message code="show.issueform.button.cancel" default="Cancel"/>" class="btn btn-default" onClick="$('#loginOrFlag').modal('hide');"/>
+                                <input type="button" id="close" value="<g:message code="show.issueform.button.close" default="Close"/>" class="btn btn-default" style="display:none;"/>
                                 <span id="submitSuccess"></span>
                             </p>
                             <p id="assertionSubmitProgress" style="display:none;">
@@ -45,21 +45,21 @@
                 </g:else>
             </div>
             <div class="hide modal-footer">
-                <button class="btn btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.loginorflag.divbutton" default="Close"/></button>
+                <button class="btn btn-default btn-small" data-dismiss="modal" aria-hidden="true" style="float:right;"><g:message code="show.loginorflag.divbutton" default="Close"/></button>
             </div>
         </div>
     </div>
 </g:if>
 <g:if test="${contacts && contacts.size()}">
     <div class="sidebar" style="float:left;">
-        <button href="#contactCuratorView" class="btn" id="showCurator" role="button" data-toggle="modal"
+        <button href="#contactCuratorView" class="btn btn-default" id="showCurator" role="button" data-toggle="modal"
                 title="Contact curator for more details on a record">
-            <span id="contactCuratorSpan" href="#contactCuratorView" title=""><i class="icon-envelope"></i> <g:message code="show.showcontactcurator.span" default="Contact curator"/></span>
+            <span id="contactCuratorSpan" href="#contactCuratorView" title=""><i class="glyphicon glyphicon-envelope"></i> <g:message code="show.showcontactcurator.span" default="Contact curator"/></span>
         </button>
     </div>
 </g:if>
 <div class="clearfix"></div>
-<ul id="navBox" class="nav nav-tabs nav-stacked">
+<ul id="navBox" class="nav nav-pills nav-stacked">
     <li><a href="#occurrenceDataset"><g:message code="recordcore.occurencedataset.title" default="Dataset"/></a></li>
     <li><a href="#occurrenceEvent"><g:message code="recordcore.occurenceevent.title" default="Event"/></a></li>
     <li><a href="#occurrenceTaxonomy"><g:message code="recordcore.occurencetaxonomy.title" default="Taxonomy"/></a></li>
@@ -195,7 +195,7 @@
             <a href="http://volunteer.ala.org.au/"><g:message code="show.sidebar01.volunteer.navigator" default="Biodiversity Volunteer Portal"/></a>.
         </p>
 
-        <button class="btn" id="viewDraftButton" >
+        <button class="btn btn-default" id="viewDraftButton" >
             <span id="viewDraftSpan" title="View Draft"><g:message code="show.button.viewdraftbutton.span" default="See draft in Biodiversity Volunteer Portal"/></span>
         </button>
     </div>
@@ -305,8 +305,8 @@
 <g:if test="${record.sounds}">
     <div class="sidebar">
         <h3 id="soundsHeader" style="margin: 20px 0 0 0;"><g:message code="show.soundsheader.title" default="Sounds"/></h3>
-        <div class="row-fluid">
-            <div id="audioWrapper" class="span12">
+        <div class="row">
+            <div id="audioWrapper" class="col-md-12">
                 <audio src="${record.sounds.get(0)?.alternativeFormats?.'audio/mpeg'}" preload="auto" />
                 <div class="track-details">
                     ${record.raw.classification.scientificName}
