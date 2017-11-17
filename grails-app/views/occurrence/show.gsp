@@ -107,7 +107,7 @@
                             <g:message code="show.jsonlink.login" default="Logged in as:"/> ${alatag.loggedInUserDisplayname()}
                         </g:if>
                         <g:if test="${clubView}">
-                            <div id="clubView"><g:message code="show.clubview.message" default="Showing &quot;Club View&quot;"/></div>
+                            <div id="clubView"><span class="label label-danger"><i class="glyphicon glyphicon-lock"></i><g:message code="show.clubview.message" default="Club View"/></span></div>
                         </g:if>
                     </div>
                     <div id="backBtn" class=" pull-rightZ">

@@ -208,6 +208,12 @@ div#userAssertionsDetailsLink > a {
 
 #clubView {
     color:red;
+    margin: 10px 0;
+}
+
+#clubView .label {
+    font-size: 13px;
+    padding: 7px 10px 6px 10px;
 }
 
 div.sidebar > button.rounded {
