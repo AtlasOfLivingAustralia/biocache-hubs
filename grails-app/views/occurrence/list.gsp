@@ -189,33 +189,32 @@
                 </a>
 
                 <!-- Modal -->
-                <div id="facetConfigDialog" class="modal fade" role="dialog">
+                <div id="facetConfigDialog" class="modal fade" role="dialog" aria-labelledby="customiseFacetsLabel">
                     <div class="modal-dialog">
 
                         <!-- Modal content-->
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title"><g:message code="list.customisefacetsbutton.div01.title"
-                                                                   default="* * Select the filter categories that you want to appear in the &quot;Refine results&quot; column"/></h4>
+                                <h4 class="modal-title" id="customiseFacetsLabel">
+                                    <g:message code="list.customisefacetsbutton.div01.title" default="Customise filter options"/>
+                                </h4>
                             </div>
                             <div class="modal-body">
                                 <div id="facetCheckboxes">
                                     <div class="row">
-                                        <div class="col-md-6 col-sm-6">
-                                            <g:message code="list.facetcheckboxes.label01" default="Select"/>: <a href="#"
-                                                                                                                  id="selectAll"><g:message
-                                                    code="list.facetcheckboxes.navigator01" default="All"/></a> | <a href="#"
-                                                                                                                     id="selectNone"><g:message
-                                                    code="list.facetcheckboxes.navigator02" default="None"/></a>
-                                        </div>
-                                        <div class="col-md-6 col-sm-6">
+                                        <div class="col-md-6">
+                                            <g:message code="list.facetcheckboxes.label01" default="Select"/>:
+                                            <div class="btn-group" role="group" aria-label="...">
+                                                <button id="selectAll" class="btn btn-default btn-sm"><g:message code="list.facetcheckboxes.navigator01" default="All"/></button>
+                                                <button id="selectNone" class="btn btn-default btn-sm"><g:message code="list.facetcheckboxes.navigator02" default="None"/></button>
+                                            </div>
                                             <g:set var="resetTitle" value="Restore default settings"/>
-                                            <button id="resetFacetOptions" class="btn btn-default btn-sm pull-right margin-left-5" title="${resetTitle}"><g:message
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button id="resetFacetOptions" class="btn btn-default btn-sm margin-left-5 pull-right" title="${resetTitle}"><g:message
                                                     code="list.facetcheckboxes.button.resetfacetoptions"
                                                     default="Reset to defaults"/></button>
-                                            <button id="updateFacetOptions" class="btn btn-primary btn-sm pull-right"><g:message
-                                                    code="list.facetcheckboxes.button.updatefacetoptions" default="Update"/></button>
                                         </div>
                                     </div>
                                     <div class="row padding-left-1">
@@ -240,6 +239,12 @@
                                         </g:each>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-default btn-sm" data-dismiss="modal"><g:message
+                                        code="list.facetcheckboxes.button.closeFacetoptions" default="Close"/></button>
+                                <button id="updateFacetOptions" class="btn btn-primary btn-sm"><g:message
+                                        code="list.facetcheckboxes.button.updatefacetoptions" default="Update"/></button>
                             </div>
                         </div>
                     </div>

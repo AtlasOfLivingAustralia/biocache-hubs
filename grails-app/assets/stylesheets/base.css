@@ -47,7 +47,7 @@ a:link, a:visited, #content2 a:link, #content2 a:visited {
 }
 
 .btn {
-    padding: 4px 12px;
+    padding: 4px 10px;
     font-size: 14px;
     line-height: 20px;
 }
@@ -57,6 +57,12 @@ a:link, a:visited, #content2 a:link, #content2 a:visited {
     background-color:#fff;
     border-color:#999
 }
+
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
 /*a:hover, #content2 a:hover {*/
     /*text-decoration: underline;*/
 /*}*/

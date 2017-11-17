@@ -577,7 +577,7 @@ div#advancedSearch {
 
 div.facetsColumn {
     float: left;
-    width: 245px;
+    width: 48%;
     padding: 4px 0;
 }
 
@@ -863,7 +863,8 @@ img.optionsIcon {
 }
 
 table#fullFacets thead th {
-    border-bottom: 1px solid #D9D9D9;
+    border-bottom: 1px solid #999;
+    font-weight: bold;
 }
 
 ul#refinedFacets b {

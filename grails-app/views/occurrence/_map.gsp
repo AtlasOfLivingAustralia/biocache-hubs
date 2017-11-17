@@ -4,21 +4,15 @@
     <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
         <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
         <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
-        <div id="spatialPortalBtn" class="btn btn-small" style="margin-bottom: 2px;">
-            <a id="spatialPortalLink" class="tooltips"
-               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="Continue analysis in ALA Spatial Portal">
-                <i class="fa fa-map-marker"></i>&nbsp&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
-        </div>
+        <a id="spatialPortalLink" class="btn btn-default btn-sm tooltips"
+           href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="Continue analysis in ALA Spatial Portal">
+            <i class="fa fa-map-marker"></i>&nbsp&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
     </g:if>
-    <div id="downloadMaps" class="btn btn-small" style="margin-bottom: 2px;">
-        <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
-            <i class="fa fa-download"></i>&nbsp&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
-    </div>
+    <a href="#downloadMap" role="button" data-toggle="modal" class="btn btn-default btn-sm tooltips" title="Download image file (single colour mode)">
+        <i class="fa fa-download"></i>&nbsp&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
     <g:if test="${params.wkt}">
-        <div id="downloadWKT" class="btn btn-small" style="margin-bottom: 2px;">
-            <a href="#downloadWKT" role="button" class="tooltips" title="Download WKT file" onclick="downloadPolygon(); return false;">
-                <i class="icon icon-stop"></i>&nbsp&nbsp;<g:message code="map.downloadwkt.btn.label" default="Download WKT"/></a>
-        </div>
+        <a href="#downloadWKT" role="button" class="btn btn-default btn-sm tooltips" title="Download WKT file" onclick="downloadPolygon(); return false;">
+            <i class="glyphicon glyphicon-stop"></i>&nbsp&nbsp;<g:message code="map.downloadwkt.btn.label" default="Download WKT"/></a>
     </g:if>
     <%-- <div id="spatialSearchFromMap" class="btn btn-small">
         <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">
@@ -975,110 +969,135 @@
     </div>
 </div>
 
-<div id="downloadMap" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="downloadsMapLabel" aria-hidden="true">
-
-    <form id="downloadMapForm">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="downloadsMapLabel"><g:message code="map.downloadmap.title" default="Download publication map"/></h3>
+<div id="downloadMap" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="downloadsMapLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="downloadMapForm" class="form-horizontal" role="form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="downloadsMapLabel"><g:message code="map.downloadmap.title" default="Download map as image file"/></h3>
+                </div>
+                <div class="modal-body">
+                    <input id="mapDownloadUrl" type="hidden" value="${alatag.getBiocacheAjaxUrl()}/webportal/wms/image"/>
+                    <div class="form-group">
+                        <label for="format" class="col-md-5 control-label"><g:message code="map.downloadmap.field01.label" default="Format"/></label>
+                        <div class="col-md-6">
+                            <select name="format" id="format" class="form-control">
+                                <option value="jpg"><g:message code="map.downloadmap.field01.option01" default="JPEG"/></option>
+                                <option value="png"><g:message code="map.downloadmap.field01.option02" default="PNG"/></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dpi" class="col-md-5 control-label"><g:message code="map.downloadmap.field02.label" default="Quality (DPI)"/></label>
+                        <div class="col-md-6">
+                            <select name="dpi" id="dpi" class="form-control">
+                                <option value="100">100</option>
+                                <option value="300" selected="true">300</option>
+                                <option value="600">600</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pradiusmm" class="col-md-5 control-label"><g:message code="map.downloadmap.field03.label" default="Point radius (mm)"/></label>
+                        <div class="col-md-6">
+                            <select name="pradiusmm" id="pradiusmm" class="form-control">
+                                <option>0.1</option>
+                                <option>0.2</option>
+                                <option>0.3</option>
+                                <option>0.4</option>
+                                <option>0.5</option>
+                                <option>0.6</option>
+                                <option selected="true">0.7</option>
+                                <option>0.8</option>
+                                <option>0.9</option>
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>6</option>
+                                <option>7</option>
+                                <option>8</option>
+                                <option>9</option>
+                                <option>10</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="popacity" class="col-md-5 control-label"><g:message code="map.downloadmap.field04.label" default="Opacity"/></label>
+                        <div class="col-md-6">
+                            <select name="popacity" id="popacity" class="form-control">
+                                <option>1</option>
+                                <option>0.9</option>
+                                <option>0.8</option>
+                                <option selected="true">0.7</option>
+                                <option>0.6</option>
+                                <option>0.5</option>
+                                <option>0.4</option>
+                                <option>0.3</option>
+                                <option>0.2</option>
+                                <option>0.1</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="colourPickerWrapper" class="col-md-5 control-label"><g:message code="map.downloadmap.field05.label" default="Color"/></label>
+                        <div class="col-md-6">
+                            <input type="color" name="pcolour" id="pcolour" class="form-control" value="#0D00FB">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="widthmm" class="col-md-5 control-label"><g:message code="map.downloadmap.field06.label" default="Width (mm)"/></label>
+                        <div class="col-md-6">
+                            <input type="text" name="widthmm" id="widthmm" class="form-control" value="150" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="scale_on" class="col-md-5 control-label"><g:message code="map.downloadmap.field07.label" default="Include scale"/></label>
+                        <div class="col-md-6">
+                            <div class="form-control" style="border: none; box-shadow: none;">
+                                <input type="radio" name="scale" value="on" id="scale_on" class="form-controlX" checked="checked"/> <g:message code="map.downloadmap.field07.option01" default="Yes"/> &nbsp;
+                                <input type="radio" name="scale" value="off" class="form-controlX" /> <g:message code="map.downloadmap.field07.option02" default="No"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="outline" class="col-md-5 control-label"><g:message code="map.downloadmap.field08.label" default="Outline points"/></label>
+                        <div class="col-md-6">
+                            <div class="form-control" style="border: none; box-shadow: none;">
+                                <input type="radio" name="outline" value="true" id="outline" class="form-controlX" checked="checked"/> <g:message code="map.downloadmap.field08.option01" default="Yes"/> &nbsp;
+                                <input type="radio" name="outline" value="false" class="form-controlX" /> <g:message code="map.downloadmap.field08.option02" default="No"/>
+                            </div>
+                            </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="baselayer" class="col-md-5 control-label"><g:message code="map.downloadmap.field09.label" default="Base layer"/></label>
+                        <div class="col-md-6">
+                            <select name="baselayer" id="baselayer" class="form-control">
+                                <option value="world"><g:message code="map.downloadmap.field09.option01" default="World outline"/></option>
+                                <option value="aus1" selected="true"><g:message code="map.downloadmap.field09.option02" default="States & Territories"/></option>
+                                <option value="aus2"><g:message code="map.downloadmap.field09.option03" default="Local government areas"/></option>
+                                <option value="ibra_merged"><g:message code="map.downloadmap.field09.option04" default="IBRA"/></option>
+                                <option value="ibra_sub_merged"><g:message code="map.downloadmap.field09.option05" default="IBRA sub regions"/></option>
+                                <option value="imcra4_pb"><g:message code="map.downloadmap.field09.option06" default="IMCRA"/></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="fileName" class="col-md-5 control-label"><g:message code="map.downloadmap.field10.label" default="File name (without extension)"/></label>
+                        <div class="col-md-6">
+                            <input type="text" name="fileName" id="fileName" class="form-control" value="MyMap"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message code="map.downloadmap.button02.label" default="Close"/></button>
+                    <button id="submitDownloadMap" class="btn btn-primary"><g:message code="map.downloadmap.button01.label" default="Download map"/></button>
+                </div>
+            </form>
         </div>
-        <div class="modal-body">
-            <input id="mapDownloadUrl" type="hidden" value="${alatag.getBiocacheAjaxUrl()}/webportal/wms/image"/>
-            <fieldset>
-                <p><label for="format"><g:message code="map.downloadmap.field01.label" default="Format"/></label>
-                    <select name="format" id="format">
-                        <option value="jpg"><g:message code="map.downloadmap.field01.option01" default="JPEG"/></option>
-                        <option value="png"><g:message code="map.downloadmap.field01.option02" default="PNG"/></option>
-                    </select>
-                </p>
-                <p>
-                    <label for="dpi"><g:message code="map.downloadmap.field02.label" default="Quality (DPI)"/></label>
-                    <select name="dpi" id="dpi">
-                        <option value="100">100</option>
-                        <option value="300" selected="true">300</option>
-                        <option value="600">600</option>
-                    </select>
-                </p>
-                <p>
-                    <label for="pradiusmm"><g:message code="map.downloadmap.field03.label" default="Point radius (mm)"/></label>
-                    <select name="pradiusmm" id="pradiusmm">
-                        <option>0.1</option>
-                        <option>0.2</option>
-                        <option>0.3</option>
-                        <option>0.4</option>
-                        <option>0.5</option>
-                        <option>0.6</option>
-                        <option selected="true">0.7</option>
-                        <option>0.8</option>
-                        <option>0.9</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                        <option>10</option>
-                    </select>
-                </p>
-                <p>
-                    <label for="popacity"><g:message code="map.downloadmap.field04.label" default="Opacity"/></label>
-                    <select name="popacity" id="popacity">
-                        <option>1</option>
-                        <option>0.9</option>
-                        <option>0.8</option>
-                        <option selected="true">0.7</option>
-                        <option>0.6</option>
-                        <option>0.5</option>
-                        <option>0.4</option>
-                        <option>0.3</option>
-                        <option>0.2</option>
-                        <option>0.1</option>
-                    </select>
-                </p>
-                <p id="colourPickerWrapper">
-                    <label for="pcolour"><g:message code="map.downloadmap.field05.label" default="Color"/></label>
-                    <input type="color" name="pcolour" id="pcolour" value="#0D00FB">
-                </p>
-                <p>
-                    <label for="widthmm"><g:message code="map.downloadmap.field06.label" default="Width (mm)"/></label>
-                    <input type="text" name="widthmm" id="widthmm" value="150" />
-                </p>
-                <p>
-                    <label for="scale_on"><g:message code="map.downloadmap.field07.label" default="Include scale"/></label>
-                    <input type="radio" name="scale" value="on" id="scale_on" checked="checked"/> <g:message code="map.downloadmap.field07.option01" default="Yes"/> &nbsp;
-                    <input type="radio" name="scale" value="off" /> <g:message code="map.downloadmap.field07.option02" default="No"/>
-                </p>
-                <p>
-                    <label for="outline"><g:message code="map.downloadmap.field08.label" default="Outline points"/></label>
-                    <input type="radio" name="outline" value="true" id="outline" checked="checked"/> <g:message code="map.downloadmap.field08.option01" default="Yes"/> &nbsp;
-                    <input type="radio" name="outline" value="false" /> <g:message code="map.downloadmap.field08.option02" default="No"/>
-                </p>
-                <p>
-                    <label for="baselayer"><g:message code="map.downloadmap.field09.label" default="Base layer"/></label>
-                    <select name="baselayer" id="baselayer">
-                        <option value="world"><g:message code="map.downloadmap.field09.option01" default="World outline"/></option>
-                        <option value="aus1" selected="true"><g:message code="map.downloadmap.field09.option02" default="States & Territories"/></option>
-                        <option value="aus2"><g:message code="map.downloadmap.field09.option03" default="Local government areas"/></option>
-                        <option value="ibra_merged"><g:message code="map.downloadmap.field09.option04" default="IBRA"/></option>
-                        <option value="ibra_sub_merged"><g:message code="map.downloadmap.field09.option05" default="IBRA sub regions"/></option>
-                        <option value="imcra4_pb"><g:message code="map.downloadmap.field09.option06" default="IMCRA"/></option>
-                    </select>
-                </p>
-                <p>
-                    <label for="fileName"><g:message code="map.downloadmap.field10.label" default="File name (without extension)"/></label>
-                    <input type="text" name="fileName" id="fileName" value="MyMap"/>
-                </p>
-            </fieldset>
-
-        </div>
-        <div class="modal-footer">
-            <button id="submitDownloadMap" class="btn" style="float:left;"><g:message code="map.downloadmap.button01.label" default="Download map"/></button>
-            <button class="btn" data-dismiss="modal" aria-hidden="true"><g:message code="map.downloadmap.button02.label" default="Close"/></button>
-        </div>
-    </form>
+    </div>
 </div>
 
 <script type="text/javascript">

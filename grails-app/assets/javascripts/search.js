@@ -222,11 +222,11 @@ $(document).ready(function() {
     } //  note removed else that did page refresh by triggering cookie update code.
 
     // select all and none buttons
-    $("a#selectNone").click(function(e) {
+    $("#selectNone").click(function(e) {
         e.preventDefault();
         $(":input.facetOpts").removeAttr("checked");
     });
-    $("a#selectAll").click(function(e) {
+    $("#selectAll").click(function(e) {
         e.preventDefault();
         $(":input.facetOpts").attr("checked","checked");
     });
