@@ -29,6 +29,8 @@
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="search"/>
+    <meta name="breadcrumbParent" content="${request.contextPath ?: '/'},${message(code: "search.heading.list")}"/>
+    <meta name="breadcrumb" content="${message(code: "show.title")}: ${recordId} (${scientificName})"/>
     <title><g:message code="show.title" default="Record"/>: ${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
 
 
@@ -149,7 +151,7 @@
                 </div>
             </div>
             <div class="row">
-                <div id="SidebarBoxZ" class="col-md-4">
+                <div id="record-sidebar" class="col-md-4 scrollspy">
                     <g:render template="recordSidebar" />
                 </div><!-- end div#SidebarBox -->
                 <div id="" class="col-md-8">

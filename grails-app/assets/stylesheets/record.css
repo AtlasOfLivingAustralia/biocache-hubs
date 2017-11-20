@@ -57,7 +57,7 @@ div.recordHeader {
 
 div#occurrenceMap {
     height: 300px;
-    margin-top: 5px;
+    margin-top: 10px;
 }
 .originalValue {
     padding-left: 12px;
@@ -282,6 +282,29 @@ div.additionalData {
 
 .additionalData table {
     /*min-width: 80%;*/
+}
+
+.affix {
+    top: 120px;
+}
+
+.affix,
+.affix-bottom {
+    width: 30.5%;
+}
+
+.affix-bottom {
+    position: absolute;
+}
+
+@media (max-width: 768px) {
+    .affix {
+        position: static;
+    }
+    .affix,
+    .affix-bottom {
+        width:100%;
+    }
 }
 
 li.userAnnotationTemplate p { padding-top: 1px !important; padding-bottom:1px !important; }
