@@ -16,7 +16,7 @@
     </g:if>
     <%-- <div id="spatialSearchFromMap" class="btn btn-default btn-small">
         <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">
-            <i class="hide icon-share-alt"></i> Restrict search</a>
+            <i class="hide glyphicon glyphicon-share-alt"></i> Restrict search</a>
     </div>
     TODO - Needs hook in UI to detect a wkt param and include button/link under search query and selected facets.
     TODO - Also needs to check if wkt is already specified and remove previous wkt param from query.
@@ -954,7 +954,7 @@
         <div class="multiRecordHeader hide">
             <g:message code="search.map.viewing" default="Viewing"/> <span class="currentRecord"></span> <g:message code="search.map.of" default="of"/>
             <span class="totalrecords"></span> <g:message code="search.map.occurrences" default="occurrence records"/>
-            &nbsp;&nbsp;<i class="icon-share-alt"></i> <a href="#" class="btn+btn-mini viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>
+            &nbsp;&nbsp;<i class="glyphicon glyphicon-share-alt"></i> <a href="#" class="btn+btn-mini viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>
         </div>
         <div class="recordSummary">
 

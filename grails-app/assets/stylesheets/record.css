@@ -72,7 +72,14 @@ table.occurrenceTable {
 .occurrenceTable td.dwcLabel {
     width: 33%;
     vertical-align: top;
-    font-weight: bold;
+    font-weight: 500;
+}
+
+.additionalData .table thead td {
+    font-weight: 500;
+}
+.additionalData .table td:first-child {
+    font-weight: 500;
 }
 
 .dataQualityResults {
@@ -341,7 +348,11 @@ li.userAnnotationTemplate { list-style: none; }
 .popover {
     max-width: 560px;
 }
-
+#main h3.popover-title {
+    margin: 0;
+    font-size: 16px;
+    line-height: 22px;
+}
 .popover-title .close {
     font-size: 24px;
     margin-top: -4px;

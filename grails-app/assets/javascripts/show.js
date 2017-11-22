@@ -222,7 +222,7 @@ $(document).ready(function() {
                 //content = "<div><b>" + dataQualityItem.name + "</b></div>";
                 content = "<div>" + dataQualityItem.description + "</div>";
                 if (dataQualityItem.wiki) {
-                    content += "<div><i class='icon-share-alt'></i>&nbsp;<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" +
+                    content += "<div><i class='glyphicon glyphicon-share-alt'></i>&nbsp;<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" +
                         dataQualityItem.name + "' target='wiki' title='More details on the wiki page'>Wiki page</a></div>";
                 }
             }

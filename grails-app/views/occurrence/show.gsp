@@ -167,7 +167,7 @@
             </div>
 
             <g:if test="${hasExpertDistribution}">
-                <div id="hasExpertDistribution"  class="additionalDataX" style="clear:both;padding-top: 20px;">
+                <div id="hasExpertDistribution"  class="additionalData" style="clear:both;padding-top: 20px;">
                     <h3><g:message code="show.hasexpertdistribution.title" default="Record outside of expert distribution area (shown in red)"/> <a id="expertReport" href="#expertReport">&nbsp;</a></h3>
                     <asset:javascript src="wms2.js" />
                     <asset:script type="text/javascript">
@@ -248,7 +248,7 @@
                         <ul id="userAnnotationsList"></ul>
                     </div>
 
-                    <div id="dataQuality" class="additionalDataX"><a name="dataQualityReport"></a>
+                    <div id="dataQuality" class="additionalData"><a name="dataQualityReport"></a>
                         <h3><g:message code="show.dataquality.title" default="Data quality tests"/></h3>
                         <div id="dataQualityModal" class="modal hide fade" tabindex="-1" role="dialog">
                             <div class="modal-header">
@@ -262,7 +262,7 @@
                                 <button class="btn btn-default" data-dismiss="modal"><g:message code="show.dataqualitymodal.button" default="Close"/></button>
                             </div>
                         </div>
-                        <table class="dataQualityResults table-striped table-bordered table-condensed">
+                        <table class="dataQualityResults table table-striped table-bordered table-condensed">
                             <%--<caption>Details of tests that have been performed for this record.</caption>--%>
                             <thead>
                             <tr class="sectionName">
@@ -335,7 +335,7 @@
 
                     <div id="outlierFeedback">
                         <g:if test="${record.processed.occurrence.outlierForLayers}">
-                            <div id="outlierInformation" class="additionalDataX">
+                            <div id="outlierInformation" class="additionalData">
                                 <h3><g:message code="show.outlierinformation.title" default="Outlier information"/> <a id="outlierReport" href="#outlierReport">&nbsp;</a></h3>
                             <p>
                                 <g:message code="show.outlierinformation.p01" default="This record has been detected as an outlier using the"/>
@@ -420,7 +420,7 @@
                             </ul>
                             </p>
                             <g:if test="${duplicateRecordDetails && duplicateRecordDetails.duplicates?.size() > 0}">
-                                <table class="duplicationTable table-striped table-bordered table-condensed" style="border-bottom:none;">
+                                <table class="duplicationTable table table-striped table-bordered table-condensed" style="border-bottom:none;">
                                     <tr class="sectionName"><td colspan="4"><g:message code="show.table01.title" default="Representative Record"/></td></tr>
                                     <g:if test="${duplicateRecordDetails.uuid}">
                                         <alatag:occurrenceTableRow
@@ -562,10 +562,10 @@
                         </g:if>
                     </div>
 
-                        <div id="outlierInformation" class="additionalDataX">
+                        <div id="outlierInformation" class="additionalData">
                             <g:if test="${contextualSampleInfo}">
                                 <h3 id="contextualSampleInfo"><g:message code="show.outlierinformation.02.title01" default="Additional geographic & environmental information"/></h3>
-                                <table class="layerIntersections table-striped table-bordered table-condensed">
+                                <table class="layerIntersections table table-striped table-bordered table-condensed">
                                     <tbody>
                                     <g:each in="${contextualSampleInfo}" var="sample" status="vs">
                                         <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != contextualSampleInfo.get(vs - 1).classification1 && vs != contextualSampleInfo.size() - 1))}">
@@ -585,7 +585,7 @@
 
                             <g:if test="${environmentalSampleInfo}">
                                 <h3 id="environmentalSampleInfo"><g:message code="show.outlierinformation.02.title02" default="Environmental sampling for this location"/></h3>
-                                <table class="layerIntersections table-striped table-bordered table-condensed" >
+                                <table class="layerIntersections table table-striped table-bordered table-condensed" >
                                     <tbody>
                                     <g:each in="${environmentalSampleInfo}" var="sample" status="vs">
                                         <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != environmentalSampleInfo.get(vs - 1).classification1 && vs != environmentalSampleInfo.size() - 1))}">
