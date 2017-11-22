@@ -74,7 +74,7 @@
     <asset:javascript src="moment.js"/>
 
     <asset:stylesheet src="show.css" />
-    <asset:stylesheet src="print.css" media="screen, projection" />
+    <asset:stylesheet src="print.css" media="print" />
 
     <asset:script type="text/javascript">
         $(document).ready(function() {

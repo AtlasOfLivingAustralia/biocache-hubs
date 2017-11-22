@@ -83,7 +83,7 @@
 <asset:javascript src="mapCommon.js"/>
 <asset:javascript src="ala/ala-charts.js"/>
 
-
+<asset:stylesheet src="print.css" media="print" />
 <asset:stylesheet src="search.css"/>
 <asset:stylesheet src="ala/images-client.css"/>
 <asset:stylesheet src="leafletPlugins.css"/>

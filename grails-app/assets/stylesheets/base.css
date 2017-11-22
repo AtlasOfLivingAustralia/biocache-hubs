@@ -34,16 +34,22 @@
     font-size: 13px;
     line-height: 1.5em;
 }
+
+
 /*!*#content2 {*!*/
     /*!*width: 720px;*!*/
 /*!*}*!*/
 /*.sidebar {*/
     /*!*width: 210px;*!*/
 /*}*/
+
+/* To prevent bootstrap-theme.css overriding ala-styles - add it back here  */
+/*.btn-primary{color:#fff;background-color:#c44d34;border-color:#b0452f}*/
+
 a:link, a:visited, #content2 a:link, #content2 a:visited {
     /*font-size: 13px;*/
     text-decoration: none;
-/*    color: #005A8E;*/
+    /*    color: #005A8E;*/
 }
 
 .btn {
@@ -57,6 +63,44 @@ a:link, a:visited, #content2 a:link, #content2 a:visited {
     background-color:#fff;
     border-color:#999
 }
+
+.btn-primary {
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    background-color: #f2684c;
+    background-image: -webkit-linear-gradient(top, #f37257 0%, #f15a3b 100%);
+    background-image: -o-linear-gradient(top, #f37257 0%, #f15a3b 100%);
+    background-image: -moz-linear-gradient(top, #f37257, #f15a3b);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#f37257), to(#f15a3b));
+    background-image: linear-gradient(to bottom, #f37257 0%, #f15a3b 100%);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff37257', endColorstr='#fff15a3b', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    border-color: #f15a3b #f15a3b #d0300f;
+    border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+}
+.btn-primary:hover,.btn-primary:focus,.btn-primary:active,.btn-primary.active,.open .dropdown-toggle.btn-primary{
+    color:#fff;
+    background-color: #a4402b;
+    border-color: #7f3222;
+    background-position: 0 -30px;
+}
+.btn-primary:active,.btn-primary.active,.open .dropdown-toggle.btn-primary{background-image:none}
+.btn-primary.disabled,.btn-primary[disabled],fieldset[disabled] .btn-primary,.btn-primary.disabled:hover,.btn-primary[disabled]:hover,fieldset[disabled] .btn-primary:hover,.btn-primary.disabled:focus,.btn-primary[disabled]:focus,fieldset[disabled] .btn-primary:focus,.btn-primary.disabled:active,.btn-primary[disabled]:active,fieldset[disabled] .btn-primary:active,.btn-primary.disabled.active,.btn-primary[disabled].active,fieldset[disabled] .btn-primary.active{background-color:#c44d34;border-color:#b0452f}
+.btn-primary .badge{color:#c44d34;background-color:#fff}
+.btn-link{color:#c44d34;font-weight:400;cursor:pointer;border-radius:0}
+.btn-link,.btn-link:active,.btn-link[disabled],fieldset[disabled] .btn-link{background-color:transparent;-webkit-box-shadow:none;box-shadow:none}
+.btn-link,.btn-link:hover,.btn-link:focus,.btn-link:active{border-color:transparent}
+.btn-link:hover,.btn-link:focus{color:#883524;text-decoration:underline;background-color:transparent}
+.btn-link[disabled]:hover,fieldset[disabled] .btn-link:hover,.btn-link[disabled]:focus,fieldset[disabled] .btn-link:focus{color:#999;text-decoration:none}
+.btn-lg,.btn-group-lg > .btn{padding:12px 18px;font-size:16px;line-height:1.33;border-radius:0}
+.btn-sm,.btn-group-sm > .btn{padding:5px 10px;font-size:13px;line-height:1.5;border-radius:0}
+.btn-xs,.btn-group-xs > .btn{padding:1px 5px;font-size:13px;line-height:1.5;border-radius:0}
+.btn-block{display:block;width:100%;padding-left:0;padding-right:0}
+.btn-block + .btn-block{margin-top:5px}
+.btn-group-vertical>.btn:last-child:not(:first-child) {border-top-left-radius: 0;border-top-right-radius: 0;border-bottom-right-radius: 0;border-bottom-left-radius: 0;}
+.btn-group-vertical>.btn:first-child:not(:last-child) {border-top-left-radius: 0;border-top-right-radius: 0;border-bottom-right-radius: 0;border-bottom-left-radius: 0;}
+
 
 .modal-body {
     max-height: calc(100vh - 200px);

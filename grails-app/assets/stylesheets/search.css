@@ -6,7 +6,6 @@
         Purpose of the stylesheet follows.
 
  *= require searchCore.css
- *= require print-search.css
  *= require_self
 */
 
@@ -906,8 +905,9 @@ span.red {
     line-height: 2.0em;
 }
 
-.activeFilters .btn btn-default btn-default {
-    font-size: 13px;
+.activeFilters .btn {
+    /*font-size: 13px;*/
+    margin: 2px 0;
 }
 
 .closeX {

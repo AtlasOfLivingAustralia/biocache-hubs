@@ -288,9 +288,12 @@ div.additionalData {
     top: 120px;
 }
 
-.affix,
-.affix-bottom {
+.affix {
     width: 30.5%;
+}
+
+.affix-bottom {
+    width: 94%;
 }
 
 .affix-bottom {
