@@ -74,9 +74,10 @@ dependencies {
     compile "org.grails.plugins:ala-admin-plugin:2.0-SNAPSHOT"
     compile "org.grails.plugins:ala-auth:3.0.2"
 
+    compile "au.org.ala.plugins.grails:images-client-plugin:0.9-SNAPSHOT"
+
     if(!inplace) {
         compile "au.org.ala.plugins.grails:ala-charts-plugin:1.4-SNAPSHOT"
-        compile "au.org.ala.plugins.grails:images-client-plugin:0.9-SNAPSHOT"
     }
 
 }

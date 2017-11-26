@@ -72,14 +72,10 @@
         };
 </asset:script>
 
-<asset:javascript src="search.js"/>
 <asset:javascript src="ala/images-client.js"/>
 <asset:javascript src="leafletPlugins.js"/>
-<asset:javascript src="slider.js"/>
-<asset:javascript src="qtip.js"/>
-<asset:javascript src="nanoscroller.js"/>
-<asset:javascript src="amplify.js"/>
-<asset:javascript src="moment.js"/>
+<asset:javascript src="listThirdParty.js"/>
+<asset:javascript src="search.js"/>
 <asset:javascript src="mapCommon.js"/>
 <asset:javascript src="ala/ala-charts.js"/>
 
@@ -87,9 +83,7 @@
 <asset:stylesheet src="search.css"/>
 <asset:stylesheet src="ala/images-client.css"/>
 <asset:stylesheet src="leafletPlugins.css"/>
-<asset:stylesheet src="slider.css"/>
-<asset:stylesheet src="qtip.css"/>
-<asset:stylesheet src="nanoscroller.css"/>
+<asset:stylesheet src="listThirdParty.css"/>
 <asset:stylesheet src="ala/ala-charts.css"/>
 
 
@@ -607,7 +601,7 @@
             </div>
         </div>
     </g:else>
-    <div id="imageDialog" class="modal fade hide" tabindex="-1" role="dialog">
+    <div id="imageDialog" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">

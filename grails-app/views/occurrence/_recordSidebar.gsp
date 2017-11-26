@@ -9,7 +9,8 @@
         <span id="contactCuratorSpan" href="#contactCuratorView" title=""><i class="glyphicon glyphicon-envelope"></i> <g:message code="show.showcontactcurator.span" default="Contact curator"/></span>
     </button>
 </g:if>
-<div class="nav-affix" data-spy="affix" data-offset-top="236" data-offset-bottom="1080">
+%{--<div class="nav-affix" data-spy="affix" data-offset-top="236" data-offset-bottom="1080">--}%
+<div class="" >
     <ul id="navBox" class="nav nav-pills nav-stacked">
         <li><a href="#occurrenceDataset"><g:message code="recordcore.occurencedataset.title" default="Dataset"/></a></li>
         <li><a href="#occurrenceEvent"><g:message code="recordcore.occurenceevent.title" default="Event"/></a></li>

@@ -70,8 +70,6 @@
     <g:render template="/layouts/global"/>
 
     <asset:javascript src="show.js" />
-    <asset:javascript src="amplify.js"/>
-    <asset:javascript src="moment.js"/>
 
     <asset:stylesheet src="show.css" />
     <asset:stylesheet src="print.css" media="print" />

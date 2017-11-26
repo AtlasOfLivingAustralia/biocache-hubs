@@ -5,6 +5,8 @@
 //= require jquery.i18n.properties-1.0.9.js
 //= require charts2.js
 //= require wms2.js
+//= require amplify.js
+//= require moment.min.js
 //= require_self
  */
 /**

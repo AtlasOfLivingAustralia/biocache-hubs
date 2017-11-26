@@ -210,6 +210,13 @@ form {
     font-size: 15px;
 }
 
+.tab-content {
+    border-bottom: 1px solid #999;
+    border-right: 1px solid #999;
+    border-left: 1px solid #999;
+    padding: 15px;
+}
+
 #listMapToggle {
     margin-top: 2px;
 }
@@ -1000,11 +1007,11 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
     opacity: 0.7;
 }
 
-#imageDialog.modal{
+#imageDialog.modal .modal-dialog{
     width: 90%; /* desired relative width */
-    min-height:80%;
-    left: 5%; /* (100%-width)/2 */
-    margin: auto auto auto auto; /* place center */}
+    min-height:90%;
+    /*left: 5%; !* (100%-width)/2 *!*/
+    /*margin: auto auto auto auto; !* place center *!}*/
 
 #imageDialog .modal-body{overflow-y: hidden;position:static;top:50px;bottom:50px;right:0px;left:0px; max-height:90%;}
 
