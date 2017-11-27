@@ -12,7 +12,8 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- *=require print-area.css
+ *= require print-area.css
+ *= require jquery.qtip.min.css
  *= require_self
  */
 
@@ -180,9 +181,10 @@ a.taxonBrowse2, a.taxonBrowse2:hover, a.taxonBrowse2:focus {
 #searchForm .input-group {
     /*width: 40%;*/
 }
-#searchForm #address {
-    width: 85%;
+#searchForm .control-group, #searchForm .input-group {
+    margin-bottom: 10px;
 }
+
 #locationInfo {
     padding: 0;
     margin: 0;
@@ -216,9 +218,7 @@ button#download {
 #locationInfo #resultsInfo {
     margin: 10px 0;
 }
-#locationInfo .btn-sm {
-    font-size: 12px;
-}
+
 #markerAddress {
     font-weight:bold;
 }
