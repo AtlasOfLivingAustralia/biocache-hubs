@@ -340,40 +340,44 @@
                 <div id="taxaUpload" class="tab-pane">
                     <form name="taxaUploadForm" id="taxaUploadForm" action="${biocacheServiceUrl}/occurrences/batchSearch"
                           method="POST">
-                        <div class="col-sm-8">
-                            <div class="form-group">
-                                <label for="raw_names"><g:message code="home.index.taxaupload.des01"
-                                              default="Enter a list of taxon names/scientific names, one name per line (common names not currently supported)."/></label>
-                                <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" class="form-control"><input type="file" class="form-control"></p>--%>
-                                <textarea name="queries" id="raw_names" class="form-control" rows="15" cols="60"></textarea>
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="raw_names"><g:message code="home.index.taxaupload.des01"
+                                                                      default="Enter a list of taxon names/scientific names, one name per line (common names not currently supported)."/></label>
+                                    <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" class="form-control"><input type="file" class="form-control"></p>--%>
+                                    <textarea name="queries" id="raw_names" class="form-control" rows="15" cols="60"></textarea>
+                                </div>
+                                <%--<input type="submit" name="action" value="Download" class="form-control">--%>
+                                <%--&nbsp;OR&nbsp;--%>
+                                <input type="hidden" name="redirectBase"
+                                       value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
+                                <input type="hidden" name="field" value="raw_name" class="form-control">
+                                <input type="submit" name="action"
+                                       value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
                             </div>
-                            <%--<input type="submit" name="action" value="Download" class="form-control">--%>
-                            <%--&nbsp;OR&nbsp;--%>
-                            <input type="hidden" name="redirectBase"
-                                   value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
-                            <input type="hidden" name="field" value="raw_name" class="form-control">
-                            <input type="submit" name="action"
-                                   value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
                         </div>
                     </form>
                 </div><!-- end #uploadDiv div -->
                 <div id="catalogUpload" class="tab-pane">
                     <form name="catalogUploadForm" id="catalogUploadForm"
                           action="${biocacheServiceUrl}/occurrences/batchSearch" method="POST">
-                        <div class="col-sm-8">
-                            <div class="form-group">
-                                <label for="catalogue_numbers"><g:message code="home.index.catalogupload.des01"
-                                              default="Enter a list of catalogue numbers (one number per line)."/></label>
-                                <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" class="form-control"><input type="file" class="form-control"></p>--%>
-                                <textarea name="queries" id="catalogue_numbers" class="form-control" rows="15" cols="60"></textarea>
+                        <div class="row">
+                                <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="catalogue_numbers"><g:message code="home.index.catalogupload.des01"
+                                                  default="Enter a list of catalogue numbers (one number per line)."/></label>
+                                    <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" class="form-control"><input type="file" class="form-control"></p>--%>
+                                    <textarea name="queries" id="catalogue_numbers" class="form-control" rows="15" cols="60"></textarea>
+                                </div>
+                                <%--<input type="submit" name="action" value="Download" class="form-control">--%>
+                                <%--&nbsp;OR&nbsp;--%>
+                                <input type="hidden" name="redirectBase"
+                                       value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
+                                <input type="hidden" name="field" value="catalogue_number" class="form-control">
+                                <input type="submit" name="action"
+                                       value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
                             </div>
-                            <%--<input type="submit" name="action" value="Download" class="form-control">--%>
-                            <%--&nbsp;OR&nbsp;--%>
-                            <input type="hidden" name="redirectBase"
-                                   value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
-                            <input type="hidden" name="field" value="catalogue_number" class="form-control">
-                            <input type="submit" name="action"
-                                   value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
                         </div>
                     </form>
                 </div><!-- end #catalogUploadDiv div -->

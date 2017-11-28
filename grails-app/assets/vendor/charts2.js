@@ -573,7 +573,7 @@ var facetChartGroup = {
 
         // show a message while requesting data
         chartsDiv.append($("<span>Loading charts...</span>"));
-
+        console.log("loadAndDrawFacetCharts options",  options.query + facets);
         // make request
         $.ajax({
             url: urlConcat(url, "/occurrences/search.json?pageSize=0&flimit=200&q=") + options.query + facets + "&fsort=index",
@@ -626,6 +626,7 @@ var facetChartGroup = {
         var chartsDiv = $('#' + (options.targetDivId ? options.targetDivId : 'charts')),
             query = options.query,
             that = this;
+        console.log("createChart", options, options.charts, facetMap);
         $.each(options.charts, function(index, name) {
             that.createChart(name, options, facetMap);
         });

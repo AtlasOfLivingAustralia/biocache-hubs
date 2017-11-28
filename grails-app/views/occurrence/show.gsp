@@ -41,7 +41,7 @@
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     </g:else>
 
-    <asset:script type="text/javascript">
+    <script type="text/javascript">
         // Global var OCC_REC to pass GSP data to external JS file
         var OCC_REC = {
             userId: "${userId}",
@@ -66,7 +66,7 @@
         }
         //google.load("visualization", "1", {packages:["corechart"]});
 
-    </asset:script>
+    </script>
     <g:render template="/layouts/global"/>
 
     <asset:javascript src="show.js" />
@@ -335,29 +335,29 @@
                         <g:if test="${record.processed.occurrence.outlierForLayers}">
                             <div id="outlierInformation" class="additionalData">
                                 <h3><g:message code="show.outlierinformation.title" default="Outlier information"/> <a id="outlierReport" href="#outlierReport">&nbsp;</a></h3>
-                            <p>
-                                <g:message code="show.outlierinformation.p01" default="This record has been detected as an outlier using the"/>
-                                <a href="https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/DETECTED_OUTLIER_JACKKNIFE"><g:message code="show.outlierinformation.p.vavigator" default="Reverse Jackknife algorithm"/></a>
-                                <g:message code="show.outlierinformation.p02" default="for the following layers"/>:</p>
-                            <ul>
-                                <g:each in="${metadataForOutlierLayers}" var="layerMetadata">
-                                    <li>
-                                        <a href="${grailsApplication.config.layersservice.baseUrl}/layers/view/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
-                                        <g:message code="show.outlierinformation.each.label01" default="Notes"/>: ${layerMetadata.notes}<br/>
-                                        <g:message code="show.outlierinformation.each.label02" default="Scale"/>: ${layerMetadata.scale}
-                                    </li>
-                                </g:each>
-                            </ul>
+                                <p>
+                                    <g:message code="show.outlierinformation.p01" default="This record has been detected as an outlier using the"/>
+                                    <a href="https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/DETECTED_OUTLIER_JACKKNIFE"><g:message code="show.outlierinformation.p.vavigator" default="Reverse Jackknife algorithm"/></a>
+                                    <g:message code="show.outlierinformation.p02" default="for the following layers"/>:</p>
+                                <ul>
+                                    <g:each in="${metadataForOutlierLayers}" var="layerMetadata">
+                                        <li>
+                                            <a href="${grailsApplication.config.layersservice.baseUrl}/layers/view/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
+                                            <g:message code="show.outlierinformation.each.label01" default="Notes"/>: ${layerMetadata.notes}<br/>
+                                            <g:message code="show.outlierinformation.each.label02" default="Scale"/>: ${layerMetadata.scale}
+                                        </li>
+                                    </g:each>
+                                </ul>
 
-                            <p style="margin-top:20px;"><g:message code="show.outlierinformation.p.label" default="More information on the data quality work being undertaken by the Atlas is available here"/>:
-                            <ul>
-                                <li><a href="https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/DETECTED_OUTLIER_JACKKNIFE">https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/DETECTED_OUTLIER_JACKKNIFE</a></li>
-                                <li><a href="https://docs.google.com/open?id=0B7rqu1P0r1N0NGVhZmVhMjItZmZmOS00YmJjLWJjZGQtY2Y0ZjczZmUzZTZl"><g:message code="show.outlierinformation.p.li02" default="Notes on Methods for Detecting Spatial Outliers"/></a></li>
-                            </ul>
-                            </p>
-                        </div>
+                                <p style="margin-top:20px;"><g:message code="show.outlierinformation.p.label" default="More information on the data quality work being undertaken by the Atlas is available here"/>:
+                                <ul>
+                                    <li><a href="https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/DETECTED_OUTLIER_JACKKNIFE">https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/DETECTED_OUTLIER_JACKKNIFE</a></li>
+                                    <li><a href="https://docs.google.com/open?id=0B7rqu1P0r1N0NGVhZmVhMjItZmZmOS00YmJjLWJjZGQtY2Y0ZjczZmUzZTZl"><g:message code="show.outlierinformation.p.li02" default="Notes on Methods for Detecting Spatial Outliers"/></a></li>
+                                </ul>
+                                </p>
+                            </div>
                             <div id="charts" style="margin-top:20px;"></div>
-                            <asset:script type="text/javascript">
+                            <script type="text/javascript" >
                                 function renderOutlierCharts(data){
                                     var chartQuery = null;
 
@@ -384,18 +384,18 @@
                                     facetChartOptions.chartsDiv = "charts";
                                     facetChartOptions[facetName] = {chartType: 'scatter'};
                                     facetChartOptions.biocacheServicesUrl = "${alatag.getBiocacheAjaxUrl()}";
-                            facetChartOptions.displayRecordsUrl = "${grailsApplication.config.grails.serverURL}";
+                                    facetChartOptions.displayRecordsUrl = "${grailsApplication.config.grails.serverURL}";
 
-                            //additional config
-                            facetChartOptions.cumulative = cumulative;
-                            facetChartOptions.outlierValues = outlierValues;    //retrieved from WS
-                            facetChartOptions.highlightedValue = valueForThisRecord;           //retrieved from the record
+                                    //additional config
+                                    facetChartOptions.cumulative = cumulative;
+                                    facetChartOptions.outlierValues = outlierValues;    //retrieved from WS
+                                    facetChartOptions.highlightedValue = valueForThisRecord;           //retrieved from the record
 
-                            //console.log('Start the drawing...' + chartName;
-                            facetChartGroup.loadAndDrawFacetCharts(facetChartOptions);
-                            //console.log('Finished the drawing...' + chartName);
-                        }
-                            </asset:script>
+                                    //console.log('Start the drawing...' + chartName;
+                                    facetChartGroup.loadAndDrawFacetCharts(facetChartOptions);
+                                    //console.log('Finished the drawing...' + chartName);
+                                }
+                            </script>
                             <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts"></script>
 
                         </g:if>
@@ -411,11 +411,11 @@
                                 <g:else><g:message code="show.inferredoccurrencedetails.p02" default="This record is associated with the representative record."/>
                                 </g:else>
                                 <g:message code="show.inferredoccurrencedetails.p03" default="More information about the duplication detection methods and terminology in use is available here"/>:
-                            <ul>
-                                <li>
-                                    <a href="https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/INFERRED_DUPLICATE_RECORD">https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/INFERRED_DUPLICATE_RECORD</a>
-                                </li>
-                            </ul>
+                                <ul>
+                                    <li>
+                                        <a href="https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/INFERRED_DUPLICATE_RECORD">https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/INFERRED_DUPLICATE_RECORD</a>
+                                    </li>
+                                </ul>
                             </p>
                             <g:if test="${duplicateRecordDetails && duplicateRecordDetails.duplicates?.size() > 0}">
                                 <table class="duplicationTable table table-striped table-bordered table-condensed" style="border-bottom:none;">
