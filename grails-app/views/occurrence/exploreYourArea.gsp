@@ -55,7 +55,7 @@
             radius: ${radius},
             filters: '${raw(grailsApplication.config.exploreYourArea.filters)}',
             speciesPageUrl: "${speciesPageUrl}",
-            queryContext: "${queryContext}",
+            queryContext: '${raw(queryContext)}',
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             geocodeRegion: "${grailsApplication.config.geocode.region}",
             hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
