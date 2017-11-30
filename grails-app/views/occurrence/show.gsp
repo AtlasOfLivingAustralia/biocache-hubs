@@ -403,7 +403,7 @@
                         <g:if test="${record.processed.occurrence.duplicationStatus}">
                             <div id="inferredOccurrenceDetails">
                                 <a href="#inferredOccurrenceDetails" name="inferredOccurrenceDetails" id="inferredOccurrenceDetails" hidden="true"></a>
-                                <h3><g:message code="show.inferredoccurrencedetails.title" default="Inferred associated occurrence details"/></32>
+                                <h3><g:message code="show.inferredoccurrencedetails.title" default="Inferred associated occurrence details"/></h3>
                             <p style="margin-top:5px;">
                                 <g:if test="${record.processed.occurrence.duplicationStatus == 'R' }">
                                     <g:message code="show.inferredoccurrencedetails.p01" default="This record has been identified as the representative occurrence in a group of associated occurrences."/>
