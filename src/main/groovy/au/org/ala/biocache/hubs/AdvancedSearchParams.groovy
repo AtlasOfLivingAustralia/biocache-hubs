@@ -72,6 +72,7 @@ class AdvancedSearchParams implements Validateable {
     String end_year = ""
 
     private final String QUOTE = "\""
+    private final String BOOL_OP = "AND"
 
     /**
      * This custom toString method outputs a valid /occurrence/search query string.
@@ -80,32 +81,32 @@ class AdvancedSearchParams implements Validateable {
      */
     @Override
     public String toString() {
-        StringBuilder q = new StringBuilder()
+        List queryItems = []
         // build up q from the simple fields first...
-        if (text) q.append("text:").append(text)
-        if (raw_taxon_name) q.append(" raw_name:").append(quoteText(raw_taxon_name))
-        if (species_group) q.append(" species_group:").append(species_group)
-        if (state) q.append(" state:").append(quoteText(state))
-        if (country) q.append(" country:").append(quoteText(country))
-        if (ibra) q.append(" cl1048:").append(quoteText(ibra))
-        if (imcra) q.append(" cl21:").append(quoteText(imcra))
-        if (imcra_meso) q.append(" cl966:").append(quoteText(imcra_meso))
-        if (lga) q.append(" cl959:").append(quoteText(lga))
-        if (places) q.append(" places:").append(quoteText(places.trim()))
-        if (type_status) q.append(" type_status:").append(type_status)
-        if (dataset) q.append(" data_resource_uid:").append(dataset)
-        if (type_material) q.append(" type_status:").append("*")
-        if (basis_of_record) q.append(" basis_of_record:").append(basis_of_record)
-        if (catalogue_number) q.append(" catalogue_number:").append(quoteText(catalogue_number))
-        if (record_number) q.append(" record_number:").append(quoteText(record_number))
-        if (cultivation_status) q.append(" establishment_means:").append(quoteText(cultivation_status))
-        if (collector) q.append(" collector_text:").append(quoteText(collector))
-        if (identified_by) q.append(" identified_by_text:").append(quoteText(identified_by))
-        if (loan_destination) q.append(" loan_destination:").append(loan_destination)
-        if (loan_identifier) q.append(" loan_identifier:").append(loan_identifier)
-        if (duplicate_inst) q.append(" duplicate_inst:").append(duplicate_inst)
-        if (state_conservation) q.append(" state_conservation:").append(state_conservation)
-        //if (collectors_number) q.append(" collector:").append(collectors_number); // TODO field in SOLR not active
+        if (text) queryItems.add("text:" + text)
+        if (raw_taxon_name) queryItems.add("raw_name:" + quoteText(raw_taxon_name))
+        if (species_group) queryItems.add("species_group:" + species_group)
+        if (state) queryItems.add("state:" + quoteText(state))
+        if (country) queryItems.add("country:" + quoteText(country))
+        if (ibra) queryItems.add("cl1048:" + quoteText(ibra))
+        if (imcra) queryItems.add("cl21:" + quoteText(imcra))
+        if (imcra_meso) queryItems.add("cl966:" + quoteText(imcra_meso))
+        if (lga) queryItems.add("cl959:" + quoteText(lga))
+        if (places) queryItems.add("places:" + quoteText(places.trim()))
+        if (type_status) queryItems.add("type_status:" + type_status)
+        if (dataset) queryItems.add("data_resource_uid:" + dataset)
+        if (type_material) queryItems.add("type_status:" + "*")
+        if (basis_of_record) queryItems.add("basis_of_record:" + basis_of_record)
+        if (catalogue_number) queryItems.add("catalogue_number:" + quoteText(catalogue_number))
+        if (record_number) queryItems.add("record_number:" + quoteText(record_number))
+        if (cultivation_status) queryItems.add("establishment_means:" + quoteText(cultivation_status))
+        if (collector) queryItems.add("collector_text:" + quoteText(collector))
+        if (identified_by) queryItems.add("identified_by_text:" + quoteText(identified_by))
+        if (loan_destination) queryItems.add("loan_destination:" + loan_destination)
+        if (loan_identifier) queryItems.add("loan_identifier:" + loan_identifier)
+        if (duplicate_inst) queryItems.add("duplicate_inst:" + duplicate_inst)
+        if (state_conservation) queryItems.add("state_conservation:" + state_conservation)
+        //if (collectors_number) queryItems.add("collector:" + collectors_number); // TODO field in SOLR not active
 
         ArrayList<String> lsids = new ArrayList<String>()
         ArrayList<String> taxas = new ArrayList<String>()
@@ -132,63 +133,63 @@ class AdvancedSearchParams implements Validateable {
                 taxa = StringUtils.join(taxas*.trim(), " OR " ).replaceAll('"','') // remove quotes which break the "taxa=foo bar" query type
             } else {
                 // build up OR'ed taxa query with braces if more than one taxon
-                q.append(" ").append(braces[0]).append(nameType).append(":")
-                q.append(StringUtils.join(taxas, " OR " + nameType + ":")).append(braces[1])
+                queryItems.add(braces[0] + nameType + ":")
+                queryItems.add(StringUtils.join(taxas, " OR " + nameType + ":") + braces[1])
             }
         }
 
         // TODO: deprecate this code (?)
         if (lsids) {
-            q.append(" lsid:").append(StringUtils.join(lsids, " OR lsid:"))
+            queryItems.add("lsid:" + StringUtils.join(lsids, " OR lsid:"))
         }
 
         if (institution_collection) {
-            String label = (StringUtils.startsWith(institution_collection, "in")) ? " institution_uid" : " collection_uid"
-            q.append(label).append(":").append(institution_collection)
+            String label = (StringUtils.startsWith(institution_collection, "in")) ? "institution_uid" : "collection_uid"
+            queryItems.add(label + ":" + institution_collection)
         }
 
         if (start_date || end_date) {
             String value = combineDates(start_date, end_date)
-            q.append(" occurrence_date:").append(value)
+            queryItems.add("occurrence_date:" + value)
         }
 
         if (last_load_start || last_load_end) {
             String value = combineDates(last_load_start, last_load_end)
-            q.append(" modified_date:").append(value)
+            queryItems.add("modified_date:" + value)
         }
 
         if (identified_date_start || identified_date_end) {
             String value = combineDates(identified_date_start, identified_date_end)
-            q.append(" identified_date:").append(value)
+            queryItems.add("identified_date:" + value)
         }
 
         if (seed_viability_start || seed_viability_end) {
             String start = (!seed_viability_start) ? "*" : seed_viability_start
             String end = (!seed_viability_end) ? "*" : seed_viability_end
             String value = "[" + start + " TO " + end + "]"
-            q.append(" ViabilitySummary_d:").append(value)
+            queryItems.add("ViabilitySummary_d:" + value)
         }
 
         if (seed_quantity_start || seed_quantity_end) {
             String start = (!seed_quantity_start) ? "*" : seed_quantity_start
             String end = (!seed_quantity_end) ? "*" : seed_quantity_end
             String value = "[" + start + " TO " + end + "]"
-            q.append(" AdjustedSeedQuantity_i:").append(value)
+            queryItems.add("AdjustedSeedQuantity_i:" + value)
         }
 
         if (start_year || end_year) {
             String start = (!start_year) ? "*" : start_year
             String end = (!end_year) ? "*" : end_year
             String value = "[" + start + " TO " + end + "]"
-            q.append(" year:").append(value)
+            queryItems.add("year:" + value)
         }
 
-        String encodedQ = q.toString().trim()
+        String encodedQ = queryItems.join(" ${BOOL_OP} ").toString().trim()
         String encodedTaxa = taxa.trim()
 
         try {
             // attempt to do query encoding
-            encodedQ = URIUtil.encodeWithinQuery(q.toString().trim().replaceFirst("\\?", ""))
+            encodedQ = URIUtil.encodeWithinQuery(encodedQ.replaceFirst("\\?", ""))
             encodedTaxa = URIUtil.encodeWithinQuery(taxa.trim())
         } catch (URIException ex) {
             log.error("URIUtil error: " + ex.getMessage(), ex)
