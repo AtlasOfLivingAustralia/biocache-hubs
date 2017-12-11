@@ -1,0 +1,54 @@
+<!--
+  ~ Copyright (C) 2017 Atlas of Living Australia
+  ~ All Rights Reserved.
+  ~ The contents of this file are subject to the Mozilla Public
+  ~ License Version 1.1 (the "License"); you may not use this file
+  ~ except in compliance with the License. You may obtain a copy of
+  ~ the License at http://www.mozilla.org/MPL/
+  ~ Software distributed under the License is distributed on an "AS
+  ~ IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  ~ implied. See the License for the specific language governing
+  ~ rights and limitations under the License.
+  -->
+
+<config
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xmlns='http://www.ehcache.org/v3'
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core.xsd">
+
+    <cache-template name="myDefaultTemplate">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+        <heap unit="entries">10000</heap>
+    </cache-template>
+
+    <cache alias="shortTermCache" uses-template="myDefaultTemplate">
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="longTermCache" uses-template="myDefaultTemplate">
+        <!--<key-type>java.lang.String</key-type>-->
+        <!--<value-type>java.util.Map</value-type>-->
+        <expiry>
+            <ttl unit="seconds">43200</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="collectoryCache" uses-template="myDefaultTemplate">
+        <expiry>
+            <ttl unit="seconds">86400</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="outageCache" uses-template="myDefaultTemplate">
+        <expiry>
+            <ttl unit="seconds">604800</ttl>
+        </expiry>
+    </cache>
+
+</config>

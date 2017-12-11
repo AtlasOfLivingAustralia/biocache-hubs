@@ -131,29 +131,5 @@ stateConservationListPath = [:] // to prevent NPE - set in ext config
 // example: stateConservationListPath.NewSouthWales = "/speciesListItem/list/dr650"
 alwaysshow.imagetab = false
 
-facets.defaultSelected = "data_resource_uid,taxon_name,year"
+facets.defaultSelected = "data_resource_uid,taxon_name,year,multimedia"
 
-grails.cache.config = {
-    defaults {
-        eternal false
-        overflowToDisk false
-        maxElementsInMemory 10000
-        timeToLiveSeconds 3600
-    }
-    cache {
-        name 'shortTermCache' // mostly used for testing
-        timeToLiveSeconds(60)
-    }
-    cache {
-        name 'collectoryCache'
-        timeToLiveSeconds(3600 * 4)
-    }
-    cache {
-        name 'longTermCache'
-        timeToLiveSeconds(3600 * 12)
-    }
-    cache {
-        name 'outageCache'
-        timeToLiveSeconds(3600 * 24 * 7)
-    }
-}

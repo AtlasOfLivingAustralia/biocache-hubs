@@ -98,8 +98,10 @@ class OccurrenceController {
             String[] filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
 
             final facetsDefaultSelectedConfig = grailsApplication.config.facets.defaultSelected
-            if(!userFacets && facetsDefaultSelectedConfig){
+            if (!userFacets && facetsDefaultSelectedConfig) {
                 userFacets = facetsDefaultSelectedConfig.trim().split(",")
+                log.debug "facetsDefaultSelectedConfig = ${facetsDefaultSelectedConfig}"
+                log.debug "userFacets = ${userFacets}"
                 def facetKeys = defaultFacets.keySet()
                 facetKeys.each {
                     defaultFacets.put(it, false)
@@ -146,6 +148,8 @@ class OccurrenceController {
             if(grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()){
                 hasImages = true
             }
+
+            log.debug "defaultFacets = ${defaultFacets}"
 
             [
                     sr: searchResults,
