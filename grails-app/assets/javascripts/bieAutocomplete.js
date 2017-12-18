@@ -27,7 +27,7 @@ jQuery(document).ready(function() {
     $.extend( bieParams, autoHints ); // merge autoHints into bieParams
     jQuery(":input#taxaQuery, :input#solrQuery, :input#taxa, :input.name_autocomplete").autocomplete(bieBaseUrl + '/search/auto.json', {
         extraParams: bieParams,
-        dataType: 'jsonp',
+        dataType: 'json',
         parse: function(data) {
             var rows = new Array();
             data = data.autoCompleteList;
