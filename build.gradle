@@ -70,10 +70,10 @@ dependencies {
     compile 'com.maxmind.geoip2:geoip2:2.9.0'
     runtime "commons-lang:commons-lang:2.6"
     compile "net.sf.supercsv:super-csv:2.1.0"
+    //compile 'com.google.guava:guava:19.0' // replaces ehcache
 
     //plugins
-//    compile 'org.grails.plugins:cache:4.0.0'
-    compile 'org.grails.plugins:cache-ehcache:3.0.0.M1'
+    //compile 'org.grails.plugins:cache-ehcache:3.0.0.M1'
     compile 'org.grails.plugins:http-builder-helper:1.0.2.ALA'
 
     compile "org.grails.plugins:ala-admin-plugin:2.0-SNAPSHOT", noCache
