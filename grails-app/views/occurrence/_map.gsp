@@ -903,7 +903,7 @@
                 fillOpacity: 0.2
             }
 
-            L.Icon.Default.imagePath = "${request.contextPath}/static/js/leaflet-0.7.2/images";
+            L.Icon.Default.imagePath = "${request.contextPath}/static/js/leaflet/images";
             var popupText = "Centre of spatial search with radius of " + radius + " km";
             var circle = L.circle(latLng, radius * 1030, circleOpts);
             circle.addTo(MAP_VAR.map);
