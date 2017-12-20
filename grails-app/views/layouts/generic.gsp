@@ -12,10 +12,10 @@
     <g:render template="/layouts/global"/>
 
     <asset:javascript src="jquery_migration.js"/>
-    <asset:javascript src="bootstrap.js"/>
+    <asset:javascript src="bootstrap/js/bootstrap.js"/>
     <asset:javascript src="hubCore.js"/>
 
-    <asset:stylesheet src="bootstrap.css" />
+    <asset:stylesheet src="bootstrap/css/bootstrap.css" />
     <asset:stylesheet src="hubCore.css" />
     <asset:stylesheet src="generic.css" />
 
