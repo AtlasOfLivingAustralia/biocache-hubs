@@ -11,6 +11,6 @@
     />
 </asset:script>
 
-<div class="row" id="charts">
+<div id="charts">
 
 </div>
