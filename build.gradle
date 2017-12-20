@@ -76,7 +76,7 @@ dependencies {
     //compile 'org.grails.plugins:cache-ehcache:3.0.0.M1'
     compile 'org.grails.plugins:http-builder-helper:1.0.2.ALA'
 
-    compile "org.grails.plugins:ala-admin-plugin:2.0-SNAPSHOT", noCache
+    compile "org.grails.plugins:ala-admin-plugin:2.1-SNAPSHOT", noCache
     compile "org.grails.plugins:ala-auth:3.0.2", noCache
 
     compile "au.org.ala.plugins.grails:images-client-plugin:0.9-SNAPSHOT", noCache
