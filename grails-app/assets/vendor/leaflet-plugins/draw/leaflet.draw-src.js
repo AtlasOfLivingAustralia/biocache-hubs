@@ -17,7 +17,6 @@
 // 	mode: 'map',
 // 	language: BC_CONF.locale // default is to use browser specified locale
 // });
-
 (function (window, document, undefined) {/*
  * Leaflet.draw assumes that you have already included the Leaflet library.
  */

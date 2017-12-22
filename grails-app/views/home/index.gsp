@@ -28,7 +28,29 @@
         <script src="https://maps.google.com/maps/api/js" type="text/javascript"></script>
     </g:else>
 
-    <!-- Here are the leaflet plugins JS -->
+    <script type="text/javascript">
+        // global var for GSP tags/vars to be passed into JS functions
+        var BC_CONF = {
+            biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
+            bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
+            bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
+            autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson() ?: '{}'},
+            contextPath: "${request.contextPath}",
+            locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
+            queryContext: "${grailsApplication.config.biocache.queryContext}"
+        }
+        /* Load Spring i18n messages into JS
+         */
+        jQuery.i18n.properties({
+            name: 'messages',
+            path: BC_CONF.contextPath + '/messages/i18n/',
+            mode: 'map',
+            language: BC_CONF.locale
+        });
+    </script>
+
+
+<!-- Here are the leaflet plugins JS -->
 
     <asset:javascript src="leaflet/leaflet.js"/>
     <asset:javascript src="leafletPlugins.js"/>
@@ -46,26 +68,6 @@
         <asset:javascript src="bieAutocomplete.js"/>
     </g:if>
 
-    <asset:script type="text/javascript">
-        // global var for GSP tags/vars to be passed into JS functions
-        var BC_CONF = {
-            biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
-            bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
-            bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
-            autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson() ?: '{}'},
-            contextPath: "${request.contextPath}",
-            locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
-            queryContext: "${grailsApplication.config.biocache.queryContext}"
-        }
-        /* Load Spring i18n messages into JS
-         */
-        jQuery.i18n.properties({
-         name: 'messages',
-         path: BC_CONF.contextPath + '/messages/i18n/',
-         mode: 'map',
-         language: BC_CONF.locale
-        });
-    </asset:script>
     <asset:script type="text/javascript">
         $(document).ready(function() {
             var mapInit = false;

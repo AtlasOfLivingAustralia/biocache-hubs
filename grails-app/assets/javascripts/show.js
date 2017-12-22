@@ -521,7 +521,7 @@ function getDataQualityItem(code) {
             success: function(data) {
                 if (data && data[1]) {
                     $.each(data, function(key, val) {
-                        console.log("data", key, val);
+                        //console.log("data", key, val);
                         dataQualityItems[key] = val;
                     });
                 }
@@ -532,7 +532,7 @@ function getDataQualityItem(code) {
             async: false
         });
     }
-    console.log("dataQualityItems",dataQualityItems);
+    //console.log("dataQualityItems",dataQualityItems);
     if (dataQualityItems[code]) {
         return dataQualityItems[code];
     }

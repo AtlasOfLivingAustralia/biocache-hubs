@@ -283,10 +283,9 @@ Wkt.Wkt.prototype.deconstruct = function (obj) {
 
         // L.Circle ////////////////////////////////////////////////////////////////
         if (obj.constructor === L.Rectangle || obj.constructor === L.rectangle) {
-            console.log('Deconstruction of L.Circle objects is not yet supported');
-
+            //console.log('Deconstruction of L.Circle objects is not yet supported');
         } else {
-            console.log('The passed object does not have any recognizable properties.');
+            //console.log('The passed object does not have any recognizable properties.');
         }
 
     };

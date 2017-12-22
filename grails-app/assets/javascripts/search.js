@@ -13,9 +13,7 @@
  *  rights and limitations under the License.
  *
  */
-
 //= require searchCore.js
-//= require jquery.overlayScrollbars.min.js
 //= require_self
 
 // Jquery Document.onLoad equivalent
@@ -397,7 +395,7 @@ $(document).ready(function() {
 
     $("#downloadFacet").live("click", function(e) {
         var facetName = $("table#fullFacets").data("facet");
-        console.log('clicked ' + window.location.href );
+        //console.log('clicked ' + window.location.href );
         window.location.href = BC_CONF.biocacheServiceUrl + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName + '&count=true&lookup=true';
     });
 
@@ -714,7 +712,7 @@ function removeFacet(el) {
     if (q != null) {
         paramList.push("q=" + q);
     }
-    console.log("0. fqList", fqList);
+    //console.log("0. fqList", fqList);
     // add filter query param
     if (fqList && typeof fqList === "string") {
         fqList = [ fqList ];
@@ -771,7 +769,7 @@ function removeFilter(el) {
     if (q != null) {
         paramList.push("q=" + q);
     }
-    console.log("0. fqList", fqList);
+    //console.log("0. fqList", fqList);
     // add filter query param
     if (fqList && typeof fqList === "string") {
         fqList = [ fqList ];
@@ -864,8 +862,8 @@ function loadUserCharts() {
                 if ($.map(data, function (n, i) {
                         return i;
                     }).length > 3) {
-                    console.log("loading user chart data")
-                    console.log(data)
+                    //console.log("loading user chart data")
+                    //console.log(data)
 
                     //do not display user charts by default
                     $.map(data.charts, function (value, key) {
@@ -899,8 +897,8 @@ function loadUserCharts() {
 }
 
 function saveChartConfig(data) {
-    console.log("saving user chart data");
-    console.log(data);
+    //console.log("saving user chart data");
+    //console.log(data);
 
     var d = jQuery.extend(true, {}, data);
 
