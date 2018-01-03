@@ -23,7 +23,7 @@
     --%>
 </div>
 
-<div class="hide" id="recordLayerControls">
+<div class="collapse" id="recordLayerControls">
     <table id="mapLayerControls">
         <tr>
             <td>
@@ -318,6 +318,7 @@
         var objLeft = undefined;
         var objRight = undefined;
         if (wktFromParams) {
+            // draw WKT feature
             var wkt = new Wkt.Wkt();
             wkt.read(wktFromParams);
             obj = wkt.toObject({color: '#bada55' });
@@ -326,18 +327,21 @@
         } else if (isSpatialRadiusSearch()) {
             // draw circle onto map
             obj = L.circle([$.url().param('lat'), $.url().param('lon')], ($.url().param('radius') * 1000), {color: '#bada55'});
-            objLeft = L.circle([$.url().param('lat'), $.url().param('lon')] - 360, ($.url().param('radius') * 1000), {color: '#bada55'});
-            objRight = L.circle([$.url().param('lat'), $.url().param('lon')] + 360, ($.url().param('radius') * 1000), {color: '#bada55'});
+            // following lines were causing error in leaflet, so removed them. NdR Jan 2018.
+            // objLeft  = L.circle([$.url().param('lat'), $.url().param('lon')] - 360, ($.url().param('radius') * 1000), {color: '#bada55'});
+            // objRight = L.circle([$.url().param('lat'), $.url().param('lon')] + 360, ($.url().param('radius') * 1000), {color: '#bada55'});
         }
         if (obj) {
             MAP_VAR.map.addHandler('paramArea', L.PointClickHandler.extend({obj: obj}));
             MAP_VAR.map.paramArea.enable();
             MAP_VAR.drawnItems.addLayer(obj);
-
+        }
+        if (objLeft) {
             MAP_VAR.map.addHandler('paramAreaLeft', L.PointClickHandler.extend({obj: objLeft}));
             MAP_VAR.map.paramAreaLeft.enable();
             MAP_VAR.drawnItems.addLayer(objLeft);
-
+        }
+        if (objRight) {
             MAP_VAR.map.addHandler('paramAreaRight', L.PointClickHandler.extend({obj: objRight}));
             MAP_VAR.map.paramAreaRight.enable();
             MAP_VAR.drawnItems.addLayer(objRight);
@@ -979,20 +983,20 @@
 </asset:script>
 <div class="hide">
     <div class="popupRecordTemplate">
-        <div class="multiRecordHeader hide">
+        <div class="multiRecordHeader collapse">
             <g:message code="search.map.viewing" default="Viewing"/> <span class="currentRecord"></span> <g:message code="search.map.of" default="of"/>
             <span class="totalrecords"></span> <g:message code="search.map.occurrences" default="occurrence records"/>
-            &nbsp;&nbsp;<i class="glyphicon glyphicon-share-alt"></i> <a href="#" class="btn+btn-mini viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>
+            &nbsp;&nbsp;<i class="glyphicon glyphicon-share-alt"></i> <a href="#" class="btn+btn-xs viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>
         </div>
         <div class="recordSummary">
 
         </div>
-        <div class="hide multiRecordFooter">
-            <span class="previousRecord "><a href="#" class="btn btn-mini disabled" onClick="return false;"><g:message code="search.map.popup.prev" default="&lt; Prev"/></a></span>
-            <span class="nextRecord "><a href="#" class="btn btn-mini disabled" onClick="return false;"><g:message code="search.map.popup.next" default="Next &gt;"/></a></span>
+        <div class="collapse multiRecordFooter">
+            <span class="previousRecord "><a href="#" class="btn btn-default btn-xs disabled" onClick="return false;"><g:message code="search.map.popup.prev" default="&lt; Prev"/></a></span>
+            <span class="nextRecord "><a href="#" class="btn btn-default btn-xs disabled" onClick="return false;"><g:message code="search.map.popup.next" default="Next &gt;"/></a></span>
         </div>
         <div class="recordLink">
-            <a href="#" class="btn btn-mini"><g:message code="search.map.popup.viewRecord" default="View record"/></a>
+            <a href="#" class="btn btn-default btn-xs"><g:message code="search.map.popup.viewRecord" default="View record"/></a>
         </div>
     </div>
 </div>
