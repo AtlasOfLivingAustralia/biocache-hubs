@@ -1210,6 +1210,8 @@ function loadMoreFacets(facetName, displayName, fsort, foffset) {
     $('#indexCol a').html(displayName); // table heading
     $('#indexCol a').attr('title', 'sort by ' + displayName); // table heading
 
+    $("table#fullFacets tbody").html(""); //clear the existing table
+
     $("a.fsort").qtip({
         style: {
             classes: 'ui-tooltip-rounded ui-tooltip-shadow'
