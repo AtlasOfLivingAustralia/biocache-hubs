@@ -26,7 +26,6 @@ class AssertionsController {
         Boolean hasClubView = request.isUserInRole("${grailsApplication.config.clubRoleForHub}")
         String userAssertionStatus = webServicesService.getRecord(id, hasClubView)?.raw.userAssertionStatus
         Map combined = [userAssertions: userAssertions?:[], assertionQueries: qualityAssertions?:[], userAssertionStatus: userAssertionStatus?:"" ]
-
         render combined as JSON
     }
 
@@ -55,7 +54,7 @@ class AssertionsController {
                 render(status: postResponse.statusCode, text: postResponse.statusMsg)
             }
         } else {
-            def errorMsg = (!userDetail) ?
+            def errorMsg = (!userDetails) ?
                     "User details not found" :
                     "Required parameters not provided: ${(!recordUuid) ? 'recordUuid' : ''} ${(!code) ? 'code' : ''}"
             log.warn("Unable to add assertions. ${errorMsg}." )

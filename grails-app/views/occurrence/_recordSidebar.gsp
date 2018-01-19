@@ -294,7 +294,7 @@
             <div class="modal-body">
                 <g:if test="${!userId}">
                     <div style="margin: 20px 0;"><g:message code="show.loginorflag.div01.label" default="Login please:"/>
-                        <a href="${grailsApplication.config.security.cas.loginUrl}?service=${serverName}${request.contextPath}/occurrences/${record.raw.uuid}"><g:message code="show.loginorflag.div01.navigator" default="Click here"/></a>
+                        <a href="${grailsApplication.config.security.cas.casServerLoginUrl}?service=${serverName}${request.contextPath}/occurrences/${record.raw.rowKey}"><g:message code="show.loginorflag.div01.navigator" default="Click here"/></a>
                     </div>
                 </g:if>
                 <g:else>

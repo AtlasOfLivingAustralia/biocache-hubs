@@ -47,7 +47,7 @@
             userId: "${userId}",
             userDisplayName: "${userDisplayName}",
             contextPath: "${request.contextPath}",
-            recordUuid: "${record.raw.uuid}",
+            recordUuid: "${record.raw.rowKey}",
             taxonRank: "${record.processed.classification.taxonRank}",
             taxonConceptID: "${record.processed.classification.taxonConceptID}",
             isUnderCas: ${isUnderCas},
@@ -672,83 +672,109 @@
                 <h4><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h4>
                 <p class="comment"></p>
                 <p class="hide userDisplayName"></p>
-                <p class="created"></p>
+                <p class="created small"></p>
                 <p class="viewMore" style="display:none;">
                    <a class="viewMoreLink" href="#"><g:message code="show.userannotationtemplate.p01.navigator" default="View more with this annotation"/></a>
                 </p>
                 <p class="deleteAnnotation" style="display:block;">
-                    <a class="deleteAnnotationButton btn btn-default" href="#"><g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/></a>
-                    <span class="deleteAssertionSubmitProgress" style="display:none;">
-                        <asset:image src="indicator.gif" alt="indicator icon"/>
-                    </span>
+                    <a class="deleteAnnotationButton btn btn-danger" href="#">
+                        <i class="glyphicon-remove"> </i> &nbsp;
+                        <g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/>
+                        <span class="deleteAssertionSubmitProgress" style="display:none;">
+                            <asset:image src="indicator.gif" alt="indicator icon"/>
+                        </span>
+                    </a>
                 </p>
-                <div class="container userVerificationClass">
-                    <div id="userVerificationTemplate" class="row userVerificationTemplate" style="display: none">
-                        <g:if test="${isCollectionAdmin}">
-                            <div class="col-md-2 qaStatus"></div>
-                            <div class="col-md-4 comment"></div>
-                            <div class="col-md-2 userDisplayName"></div>
-                            <div class="col-md-2 created"></div>
-                            <div class="col-md-2 deleteVerification"><a class="deleteVerificationButton" style="text-align: right" href="#"><g:message code="show.userannotationtemplate.p04.navigator" default="Delete this verification"/></a>
-                            </div>
-                        </g:if>
-                        <g:if test="${!isCollectionAdmin}">
-                            <div class="col-md-2 qaStatus"></div>
-                            <div class="col-md-6 comment"></div>
-                            <div class="col-md-2 userDisplayName"></div>
-                            <div class="col-md-2 created"></div>
-                        </g:if>
-                    </div>
-                </div>
                 <g:if test="${isCollectionAdmin}">
                     <p class="verifyAnnotation" style="display:none;">
-                        <a class="verifyAnnotationButton btn btn-default"  href="#verifyRecordModal" data-toggle="modal"><g:message code="show.userannotationtemplate.p03.navigator" default="Verify this annotation"/></a>
+                        <a class="verifyAnnotationButton btn btn-default"  href="#verifyRecordModal" data-toggle="modal">
+                            <i class="glyphicon-thumbs-up"> </i> &nbsp;
+                            <g:message code="show.userannotationtemplate.p03.navigator" default="Verify this annotation"/></a>
                     </p>
                 </g:if>
+
+                <!-- verifications for this annotation -->
+                <table class="table verifications">
+                    <thead>
+                        <tr>
+                            <th>Verification status</th>
+                            <th>Comment</th>
+                            <th>Verified&nbsp;by</th>
+                            <th>Created</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </li>
         </ul>
 
-        <div id="verifyRecordModal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="loginOrFlagLabel" aria-hidden="true">
-            <div class="modal-header">
-                <h3><g:message code="show.verifyrecord.title" default="Confirmation"/></h3>
-            </div>
-            <div class="modal-body">
-                <div id="verifyAsk">
-                    <g:set var="markedAssertions"/>
-                    <g:if test="!record.processed.geospatiallyKosher">
-                        <g:set var="markedAssertions"><g:message code="show.verifyask.set01" default="geospatially suspect"/></g:set>
+        <!-- template to add a row -->
+        <table class="hide">
+            <tr id="userVerificationTemplate" class="userVerificationTemplate">
+                <td class="qaStatus"></td>
+                <td class="comment"></td>
+                <td class="userDisplayName"></td>
+                <td class="created"></td>
+                <td class="deleteVerification">
+                    <g:if test="${isCollectionAdmin}">
+                    <a class="deleteVerificationButton btn btn-danger" style="text-align: right" href="#">
+                        <g:message code="show.userannotationtemplate.p04.navigator" default="Delete this verification"/>
+                    </a>
                     </g:if>
-                    <g:if test="!record.processed.taxonomicallyKosher">
-                        <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}<g:message code="show.verifyask.set02" default="taxonomically suspect"/></g:set>
-                    </g:if>
-                    <g:each var="sysAss" in="${record.systemAssertions.failed}">
-                        <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}<g:message code="${sysAss.name}" /></g:set>
-                    </g:each>
-                    <p>
-                        <g:message code="show.verifyrecord.p01" default="Record is marked as"/> <b>${markedAssertions}</b>
-                    </p>
-                    <p style="margin-bottom:10px;">
-                        <g:message code="show.verifyrecord.p02" default="Click the &quot;Confirm&quot; button to verify that this record is correct and that the listed &quot;validation issues&quot; are incorrect/invalid."/>
-                    </p>
-                    <p style="margin-top:20px;">
-                        <label for="userAssertionStatusSelection"><g:message code="show.verifyrecord.p03" default="User Assertion Status:"/></label>
-                        <select name="userAssertionStatusSelection" id="userAssertionStatusSelection">
-                            <option value="50001"><alatag:message code="user_assertions.50001" default="Open issue"/></option>
-                            <option value="50002"><alatag:message code="user_assertions.50002" default="Verified"/></option>
-                            <option value="50003"><alatag:message code="user_assertions.50003" default="Corrected"/></option>
-                        </select>
-                    </p>
-                    <p><textarea id="verifyComment" rows="3" style="width: 90%"></textarea></p><br>
-                    <button id="confirmVerify" class="btn confirmVerify"><g:message code="show.verifyrecord.btn.confirmverify" default="Confirm"/></button>
-                    <button class="btn cancelVerify"  data-dismiss="modal"><g:message code="show.verifyrecord.btn.cancel" default="Cancel"/></button>
-                    <img src="${assetPath(src: 'spinner.gif')}" id="verifySpinner" class="verifySpinner hide" alt="spinner icon"/>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <div id="verifyDone" style="display:none;">
-                    <g:message code="show.verifydone.message" default="Record successfully verified"/>
-                    <br/>
-                    <button class="btn closeVerify" data-dismiss="modal"><g:message code="show.verifydone.btn.closeverify" default="Close"/></button>
+                </td>
+            </tr>
+        </table>
+
+        <div id="verifyRecordModal" class="modal fade in" data-keyboard="false"  role="dialog" aria-labelledby="verifyRecordLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><g:message code="show.verifyrecord.title" default="Confirmation"/></h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="verifyAsk">
+                            <g:set var="markedAssertions"/>
+                            <g:if test="!record.processed.geospatiallyKosher">
+                                <g:set var="markedAssertions"><g:message code="show.verifyask.set01" default="geospatially suspect"/></g:set>
+                            </g:if>
+                            <g:if test="!record.processed.taxonomicallyKosher">
+                                <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}<g:message code="show.verifyask.set02" default="taxonomically suspect"/></g:set>
+                            </g:if>
+                            <g:each var="sysAss" in="${record.systemAssertions.failed}">
+                                <g:set var="markedAssertions">${markedAssertions}${markedAssertions ? ", " : ""}<g:message code="${sysAss.name}" /></g:set>
+                            </g:each>
+                            <p>
+                                <g:message code="show.verifyrecord.p01" default="Record is marked as"/> <b>${markedAssertions}</b>
+                            </p>
+                            <p style="margin-bottom:10px;">
+                                <g:message code="show.verifyrecord.p02" default="Click the &quot;Confirm&quot; button to verify that this record is correct and that the listed &quot;validation issues&quot; are incorrect/invalid."/>
+                            </p>
+                            <p style="margin-top:20px;">
+                                <label for="userAssertionStatusSelection"><g:message code="show.verifyrecord.p03" default="User Assertion Status:"/></label>
+                                <select name="userAssertionStatusSelection" id="userAssertionStatusSelection">
+                                    <option value="50001"><alatag:message code="user_assertions.50001" default="Open issue"/></option>
+                                    <option value="50002"><alatag:message code="user_assertions.50002" default="Verified"/></option>
+                                    <option value="50003"><alatag:message code="user_assertions.50003" default="Corrected"/></option>
+                                </select>
+                            </p>
+                            <p><textarea id="verifyComment" rows="3" style="width: 90%"></textarea></p><br>
+                        </div>
+                        <div class="verifyDone" style="display:none;">
+                            <g:message code="show.verifydone.message" default="Record successfully verified"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="verifyAsk">
+                            <button id="confirmVerify" class="btn btn-primary confirmVerify"><g:message code="show.verifyrecord.btn.confirmverify" default="Confirm"/></button>
+                            <button class="btn btn-default cancelVerify"  data-dismiss="modal"><g:message code="show.verifyrecord.btn.cancel" default="Cancel"/></button>
+                            <img src="${assetPath(src: 'spinner.gif')}" id="verifySpinner" class="verifySpinner hide" alt="spinner icon"/>
+                        </div>
+                        <div class="verifyDone" style="display:none;">
+                            <button class="btn btn-default closeVerify" data-dismiss="modal"><g:message code="show.verifydone.btn.closeverify" default="Close"/></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
