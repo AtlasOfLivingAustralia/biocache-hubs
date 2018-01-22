@@ -14,3 +14,8 @@ E.g. to change the header and footer, create a copy of the file `grails-app/view
 To load and view you own occurrence record data, you'll need to install and run [**biocache-store**](https://github.com/AtlasOfLivingAustralia/biocache-store) and [**biocache-service**](https://github.com/AtlasOfLivingAustralia/biocache-service) and then configure your app to use your local **biocache-service** by adding/editing the line: `biocache.baseUrl = "http://hostname.acme.org/biocache-service/"`.
 
 A full list of the configuration settings (and their default values) are found in `grails-app/conf/defaultConfig.groovy`.
+
+## Versions
+
+* Version 1.7.x is now using Grails 3 and Bootstrap 3 - this is currently maintained on the `bs3-with-grails3` branch 
+* Version 1.5.x is using Grails 2.5.6 and Bootstrap2 - this is currently maintained on the `master` branch.
