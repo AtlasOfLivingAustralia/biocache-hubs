@@ -1252,6 +1252,7 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
             $.each(data.facetResults[0].fieldResult, function(i, el) {
                 //console.log("0. facet", el);
                 if (el.count > 0) {
+
                     // surround with quotes: fq value if contains spaces but not for range queries
                     var fqEsc = ((el.label.indexOf(" ") != -1 || el.label.indexOf(",") != -1 || el.label.indexOf("lsid") != -1) && el.label.indexOf("[") != 0)
                         ? "\"" + el.label + "\""
@@ -1260,12 +1261,9 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                     var encodeFq = true;
                     if (label.indexOf("@") != -1) {
                         label = label.substring(0,label.indexOf("@"));
-                    } else if (jQuery.i18n.prop(label).indexOf("[") == -1) {
+                    } else if (jQuery.i18n.prop(el.i18nCode).indexOf("[") == -1) {
                         // i18n substitution
-                        var code = facetName + "." + label;
-                        var i18nLabel = jQuery.i18n.prop(code);
-                        //console.log(label, code, i18nLabel, jQuery.i18n.prop(label))
-                        label = (i18nLabel.indexOf("[") == -1) ? i18nLabel : jQuery.i18n.prop(label);
+                        label = jQuery.i18n.prop(el.i18nCode);
                     } else if (facetName.indexOf("outlier_layer") != -1 || /^el\d+/.test(label)) {
                         label = jQuery.i18n.prop("layer." + label);
                     } else if (facetName.indexOf("geospatial_kosher") != -1 || /^el\d+/.test(label)) {

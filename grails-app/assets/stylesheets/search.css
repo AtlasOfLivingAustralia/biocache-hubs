@@ -581,6 +581,8 @@ div#advancedSearch {
     margin-bottom: 8px;
 }
 
+#facetCheckboxes .row { margin-left:0px; margin-right: 0px; }
+
 div.facetsColumn {
     float: left;
     width: 48%;
