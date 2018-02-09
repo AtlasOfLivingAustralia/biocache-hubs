@@ -79,7 +79,7 @@ dependencies {
     compile "au.org.ala.plugins.grails:images-client-plugin:0.9-SNAPSHOT", noCache
 
     if(!inplace) {
-        compile "au.org.ala.plugins.grails:ala-charts-plugin:1.4-SNAPSHOT", noCache
+        compile "au.org.ala.plugins.grails:ala-charts-plugin:1.4", noCache
     }
 
 }
