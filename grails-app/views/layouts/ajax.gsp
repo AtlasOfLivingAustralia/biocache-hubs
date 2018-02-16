@@ -5,10 +5,10 @@
     <alatag:addApplicationMetaTags/>
     <title><g:layoutTitle /></title>
 
-    <asset:javascript src="bootstrap.js"/>
+    <asset:javascript src="bootstrap/js/bootstrap.js"/>
     <asset:javascript src="hubCore.js"/>
 
-    <asset:stylesheet src="bootstrap.css" />
+    <asset:stylesheet src="bootstrap/css/bootstrap.css" />
     <asset:stylesheet src="hubCore.css" />
 
     <g:layoutHead />

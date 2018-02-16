@@ -288,7 +288,6 @@ Wkt.Wkt.prototype.deconstruct = function (obj) {
         } else {
             console.log('The passed object does not have any recognizable properties.');
         }
-
     };
 
 L.Util.extend(Wkt, {

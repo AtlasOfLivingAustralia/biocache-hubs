@@ -19,7 +19,6 @@ package au.org.ala.biocache.hubs
  * Admin functions - should be protected by login and ROLE_ADMIN or equiv.
  */
 class AdminController {
-    def scaffold = true
     def facetsCacheService, authService, webServicesService
     def messageSourceCacheService
     def beforeInterceptor = [action:this.&auth]
@@ -37,7 +36,7 @@ class AdminController {
             // External config - bypass
             true
         } else if (!authService?.userInRole(grailsApplication.config.auth.admin_role)) {
-            log.debug "redirecting to index..."
+            log.debug "User not authorised to access the page: ${params.controller}/${params.action?:''}. Redirecting to index."
             flash.message = "You are not authorised to access the page: ${params.controller}/${params.action?:''}."
             redirect(controller: "home", action: "index")
             false

@@ -1,0 +1,26 @@
+---
+grails:
+    profile: web-plugin
+    codegen:
+        defaultPackage: au.org.ala.biocache.hubs
+#    cache:
+#        cacheManager: GrailsConcurrentLinkedMapCacheManager
+#        caches:
+#            longTermCache:
+#                maxCapacity: 5000
+#            shortTermCache:
+#                maxCapacity: 10000
+#            collectoryCache:
+#                maxCapacity: 8000
+#            outageCache:
+#                maxCapacity: 1000
+    cache:
+        ehcache:
+            ehcacheXmlLocation: 'classpath:ehcache.xml'
+            lockTimeout: 200 # In milliseconds
+
+info:
+    app:
+        name: '@info.app.name@'
+        version: '@info.app.version@'
+        grailsVersion: '@info.app.grailsVersion@'

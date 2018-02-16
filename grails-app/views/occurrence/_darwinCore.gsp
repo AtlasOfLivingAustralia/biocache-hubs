@@ -11,7 +11,7 @@
   - rights and limitations under the License.
   --}%
 <g:set var="sections" value="${["Occurrence","Attribution","Identification","Event","Classification","Location","Measurement"]}"/>
-<div id="occurrenceDataset" class="hideX">
+<div id="occurrenceDataset" class="">
     <table class="table table-bordered table-striped table-condensed">
         <thead>
             <tr><th width="20%"></th><th width="40%">processed</th><th width="40%">original</th></tr>

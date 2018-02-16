@@ -42,42 +42,47 @@
     margin-top: 5px;
 }
 
-#spatialSearch .accordion-group {
+#spatialSearch .panel-group-group {
     border: none;
 
 }
 
-#spatialSearch .accordion-heading .accordion-toggle {
+#spatialSearch .panel-group-heading .panel-group-toggle {
     padding: 0;
 }
 
-.accordion-heading .accordion-toggle {
+.panel-group-heading .panel-group-toggle {
     padding: 8px 10px;
 }
 
-.accordion-inner {
+.panel-group-inner {
     /*padding: 10px 10px;*/
     margin-top: 5px;
     padding: 0;
     border: none;
 }
 
-.accordion-caret .accordion-toggle:hover {
+.panel-group-caret .panel-group-toggle:hover {
     text-decoration: none;
 }
-.accordion-caret .accordion-toggle:hover span,
-.accordion-caret .accordion-toggle:hover strong {
+.panel-group-caret .panel-group-toggle:hover span,
+.panel-group-caret .panel-group-toggle:hover strong {
     text-decoration: underline;
 }
-.accordion-caret .accordion-toggle:before {
+.panel-group-caret .panel-group-toggle:before {
     font-size: 18px;
     vertical-align: -1px;
 }
-.accordion-caret .accordion-toggle:not(.collapsed):before {
+.panel-group-caret .panel-group-toggle:not(.collapsed):before {
     content: "▾";
     margin-right: 0px;
 }
-.accordion-caret .accordion-toggle.collapsed:before {
+.panel-group-caret .panel-group-toggle.collapsed:before {
     content: "▸";
     margin-right: 0px;
+}
+
+.labelFirst {
+    font-weight: bold;
+    background-color: #999;
 }

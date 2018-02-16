@@ -8,7 +8,7 @@
 <%@ page import="org.springframework.web.servlet.support.RequestContextUtils; au.org.ala.biocache.hubs.FacetsName; org.apache.commons.lang.StringUtils" contentType="text/html;charset=UTF-8" %>
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
 <g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocache.baseUrl}"/>
-<g:set var="serverName" value="${grailsApplication.config.serverName?:grailsApplication.config.biocache.baseUrl}"/>
+<g:set var="serverName" value="${grailsApplication.config.serverName ?: grailsApplication.config.biocache.baseUrl}"/>
 <g:set var="searchQuery" value="${grailsApplication.config.skin.useAlaBie.toBoolean() ? 'taxa' : 'q'}"/>
 <!DOCTYPE html>
 <html>
@@ -16,36 +16,25 @@
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
     <meta name="section" content="search"/>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
+    <meta name="breadcrumb" content="${message(code: "search.heading.list")}"/>
+    <meta name="hideBreadcrumb" content=""/>
     <title><g:message code="home.index.title" default="Search for records"/> | ${hubDisplayName}</title>
 
     <g:if test="${grailsApplication.config.google.apikey}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}"
+                type="text/javascript"></script>
     </g:if>
     <g:else>
-        <script src="https://maps.google.com/maps/api/js"></script>
+        <script src="https://maps.google.com/maps/api/js" type="text/javascript"></script>
     </g:else>
 
-    <!-- Here are the laflet plugins JS -->
-    <asset:javascript src="leafletPlugins.js" />
-    <asset:javascript src="mapCommon.js"/>
-    <asset:javascript src="bootstrapCombobox.js"/>
-
-    <!-- Here are the laflet plugins CSS-->
-    <asset:stylesheet src="leafletPlugins.css" />
-    <asset:stylesheet src="searchMap.css" />
-    <asset:stylesheet src="bootstrapCombobox.css" />
-
-    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
-        <asset:javascript src="bieAutocomplete.js"/>
-    </g:if>
-
-    <asset:script type="text/javascript">
+    <script type="text/javascript">
         // global var for GSP tags/vars to be passed into JS functions
         var BC_CONF = {
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
             bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
-            autocompleteHints: '{${raw(grailsApplication.config.bie?.autocompleteHints)}}',
+            autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson() ?: '{}'},
             contextPath: "${request.contextPath}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             queryContext: "${grailsApplication.config.biocache.queryContext}"
@@ -53,18 +42,37 @@
         /* Load Spring i18n messages into JS
          */
         jQuery.i18n.properties({
-         name: 'messages',
-         path: BC_CONF.contextPath + '/messages/i18n/',
-         mode: 'map',
-         language: BC_CONF.locale
+            name: 'messages',
+            path: BC_CONF.contextPath + '/messages/i18n/',
+            mode: 'map',
+            language: BC_CONF.locale
         });
-    </asset:script>
+    </script>
+
+
+<!-- Here are the leaflet plugins JS -->
+
+    <asset:javascript src="leaflet/leaflet.js"/>
+    <asset:javascript src="leafletPlugins.js"/>
+    <asset:javascript src="mapCommon.js"/>
+    <asset:javascript src="bootstrapCombobox.js"/>
+
+    <!-- Here are the leaflet plugins CSS -->
+    <asset:stylesheet src="leaflet/leaflet.css"/>
+    <asset:stylesheet src="leafletPlugins.css"/>
+    <asset:stylesheet src="searchMap.css"/>
+    <asset:stylesheet src="search.css" />
+    <asset:stylesheet src="bootstrapCombobox.css"/>
+
+    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
+        <asset:javascript src="bieAutocomplete.js"/>
+    </g:if>
+
     <asset:script type="text/javascript">
         $(document).ready(function() {
-
             var mapInit = false;
-            $('a[data-toggle="tab"]').on('shown', function(e) {
-                //console.log("this", $(this).attr('id'));
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+                // console.log("this", $(this).attr('id'));
                 var id = $(this).attr('id');
                 location.hash = 'tab_'+ $(e.target).attr('href').substr(1);
 
@@ -126,8 +134,8 @@
         var defaultBaseLayer = L.tileLayer("${grailsApplication.config.map.minimal.url}", {
             attribution: "${raw(grailsApplication.config.map.minimal.attr)}",
             subdomains: "${grailsApplication.config.map.minimal.subdomains}",
-            mapid: "${grailsApplication.config.map.mapbox?.id?:''}",
-            token: "${grailsApplication.config.map.mapbox?.token?:''}"
+            mapid: "${grailsApplication.config.map.mapbox?.id ?: ''}",
+            token: "${grailsApplication.config.map.mapbox?.token ?: ''}"
         });
 
         // Global var to store map config
@@ -137,30 +145,30 @@
             query : "${searchString}",
             queryDisplayString : "${queryDisplayString}",
             //center: [-30.0,133.6],
-            defaultLatitude : "${grailsApplication.config.map.defaultLatitude?:'-25.4'}",
-            defaultLongitude : "${grailsApplication.config.map.defaultLongitude?:'133.6'}",
-            defaultZoom : "${grailsApplication.config.map.defaultZoom?:'4'}",
+            defaultLatitude : "${grailsApplication.config.map.defaultLatitude ?: '-25.4'}",
+            defaultLongitude : "${grailsApplication.config.map.defaultLongitude ?: '133.6'}",
+            defaultZoom : "${grailsApplication.config.map.defaultZoom ?: '4'}",
             overlays : {
-                <g:if test="${grailsApplication.config.map.overlay.url}">
-                    "${grailsApplication.config.map.overlay.name?:'overlay'}" : L.tileLayer.wms("${grailsApplication.config.map.overlay.url}", {
+        <g:if test="${grailsApplication.config.map.overlay.url}">
+            "${grailsApplication.config.map.overlay.name ?: 'overlay'}" : L.tileLayer.wms("${grailsApplication.config.map.overlay.url}", {
                         layers: 'ALA:ucstodas',
                         format: 'image/png',
                         transparent: true,
-                        attribution: "${grailsApplication.config.map.overlay.name?:'overlay'}"
+                        attribution: "${grailsApplication.config.map.overlay.name ?: 'overlay'}"
                     })
-                </g:if>
-            },
-            baseLayers : {
-                "Minimal" : defaultBaseLayer,
-                //"Night view" : L.tileLayer(cmUrl, {styleId: 999,   attribution: cmAttr}),
-                "Road" :  new L.Google('ROADMAP'),
-                "Terrain" : new L.Google('TERRAIN'),
-                "Satellite" : new L.Google('HYBRID')
-            },
-            layerControl : null,
-            //currentLayers : [],
-            //additionalFqs : '',
-            //zoomOutsideScopedRegion: ${(grailsApplication.config.map.zoomOutsideScopedRegion == false || grailsApplication.config.map.zoomOutsideScopedRegion == "false") ? false : true}
+        </g:if>
+        },
+        baseLayers : {
+            "Minimal" : defaultBaseLayer,
+            //"Night view" : L.tileLayer(cmUrl, {styleId: 999,   attribution: cmAttr}),
+            "Road" :  new L.Google('ROADMAP'),
+            "Terrain" : new L.Google('TERRAIN'),
+            "Satellite" : new L.Google('HYBRID')
+        },
+        layerControl : null,
+        //currentLayers : [],
+        //additionalFqs : '',
+        //zoomOutsideScopedRegion: ${(grailsApplication.config.map.zoomOutsideScopedRegion == false || grailsApplication.config.map.zoomOutsideScopedRegion == "false") ? false : true}
         };
 
         function initialiseMap() {
@@ -208,7 +216,7 @@
                         allowIntersection: false, // Restricts shapes to simple polygons
                         drawError: {
                             color: '#e1e100', // Color the shape will turn when intersects
-                            message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                            message: '<strong>Oh snap!</strong> you can\'t draw that!' // Message that will show when intersect
                         },
                         shapeOptions: {
                             color: '#bada55'
@@ -280,106 +288,142 @@
 
 <body>
     <div id="headingBar" class="heading-bar">
-        <h1 style="width:100%;" id="searchHeader"><g:message code="home.index.body.title" default="Search for records in"/> ${raw(hubDisplayName)}</h1>
+        <h1 style="width:100%;" id="searchHeader"><g:message code="home.index.body.title"
+                                                             default="Search for records in"/> ${raw(hubDisplayName)}</h1>
     </div>
     <g:if test="${flash.message}">
-        <div class="message alert alert-info">
+        <div class="message alert alert-info alert-dismissable">
             <button type="button" class="close" onclick="$(this).parent().hide()">×</button>
             <b><g:message code="home.index.body.alert" default="Alert:"/></b> ${raw(flash.message)}
         </div>
     </g:if>
-    <div class="row-fluid" id="content">
-        <div class="span12">
+    <div class="row" id="content">
+        <div class="col-sm-12 col-md-12">
             <div class="tabbable">
                 <ul class="nav nav-tabs" id="searchTabs">
-                    <li><a id="t1" href="#simpleSearch" data-toggle="tab"><g:message code="home.index.navigator01" default="Simple search"/></a></li>
-                    <li><a id="t2" href="#advanceSearch" data-toggle="tab"><g:message code="home.index.navigator02" default="Advanced search"/></a></li>
-                    <li><a id="t3" href="#taxaUpload" data-toggle="tab"><g:message code="home.index.navigator03" default="Batch taxon search"/></a></li>
-                    <li><a id="t4" href="#catalogUpload" data-toggle="tab"><g:message code="home.index.navigator04" default="Catalogue number search"/></a></li>
-                    <li><a id="t5" href="#spatialSearch" data-toggle="tab"><g:message code="home.index.navigator05" default="Spatial search"/></a></li>
+                    <li><a id="t1" href="#simpleSearch" data-toggle="tab"><g:message code="home.index.navigator01"
+                                                                                     default="Simple search"/></a></li>
+                    <li><a id="t2" href="#advanceSearch" data-toggle="tab"><g:message code="home.index.navigator02"
+                                                                                      default="Advanced search"/></a></li>
+                    <li><a id="t3" href="#taxaUpload" data-toggle="tab"><g:message code="home.index.navigator03"
+                                                                                   default="Batch taxon search"/></a></li>
+                    <li><a id="t4" href="#catalogUpload" data-toggle="tab"><g:message code="home.index.navigator04"
+                                                                                      default="Catalogue number search"/></a>
+                    </li>
+                    <li><a id="t5" href="#spatialSearch" data-toggle="tab"><g:message code="home.index.navigator05"
+                                                                                      default="Spatial search"/></a></li>
                 </ul>
             </div>
+
             <div class="tab-content searchPage">
                 <div id="simpleSearch" class="tab-pane active">
-                    <form name="simpleSearchForm" id="simpleSearchForm" action="${request.contextPath}/occurrences/search" method="GET">
+                    <form class="form-horizontal" name="simpleSearchForm" id="simpleSearchForm" action="${request.contextPath}/occurrences/search"
+                          method="GET">
                         <br/>
-                        <div class="controls">
-                            <div class="input-append">
-                                <input type="text" name="${searchQuery}" id="taxa" class="input-xxlarge">
-                                <button id="locationSearch" type="submit" class="btn"><g:message code="home.index.simsplesearch.button" default="Search"/></button>
-                            </div>
+                        <div class="col-sm-9 input-group">
+                            <input type="text" class="form-control" name="${searchQuery}" id="taxa"/>
+                            <span class="input-group-btn">
+                                <input class="form-control btn btn-primary" id="locationSearch"  type="submit"
+                                       value="${g.message(code:"home.index.simsplesearch.button", default:"Search")}"/>
+                            </span>
                         </div>
                         <div>
                             <br/>
-                            <span style="font-size: 12px; color: #444;">
-                                <b><g:message code="home.index.simsplesearch.span" default="Note: the simple search attempts to match a known species/taxon - by its scientific name or common name. If there are no name matches, a full text search will be performed on your query"/>
+                            <span class="simpleSearchNote">
+                                <b><g:message code="home.index.simsplesearch.span"
+                                              default="Note: the simple search attempts to match a known species/taxon - by its scientific name or common name. If there are no name matches, a full text search will be performed on your query"/></b>
                             </span>
                         </div>
                     </form>
                 </div><!-- end simpleSearch div -->
                 <div id="advanceSearch" class="tab-pane">
-                    <g:render template="advanced" />
+                    <g:render template="advanced"/>
                 </div><!-- end #advancedSearch div -->
                 <div id="taxaUpload" class="tab-pane">
-                    <form name="taxaUploadForm" id="taxaUploadForm" action="${biocacheServiceUrl}/occurrences/batchSearch" method="POST">
-                        <p><g:message code="home.index.taxaupload.des01" default="Enter a list of taxon names/scientific names, one name per line (common names not currently supported)."/></p>
-                        <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" /><input type="file" /></p>--%>
-                        <p><textarea name="queries" id="raw_names" class="span6" rows="15" cols="60"></textarea></p>
-                        <p>
-                            <%--<input type="submit" name="action" value="Download" />--%>
-                            <%--&nbsp;OR&nbsp;--%>
-                            <input type="hidden" name="redirectBase" value="${serverName}${request.contextPath}/occurrences/search"/>
-                            <input type="hidden" name="field" value="raw_name"/>
-                            <input type="submit" name="action" value=<g:message code="home.index.taxaupload.button01" default="Search"/> class="btn" /></p>
+                    <form name="taxaUploadForm" id="taxaUploadForm" action="${biocacheServiceUrl}/occurrences/batchSearch"
+                          method="POST">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="raw_names"><g:message code="home.index.taxaupload.des01"
+                                                                      default="Enter a list of taxon names/scientific names, one name per line (common names not currently supported)."/></label>
+                                    <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" class="form-control"><input type="file" class="form-control"></p>--%>
+                                    <textarea name="queries" id="raw_names" class="form-control" rows="15" cols="60"></textarea>
+                                </div>
+                                <%--<input type="submit" name="action" value="Download" class="form-control">--%>
+                                <%--&nbsp;OR&nbsp;--%>
+                                <input type="hidden" name="redirectBase"
+                                       value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
+                                <input type="hidden" name="field" value="raw_name" class="form-control">
+                                <input type="submit" name="action"
+                                       value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
+                            </div>
+                        </div>
                     </form>
                 </div><!-- end #uploadDiv div -->
                 <div id="catalogUpload" class="tab-pane">
-                    <form name="catalogUploadForm" id="catalogUploadForm" action="${biocacheServiceUrl}/occurrences/batchSearch" method="POST">
-                        <p><g:message code="home.index.catalogupload.des01" default="Enter a list of catalogue numbers (one number per line)."/></p>
-                        <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" /><input type="file" /></p>--%>
-                        <p><textarea name="queries" id="catalogue_numbers" class="span6" rows="15" cols="60"></textarea></p>
-                        <p>
-                            <%--<input type="submit" name="action" value="Download" />--%>
-                            <%--&nbsp;OR&nbsp;--%>
-                            <input type="hidden" name="redirectBase" value="${serverName}${request.contextPath}/occurrences/search"/>
-                            <input type="hidden" name="field" value="catalogue_number"/>
-                            <input type="submit" name="action" value=<g:message code="home.index.catalogupload.button01" default="Search"/> class="btn"/></p>
+                    <form name="catalogUploadForm" id="catalogUploadForm"
+                          action="${biocacheServiceUrl}/occurrences/batchSearch" method="POST">
+                        <div class="row">
+                                <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="catalogue_numbers"><g:message code="home.index.catalogupload.des01"
+                                                  default="Enter a list of catalogue numbers (one number per line)."/></label>
+                                    <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" class="form-control"><input type="file" class="form-control"></p>--%>
+                                    <textarea name="queries" id="catalogue_numbers" class="form-control" rows="15" cols="60"></textarea>
+                                </div>
+                                <%--<input type="submit" name="action" value="Download" class="form-control">--%>
+                                <%--&nbsp;OR&nbsp;--%>
+                                <input type="hidden" name="redirectBase"
+                                       value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
+                                <input type="hidden" name="field" value="catalogue_number" class="form-control">
+                                <input type="submit" name="action"
+                                       value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
+                            </div>
+                        </div>
                     </form>
                 </div><!-- end #catalogUploadDiv div -->
                 <div id="spatialSearch" class="tab-pane">
-                    <div class="row-fluid">
-                        <div class="span3">
+                    <div class="row">
+                        <div class="col-sm-3 col-md-3">
                             <div>
-                                <g:message code="search.map.helpText" default="Select one of the draw tools (polygon, rectangle, circle), draw a shape and click the search link that pops up."/>
+                                <g:message code="search.map.helpText"
+                                           default="Select one of the draw tools (polygon, rectangle, circle), draw a shape and click the search link that pops up."/>
                             </div>
                             <br>
-                            <div class="accordion accordion-caret" id="accordion2">
-                                <div class="accordion-group">
-                                    <div class="accordion-heading">
-                                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+
+                            <div class="panel-group panel-group-caret" id="importAreaPanel">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <a class="panel-group-toggle collapsed" data-toggle="collapse"
+                                           data-parent="#importAreaPanel" href="#importAreaContent">
                                             <g:message code="search.map.importToggle" default="Import WKT"/>
                                         </a>
                                     </div>
-                                    <div id="collapseOne" class="accordion-body collapse">
-                                        <div class="accordion-inner">
+
+                                    <div id="importAreaContent" class="panel-collapse collapse">
+                                        <div class="panel-body">
                                             <p><g:message code="search.map.importText"/></p>
-                                            <p><g:message code="search.map.wktHelpText" default="Optionally, paste a WKT string: "/></p>
+
+                                            <p><g:message code="search.map.wktHelpText"
+                                                          default="Optionally, paste a WKT string: "/></p>
                                             <textarea type="text" id="wktInput"></textarea>
-                                            <br>
-                                            <button class="btn btn-small" id="addWkt"><g:message code="search.map.wktButtonText" default="Add to map"/></button>
+                                            <br/>
+                                            <button class="btn btn-primary btn-sm" id="addWkt"><g:message
+                                                    code="search.map.wktButtonText" default="Add to map"/></button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-                        <div class="span9">
+
+                        <div class="col-sm-9 col-md-9">
                             <div id="leafletMap" style="height:600px;"></div>
                         </div>
                     </div>
                 </div><!-- end #spatialSearch  -->
             </div><!-- end .tab-content -->
         </div><!-- end .span12 -->
-    </div><!-- end .row-fluid -->
+    </div><!-- end .row -->
 </body>
 </html>

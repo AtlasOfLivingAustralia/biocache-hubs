@@ -17,7 +17,7 @@ package au.org.ala.biocache.hubs
 
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringUtils
-import org.codehaus.groovy.grails.web.util.WebUtils
+import org.grails.web.util.WebUtils
 import org.springframework.web.servlet.support.RequestContextUtils
 import grails.util.Environment
 
@@ -392,7 +392,7 @@ class OccurrenceTagLib {
                 "data-toggle":"popover",
                 "data-code": attrs.code?:""
         ) {
-            i(class:"icon-question-sign", "")
+            i(class:"glyphicon glyphicon-question-sign", "")
         }
         //def html = "&nbsp;<a href='#' class='dataQualityHelpLink' data-toggle='popover' data-code='${code}'><i class='icon-question-sign'></i></a>"
         //out << html
@@ -614,7 +614,7 @@ class OccurrenceTagLib {
                 }
 
                 // display dynamic fields
-                if(grailsApplication.config.table.displayDynamicProperties.toBoolean()) {
+                if(grailsApplication.config.table.displayDynamicProperties?.toString()?.toBoolean()) {
                     span(class: 'dynamicValues') {
                         def count = 0
                         occurrence.miscStringProperties.each { key, value ->
@@ -659,7 +659,7 @@ class OccurrenceTagLib {
     /**
      * Alternative to g.message(code:'foo.bar')
      *
-     * @see org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+     * @see org.grails.plugins.web.taglib.ValidationTagLib
      *
      * @attr code REQUIRED
      * @attr default
@@ -722,7 +722,7 @@ class OccurrenceTagLib {
      * Get the appropriate sourceId for the current hub
      */
     def getSourceId = { attrs ->
-        def skin = grailsApplication.config.skin.layout?.toUpperCase()
+        def skin = grailsApplication.config.skin.layout?.toString()?.toUpperCase()
         def sources = webServicesService.getLoggerSources()
         sources.each {
             if (it.name == skin) {
@@ -757,7 +757,7 @@ class OccurrenceTagLib {
      */
     def getBiocacheAjaxUrl = { attrs ->
         String url = grailsApplication.config.biocache.baseUrl
-        Boolean useProxy = grailsApplication.config.biocache.ajax.useProxy.toBoolean() // will convert String 'true' to boolean true
+        Boolean useProxy = grailsApplication.config.biocache.ajax.useProxy?.toString()?.toBoolean() // will convert String 'true' to boolean true
         log.debug "useProxy = ${useProxy}"
 
         if (useProxy) {
@@ -807,7 +807,7 @@ class OccurrenceTagLib {
 
         mb.meta(name:'grails.env', content: "${Environment.current}")
         metaList.each {
-            mb.meta(name:it, content: g.meta(name:it))
+            mb.meta(name:it, content: g.meta(name: it)?: '' )
         }
         mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
     }

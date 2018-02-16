@@ -1,4 +1,17 @@
 /*
+ * Copyright (C) 2017 Atlas of Living Australia
+ * All Rights Reserved.
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ */
+
+/*
  * L.Control.Loading is a control that shows a loading indicator when tiles are
  * loading or when map-related AJAX requests are taking place.
  */
@@ -17,13 +30,13 @@
                 separate: false,
                 zoomControl: null,
                 spinjs: false,
-                spin: { 
-                  lines: 7, 
-                  length: 3, 
-                  width: 3, 
-                  radius: 5, 
-                  rotate: 13, 
-                  top: "83%"
+                spin: {
+                    lines: 7,
+                    length: 3,
+                    width: 3,
+                    radius: 5,
+                    rotate: 13,
+                    top: "83%"
                 }
             },
 
@@ -31,7 +44,7 @@
                 L.setOptions(this, options);
                 this._dataLoaders = {};
 
-                // Try to set the zoom control this control is attached to from the 
+                // Try to set the zoom control this control is attached to from the
                 // options
                 if (this.options.zoomControl !== null) {
                     this.zoomControl = this.options.zoomControl;
@@ -74,8 +87,8 @@
                 }
                 this._indicator = L.DomUtil.create('a', classes, container);
                 if (this.options.spinjs) {
-                  this._spinner = new Spinner(this.options.spin).spin();
-                  this._indicator.appendChild(this._spinner.el);
+                    this._spinner = new Spinner(this.options.spin).spin();
+                    this._indicator.appendChild(this._spinner.el);
                 }
                 return container;
             },
@@ -207,13 +220,13 @@
                 }
                 catch (exception) {
                     console.warn('L.Control.Loading: Tried and failed to add ' +
-                                 ' event handlers to layer', e.layer);
+                        ' event handlers to layer', e.layer);
                     console.warn('L.Control.Loading: Full details', exception);
                 }
             },
 
             _addLayerListeners: function(map) {
-                // Add listeners for begin and end of load to any layers already on the 
+                // Add listeners for begin and end of load to any layers already on the
                 // map
                 map.eachLayer(function(layer) {
                     if (!layer.on) return;

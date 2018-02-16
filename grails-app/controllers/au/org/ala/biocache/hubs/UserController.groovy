@@ -17,9 +17,9 @@ package au.org.ala.biocache.hubs
 
 import au.org.ala.web.CASRoles
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONElement
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONElement
+import org.grails.web.json.JSONObject
 
 import java.text.SimpleDateFormat
 

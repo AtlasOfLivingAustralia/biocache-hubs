@@ -10,9 +10,9 @@ import groovyx.net.http.Method
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.io.FileUtils
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONElement
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONElement
+import org.grails.web.json.JSONObject
 import org.springframework.web.client.RestClientException
 
 import javax.annotation.PostConstruct
@@ -121,9 +121,9 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    @Cacheable('longTermCache')
+    @Cacheable(value="longTermCache", key = "#root.method.name")
     def Map getGroupedFacets() {
-        log.info "Getting grouped facets"
+        log.info "Getting grouped facets with key: #root.methodName"
         def url = "${grailsApplication.config.biocache.baseUrl}/search/grouped/facets"
 
         if (grailsApplication.config.biocache.groupedFacetsUrl) {
@@ -392,7 +392,7 @@ class WebServicesService {
         } catch (Exception e) {
             def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
             log.error error
-            throw new RestClientException(error)
+            throw new RestClientException(error, e)
         }
     }
 
@@ -415,7 +415,7 @@ class WebServicesService {
             def error = "Failed to get text from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
             log.error error
             //return null
-            throw new RestClientException(error) // exception will result in no caching as opposed to returning null
+            throw new RestClientException(error, e) // exception will result in no caching as opposed to returning null
         }
     }
 

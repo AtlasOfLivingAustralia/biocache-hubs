@@ -13,7 +13,6 @@
  *  rights and limitations under the License.
  *
  */
-
 //= require searchCore.js
 //= require_self
 
@@ -53,7 +52,7 @@ $(document).ready(function() {
 
 
     // initialise BS tabs
-    $('a[data-toggle="tab"]').on('shown', function(e) {
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
         //console.log("this", $(this).attr('id'));
         var id = $(this).attr('id');
         var tab = e.currentTarget.hash.substring(1);
@@ -177,9 +176,9 @@ $(document).ready(function() {
     });
 
     // user selectable facets...
-    $("#updateFacetOptions").live("click",function(e) {
+    $("#updateFacetOptions").click(function(e) {
         e.preventDefault();
-        //alert("about to reload with new facets...");
+        // alert("about to reload with new facets...");
         var selectedFacets = [];
         // iterate over seleted facet options
         $(":input.facetOpts:checked").each(function(i, el) {
@@ -221,11 +220,11 @@ $(document).ready(function() {
     } //  note removed else that did page refresh by triggering cookie update code.
 
     // select all and none buttons
-    $("a#selectNone").click(function(e) {
+    $("#selectNone").click(function(e) {
         e.preventDefault();
         $(":input.facetOpts").removeAttr("checked");
     });
-    $("a#selectAll").click(function(e) {
+    $("#selectAll").click(function(e) {
         e.preventDefault();
         $(":input.facetOpts").attr("checked","checked");
     });
@@ -396,7 +395,7 @@ $(document).ready(function() {
 
     $("#downloadFacet").live("click", function(e) {
         var facetName = $("table#fullFacets").data("facet");
-        console.log('clicked ' + window.location.href );
+        //console.log('clicked ' + window.location.href );
         window.location.href = BC_CONF.biocacheServiceUrl + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName + '&count=true&lookup=true';
     });
 
@@ -545,7 +544,7 @@ $(document).ready(function() {
     $('.showHideFacetGroup').click(function(e) {
         e.preventDefault();
         var name = $(this).data('name');
-        //console.log('search-facets-state-' + name + '=')
+        //console.log('toggle on #group_' + name, $('#group_' + name).is(":visible"))
         $(this).find('span').toggleClass('right-caret');
         $('#group_' + name).slideToggle(600, function() {
             //console.log('showHideFacetGroup',name);
@@ -575,7 +574,8 @@ $(document).ready(function() {
     });
 
     // scroll bars on facet values
-    $(".nano").nanoScroller({ preventPageScrolling: true });
+    $(".nano").nanoScroller({ preventPageScrolling: true, sliderMinHeight: 90 });
+    //$(".nano").overlayScrollbars({  });
 
     // store last search in local storage for a "back button" on record pages
     amplify.store('lastSearch', $.url().attr('relative'));
@@ -724,7 +724,7 @@ function removeFacet(el) {
     if (q != null) {
         paramList.push("q=" + q);
     }
-    console.log("0. fqList", fqList);
+    //console.log("0. fqList", fqList);
     // add filter query param
     if (fqList && typeof fqList === "string") {
         fqList = [ fqList ];
@@ -781,7 +781,7 @@ function removeFilter(el) {
     if (q != null) {
         paramList.push("q=" + q);
     }
-    console.log("0. fqList", fqList);
+    //console.log("0. fqList", fqList);
     // add filter query param
     if (fqList && typeof fqList === "string") {
         fqList = [ fqList ];
@@ -874,8 +874,8 @@ function loadUserCharts() {
                 if ($.map(data, function (n, i) {
                         return i;
                     }).length > 3) {
-                    console.log("loading user chart data")
-                    console.log(data)
+                    //console.log("loading user chart data")
+                    //console.log(data)
 
                     //do not display user charts by default
                     $.map(data.charts, function (value, key) {
@@ -909,8 +909,8 @@ function loadUserCharts() {
 }
 
 function saveChartConfig(data) {
-    console.log("saving user chart data");
-    console.log(data);
+    //console.log("saving user chart data");
+    //console.log(data);
 
     var d = jQuery.extend(true, {}, data);
 
@@ -1222,6 +1222,8 @@ function loadMoreFacets(facetName, displayName, fsort, foffset) {
     $('#indexCol a').html(displayName); // table heading
     $('#indexCol a').attr('title', 'sort by ' + displayName); // table heading
 
+    $("table#fullFacets tbody").html(""); //clear the existing table
+
     $("a.fsort").qtip({
         style: {
             classes: 'ui-tooltip-rounded ui-tooltip-shadow'
@@ -1262,6 +1264,7 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
             $.each(data.facetResults[0].fieldResult, function(i, el) {
                 //console.log("0. facet", el);
                 if (el.count > 0) {
+
                     // surround with quotes: fq value if contains spaces but not for range queries
                     var fqEsc = ((el.label.indexOf(" ") != -1 || el.label.indexOf(",") != -1 || el.label.indexOf("lsid") != -1) && el.label.indexOf("[") != 0)
                         ? "\"" + el.label + "\""
@@ -1270,12 +1273,9 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                     var encodeFq = true;
                     if (label.indexOf("@") != -1) {
                         label = label.substring(0,label.indexOf("@"));
-                    } else if (jQuery.i18n.prop(label).indexOf("[") == -1) {
+                    } else if (jQuery.i18n.prop(el.i18nCode).indexOf("[") == -1) {
                         // i18n substitution
-                        var code = facetName + "." + label;
-                        var i18nLabel = jQuery.i18n.prop(code);
-                        //console.log(label, code, i18nLabel, jQuery.i18n.prop(label))
-                        label = (i18nLabel.indexOf("[") == -1) ? i18nLabel : jQuery.i18n.prop(label);
+                        label = jQuery.i18n.prop(el.i18nCode);
                     } else if (facetName.indexOf("outlier_layer") != -1 || /^el\d+/.test(label)) {
                         label = jQuery.i18n.prop("layer." + label);
                     } else if (facetName.indexOf("geospatial_kosher") != -1 || /^el\d+/.test(label)) {
@@ -1305,7 +1305,7 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                     var rowType = (i % 2 == 0) ? "normalRow" : "alternateRow";
                     html += "<tr class='" + rowType + "'><td>" +
                         "<input type='checkbox' name='fqs' class='fqs' value='"  + fqParam +
-                        "'/></td><td><a href=\"" + link + "\"> " + label + "</a></td><td style='text-align: right'>" + el.count + "</td></tr>";
+                        "'/></td><td class='multiple-facet-value'><a href=\"" + link + "\"> " + label + "</a></td><td class='multiple-facet-count'>" + el.count + "</td></tr>";
                 }
                 if (i == facetLimit - 1) {
                     //console.log("got to end of page of facets: " + i);

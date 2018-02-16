@@ -34,28 +34,24 @@
         <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
     </g:if>
     <g:else>
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script src="https://maps.google.com/maps/api/js"></script>
     </g:else>
+
     <g:render template="/layouts/global"/>
-
-    <asset:javascript src="exploreYourArea.js"/>
-    <asset:javascript src="qtip.js"/>
-
+    <asset:javascript src="exploreYourArea.js" asset-defer="true"/>
     <asset:stylesheet src="exploreYourArea.css" />
-    <asset:stylesheet src="qtip.css" />
 
     <asset:script type="text/javascript">
         // Global variables for yourAreaMap.js
         var EYA_CONF = {
-            serverURL: "${grailsApplication.config.grails.serverURL}",
             contextPath: "${request.contextPath}",
             biocacheServiceUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}",
-            imagesUrlPrefix: '${ raw(asset.assetPath(src: '/eya-images')) }',
-            zoom: ${zoom},
-            radius: ${radius},
-            filters: '${raw(grailsApplication.config.exploreYourArea.filters)}',
+            forwardURI: "${request.forwardURI}",
+            imagesUrlPrefix: "${request.contextPath}/assets/eya-images",
+            zoom: Number(${zoom}),
+            radius: Number(${radius}),
             speciesPageUrl: "${speciesPageUrl}",
-            queryContext: '${raw(queryContext)}',
+            queryContext: "${queryContext}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             geocodeRegion: "${grailsApplication.config.geocode.region}",
             hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
@@ -79,49 +75,55 @@
     <h1><g:message code="eya.header.title" default="Explore Your Area"/></h1>
 </div>
 <form name="searchForm" id="searchForm" class="" action="" method="GET">
+    <input type="hidden" name="latitude" id="latitude" value="${latitude}"/>
+    <input type="hidden" name="longitude" id="longitude" value="${longitude}"/>
+    <input type="hidden" name="location" id="location" value="${location}"/>
     <div class="control-group">
         <label class="control-label" for="address"><h4><g:message code="eya.searchform.label01" default="Enter your location or address"/>:</h4></label>
-        <div class="controls row-fluid">
-            <div class="input-append span5">
-                <input type="text" name="address" id="address" class="span10X">
-                <input type="hidden" name="latitude" id="latitude" value="${latitude}"/>
-                <input type="hidden" name="longitude" id="longitude" value="${longitude}"/>
-                <input type="hidden" name="location" id="location" value="${location}"/>
-                <input id="locationSearch" type="submit" class="btn" value="<g:message code="eya.searchform.btn01" default="Search"/>"/>
-            </div>
-            <div class="span7 help-inline"><g:message code="eya.searchform.des01" default="E.g. a street address, place name, postcode or GPS coordinates (as lat, long)"/></div>
-        </div>
+        <div class="controls row">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <input type="text" name="address" id="address" class="form-control">
+                    <span class="input-group-btn">
+                        <input id="locationSearch" type="submit" class="btn btn-default" value="<g:message code="eya.searchform.btn01" default="Search"/>"/>
+                    </span>
+                </div><!-- /input-group -->
+            </div><!-- /.col-md-5 -->
+            <div class="col-md-7 help-inline"><g:message code="eya.searchform.des01" default="E.g. a street address, place name, postcode or GPS coordinates (as lat, long)"/></div>
+        </div><!-- /.row -->
     </div>
-    <div id="locationInfo" class="span12 row-fluid ">
+    <div id="locationInfo" class="col-md-12 row ">
         <g:if test="${true || location}">
             <div id="resultsInfo">
                 <g:message code="eya.searchform.label02" default="Showing records for"/>: <span id="markerAddress">${location}</span>&nbsp;&nbsp<a href="#" id="addressHelp" style="text-decoration: none"><span class="help-container">&nbsp;</span></a>
             </div>
         </g:if>
-        <div class="row-fluid">
-            <span class="pad">
-                <g:message code="eya.searchformradius.label01" default="Display records in a"/>
-                <select id="radius" name="radius" class="" style="height:24px;width:auto;line-height:18px;margin-bottom:0;">
-                    <option value="1" <g:if test="${radius == 1}">selected</g:if>>1</option>
-                    <option value="2" <g:if test="${radius == 2}">selected</g:if>>2</option>
-                    <option value="5" <g:if test="${radius == 5}">selected</g:if>>5</option>
-                    <option value="10" <g:if test="${radius == 10}">selected</g:if>>10</option>
-                </select> <g:message code="eya.searchformradius.label02" default="km radius"/>
-            </span>
-            <span class="pad">
-                <a href="#" id="viewAllRecords" class="btn btn-small"><i class="icon-list"></i>&nbsp;&nbsp;<g:message code="eya.searchform.a.viewallrecords.01" default="View"/>
-                    <span id="recordsGroupText"><g:message code="eya.searchform.a.viewallrecords.02" default="all"/></span>  <g:message code="eya.searchform.a.viewallrecords.03" default="records"/></a>
-            </span>
-            <span class="pad">
-                <g:if test="${grailsApplication.config.eya.downloadsoffline}">
-                    <a id="offlineDownloadBtn" role="button" class="btn btn-small " title="Start download...">
-                        <i class="icon-download"></i> <g:message code="eya.searchform.a.downloads" default="Downloads"/></a>
-                </g:if>
-                <g:else>
-                    <a href="#download" role="button" data-toggle="modal" class="btn btn-small tooltips" title="Download all records OR species checklist">
-                        <i class="icon-download"></i> <g:message code="eya.searchform.a.downloads" default="Downloads"/></a>
-                </g:else>
-            </span>
+        <div class="row">
+            <div class="col-md-12">
+                <span class="pad">
+                    <g:message code="eya.searchformradius.label01" default="Display records in a"/>
+                    <select id="radius" name="radius" class="" style="height:24px;width:auto;line-height:18px;margin-bottom:0;">
+                        <option value="1" <g:if test="${radius == 1}">selected</g:if>>1</option>
+                        <option value="5" <g:if test="${radius == 5}">selected</g:if>>5</option>
+                        <option value="10" <g:if test="${radius == 10}">selected</g:if>>10</option>
+                    </select> <g:message code="eya.searchformradius.label02" default="km radius"/>
+                </span>
+                <span class="pad">
+                    <a href="#" id="viewAllRecords" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-list"></i>&nbsp;&nbsp;<g:message code="eya.searchform.a.viewallrecords.01" default="View"/>
+                        <span id="recordsGroupText"><g:message code="eya.searchform.a.viewallrecords.02" default="all"/></span>  <g:message code="eya.searchform.a.viewallrecords.03" default="records"/></a>
+                </span>
+                <span class="pad">
+                    <g:if test="${grailsApplication.config.useDownloadPlugin?.toBoolean()}">
+                        <a href="#" id="downloadData" class="btn btn-sm btn-default tooltips" title="Download records, check lists or field guides">
+                            <i class="glyphicon glyphicon-download-alt"></i>&nbsp;&nbsp;
+                            <g:message code="list.downloads.navigator" default="Download"/></a>
+                    </g:if>
+                    <g:else>
+                        <a href="#download" role="button" data-toggle="modal" class="btn btn-sm btn-default tooltips" title="Download all records OR species checklist">
+                            <i class="glyphicon glyphicon-download-alt"></i> <g:message code="eya.searchform.a.downloads" default="Downloads"/></a>
+                    </g:else>
+                </span>
+            </div>
         </div>
         <div id="dialog-confirm" title="Continue with download?" style="display: none">
             <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><g:message code="eya.dialogconfirm01" default="You are about to download a list of species found within a"/> <span id="rad"></span> <g:message code="eya.dialogconfirm02" default="km radius of"/> <code>${location}</code>.<br/>
@@ -129,8 +131,8 @@
         </div>
     </div>
 </form>
-<div class="row-fluid">
-    <div class="span7">
+<div class="row">
+    <div class="col-md-7">
         <div id="taxaBox">
             <div id="leftList">
                 <table id="taxa-level-0">
@@ -159,8 +161,8 @@
                 </table>
             </div>
         </div>
-    </div><!-- .span7 -->
-    <div class="span5">
+    </div><!-- .col-md-7 -->
+    <div class="col-md-5">
         <div id="mapCanvas" style="width: 100%; height: 490px;"></div>
         <div style="font-size:11px;width:100%;color:black;height:20px;" class="show-80">
             <table id="cellCountsLegend">
@@ -178,10 +180,11 @@
         <div id="mapTips">
             <b><g:message code="eya.maptips.01" default="Tip"/></b>: <g:message code="eya.maptips.02" default="you can fine-tune the location of the area by dragging the red marker icon"/>
         </div>
-    </div><!-- .span5 -->
-</div><!-- .row-fluid -->
+    </div><!-- .col-md-5 -->
+</div><!-- .row -->
 
-<g:render template="download"/>
-
+<g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
+    <g:render template="download"/>
+</g:if>
 </body>
 </html>

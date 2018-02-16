@@ -57,7 +57,7 @@ div.recordHeader {
 
 div#occurrenceMap {
     height: 300px;
-    margin-top: 5px;
+    margin-top: 10px;
 }
 .originalValue {
     padding-left: 12px;
@@ -65,21 +65,32 @@ div#occurrenceMap {
 }
 table.occurrenceTable {
     /*border-bottom: 0px !important;*/
-    /*margin: 5px 0 10px 0;*/
+    margin: 5px 0 10px 0;
     /*padding-bottom: 5px;*/
     /*width: 100%;*/
 }
 .occurrenceTable td.dwcLabel {
     width: 33%;
     vertical-align: top;
-    font-weight: bold;
+    font-weight: 500;
+}
+
+.additionalData .table thead td {
+    font-weight: 500;
+}
+.additionalData .table td:first-child {
+    font-weight: 500;
 }
 
 .dataQualityResults {
     /*border-bottom: 0px !important;*/
     margin: 5px 0 10px 0;
     /*padding-bottom: 5px;*/
-    /*width: 100%;*/
+    width: 100%;
+}
+
+.glyphicon {
+    margin-right: 4px;
 }
 
 td.annoText {
@@ -102,6 +113,27 @@ h2#headingSciName {
 h1 span#recordId {
     color: #222;
 }
+#main h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 21px;
+    line-height: 40px;
+}
+#main .modal-header h3 {
+    margin: 0;
+    line-height: 20px;
+}
+
+#userAnnotationsList h3 {
+    margin: 0;
+}
+
+#userAnnotationsList  {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
 #content2 h3 {
     margin-top: 4px;
 }
@@ -112,6 +144,7 @@ h1 span#recordId {
 }
 #recordHeadingLine2 {
     font-size: 16px;
+    margin-top: 5px;
 }
 #assertionMaker {
     font-size: 110%;
@@ -136,9 +169,9 @@ h1 span#recordId {
 #processedVsRawView {
     font-size: 13px;
     text-align: center;
-    width: 900px;
+    /*width: 900px;*/
     /*margin-top: -300px !important;*/
-    margin-left:  -450px !important;
+    /*margin-left:  -450px !important;*/
 }
 
 #processedVsRawView table {
@@ -192,6 +225,12 @@ div#userAssertionsDetailsLink > a {
 
 #clubView {
     color:red;
+    margin: 10px 0;
+}
+
+#clubView .label {
+    font-size: 13px;
+    padding: 7px 10px 6px 10px;
 }
 
 div.sidebar > button.rounded {
@@ -238,12 +277,44 @@ tr.sectionName td {
 }
 
 div.additionalData {
-    margin-left: 20px;
-    margin-top: 20px;
+    /*margin-left: 20px;*/
+    /*margin-top: 20px;*/
+}
+
+#userAnnotationsDiv > h4, #userAnnotationsDiv .well {
+    border: 1px solid #bbb;
+    margin-bottom:-1px;
+    padding: 9px;
 }
 
 .additionalData table {
-    min-width: 80%;
+    /*min-width: 80%;*/
+}
+
+.affix {
+    top: 120px;
+}
+
+.affix {
+    width: 30.5%;
+}
+
+.affix-bottom {
+    width: 94%;
+}
+
+.affix-bottom {
+    position: absolute;
+}
+
+@media (max-width: 768px) {
+    .affix {
+        position: static;
+    }
+    .affix,
+    .affix-bottom {
+        width:100%;
+    }
 }
 
 li.userAnnotationTemplate p { padding-top: 1px !important; padding-bottom:1px !important; }
@@ -277,7 +348,11 @@ li.userAnnotationTemplate { list-style: none; }
 .popover {
     max-width: 560px;
 }
-
+#main h3.popover-title {
+    margin: 0;
+    font-size: 16px;
+    line-height: 22px;
+}
 .popover-title .close {
     font-size: 24px;
     margin-top: -4px;
@@ -327,6 +402,20 @@ div.audiojs div.time {
 
 .primaryContact{
     color: orange;
+}
+
+#navBox.nav-pills > li > a {
+    border-radius: 0;
+    border: 1px solid #ddd;
+    background-color: #f2f2f2;
+}
+
+#navBox.nav-stacked > li {
+    margin-bottom: -1px;
+}
+
+#navBox.nav-stacked > li + li {
+    margin-top: 0;
 }
 
 #navBox {

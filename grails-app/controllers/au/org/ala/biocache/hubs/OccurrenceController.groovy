@@ -15,19 +15,25 @@
 
 package au.org.ala.biocache.hubs
 
+import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONElement
-import org.codehaus.groovy.grails.web.json.JSONObject
+import groovy.util.logging.Slf4j
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONElement
+import org.grails.web.json.JSONObject
 import au.org.ala.web.CASRoles
 
 import java.text.SimpleDateFormat
+
 /**
  * Controller for occurrence searches and records
  */
+@Slf4j
 class OccurrenceController {
-
     def webServicesService, facetsCacheService, postProcessingService, authService
+
+    GeoIpService geoIpService
+
     def ENVIRO_LAYER = "el"
     def CONTEXT_LAYER = "cl"
 
@@ -66,7 +72,7 @@ class OccurrenceController {
         log.debug "skin.useAlaBie = ${grailsApplication.config.skin.useAlaBie}"
         log.debug "taxaQueries = ${taxaQueries} || q = ${requestParams.q}"
 
-        if (grailsApplication.config.skin.useAlaBie?.toBoolean() &&
+        if (grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean() &&
                 grailsApplication.config.bie.baseUrl && taxaQueries && taxaQueries[0]) {
             // check for list with empty string
             // taxa query - attempt GUID lookup
@@ -91,9 +97,11 @@ class OccurrenceController {
             String[] userFacets = postProcessingService.getFacetsFromCookie(request)
             String[] filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
 
-            if(!userFacets && grailsApplication.config.facets.defaultSelected){
-                userFacets = grailsApplication.config.facets.defaultSelected.trim().split(",")
-
+            final facetsDefaultSelectedConfig = grailsApplication.config.facets.defaultSelected
+            if (!userFacets && facetsDefaultSelectedConfig) {
+                userFacets = facetsDefaultSelectedConfig.trim().split(",")
+                log.debug "facetsDefaultSelectedConfig = ${facetsDefaultSelectedConfig}"
+                log.debug "userFacets = ${userFacets}"
                 def facetKeys = defaultFacets.keySet()
                 facetKeys.each {
                     defaultFacets.put(it, false)
@@ -107,7 +115,7 @@ class OccurrenceController {
 
             String[] requestedFacets = userFacets ?: filteredFacets
 
-            if (grailsApplication.config.facets.includeDynamicFacets?.toBoolean()) {
+            if (grailsApplication.config.facets.includeDynamicFacets?.toString()?.toBoolean()) {
                 // Sandbox only...
                 dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
                 requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
@@ -137,9 +145,11 @@ class OccurrenceController {
             }
 
             def hasImages = postProcessingService.resultsHaveImages(searchResults)
-            if(grailsApplication.config.alwaysshow.imagetab.toBoolean()){
+            if(grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()){
                 hasImages = true
             }
+
+            log.debug "defaultFacets = ${defaultFacets}"
 
             [
                     sr: searchResults,
@@ -305,7 +315,8 @@ class OccurrenceController {
     }
 
     /**
-     * Explore your area page.
+     * Explore your area page
+     * Uses http://dev.maxmind.com/geoip/geoip2/geolite2/
      *
      * @return
      */
@@ -313,11 +324,28 @@ class OccurrenceController {
         def radius = params.radius?:5
         Map radiusToZoomLevelMap = grailsApplication.config.exploreYourArea.zoomLevels // zoom levels for the various radius sizes
 
+        def lat = params.latitude
+        def lng = params.longitude
+
+        if (!(lat && lng)) {
+            // try to determine lat/lng from IP address via lookup with MaxMind GeoLite2 City
+            Location location = geoIpService.getLocation(request)
+
+            if (location) {
+                log.debug "location = ${location}"
+                lat = location.latitude
+                lng = location.longitude
+            } else {
+                lat = grailsApplication.config.exploreYourArea.lat
+                lng = grailsApplication.config.exploreYourArea.lng
+            }
+        }
+
         [
-                latitude: params.latitude?:grailsApplication.config.exploreYourArea.lat,
-                longitude: params.longitude?:grailsApplication.config.exploreYourArea.lng,
+                latitude: lat,
+                longitude: lng,
                 radius: radius,
-                zoom: radiusToZoomLevelMap.get(radius),
+                zoom: radiusToZoomLevelMap.get(radius?.toString()),
                 location: grailsApplication.config.exploreYourArea.location,
                 speciesPageUrl: grailsApplication.config.bie.baseUrl + "/species/"
         ]
@@ -377,7 +405,7 @@ class OccurrenceController {
             }
         } catch (Exception ex) {
             flash.message = "Error generating field guide PDF. ${ex}"
-            log.error ex, ex
+            log.error ex.message, ex
             render view:'../error'
         }
     }

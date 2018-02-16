@@ -1,5 +1,8 @@
+out
 target/*
 .idea/*
 *.iml
 wrapper/*
 .slcache/*
+build/*
+.gradle/*

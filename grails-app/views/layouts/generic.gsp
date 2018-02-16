@@ -4,7 +4,6 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <alatag:addApplicationMetaTags/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 
@@ -12,10 +11,10 @@
     <g:render template="/layouts/global"/>
 
     <asset:javascript src="jquery_migration.js"/>
-    <asset:javascript src="bootstrap.js"/>
+    <asset:javascript src="bootstrap/js/bootstrap.js"/>
     <asset:javascript src="hubCore.js"/>
 
-    <asset:stylesheet src="bootstrap.css" />
+    <asset:stylesheet src="bootstrap/css/bootstrap.css" />
     <asset:stylesheet src="hubCore.css" />
     <asset:stylesheet src="generic.css" />
 

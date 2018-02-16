@@ -5,6 +5,8 @@
 //= require jquery.i18n.properties-1.0.9.js
 //= require charts2.js
 //= require wms2.js
+//= require amplify.js
+//= require moment.min.js
 //= require_self
  */
 /**
@@ -222,7 +224,7 @@ $(document).ready(function() {
                 //content = "<div><b>" + dataQualityItem.name + "</b></div>";
                 content = "<div>" + dataQualityItem.description + "</div>";
                 if (dataQualityItem.wiki) {
-                    content += "<div><i class='icon-share-alt'></i>&nbsp;<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" +
+                    content += "<div><i class='glyphicon glyphicon-share-alt'></i>&nbsp;<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" +
                         dataQualityItem.name + "' target='wiki' title='More details on the wiki page'>Wiki page</a></div>";
                 }
             }
@@ -284,8 +286,11 @@ function getMessage(userAssertionCode) {
     return "${message(code:show.userAssertionStatus." + userAssertionCode+ ")}";
 }
 
-//load the assertions
+/**
+ * Load and display the assertions for this record
+ */
 function refreshUserAnnotations(){
+
     $.get( OCC_REC.contextPath + "/assertions/" + OCC_REC.recordUuid, function(data) {
 
         if (data.assertionQueries.length == 0 && data.userAssertions.length == 0) {
@@ -320,63 +325,66 @@ function refreshUserAnnotations(){
         var disableDelete = [];
         var enableDelete = [];
 
-        for(var i = 0; i < data.userAssertions.length; i++){
+        $.each(data.userAssertions, function( index, userAssertion ) {
 
-            if (data.userAssertions[i].code != 50000) {
-                var $clone = $('#userAnnotationTemplate').clone();
-                //$clone.id = "userAnnotation_" + data.userAssertions[i].uuid
-                $clone.prop('id', "userAnnotation_" + data.userAssertions[i].uuid);
-                $clone.find('.issue').text(data.userAssertions[i].name);
-                $clone.find('.user').text(data.userAssertions[i].userDisplayName);
-                //$clone.find('.userDisplayName').text("User: " + data.userAssertions[i].userDisplayName);
-                $clone.find('.comment').text('Comment: ' + data.userAssertions[i].comment);
-                $clone.find('.userRole').text(data.userAssertions[i].userRole != null ? data.userAssertions[i].userRole : '');
-                $clone.find('.userEntity').text(data.userAssertions[i].userEntityName != null ? data.userAssertions[i].userEntityName : '');
-                $clone.find('.created').text('Date created: ' + (moment(data.userAssertions[i].created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));
-                if (data.userAssertions[i].userRole != null) {
-                    $clone.find('.userRole').text(', ' + data.userAssertions[i].userRole);
+            var $clone = $('#userAnnotationTemplate').clone();
+
+            // if the code == 50000, then we have verification - so don't display here
+            if (userAssertion.code != 50000) {
+                $clone.prop('id', "userAnnotation_" + userAssertion.uuid);
+                $clone.find('.issue').text(jQuery.i18n.prop(userAssertion.name));
+                $clone.find('.user').text(userAssertion.userDisplayName);
+                $clone.find('.comment').text('Comment: ' + userAssertion.comment);
+                $clone.find('.userRole').text(userAssertion.userRole != null ? userAssertion.userRole : '');
+                $clone.find('.userEntity').text(userAssertion.userEntityName != null ? userAssertion.userEntityName : '');
+                $clone.find('.created').text('Date created: ' + (moment(userAssertion.created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));
+                if (userAssertion.userRole != null) {
+                    $clone.find('.userRole').text(', ' + userAssertion.userRole);
                 }
-                if (data.userAssertions[i].userEntityName != null) {
-                    $clone.find('.userEntity').text(', ' + data.userAssertions[i].userEntityName);
+                if (userAssertion.userEntityName != null) {
+                    $clone.find('.userEntity').text(', ' + userAssertion.userEntityName);
                 }
+
+                //if the current user is the author of the annotation, they can delete
+                if(OCC_REC.userId == userAssertion.userId){
+                    $clone.find('.deleteAnnotation').css({display:'block'});
+                    $clone.find('.deleteAnnotation').attr('id', userAssertion.uuid);
+                } else {
+                    $clone.find('.deleteAnnotation').css({display:'none'});
+                }
+
+                //display the verification button,
+                $clone.find('.verifyAnnotation').css({display:'block'});
+                $clone.find('.verifyAnnotation').attr('id', "verifyAnnotations_" +userAssertion.uuid);
+
+                $clone.find(".verifications").hide();
+
+                $('#userAnnotationsList').append($clone);
             } else {
-                verifiedAssertions.push(data.userAssertions[i]);
-                if (disableDelete.indexOf(data.userAssertions[i].relatedUuid) < 0) {
-                    disableDelete.push (data.userAssertions[i].relatedUuid);
+                //this is a verification assertion, so it needs to be embedded in existing assertion
+                verifiedAssertions.push(userAssertion);
+                // if an assertion has a verification, disable the delete button
+                if (disableDelete.indexOf(userAssertion.relatedUuid) < 0) {
+                    disableDelete.push(userAssertion.relatedUuid);
                 }
             }
+        });
 
-            if(OCC_REC.userId == data.userAssertions[i].userId){
-                $clone.find('.deleteAnnotation').css({display:'block'});
-                $clone.find('.deleteAnnotation').attr('id', data.userAssertions[i].uuid);
-            } else {
-                $clone.find('.deleteAnnotation').css({display:'none'});
-            }
-
-            $clone.find('.verifyAnnotation').css({display:'block'});
-            $clone.find('.verifyAnnotation').attr('id', "verifyAnnotations_" + data.userAssertions[i].uuid);
-
-            $('#userAnnotationsList').append($clone);
-
-        }
-
+        //display verified
         var sortedVerifiedAssertion = verifiedAssertions.sort(compareModifiedDate);
-
         for(var i = 0; i < sortedVerifiedAssertion.length; i++){
-           // $clone.find('.verifyAnnotation').css({display:'block'});
-            var relatedUuid = sortedVerifiedAssertion[i].relatedUuid;
-            var $clone = $('#userVerificationTemplate').clone();
 
+            var $clone = $('#userVerificationTemplate').clone();
             $clone.prop('id', "userVerificationAnnotation_" + sortedVerifiedAssertion[i].uuid);
             var qaStatusMessage = jQuery.i18n.prop("user_assertions." + sortedVerifiedAssertion[i].qaStatus);
             $clone.find('.qaStatus').text(qaStatusMessage);
             $clone.find('.comment').text(sortedVerifiedAssertion[i].comment);
             $clone.find('.userDisplayName').text(sortedVerifiedAssertion[i].userDisplayName);
             $clone.find('.created').text((moment(sortedVerifiedAssertion[i].created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));
-            $clone.css({display:'block'});
 
-            ($clone).insertAfter('#userAnnotation_' + sortedVerifiedAssertion[i].relatedUuid  +' .userVerificationClass .userVerificationTemplate:first')
-
+            //add the verification, and show the table
+            $('#userAnnotationsList').find('#userAnnotation_' + sortedVerifiedAssertion[i].relatedUuid + " table.verifications tbody").append($clone);
+            $('#userAnnotationsList').find('#userAnnotation_' + sortedVerifiedAssertion[i].relatedUuid + " table.verifications").show();
             updateDeleteVerificationEvents(sortedVerifiedAssertion[i].relatedUuid)
         }
 
@@ -384,20 +392,13 @@ function refreshUserAnnotations(){
             var $cloneHeader = $('#userVerificationTemplate').clone();
             $cloneHeader.prop('id', "userVerificationAnnotationHeader_" + disableDelete[i]);
             $cloneHeader.find('.qaStatus').text("User Verification Status");
-            $cloneHeader.find('.qaStatus').css({fontWeight: 'bold'});
             $cloneHeader.find('.comment').text("Comment");
-            $cloneHeader.find('.comment').css({fontWeight: 'bold'});
             $cloneHeader.find('.userDisplayName').text("Verified By");
-            $cloneHeader.find('.userDisplayName').css({fontWeight: 'bold'});
             $cloneHeader.find('.created').text("Created");
-            $cloneHeader.find('.created').css({fontWeight: 'bold'});
             $cloneHeader.find('.deleteVerification').html('Delete this Verification');
-            $cloneHeader.find('.deleteVerification').css({fontWeight: 'bold'});
-
             $cloneHeader.css({display: 'block'});
             ($cloneHeader).insertAfter('#userAnnotation_' + disableDelete[i] + ' .userVerificationClass .userVerificationTemplate:first')
         }
-
 
         for(var i = 0; i < data.userAssertions.length; i++){
             if ((data.userAssertions[i].code != 50000) && (disableDelete.indexOf(data.userAssertions[i].uuid) < 0)) {
@@ -406,7 +407,6 @@ function refreshUserAnnotations(){
         }
 
         updateDeleteEvents(enableDelete, disableDelete);
-
     });
 }
 
@@ -414,12 +414,11 @@ function updateDeleteVerificationEvents(relatedAssertionId) {
     $('#userAnnotation_' + relatedAssertionId + ' .deleteVerificationButton').off("click");
     $('#userAnnotation_' + relatedAssertionId + ' .deleteVerificationButton').on("click", function (e) {
         e.preventDefault();
-        var isConfirmed = confirm('Are you sure you want to delete this issue?');
+        var isConfirmed = confirm('Are you sure you want to delete this verification ?');
         if (isConfirmed === true) {
             deleteAssertion(OCC_REC.recordUuid, this.parentElement.parentElement.id.split('_').pop());
         }
     });
-
 }
 
 function updateDeleteEvents(enableDelete, disableDelete){
@@ -428,7 +427,7 @@ function updateDeleteEvents(enableDelete, disableDelete){
         $('#userAnnotation_' + enableDelete[i] + ' .deleteAnnotation').off("click");
         $('#userAnnotation_' + enableDelete[i] + ' .deleteAnnotation').on("click", function (e) {
             e.preventDefault();
-            var isConfirmed = confirm('Are you sure you want to delete this issue?');
+            var isConfirmed = confirm('Are you sure you want to delete this flagged issue?');
             if (isConfirmed === true) {
                 $('#' + enableDelete[i] + ' .deleteAssertionSubmitProgress').css({'display':'inline'});
                 deleteAssertion(OCC_REC.recordUuid, enableDelete[i]);
@@ -439,6 +438,9 @@ function updateDeleteEvents(enableDelete, disableDelete){
 
     for(var i = 0; i < disableDelete.length; i++){
         $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotationButton').attr('disabled', 'disabled');
+        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotationButton').attr('title', 'Unable to delete, as this assertion has a verification');
+
+
         $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotation').off("click");
         $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotation').on("click", function (e) {
             e.preventDefault();
@@ -461,8 +463,8 @@ function updateConfirmVerificationEvents(occUuid, assertionUuid, userDisplayName
 
     $('.closeVerify').on("click", function(e){
         e.preventDefault();
-        $("#verifyAsk").fadeIn();
-        $("#verifyDone").fadeOut();
+        $(".verifyAsk").fadeIn();
+        $(".verifyDone").fadeOut();
     });
 
     $('.confirmVerify').off("click");
@@ -479,13 +481,20 @@ function updateConfirmVerificationEvents(occUuid, assertionUuid, userDisplayName
             return false;
         }
 
+        console.log("Submitting an assertion with userAssertionStatus: " + userAssertionStatus)
+
         $.post(OCC_REC.contextPath + "/occurrences/assertions/add",
-            { recordUuid: occUuid, code: code, comment: comment, userAssertionStatus: userAssertionStatus,
-                assertionUuid: assertionUuid, userId: OCC_REC.userId, userDisplayName: userDisplayName},
+            { recordUuid: occUuid,
+                code: code,
+                comment: comment,
+                userAssertionStatus: userAssertionStatus,
+                assertionUuid: assertionUuid,
+                userId: OCC_REC.userId,
+                userDisplayName: userDisplayName},
             function(data) {
                 // service simply returns status or OK or FORBIDDEN, so assume it worked...
-                $("#verifyAsk").fadeOut();
-                $("#verifyDone").fadeIn();
+                $(".verifyAsk").fadeOut();
+                $(".verifyDone").fadeIn();
                 refreshUserAnnotations();
             }
         ).error(function (request, status, error) {
@@ -493,7 +502,6 @@ function updateConfirmVerificationEvents(occUuid, assertionUuid, userDisplayName
         }).complete(function() {
             $("#verifySpinner").hide();
         });
-
     });
 }
 
@@ -519,7 +527,7 @@ function getDataQualityItem(code) {
             success: function(data) {
                 if (data && data[1]) {
                     $.each(data, function(key, val) {
-                        console.log("data", key, val);
+                        //console.log("data", key, val);
                         dataQualityItems[key] = val;
                     });
                 }
@@ -530,7 +538,7 @@ function getDataQualityItem(code) {
             async: false
         });
     }
-    console.log("dataQualityItems",dataQualityItems);
+    //console.log("dataQualityItems",dataQualityItems);
     if (dataQualityItems[code]) {
         return dataQualityItems[code];
     }
