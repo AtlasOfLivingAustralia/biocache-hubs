@@ -143,7 +143,7 @@
         <div class="sidebar">
             <p class="grey-bg" style="padding:5px; margin-top:15px; margin-bottom:10px;">
                 <g:message code="show.sidebar01.p" default="This record was transcribed from the label by an online volunteer. It has not yet been validated by the owner institution"/>
-                <a href="http://volunteer.ala.org.au/"><g:message code="show.sidebar01.volunteer.navigator" default="Biodiversity Volunteer Portal"/></a>.
+                <a href="https://volunteer.ala.org.au/"><g:message code="show.sidebar01.volunteer.navigator" default="Biodiversity Volunteer Portal"/></a>.
             </p>
 
             <button class="btn btn-default" id="viewDraftButton" >
