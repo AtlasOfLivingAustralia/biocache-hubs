@@ -1,5 +1,10 @@
 # biocache-hubs [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/biocache-hubs.svg?branch=master)](http://travis-ci.org/AtlasOfLivingAustralia/biocache-hubs) 
 
+The grails2 branch contains the 1.5.x series of the plugin compatible with Grails 2.x
+
+The master branch hosts version 2.x and forward of the plugin compatible with grails 3.x
+
+
 **biocache-hubs** is a Grails plugin that provides the core functionality for the _Atlas of Living Australia_ (ALA) [Occurrence search portal](http://biocache.ala.org.au/search) (Biocache) front-end.
 
 This application/plugin provides a web UI for a back-end service called [**biocache-service**](https://github.com/AtlasOfLivingAustralia/biocache-service) (see [biocache-service API](http://biocache.ala.org.au/ws)) - a full-text search and record retreival for occurrence data records, using JSON data format.
