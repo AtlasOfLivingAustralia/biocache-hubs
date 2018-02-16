@@ -11,17 +11,15 @@
  * rights and limitations under the License.
  */
 
-import au.org.ala.biocache.hubs.EnglishValueConverter
 import au.org.ala.biocache.hubs.ExtendedPluginAwareResourceBundleMessageSource
 
 beans = {
-    // Custom message source
-    customMessageSource(ExtendedPluginAwareResourceBundleMessageSource) {
-        // The standard messageSource will already use "WEB-INF/grails-app/i18n/messages"
-        // ExtendedPluginAwareResourceBundleMessageSource uses messageSource as an additional backing message source
-        basename = "${application.config.biocache.baseUrl}/facets/i18n"
-        cacheSeconds = (60 * 60 * 6) // 6 hours
-        useCodeAsDefaultMessage = false
-    }
-
+    // Custom message source - This is a duplicate bean def - see original in: src/main/groovy/au/org/ala/biocache/hubs/BiocacheHubsGrailsPlugin.groovy
+//    customMessageSource(ExtendedPluginAwareResourceBundleMessageSource) {
+//        // The standard messageSource will already use "WEB-INF/grails-app/i18n/messages"
+//        // ExtendedPluginAwareResourceBundleMessageSource uses messageSource as an additional backing message source
+//        basename = "${application.config.biocache.baseUrl}/facets/i18n"
+//        cacheSeconds = (60 * 60 * 6) // 6 hours
+//        useCodeAsDefaultMessage = false
+//    }
 }

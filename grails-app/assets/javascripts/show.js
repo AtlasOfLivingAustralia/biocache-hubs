@@ -414,7 +414,7 @@ function updateDeleteVerificationEvents(relatedAssertionId) {
     $('#userAnnotation_' + relatedAssertionId + ' .deleteVerificationButton').off("click");
     $('#userAnnotation_' + relatedAssertionId + ' .deleteVerificationButton').on("click", function (e) {
         e.preventDefault();
-        var isConfirmed = confirm('Are you sure you want to delete this verification ? ' + relatedAssertionId);
+        var isConfirmed = confirm('Are you sure you want to delete this verification ?');
         if (isConfirmed === true) {
             deleteAssertion(OCC_REC.recordUuid, this.parentElement.parentElement.id.split('_').pop());
         }
