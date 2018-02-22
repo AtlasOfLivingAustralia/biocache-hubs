@@ -145,7 +145,7 @@ $(document).ready(function() {
     $('#viewAllRecords').live("click", function(e) {
         e.preventDefault();
         //var params = "q=taxon_name:*|"+$('#latitude').val()+"|"+$('#longitude').val()+"|"+$('#radius').val();
-        var params = "q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val();
+        var params = "q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=geospatial_kosher=true";
         if (speciesGroup != "ALL_SPECIES") {
             params += "&fq=species_group:" + speciesGroup;
         }
@@ -157,7 +157,7 @@ $(document).ready(function() {
     $('#downloadData').live("click", function(e) {
         e.preventDefault();
         //var params = "q=taxon_name:*|"+$('#latitude').val()+"|"+$('#longitude').val()+"|"+$('#radius').val();
-        var params = "?q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val();
+        var params = "?q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=geospatial_kosher=true";
         if (speciesGroup != "ALL_SPECIES") {
             params += "&fq=species_group:" + speciesGroup;
         }
