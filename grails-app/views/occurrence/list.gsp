@@ -425,9 +425,12 @@
                             <div class="col-sm-4 col-md-4">
                                 <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
                                     <div id="downloads" class="btn btn-default btn-sm">
-                                        <a href="#download" role="button" data-toggle="modal" class="tooltips"
-                                           title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records OR species checklist"><i
-                                                class="fa fa-download"></i>&nbsp;&nbsp;<g:message
+                                        <a href="#downloadModal"
+                                           role="button"
+                                           data-toggle="modal"
+                                           class="tooltips"
+                                           title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records OR species checklist">
+                                            <i class="fa fa-download"></i>&nbsp;&nbsp;<g:message
                                                 code="list.downloads.navigator" default="Downloads"/></a>
                                     </div>
                                 </g:if>
@@ -435,8 +438,7 @@
                                     <div id="alerts" class="btn btn-default btn-sm ">
                                         <a href="#alert" role="button" data-toggle="modal" class="tooltips"
                                            title="Get email alerts for this search"><i
-                                                class="fa fa-bell"></i>&nbsp;&nbsp;<g:message code="list.alerts.navigator"
-                                                                                              default="Alerts"/></a>
+                                                class="fa fa-bell"></i>&nbsp;&nbsp;<g:message code="list.alerts.navigator" default="Alerts"/></a>
                                     </div>
                                 </g:if>
                             </div>
