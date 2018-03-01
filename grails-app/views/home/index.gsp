@@ -354,8 +354,9 @@
                                 <%--&nbsp;OR&nbsp;--%>
                                 <input type="hidden" name="redirectBase"
                                        value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
-                                <input type="hidden" name="field" value="raw_name" class="form-control">
-                                <input type="submit" name="action"
+                                <input type="hidden" name="field" value="raw_name" class="form-control"/>
+                                <input type="hidden" name="action" value="Search" />
+                                <input type="submit"
                                        value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
                             </div>
                         </div>
@@ -377,7 +378,8 @@
                                 <input type="hidden" name="redirectBase"
                                        value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
                                 <input type="hidden" name="field" value="catalogue_number" class="form-control">
-                                <input type="submit" name="action"
+                                <input type="hidden" name="action" value="Search" />
+                                <input type="submit"
                                        value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
                             </div>
                         </div>
