@@ -4,12 +4,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <alatag:addApplicationMetaTags/>
     <title><g:layoutTitle /></title>
-    <r:require modules="bootstrap2, hubCore" />
-    <r:layoutResources/>
+
+    <asset:javascript src="bootstrap/js/bootstrap.js"/>
+    <asset:javascript src="hubCore.js"/>
+
+    <asset:stylesheet src="bootstrap/css/bootstrap.css" />
+    <asset:stylesheet src="hubCore.css" />
+
     <g:layoutHead />
 </head>
 <body class="${pageProperty(name:'body.class')}" id="${pageProperty(name:'body.id')}" onload="${pageProperty(name:'body.onload')}">
 <g:layoutBody />
-<r:layoutResources/>
+<asset:deferredScripts/>
 </body>
 </html>

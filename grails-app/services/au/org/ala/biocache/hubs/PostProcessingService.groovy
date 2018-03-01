@@ -1,8 +1,22 @@
+/*
+ * Copyright (C) 2017. Atlas of Living Australia
+ * All Rights Reserved.
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ */
+
 package au.org.ala.biocache.hubs
 
 import org.apache.commons.lang.StringUtils
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.apache.commons.lang.WordUtils
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONObject
 
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
@@ -387,5 +401,44 @@ class PostProcessingService {
         }
 
         facets
+    }
+
+    /**
+     * Add markup, links, etc., to certain field values. Due to the way the record page is generated
+     * in a field-agnostic way, it makes it hard to add field-specific formatting in the current output
+     * taglib (formatExtraDwC).
+     *
+     * TODO: move record key string values into enum or config (e.g. Location & Occurrence)
+     *
+     * @param record
+     */
+    JSONObject augmentRecord(JSONObject record) {
+        // take a copy so we don't modify the original
+        JSONObject modifiedRecord = new JSONObject(record.toString()) // clone it
+        // add link to conservation list for stateConservation
+        //log.debug "record = ${record as JSON}"
+        String stateProvince = ""
+        String stateKey = ""
+        Map statesListsPaths = grailsApplication.config.stateConservationListPath ?: [:]
+        // conservation list is state based, so first we need to know the state
+        modifiedRecord.get("Location")?.each {
+            if (it.name == "stateProvince") {
+                stateProvince = it.processed ?: it.raw
+                // converts to camel case, e.g. "new south wales" to "NewSouthWales"
+                stateKey = WordUtils.capitalizeFully(stateProvince).replaceAll("\\s+","")
+            }
+        }
+        modifiedRecord.get("Occurrence")?.each {
+            if (it.name == "stateConservation" && stateProvince && statesListsPaths.containsKey(stateKey)) {
+                String statusValue = it.processed ?: it.raw
+                List statusValues = statusValue.tokenize(",").unique( false ) // remove duplicate values
+                statusValue = (statusValues.size() == 2) ? statusValues[1] : statusValues.join(", ") // only show 'sourceStatus' if 2 values are present
+
+                String specieslistUrl = "${grailsApplication.config.speciesList.baseURL}${statesListsPaths[stateKey]}"
+                it.processed = "<a href=\"${specieslistUrl}\" target=\"_lists\">${stateProvince}: ${statusValue}</a>"
+            }
+        }
+
+        modifiedRecord
     }
 }

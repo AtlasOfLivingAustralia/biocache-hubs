@@ -17,13 +17,15 @@ package au.org.ala.biocache.hubs
 
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringUtils
-import org.codehaus.groovy.grails.web.util.WebUtils
+import org.grails.web.util.WebUtils
 import org.springframework.web.servlet.support.RequestContextUtils
 import grails.util.Environment
 
 class OccurrenceTagLib {
     // injected beans
-    def webServicesService, authService, outageService, messageSourceCacheService
+    def authService
+    def webServicesService
+    def messageSourceCacheService
     def userService
 
     //static defaultEncodeAs = 'html'
@@ -133,12 +135,19 @@ class OccurrenceTagLib {
         def filterLabel = item.value.displayName.replaceFirst(/^\-/, "") // remove leading "-" for exclude searches
         def preFix = (item.value.displayName.startsWith('-')) ? "<span class='excludeFq'>[exclude]</span> " : ""
         def fqLabel = preFix + filterLabel
+        String facetKey = item.key.replaceFirst("\\(","") // remove brace
+        String i18nLabel = alatag.message(code: "facet.${facetKey}", default: "") // i18n lookup
+
+        if (i18nLabel) {
+            // replace with i18n values, if found
+            fqLabel = fqLabel.replaceAll(facetKey, i18nLabel)
+        }
 
         def mb = new MarkupBuilder(out)
         mb.a(   href:"#",
                 class: "${attrs.cssClass} tooltips activeFilter",
                     title: alatag.message(code:"title.filter.remove", default:"Click to remove this filter"),
-                    "data-facet": item.key
+                    "data-facet": facetKey
                     //"data-facet":"${item.key}:${item.value.value.encodeAsURL()}",
                     //onClick:"removeFacet(this); return false;"
             ) {
@@ -196,63 +205,66 @@ class OccurrenceTagLib {
 
         mb.ul(class:'facets nano-content') {
             facetResult.fieldResult.each { fieldResult ->
-                // Catch specific facets fields
-                if (fieldResult.fq) {
-                    // biocache-service has provided a fq field in the fieldResults list
-                    li {
-                        a(      href:"?${queryParam}&fq=${fieldResult.fq?.encodeAsURL()}",
-                                class: "tooltips",
-                                title: linkTitle
-                        ) {
-                            span(class:"fa fa-square-o"){
-                                mkp.yieldUnescaped("&nbsp;")
-                            }
-                            span(class:"facet-item") {
-                                mkp.yield( alatag.message(code: fieldResult.label?:'unknown'))
-                                addCounts(fieldResult.count)
+
+                if(fieldResult.count > 0) {
+                    // Catch specific facets fields
+                    if (fieldResult.fq) {
+                        // biocache-service has provided a fq field in the fieldResults list
+                        li {
+                            a(href: "?${queryParam}&fq=${fieldResult.fq?.encodeAsURL()}",
+                                    class: "tooltips",
+                                    title: linkTitle
+                            ) {
+                                span(class: "fa fa-square-o") {
+                                    mkp.yieldUnescaped("&nbsp;")
+                                }
+                                span(class: "facet-item") {
+                                    mkp.yield(alatag.message(code: fieldResult.label ?: 'unknown'))
+                                    addCounts(fieldResult.count)
+                                }
+
                             }
 
                         }
+                    } else if (facetResult.fieldName.startsWith("occurrence_") && facetResult.fieldResult && facetResult.fieldResult.size() > 1) {
+                        // decade date range a special case
+                        def decade = processDecadeLabel(facetResult.fieldName, facetResult.fieldResult?.get(1)?.label, fieldResult.label)
 
-                    }
-                } else if (facetResult.fieldName.startsWith("occurrence_") && facetResult.fieldResult && facetResult.fieldResult.size() > 1 ) {
-                    // decade date range a special case
-                    def decade = processDecadeLabel(facetResult.fieldName, facetResult.fieldResult?.get(1)?.label, fieldResult.label)
+                        li {
+                            a(href: "?${queryParam}&fq=${decade.fq}",
+                                    class: "tooltips",
+                                    title: linkTitle
+                            ) {
+                                span(class: "fa fa-square-o") {
+                                    mkp.yieldUnescaped("&nbsp;")
+                                }
+                                span(class: "facet-item") {
+                                    mkp.yieldUnescaped("${decade.label}")
+                                    addCounts(fieldResult.count)
+                                }
+                            }
 
-                    li {
-                        a(      href:"?${queryParam}&fq=${decade.fq}",
-                                class: "tooltips",
-                                title: linkTitle
-                        ) {
-                            span(class:"fa fa-square-o"){
-                                mkp.yieldUnescaped("&nbsp;")
-                            }
-                            span(class:"facet-item") {
-                                mkp.yieldUnescaped("${decade.label}")
-                                addCounts(fieldResult.count)
-                            }
                         }
-
-                    }
-                } else {
-                    def label = alatag.message(code: facetResult.fieldName + "." + fieldResult.label, default: '') ?: alatag.message(code: fieldResult.label)
-                    def href = "?${queryParam}&fq=${facetResult.fieldName}:"
-                    if(isRangeFilter(fieldResult.label)){
-                        href = href + "${fieldResult.label?.encodeAsURL()}"
                     } else {
-                        href = href + "%22${fieldResult.label?.encodeAsURL()}%22"
-                    }
-                    li {
-                        a(      href:href,
-                                class: "tooltips",
-                                title: linkTitle
-                        ) {
-                            span(class:"fa fa-square-o"){
-                                mkp.yieldUnescaped("&nbsp;")
-                            }
-                            span(class:"facet-item") {
-                                mkp.yield(label)
-                                addCounts(fieldResult.count)
+                        def label = alatag.message(code: facetResult.fieldName + "." + fieldResult.label, default: '') ?: alatag.message(code: fieldResult.label)
+                        def href = "?${queryParam}&fq=${facetResult.fieldName}:"
+                        if (isRangeFilter(fieldResult.label)) {
+                            href = href + "${fieldResult.label?.encodeAsURL()}"
+                        } else {
+                            href = href + "%22${fieldResult.label?.encodeAsURL()}%22"
+                        }
+                        li {
+                            a(href: href,
+                                    class: "tooltips",
+                                    title: linkTitle
+                            ) {
+                                span(class: "fa fa-square-o") {
+                                    mkp.yieldUnescaped("&nbsp;")
+                                }
+                                span(class: "facet-item") {
+                                    mkp.yield(label)
+                                    addCounts(fieldResult.count)
+                                }
                             }
                         }
                     }
@@ -281,7 +293,7 @@ class OccurrenceTagLib {
             output.startYear = "Before "
             output.endDate = firstLabel
             output.endYear = output.endDate?.substring(0, 4)
-        } else {
+        } else if(fqLabel && fqLabel.length() >= 4) {
             output.startDate = fqLabel
             output.startYear = fqLabel.substring(0, 4)
             output.endDate = fqLabel.replace('0-01-01T00:00:00Z','9-12-31T11:59:59Z')
@@ -380,7 +392,7 @@ class OccurrenceTagLib {
                 "data-toggle":"popover",
                 "data-code": attrs.code?:""
         ) {
-            i(class:"icon-question-sign", "")
+            i(class:"glyphicon glyphicon-question-sign", "")
         }
         //def html = "&nbsp;<a href='#' class='dataQualityHelpLink' data-toggle='popover' data-code='${code}'><i class='icon-question-sign'></i></a>"
         //out << html
@@ -404,7 +416,7 @@ class OccurrenceTagLib {
                                 b(group.key)
                             }
                         }
-                        td(alatag.camelCaseToHuman(text: field.name))
+                        td(alatag.databaseFieldName(text: field.name))
                         td(field.raw)
                         td(field.processed)
                     }
@@ -424,6 +436,19 @@ class OccurrenceTagLib {
         String text = attrs.text
         text = text.replaceAll(/([a-z])([A-Z])/, '$1 $2').toLowerCase().capitalize()
         out << text.replaceAll("_", " ")
+    }
+
+    /**
+     * Database field names align with download field names so they be in i18n with or without .p appended.
+     *
+     * Download field name values in i18n may end with a distinction between raw and processed that occurs after '-'
+     *
+     * @attr text REQUIRED the input text
+     */
+    def databaseFieldName = { attrs ->
+        String text = attrs.text
+        text = alatag.message(code:text, default: alatag.message(code:text + '.p', default:alatag.camelCaseToHuman(text: text)))
+        out << text.replaceAll(/-.*/, '')
     }
 
     /**
@@ -589,7 +614,7 @@ class OccurrenceTagLib {
                 }
 
                 // display dynamic fields
-                if(grailsApplication.config.table.displayDynamicProperties.toBoolean()) {
+                if(grailsApplication.config.table.displayDynamicProperties?.toString()?.toBoolean()) {
                     span(class: 'dynamicValues') {
                         def count = 0
                         occurrence.miscStringProperties.each { key, value ->
@@ -634,7 +659,7 @@ class OccurrenceTagLib {
     /**
      * Alternative to g.message(code:'foo.bar')
      *
-     * @see org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+     * @see org.grails.plugins.web.taglib.ValidationTagLib
      *
      * @attr code REQUIRED
      * @attr default
@@ -697,7 +722,7 @@ class OccurrenceTagLib {
      * Get the appropriate sourceId for the current hub
      */
     def getSourceId = { attrs ->
-        def skin = grailsApplication.config.skin.layout?.toUpperCase()
+        def skin = grailsApplication.config.skin.layout?.toString()?.toUpperCase()
         def sources = webServicesService.getLoggerSources()
         sources.each {
             if (it.name == skin) {
@@ -710,10 +735,10 @@ class OccurrenceTagLib {
      * Display an outage banner
      */
     def outageBanner = { attrs ->
-        OutageBanner ob = outageService.getOutageBanner()
+        def message = "Outage banner no longer supported - please use ala-admin-plugin tag - <code>&lt;ala:systemMessage/&gt;</code> and remove <code>&lt;alatag:outageBanner/&gt;</code>"
 
-        if (ob.showBanner()) {
-            out << "<div id='outageMessage'>" + ob.message + "</div>"
+        if (message) {
+            out << "<div id='outageMessage'>" + message + "</div>"
         }
     }
 
@@ -732,7 +757,7 @@ class OccurrenceTagLib {
      */
     def getBiocacheAjaxUrl = { attrs ->
         String url = grailsApplication.config.biocache.baseUrl
-        Boolean useProxy = grailsApplication.config.biocache.ajax.useProxy.toBoolean() // will convert String 'true' to boolean true
+        Boolean useProxy = grailsApplication.config.biocache.ajax.useProxy?.toString()?.toBoolean() // will convert String 'true' to boolean true
         log.debug "useProxy = ${useProxy}"
 
         if (useProxy) {
@@ -782,7 +807,7 @@ class OccurrenceTagLib {
 
         mb.meta(name:'grails.env', content: "${Environment.current}")
         metaList.each {
-            mb.meta(name:it, content: g.meta(name:it))
+            mb.meta(name:it, content: g.meta(name: it)?: '' )
         }
         mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
     }
@@ -804,7 +829,7 @@ class OccurrenceTagLib {
         int index = email.indexOf('@')
         if (index > 0) {
             email = email.replaceAll("@", strEncodedAtSign)
-            out << "<span class='link under' onclick=\"return sendEmail('${email}')\">${body()}</span>"
+            out << "<a href='#' class='link under' onclick=\"return sendEmail('${email}')\">${body()}</a>"
         }
     }
 }

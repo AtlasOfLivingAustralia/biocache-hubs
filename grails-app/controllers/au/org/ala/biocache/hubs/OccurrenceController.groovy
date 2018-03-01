@@ -14,18 +14,26 @@
  */
 
 package au.org.ala.biocache.hubs
+
+import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONElement
-import org.codehaus.groovy.grails.web.json.JSONObject
+import groovy.util.logging.Slf4j
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONElement
+import org.grails.web.json.JSONObject
+import au.org.ala.web.CASRoles
 
 import java.text.SimpleDateFormat
+
 /**
  * Controller for occurrence searches and records
  */
+@Slf4j
 class OccurrenceController {
-
     def webServicesService, facetsCacheService, postProcessingService, authService
+
+    GeoIpService geoIpService
+
     def ENVIRO_LAYER = "el"
     def CONTEXT_LAYER = "cl"
 
@@ -62,15 +70,15 @@ class OccurrenceController {
 
         List taxaQueries = (ArrayList<String>) params.list("taxa") // will be list for even one instance
         log.debug "skin.useAlaBie = ${grailsApplication.config.skin.useAlaBie}"
+        log.debug "taxaQueries = ${taxaQueries} || q = ${requestParams.q}"
 
-        if (grailsApplication.config.skin.useAlaBie?.toBoolean() &&
-                grailsApplication.config.bie.baseUrl &&
-                !params.q &&
-                taxaQueries &&
-                taxaQueries[0]) { // check for list with empty string
-            // taxa query - attempt GUID lookup via BIE
+        if (grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean() &&
+                grailsApplication.config.bie.baseUrl && taxaQueries && taxaQueries[0]) {
+            // check for list with empty string
+            // taxa query - attempt GUID lookup
             List guidsForTaxa = webServicesService.getGuidsForTaxa(taxaQueries)
-            requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, guidsForTaxa)
+            def additionalQ = (params.q) ? " AND " + params.q : "" // advanced search form can provide both taxa and q params
+            requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, guidsForTaxa) + additionalQ
         } else if (!params.q && taxaQueries && taxaQueries[0]) {
             // Bypass BIE lookup and pass taxa query in as text
             List emptyGuidList = taxaQueries.clone().collect { it = ""} // list of empty strings, of equal size to taxaQueries
@@ -89,11 +97,25 @@ class OccurrenceController {
             String[] userFacets = postProcessingService.getFacetsFromCookie(request)
             String[] filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
 
+            final facetsDefaultSelectedConfig = grailsApplication.config.facets.defaultSelected
+            if (!userFacets && facetsDefaultSelectedConfig) {
+                userFacets = facetsDefaultSelectedConfig.trim().split(",")
+                log.debug "facetsDefaultSelectedConfig = ${facetsDefaultSelectedConfig}"
+                log.debug "userFacets = ${userFacets}"
+                def facetKeys = defaultFacets.keySet()
+                facetKeys.each {
+                    defaultFacets.put(it, false)
+                }
+                userFacets.each {
+                    defaultFacets.put(it, true)
+                }
+            }
+
             List dynamicFacets = []
 
             String[] requestedFacets = userFacets ?: filteredFacets
 
-            if (grailsApplication.config.facets.includeDynamicFacets?.toBoolean()) {
+            if (grailsApplication.config.facets.includeDynamicFacets?.toString()?.toBoolean()) {
                 // Sandbox only...
                 dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
                 requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
@@ -111,6 +133,24 @@ class OccurrenceController {
             //grouped facets
             Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)
 
+            //remove qc from active facet map
+            if (params?.qc && searchResults?.activeFacetMap) {
+                def remove = null
+                searchResults?.activeFacetMap.each { k, v ->
+                    if (k + ':' + v?.value == params.qc) {
+                        remove = k
+                    }
+                }
+                if (remove) searchResults?.activeFacetMap?.remove(remove)
+            }
+
+            def hasImages = postProcessingService.resultsHaveImages(searchResults)
+            if(grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()){
+                hasImages = true
+            }
+
+            log.debug "defaultFacets = ${defaultFacets}"
+
             [
                     sr: searchResults,
                     searchRequestParams: requestParams,
@@ -119,7 +159,7 @@ class OccurrenceController {
                     groupedFacetsMap: groupedFacetsMap,
                     dynamicFacets: dynamicFacets,
                     selectedDataResource: getSelectedResource(requestParams.q),
-                    hasImages: postProcessingService.resultsHaveImages(searchResults),
+                    hasImages: hasImages,
                     showSpeciesImages: false,
                     sort: requestParams.sort,
                     dir: requestParams.dir,
@@ -192,12 +232,29 @@ class OccurrenceController {
                     }
                 }
 
+                String userEmail = authService?.getEmail()
+                Boolean isCollectionAdmin = false
+                Boolean userHasRoleAdmin = authService?.userInRole(CASRoles.ROLE_ADMIN)
+
+                if (userHasRoleAdmin) {
+                  isCollectionAdmin = true
+                } else {
+                    if (userEmail && contacts != null && contacts.size() > 0) {
+                        for (int i = 0; i < contacts.size(); i++) {
+                            if (contacts.get(i).editor == true && userEmail.equalsIgnoreCase(contacts.get(i).contact.email)) {
+                                isCollectionAdmin = true;
+                            }
+                        }
+                    }
+                }
+
                 List groupedAssertions = postProcessingService.getGroupedAssertions(
                         webServicesService.getUserAssertions(id),
                         webServicesService.getQueryAssertions(id),
                         userId)
 
                 Map layersMetaData = webServicesService.getLayersMetaData()
+                compareRecord = postProcessingService.augmentRecord(compareRecord) // adds some links to certain fields, etc
 
                 [
                         record: record,
@@ -207,7 +264,7 @@ class OccurrenceController {
                         collectionName: collectionInfo?.name,
                         collectionLogo: collectionInfo?.institutionLogoUrl,
                         collectionInstitution: collectionInfo?.institution,
-                        isCollectionAdmin: false, // TODO implement this
+                        isCollectionAdmin: isCollectionAdmin,
                         contacts: contacts,
                         queryAssertions: null, // TODO implement this
                         duplicateRecordDetails: webServicesService.getDuplicateRecordDetails(record),
@@ -259,18 +316,36 @@ class OccurrenceController {
 
     /**
      * Explore your area page
+     * Uses http://dev.maxmind.com/geoip/geoip2/geolite2/
      *
      * @return
      */
     def exploreYourArea() {
         def radius = params.radius?:5
-        Map radiusToZoomLevelMap = [ 1: 14, 5: 12, 10: 11, 50: 9 ] // zoom levels for the various radius sizes
+        Map radiusToZoomLevelMap = grailsApplication.config.exploreYourArea.zoomLevels // zoom levels for the various radius sizes
+
+        def lat = params.latitude
+        def lng = params.longitude
+
+        if (!(lat && lng)) {
+            // try to determine lat/lng from IP address via lookup with MaxMind GeoLite2 City
+            Location location = geoIpService.getLocation(request)
+
+            if (location) {
+                log.debug "location = ${location}"
+                lat = location.latitude
+                lng = location.longitude
+            } else {
+                lat = grailsApplication.config.exploreYourArea.lat
+                lng = grailsApplication.config.exploreYourArea.lng
+            }
+        }
 
         [
-                latitude:  params.latitude?:grailsApplication.config.exploreYourArea.lat,
-                longitude: params.longitude?:grailsApplication.config.exploreYourArea.lng,
+                latitude: lat,
+                longitude: lng,
                 radius: radius,
-                zoom: radiusToZoomLevelMap.get(radius),
+                zoom: radiusToZoomLevelMap.get(radius?.toString()),
                 location: grailsApplication.config.exploreYourArea.location,
                 speciesPageUrl: grailsApplication.config.bie.baseUrl + "/species/"
         ]
@@ -314,23 +389,23 @@ class OccurrenceController {
         //set the properties of the query
         fg.title = "This document was generated on "+ sdf.format(new Date())
         String serverName = grailsApplication.config.serverName ?: grailsApplication.config.security.cas.appServerName
-        String contextPath = grailsApplication.config.contextPath ?: grailsApplication.config.security.cas.contextPath ?: ""
+        String contextPath = request.contextPath
         fg.link = serverName + contextPath + "/occurrences/search?" + request.getQueryString()
         //log.info "FG json = " + fg.getJson()
 
         try {
-            JSONElement fgPostObj = webServicesService.postJsonElements("http://fieldguide.ala.org.au/generate", fg.getJson())
+            JSONElement fgPostObj = webServicesService.postJsonElements(grailsApplication.config.fieldguide.url + "/generate", fg.getJson())
             //log.info "fgFileId = ${fgFileId}"
 
             if (fgPostObj.fileId) {
-                response.sendRedirect("http://fieldguide.ala.org.au/guide/"+fgPostObj.fileId)
+                response.sendRedirect(grailsApplication.config.fieldguide.url + "/guide/"+fgPostObj.fileId)
             } else {
                 flash.message = "No field guide found for requested taxa."
                 render view:'../error'
             }
         } catch (Exception ex) {
             flash.message = "Error generating field guide PDF. ${ex}"
-            log.error ex, ex
+            log.error ex.message, ex
             render view:'../error'
         }
     }

@@ -1,7 +1,9 @@
 package au.org.ala.biocache.hubs
 
+import au.org.ala.web.UserDetails
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONArray
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONObject
 
 class AssertionsController {
     def webServicesService, authService
@@ -21,8 +23,9 @@ class AssertionsController {
     def assertions(String id) {
         JSONArray userAssertions = webServicesService.getUserAssertions(id)
         JSONArray qualityAssertions = webServicesService.getQueryAssertions(id)
-        Map combined = [userAssertions: userAssertions?:[], assertionQueries: qualityAssertions?:[]]
-
+        Boolean hasClubView = request.isUserInRole("${grailsApplication.config.clubRoleForHub}")
+        String userAssertionStatus = webServicesService.getRecord(id, hasClubView)?.raw.userAssertionStatus
+        Map combined = [userAssertions: userAssertions?:[], assertionQueries: qualityAssertions?:[], userAssertionStatus: userAssertionStatus?:"" ]
         render combined as JSON
     }
 
@@ -35,24 +38,26 @@ class AssertionsController {
         String recordUuid = params.recordUuid
         String code = params.code
         String comment = params.comment?:''
-        Map userDetails = authService?.userDetails() // will return null if not available/not logged in
+        String userAssertionStatus = params.userAssertionStatus?: ""
+        String assertionUuid = params.assertionUuid?: ""
+        UserDetails userDetails = authService?.userDetails() // will return null if not available/not logged in
 
         if (recordUuid && code && userDetails) {
-            log.info("Adding assertion to UUID: ${recordUuid}, code: ${code}, comment: ${comment}, userId: ${userDetails.userId}, userEmail: ${userDetails.email}")
-            Map postResponse = webServicesService.addAssertion(recordUuid, code, comment, userDetails.userId, userDetails.userDisplayName)
+            log.info("Adding assertion to UUID: ${recordUuid}, code: ${code}, comment: ${comment}, userAssertionStatus: ${userAssertionStatus}, userId: ${userDetails.userId}, userEmail: ${userDetails.email}")
+            Map postResponse = webServicesService.addAssertion(recordUuid, code, comment, userDetails.userId, userDetails.displayName, userAssertionStatus, assertionUuid)
 
             if (postResponse.statusCode == 201) {
-                log.info("****** Called REST service. Assertion should be added" )
+                log.info("Called REST service. Assertion should be added" )
                 render(status: postResponse.statusCode, text:'Assertion added')
             } else {
                 log.error "Unexpected error: ${postResponse.statusCode} (${postResponse.statusCode.class.name}) : ${postResponse.statusMsg}"
                 render(status: postResponse.statusCode, text: postResponse.statusMsg)
             }
         } else {
-            def errorMsg = (!userDetail) ?
+            def errorMsg = (!userDetails) ?
                     "User details not found" :
                     "Required parameters not provided: ${(!recordUuid) ? 'recordUuid' : ''} ${(!code) ? 'code' : ''}"
-            log.warn("****** Unable to add assertions. ${errorMsg}." )
+            log.warn("Unable to add assertions. ${errorMsg}." )
 
             render(status:400, text: errorMsg)
         }
@@ -72,7 +77,7 @@ class AssertionsController {
             Map postResponse = webServicesService.deleteAssertion(recordUuid, assertionUuid)
 
             if (postResponse.statusCode == 200) {
-                log.info("****** Called REST service. Assertion should be deleted" )
+                log.info("Called REST service. Assertion should be deleted" )
                 render(status: postResponse.statusCode, text:'Assertion deleted')
             } else {
                 log.error "Unexpected error: ${postResponse.statusCode} (${postResponse.statusCode.class.name}) : ${postResponse.statusMsg}"
@@ -80,7 +85,7 @@ class AssertionsController {
             }
         } else {
             def errorMsg = "Required parameters not provided: ${(!recordUuid) ? 'recordUuid' : ''} ${(!assertionUuid) ? 'assertionUuid' : ''}"
-            log.warn("****** Unable to add assertions. ${errorMsg}." )
+            log.warn("Unable to add assertions. ${errorMsg}." )
 
             render(status:400, text: errorMsg)
         }

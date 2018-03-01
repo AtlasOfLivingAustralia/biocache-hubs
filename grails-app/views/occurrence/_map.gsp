@@ -1,187 +1,29 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<style type="text/css">
-
-#leafletMap {
-    cursor: pointer;
-    font-size: 12px;
-    line-height: 18px;
-}
-
-#leafletMap, input {
-    margin: 0px;
-}
-
-.leaflet-control-layers-base  {
-    font-size: 12px;
-}
-
-.leaflet-control-layers-base label,  .leaflet-control-layers-base input, .leaflet-control-layers-base button, .leaflet-control-layers-base select, .leaflet-control-layers-base textarea {
-    margin:0px;
-    height:20px;
-    font-size: 12px;
-    line-height:18px;
-    width:auto;
-}
-
-.leaflet-control-layers {
-    opacity:0.8;
-    filter:alpha(opacity=80);
-}
-
-.leaflet-control-layers-overlays label {
-    font-size: 12px;
-    line-height: 18px;
-    margin-bottom: 0px;
-}
-
-.leaflet-drag-target {
-    line-height:18px;
-    font-size: 12px;
-}
-
-i.legendColour {
-    -webkit-background-clip: border-box;
-    -webkit-background-origin: padding-box;
-    -webkit-background-size: auto;
-    background-attachment: scroll;
-    background-clip: border-box;
-    background-image: none;
-    background-origin: padding-box;
-    background-size: auto;
-    display: inline-block;
-    height: 12px;
-    line-height: 12px;
-    width: 14px;
-    margin-bottom: -5px;
-    margin-left:2px;
-    margin-right:2px;
-    opacity:1;
-    filter:alpha(opacity=100);
-}
-
-i#defaultLegendColour {
-    margin-bottom: -2px;
-    margin-left: 2px;
-    margin-right: 5px;
-}
-
-.legendTable {
-    padding: 0px;
-    margin: 0px;
-}
-
-a.colour-by-legend-toggle {
-    color: #000000;
-    text-decoration: none;
-    cursor: auto;
-    display: block;
-    font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: normal;
-    line-height: 18px;
-    text-decoration: none solid rgb(0, 120, 168);
-    padding:6px 10px 6px 10px;
-}
-
-#mapLayerControls label {
-    margin-bottom: 0;
-}
-
-/*#mapLayerControls input[type="checkbox"] {*/
-    /*margin-top: 0;*/
-/*}*/
-
-.leaflet-bar-bg a,
-.leaflet-bar-bg a:hover {
-    width: 36px;
-    height: 36px;
-    line-height: 36px;
-}
-
-.leaflet-bar-bg .fa {
-    line-height: 36px;
-    opacity: 0.8;
-}
-#mapLayerControls {
-    /*position: absolute;*/
-    /*width: 80%;*/
-    /*z-index: 1010;*/
-    /*top: 0;*/
-    /*left: 0;*/
-    /*right: 0;*/
-    height: 30px;
-    /*margin: 10px auto;*/
-    /*background: rgba(0,0,0,0.4);*/
-    /* box-shadow: -2px 0 2px rgba(0,0,0,0.3); */
-    /*box-shadow: 0 1px 5px rgba(0,0,0,0.4);*/
-    /*-webkit-border-radius: 5px;*/
-    /*-moz-border-radius: 5px;*/
-    /*border-radius: 5px;*/
-    color: #000;
-    font-size: 13px;
-}
-#mapLayerControls .layerControls, #mapLayerControls #sizeslider {
-    display: inline-block;
-    float: none;
-}
-#mapLayerControls td {
-    padding: 2px 5px 0px 5px;
-}
-#mapLayerControls label {
-    padding-top: 4px;
-}
-#mapLayerControls .slider {
-    margin-bottom: 4px;
-}
-#mapLayerControls select {
-    color: #000;
-    background: #EEEEEE;
-    /*-moz-user-select: auto;*/
-}
-#mapLayerControls .layerControls {
-    margin-top: 0;
-}
-#outlineDots {
-    height: 20px;
-}
-#recordLayerControl {
-    padding: 0 5px;
-}
-
-</style>
-
+<asset:stylesheet src="map.css"/>
 <div style="margin-bottom: 10px">
     <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
         <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
         <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
-        <div id="spatialPortalBtn" class="btn btn-small" style="margin-bottom: 2px;">
-            <a id="spatialPortalLink" class="tooltips"
-               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="Continue analysis in ALA Spatial Portal">
-                <i class="fa fa-map-marker"></i>&nbsp&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
-        </div>
+        <a id="spatialPortalLink" class="btn btn-default btn-sm tooltips"
+           href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="Continue analysis in ALA Spatial Portal">
+            <i class="fa fa-map-marker"></i>&nbsp&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
     </g:if>
-    <div id="downloadMaps" class="btn btn-small" style="margin-bottom: 2px;">
-        <a href="#downloadMap" role="button" data-toggle="modal" class="tooltips" title="Download image file (single colour mode)">
-            <i class="fa fa-download"></i>&nbsp&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
-    </div>
+    <a href="#downloadMap" role="button" data-toggle="modal" class="btn btn-default btn-sm tooltips" title="Download image file (single colour mode)">
+        <i class="fa fa-download"></i>&nbsp&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
     <g:if test="${params.wkt}">
-        <div id="downloadWKT" class="btn btn-small" style="margin-bottom: 2px;">
-            <a href="#downloadWKT" role="button" class="tooltips" title="Download WKT file" onclick="downloadPolygon(); return false;">
-                <i class="icon icon-stop"></i>&nbsp&nbsp;<g:message code="map.downloadwkt.btn.label" default="Download WKT"/></a>
-        </div>
+        <a href="#downloadWKT" role="button" class="btn btn-default btn-sm tooltips" title="Download WKT file" onclick="downloadPolygon(); return false;">
+            <i class="glyphicon glyphicon-stop"></i>&nbsp&nbsp;<g:message code="map.downloadwkt.btn.label" default="Download WKT"/></a>
     </g:if>
-    <%-- <div id="spatialSearchFromMap" class="btn btn-small">
+    <%-- <div id="spatialSearchFromMap" class="btn btn-default btn-small">
         <a href="#" id="wktFromMapBounds" class="tooltips" title="Restrict search to current view">
-            <i class="hide icon-share-alt"></i> Restrict search</a>
+            <i class="hide glyphicon glyphicon-share-alt"></i> Restrict search</a>
     </div>
     TODO - Needs hook in UI to detect a wkt param and include button/link under search query and selected facets.
     TODO - Also needs to check if wkt is already specified and remove previous wkt param from query.
     --%>
 </div>
 
-<div class="hide" id="recordLayerControls">
+<div class="collapse" id="recordLayerControls">
     <table id="mapLayerControls">
         <tr>
             <td>
@@ -196,7 +38,7 @@ a.colour-by-legend-toggle {
                             <g:set var="Defaultselected">
                                 <g:if test="${defaultColourBy && facetResult.fieldName == defaultColourBy}">selected="selected"</g:if>
                             </g:set>
-                            %{--<g:if test="${facetResult.fieldName == 'occurrence_year'}">${facetResult.fieldName = 'decade'}</g:if>--}%
+                            <g:if test="${facetResult.fieldName == 'occurrence_year'}">${facetResult.fieldName = 'decade'}</g:if>
                             <g:if test="${facetResult.fieldName == 'uncertainty'}">${facetResult.fieldName = 'coordinate_uncertainty'}</g:if>
                             <g:if test="${facetResult.fieldResult.size() > 1}">
                                 <option value="${facetResult.fieldName}" ${Defaultselected}>
@@ -229,7 +71,7 @@ a.colour-by-legend-toggle {
     </table>
 </div>
 
-<div id="leafletMap" class="span12" style="height:600px;"></div>
+<div id="leafletMap" class="col-md-12" style="height:600px;"></div>
 
 <div id="template" style="display:none">
     <div class="colourbyTemplate">
@@ -251,10 +93,10 @@ a.colour-by-legend-toggle {
 </div>
 
 
-<r:script>
+<asset:script type="text/javascript">
 
     //var mbAttr = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, imagery &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
-	//var mbUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+	//var mbUrl = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png';
     var defaultBaseLayer = L.tileLayer("${grailsApplication.config.map.minimal.url}", {
             attribution: "${raw(grailsApplication.config.map.minimal.attr)}",
             subdomains: "${grailsApplication.config.map.minimal.subdomains}",
@@ -349,7 +191,8 @@ a.colour-by-legend-toggle {
             fullscreenControl: true,
             fullscreenControlOptions: {
                 position: 'topleft'
-            }
+            },
+            worldCopyJump: true
         });
 
         //add edit drawing toolbar
@@ -392,9 +235,9 @@ a.colour-by-legend-toggle {
         MAP_VAR.map.on('draw:created', function(e) {
             //setup onclick event for this object
             var layer = e.layer;
+            MAP_VAR.drawnItems.addLayer(layer);
             generatePopup(layer, layer._latlng);
             addClickEventForVector(layer);
-            MAP_VAR.drawnItems.addLayer(layer);
         });
 
         //add the default base layer
@@ -426,19 +269,6 @@ a.colour-by-legend-toggle {
             e.stopPropagation();
             return false;
         });
-
-        $('#colourByControl,#recordLayerControl').mouseover(function(e){
-            //console.log('mouseover');
-            MAP_VAR.map.dragging.disable();
-            MAP_VAR.map.off('click', pointLookupClickRegister);
-        });
-
-        $('#colourByControl,#recordLayerControl').mouseout(function(e){
-            //console.log('mouseout');
-            MAP_VAR.map.dragging.enable();
-            MAP_VAR.map.on('click', pointLookupClickRegister);
-        });
-
         $('.hideColourControl').click(function(e){
             //console.log('hideColourControl');
             $('#colourByControl').removeClass('leaflet-control-layers-expanded');
@@ -483,22 +313,38 @@ a.colour-by-legend-toggle {
 
         // display vector from previous wkt search
         var wktFromParams = "${params.wkt}";
+        // duplicate wkt and circle for leaflet's continous world display.
+        var obj = undefined;
+        var objLeft = undefined;
+        var objRight = undefined;
         if (wktFromParams) {
+            // draw WKT feature
             var wkt = new Wkt.Wkt();
             wkt.read(wktFromParams);
-            var wktObject = wkt.toObject({color: '#bada55'});
-            //addClickEventForVector(wktObject); // can't click on points if this is set
-            //wktObject.editing.enable();
-            wktObject.on('click', pointLookupClickRegister);
-            MAP_VAR.drawnItems.addLayer(wktObject);
-
+            obj = wkt.toObject({color: '#bada55' });
+            objLeft = wkt.toObject({color: '#bada55', translate: {x: -360} });
+            objRight = wkt.toObject({color: '#bada55', translate: {x: 360} });
         } else if (isSpatialRadiusSearch()) {
             // draw circle onto map
-            var circle = L.circle([$.url().param('lat'), $.url().param('lon')], ($.url().param('radius') * 1000), {color: '#bada55'});
-            //console.log("circle", circle);
-            //addClickEventForVector(circle);  // can't click on points if this is set
-            circle.on('click', pointLookupClickRegister);
-            MAP_VAR.drawnItems.addLayer(circle);
+            obj = L.circle([$.url().param('lat'), $.url().param('lon')], ($.url().param('radius') * 1000), {color: '#bada55'});
+            // following lines were causing error in leaflet, so removed them. NdR Jan 2018.
+            // objLeft  = L.circle([$.url().param('lat'), $.url().param('lon')] - 360, ($.url().param('radius') * 1000), {color: '#bada55'});
+            // objRight = L.circle([$.url().param('lat'), $.url().param('lon')] + 360, ($.url().param('radius') * 1000), {color: '#bada55'});
+        }
+        if (obj) {
+            MAP_VAR.map.addHandler('paramArea', L.PointClickHandler.extend({obj: obj}));
+            MAP_VAR.map.paramArea.enable();
+            MAP_VAR.drawnItems.addLayer(obj);
+        }
+        if (objLeft) {
+            MAP_VAR.map.addHandler('paramAreaLeft', L.PointClickHandler.extend({obj: objLeft}));
+            MAP_VAR.map.paramAreaLeft.enable();
+            MAP_VAR.drawnItems.addLayer(objLeft);
+        }
+        if (objRight) {
+            MAP_VAR.map.addHandler('paramAreaRight', L.PointClickHandler.extend({obj: objRight}));
+            MAP_VAR.map.paramAreaRight.enable();
+            MAP_VAR.drawnItems.addLayer(objRight);
         }
 
         MAP_VAR.map.on('draw:edited', function(e) {
@@ -512,7 +358,39 @@ a.colour-by-legend-toggle {
 
         MAP_VAR.recordList = new Array(); // store list of records for popup
 
-        MAP_VAR.map.on('click', pointLookupClickRegister);
+        //MAP_VAR.map.on('click', pointLookupClickRegister);
+        if (obj === undefined) {
+            MAP_VAR.map.addHandler('paramArea', L.PointClickHandler.extend({obj: MAP_VAR.map}));
+            MAP_VAR.map.paramArea.enable();
+        }
+
+        // Add a help tooltip to map when first loaded
+        MAP_VAR.map.whenReady(function() {
+            var opts = {
+                placement:'right',
+                callback: destroyHelpTooltip // hide help tooltip when mouse over the tools
+            }
+            $('.leaflet-draw-toolbar a').tooltip(opts);
+            //$('.leaflet-draw-toolbar').first().attr('title',jQuery.i18n.prop('advancedsearch.js.choosetool')).tooltip({placement:'right'}).tooltip('show');
+        });
+
+        // Hide help tooltip on first click event
+        var once = true;
+        MAP_VAR.map.on('click', function(e) {
+            if (once) {
+                $('.leaflet-draw-toolbar').tooltip('destroy');
+                once = false;
+            }
+        });
+    }
+
+    // helper to remove tooltips from map
+    var once = true;
+    function destroyHelpTooltip() {
+        if ($('.leaflet-draw-toolbar').length && once) {
+            $('.leaflet-draw-toolbar').tooltip('destroy');
+            once = false;
+        }
     }
 
     var clickCount = 0;
@@ -817,10 +695,11 @@ a.colour-by-legend-toggle {
             url: MAP_VAR.mappingUrl + "/occurrences/info" + mapQuery + MAP_VAR.removeFqs,
             jsonp: "callback",
             dataType: "jsonp",
+            timeout: 30000,
             data: {
                 zoom: MAP_VAR.map.getZoom(),
-                lat: e.latlng.lat,
-                lon: e.latlng.lng,
+                lat: e.latlng.wrap().lat,
+                lon: e.latlng.wrap().lng,
                 radius: radius,
                 format: "json"
             },
@@ -830,15 +709,16 @@ a.colour-by-legend-toggle {
                 if (response.occurrences && response.occurrences.length > 0) {
 
                     MAP_VAR.recordList = response.occurrences; // store the list of record uuids
-                    MAP_VAR.popupLatlng = e.latlng; // store the coordinates of the mouse click for the popup
+                    MAP_VAR.popupLatlng = e.latlng.wrap(); // store the coordinates of the mouse click for the popup
 
                     // Load the first record details into popup
                     insertRecordInfo(0);
                 }
             },
-            error: function() {
+            error: function(x, t, m) {
                 MAP_VAR.map.spin(false);
-            }
+            },
+
         });
     }
 
@@ -883,49 +763,7 @@ a.colour-by-legend-toggle {
                 MAP_VAR.map.spin(false);
 
                 if (record.raw) {
-                    var displayHtml = "";
-
-                    // catalogNumber
-                    if(record.raw.occurrence.catalogNumber != null){
-                        displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.raw.occurrence.catalogNumber + '<br />';
-                    } else if(record.processed.occurrence.catalogNumber != null){
-                        displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.processed.occurrence.catalogNumber + '<br />';
-                    }
-
-                    if(record.raw.classification.vernacularName!=null ){
-                        displayHtml += record.raw.classification.vernacularName + '<br />';
-                    } else if(record.processed.classification.vernacularName!=null){
-                        displayHtml += record.processed.classification.vernacularName + '<br />';
-                    }
-
-                    if (record.processed.classification.scientificName) {
-                        displayHtml += formatSciName(record.processed.classification.scientificName, record.processed.classification.taxonRankID)  + '<br />';
-                    } else {
-                        displayHtml += record.raw.classification.scientificName  + '<br />';
-                    }
-
-                    if(record.processed.attribution.institutionName != null){
-                        displayHtml += "${g.message(code:'record.institutionName.label', default: 'Institution')}: " + record.processed.attribution.institutionName + '<br />';
-                    } else if(record.processed.attribution.dataResourceName != null){
-                        displayHtml += "${g.message(code:'record.dataResourceName.label', default: 'Data Resource')}: " + record.processed.attribution.dataResourceName + '<br />';
-                    }
-
-                    if(record.processed.attribution.collectionName != null){
-                        displayHtml += "${g.message(code:'record.collectionName.label', default: 'Collection')}: " + record.processed.attribution.collectionName  + '<br />';
-                    }
-
-                    if(record.raw.occurrence.recordedBy != null){
-                        displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.raw.occurrence.recordedBy + '<br />';
-                    } else if(record.processed.occurrence.recordedBy != null){
-                        displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.processed.occurrence.recordedBy + '<br />';
-                    }
-
-                    if(record.processed.event.eventDate != null){
-                        //displayHtml += "<br/>";
-                        var label = "${g.message(code:'record.eventDate.label', default: 'Event date')}: ";
-                        displayHtml += label + record.processed.event.eventDate;
-                    }
-
+                    var displayHtml = formatPopupHtml(record);
                     $popupClone.find('.recordSummary').html( displayHtml ); // insert into clone
                 } else {
                     // missing record - disable "view record" button and display message
@@ -941,6 +779,61 @@ a.colour-by-legend-toggle {
             }
         });
 
+    }
+
+    function formatPopupHtml(record) {
+        var displayHtml = "";
+
+        // catalogNumber
+        if(record.raw.occurrence.catalogNumber != null){
+            displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.raw.occurrence.catalogNumber + '<br />';
+        } else if(record.processed.occurrence.catalogNumber != null){
+            displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.processed.occurrence.catalogNumber + '<br />';
+        }
+
+        // record or field number
+        if(record.raw.occurrence.recordNumber != null){
+            displayHtml += "${g.message(code:'record.recordNumber.label', default: 'Collecting number')}: " + record.raw.occurrence.recordNumber + '<br />';
+        } else if(record.raw.occurrence.fieldNumber != null){
+            displayHtml += "${g.message(code:'record.fieldNumber.label', default: 'Collecting number')}: " + record.raw.occurrence.fieldNumber + '<br />';
+        }
+
+
+        if(record.raw.classification.vernacularName!=null ){
+            displayHtml += record.raw.classification.vernacularName + '<br />';
+        } else if(record.processed.classification.vernacularName!=null){
+            displayHtml += record.processed.classification.vernacularName + '<br />';
+        }
+
+        if (record.processed.classification.scientificName) {
+            displayHtml += formatSciName(record.processed.classification.scientificName, record.processed.classification.taxonRankID)  + '<br />';
+        } else {
+            displayHtml += record.raw.classification.scientificName  + '<br />';
+        }
+
+        if(record.processed.attribution.institutionName != null){
+            displayHtml += "${g.message(code:'record.institutionName.label', default: 'Institution')}: " + record.processed.attribution.institutionName + '<br />';
+        } else if(record.processed.attribution.dataResourceName != null){
+            displayHtml += "${g.message(code:'record.dataResourceName.label', default: 'Data Resource')}: " + record.processed.attribution.dataResourceName + '<br />';
+        }
+
+        if(record.processed.attribution.collectionName != null){
+            displayHtml += "${g.message(code:'record.collectionName.label', default: 'Collection')}: " + record.processed.attribution.collectionName  + '<br />';
+        }
+
+        if(record.raw.occurrence.recordedBy != null){
+            displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.raw.occurrence.recordedBy + '<br />';
+        } else if(record.processed.occurrence.recordedBy != null){
+            displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.processed.occurrence.recordedBy + '<br />';
+        }
+
+        if(record.processed.event.eventDate != null){
+            //displayHtml += "<br/>";
+            var label = "${g.message(code:'record.eventDate.label', default: 'Event date')}: ";
+            displayHtml += label + record.processed.event.eventDate;
+        }
+
+        return displayHtml;
     }
 
     function getRecordInfo(){
@@ -989,14 +882,22 @@ a.colour-by-legend-toggle {
                     var mapBounds = MAP_VAR.map.getBounds();
 
                     if (mapBounds && mapBounds.contains(sw) && mapBounds.contains(ne) && dataBounds) {
-                        // data bounds is smaller than all of Aust
-                        //console.log("smaller bounds",dataBounds,mapBounds)
+                        // data bounds is smaller than the default map bounds/view, so zoom into fit data
                         MAP_VAR.map.fitBounds(dataBounds);
 
                         if (MAP_VAR.map.getZoom() > 15) {
                             MAP_VAR.map.setZoom(15);
                         }
+                    } else if (!mapBounds.contains(dataBounds) && !mapBounds.intersects(dataBounds)) {
+                        // if data is not present in the default map bounds/view, then zoom to data
+                        MAP_VAR.map.fitBounds(dataBounds);
+                        if (MAP_VAR.map.getZoom() > 3) {
+                            MAP_VAR.map.setZoom(3);
+                        }
                     } else if (MAP_VAR.zoomOutsideScopedRegion) {
+                        // if data is present in default map view but also outside that area, then zoom to data bounds
+                        // as long as zoomOutsideScopedRegion is true, otherwise keep default zoom/bounds
+
                         // fitBounds is async so we set a one time only listener to detect change
                         MAP_VAR.map.once('zoomend', function() {
                             //console.log("zoomend", MAP_VAR.map.getZoom());
@@ -1034,7 +935,7 @@ a.colour-by-legend-toggle {
                 fillOpacity: 0.2
             }
 
-            L.Icon.Default.imagePath = "${request.contextPath}/static/js/leaflet-0.7.2/images";
+            L.Icon.Default.imagePath = "${request.contextPath}/static/js/leaflet/images";
             var popupText = "Centre of spatial search with radius of " + radius + " km";
             var circle = L.circle(latLng, radius * 1030, circleOpts);
             circle.addTo(MAP_VAR.map);
@@ -1071,219 +972,179 @@ a.colour-by-legend-toggle {
       var link = document.createElement("a");
       link.download = name;
       link.href = uri;
+      //console.log("downloadPolygon",link);
+      document.body.appendChild(link);
       link.click();
+      // Cleanup the DOM
+      document.body.removeChild(link);
+      delete link;
       return false;
     }
-
-</r:script>
+</asset:script>
 <div class="hide">
     <div class="popupRecordTemplate">
-        <div class="multiRecordHeader hide">
+        <div class="multiRecordHeader collapse">
             <g:message code="search.map.viewing" default="Viewing"/> <span class="currentRecord"></span> <g:message code="search.map.of" default="of"/>
             <span class="totalrecords"></span> <g:message code="search.map.occurrences" default="occurrence records"/>
-            &nbsp;&nbsp;<i class="icon-share-alt"></i> <a href="#" class="btn+btn-mini viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>
+            &nbsp;&nbsp;<i class="glyphicon glyphicon-share-alt"></i> <a href="#" class="btn+btn-xs viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>
         </div>
         <div class="recordSummary">
 
         </div>
-        <div class="hide multiRecordFooter">
-            <span class="previousRecord "><a href="#" class="btn btn-mini disabled" onClick="return false;"><g:message code="search.map.popup.prev" default="&lt; Prev"/></a></span>
-            <span class="nextRecord "><a href="#" class="btn btn-mini disabled" onClick="return false;"><g:message code="search.map.popup.next" default="Next &gt;"/></a></span>
+        <div class="collapse multiRecordFooter">
+            <span class="previousRecord "><a href="#" class="btn btn-default btn-xs disabled" onClick="return false;"><g:message code="search.map.popup.prev" default="&lt; Prev"/></a></span>
+            <span class="nextRecord "><a href="#" class="btn btn-default btn-xs disabled" onClick="return false;"><g:message code="search.map.popup.next" default="Next &gt;"/></a></span>
         </div>
         <div class="recordLink">
-            <a href="#" class="btn btn-mini"><g:message code="search.map.popup.viewRecord" default="View record"/></a>
+            <a href="#" class="btn btn-default btn-xs"><g:message code="search.map.popup.viewRecord" default="View record"/></a>
         </div>
     </div>
 </div>
 
-<div id="downloadMap" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="downloadsMapLabel" aria-hidden="true">
-
-    <form id="downloadMapForm">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="downloadsMapLabel"><g:message code="map.downloadmap.title" default="Download publication map"/></h3>
+<div id="downloadMap" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="downloadsMapLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="downloadMapForm" class="form-horizontal" role="form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="downloadsMapLabel"><g:message code="map.downloadmap.title" default="Download map as image file"/></h3>
+                </div>
+                <div class="modal-body">
+                    <input id="mapDownloadUrl" type="hidden" value="${alatag.getBiocacheAjaxUrl()}/webportal/wms/image"/>
+                    <div class="form-group">
+                        <label for="format" class="col-md-5 control-label"><g:message code="map.downloadmap.field01.label" default="Format"/></label>
+                        <div class="col-md-6">
+                            <select name="format" id="format" class="form-control">
+                                <option value="jpg"><g:message code="map.downloadmap.field01.option01" default="JPEG"/></option>
+                                <option value="png"><g:message code="map.downloadmap.field01.option02" default="PNG"/></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dpi" class="col-md-5 control-label"><g:message code="map.downloadmap.field02.label" default="Quality (DPI)"/></label>
+                        <div class="col-md-6">
+                            <select name="dpi" id="dpi" class="form-control">
+                                <option value="100">100</option>
+                                <option value="300" selected="true">300</option>
+                                <option value="600">600</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pradiusmm" class="col-md-5 control-label"><g:message code="map.downloadmap.field03.label" default="Point radius (mm)"/></label>
+                        <div class="col-md-6">
+                            <select name="pradiusmm" id="pradiusmm" class="form-control">
+                                <option>0.1</option>
+                                <option>0.2</option>
+                                <option>0.3</option>
+                                <option>0.4</option>
+                                <option>0.5</option>
+                                <option>0.6</option>
+                                <option selected="true">0.7</option>
+                                <option>0.8</option>
+                                <option>0.9</option>
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>6</option>
+                                <option>7</option>
+                                <option>8</option>
+                                <option>9</option>
+                                <option>10</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="popacity" class="col-md-5 control-label"><g:message code="map.downloadmap.field04.label" default="Opacity"/></label>
+                        <div class="col-md-6">
+                            <select name="popacity" id="popacity" class="form-control">
+                                <option>1</option>
+                                <option>0.9</option>
+                                <option>0.8</option>
+                                <option selected="true">0.7</option>
+                                <option>0.6</option>
+                                <option>0.5</option>
+                                <option>0.4</option>
+                                <option>0.3</option>
+                                <option>0.2</option>
+                                <option>0.1</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="colourPickerWrapper" class="col-md-5 control-label"><g:message code="map.downloadmap.field05.label" default="Color"/></label>
+                        <div class="col-md-6">
+                            <input type="color" name="pcolour" id="pcolour" class="form-control" value="#0D00FB">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="widthmm" class="col-md-5 control-label"><g:message code="map.downloadmap.field06.label" default="Width (mm)"/></label>
+                        <div class="col-md-6">
+                            <input type="text" name="widthmm" id="widthmm" class="form-control" value="150" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="scale_on" class="col-md-5 control-label"><g:message code="map.downloadmap.field07.label" default="Include scale"/></label>
+                        <div class="col-md-6">
+                            <div class="form-control" style="border: none; box-shadow: none;">
+                                <input type="radio" name="scale" value="on" id="scale_on" class="form-controlX" checked="checked"/> <g:message code="map.downloadmap.field07.option01" default="Yes"/> &nbsp;
+                                <input type="radio" name="scale" value="off" class="form-controlX" /> <g:message code="map.downloadmap.field07.option02" default="No"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="outline" class="col-md-5 control-label"><g:message code="map.downloadmap.field08.label" default="Outline points"/></label>
+                        <div class="col-md-6">
+                            <div class="form-control" style="border: none; box-shadow: none;">
+                                <input type="radio" name="outline" value="true" id="outline" class="form-controlX" checked="checked"/> <g:message code="map.downloadmap.field08.option01" default="Yes"/> &nbsp;
+                                <input type="radio" name="outline" value="false" class="form-controlX" /> <g:message code="map.downloadmap.field08.option02" default="No"/>
+                            </div>
+                            </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="baselayer" class="col-md-5 control-label"><g:message code="map.downloadmap.field09.label" default="Base layer"/></label>
+                        <div class="col-md-6">
+                            <select name="baselayer" id="baselayer" class="form-control">
+                                <option value="world"><g:message code="map.downloadmap.field09.option01" default="World outline"/></option>
+                                <option value="aus1" selected="true"><g:message code="map.downloadmap.field09.option02" default="States & Territories"/></option>
+                                <option value="aus2"><g:message code="map.downloadmap.field09.option03" default="Local government areas"/></option>
+                                <option value="ibra_merged"><g:message code="map.downloadmap.field09.option04" default="IBRA"/></option>
+                                <option value="ibra_sub_merged"><g:message code="map.downloadmap.field09.option05" default="IBRA sub regions"/></option>
+                                <option value="imcra4_pb"><g:message code="map.downloadmap.field09.option06" default="IMCRA"/></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="fileName" class="col-md-5 control-label"><g:message code="map.downloadmap.field10.label" default="File name (without extension)"/></label>
+                        <div class="col-md-6">
+                            <input type="text" name="fileName" id="fileName" class="form-control" value="MyMap"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message code="map.downloadmap.button02.label" default="Close"/></button>
+                    <button id="submitDownloadMap" class="btn btn-primary"><g:message code="map.downloadmap.button01.label" default="Download map"/></button>
+                </div>
+            </form>
         </div>
-        <div class="modal-body">
-            <input id="mapDownloadUrl" type="hidden" value="${alatag.getBiocacheAjaxUrl()}/webportal/wms/image"/>
-            <fieldset>
-                <p><label for="format"><g:message code="map.downloadmap.field01.label" default="Format"/></label>
-                    <select name="format" id="format">
-                        <option value="jpg"><g:message code="map.downloadmap.field01.option01" default="JPEG"/></option>
-                        <option value="png"><g:message code="map.downloadmap.field01.option02" default="PNG"/></option>
-                    </select>
-                </p>
-                <p>
-                    <label for="dpi"><g:message code="map.downloadmap.field02.label" default="Quality (DPI)"/></label>
-                    <select name="dpi" id="dpi">
-                        <option value="100">100</option>
-                        <option value="300" selected="true">300</option>
-                        <option value="600">600</option>
-                    </select>
-                </p>
-                <p>
-                    <label for="pradiusmm"><g:message code="map.downloadmap.field03.label" default="Point radius (mm)"/></label>
-                    <select name="pradiusmm" id="pradiusmm">
-                        <option>0.1</option>
-                        <option>0.2</option>
-                        <option>0.3</option>
-                        <option>0.4</option>
-                        <option>0.5</option>
-                        <option>0.6</option>
-                        <option selected="true">0.7</option>
-                        <option>0.8</option>
-                        <option>0.9</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                        <option>10</option>
-                    </select>
-                </p>
-                <p>
-                    <label for="popacity"><g:message code="map.downloadmap.field04.label" default="Opacity"/></label>
-                    <select name="popacity" id="popacity">
-                        <option>1</option>
-                        <option>0.9</option>
-                        <option>0.8</option>
-                        <option selected="true">0.7</option>
-                        <option>0.6</option>
-                        <option>0.5</option>
-                        <option>0.4</option>
-                        <option>0.3</option>
-                        <option>0.2</option>
-                        <option>0.1</option>
-                    </select>
-                </p>
-                <p id="colourPickerWrapper">
-                    <label for="pcolour"><g:message code="map.downloadmap.field05.label" default="Color"/></label>
-                    <select name="pcolour" id="pcolour">
-                        <option value="ffffff">#ffffff</option>
-                        <option value="ffccc9">#ffccc9</option>
-                        <option value="ffce93">#ffce93</option>
-                        <option value="fffc9e">#fffc9e</option>
-                        <option value="ffffc7">#ffffc7</option>
-                        <option value="9aff99">#9aff99</option>
-                        <option value="96fffb">#96fffb</option>
-                        <option value="cdffff">#cdffff</option>
-                        <option value="cbcefb">#cbcefb</option>
-                        <option value="cfcfcf">#cfcfcf</option>
-                        <option value="fd6864">#fd6864</option>
-                        <option value="fe996b">#fe996b</option>
-                        <option value="fffe65">#fffe65</option>
-                        <option value="fcff2f">#fcff2f</option>
-                        <option value="67fd9a">#67fd9a</option>
-                        <option value="38fff8">#38fff8</option>
-                        <option value="68fdff">#68fdff</option>
-                        <option value="9698ed">#9698ed</option>
-                        <option value="c0c0c0">#c0c0c0</option>
-                        <option value="fe0000">#fe0000</option>
-                        <option value="f8a102">#f8a102</option>
-                        <option value="ffcc67">#ffcc67</option>
-                        <option value="f8ff00">#f8ff00</option>
-                        <option value="34ff34">#34ff34</option>
-                        <option value="68cbd0">#68cbd0</option>
-                        <option value="34cdf9">#34cdf9</option>
-                        <option value="6665cd">#6665cd</option>
-                        <option value="9b9b9b">#9b9b9b</option>
-                        <option value="cb0000">#cb0000</option>
-                        <option value="f56b00">#f56b00</option>
-                        <option value="ffcb2f">#ffcb2f</option>
-                        <option value="ffc702">#ffc702</option>
-                        <option value="32cb00">#32cb00</option>
-                        <option value="00d2cb">#00d2cb</option>
-                        <option value="3166ff">#3166ff</option>
-                        <option value="6434fc">#6434fc</option>
-                        <option value="656565">#656565</option>
-                        <option value="9a0000">#9a0000</option>
-                        <option value="ce6301">#ce6301</option>
-                        <option value="cd9934">#cd9934</option>
-                        <option value="999903">#999903</option>
-                        <option value="009901">#009901</option>
-                        <option value="329a9d">#329a9d</option>
-                        <option value="3531ff" selected="selected">#3531ff</option>
-                        <option value="6200c9">#6200c9</option>
-                        <option value="343434">#343434</option>
-                        <option value="680100">#680100</option>
-                        <option value="963400">#963400</option>
-                        <option value="986536">#986536</option>
-                        <option value="646809">#646809</option>
-                        <option value="036400">#036400</option>
-                        <option value="34696d">#34696d</option>
-                        <option value="00009b">#00009b</option>
-                        <option value="303498">#303498</option>
-                        <option value="000000">#000000</option>
-                        <option value="330001">#330001</option>
-                        <option value="643403">#643403</option>
-                        <option value="663234">#663234</option>
-                        <option value="343300">#343300</option>
-                        <option value="013300">#013300</option>
-                        <option value="003532">#003532</option>
-                        <option value="010066">#010066</option>
-                        <option value="340096">#340096</option>
-                    </select>
-                </p>
-                <p>
-                    <label for="widthmm"><g:message code="map.downloadmap.field06.label" default="Width (mm)"/></label>
-                    <input type="text" name="widthmm" id="widthmm" value="150" />
-                </p>
-                <p>
-                    <label for="scale_on"><g:message code="map.downloadmap.field07.label" default="Include scale"/></label>
-                    <input type="radio" name="scale" value="on" id="scale_on" checked="checked"/> <g:message code="map.downloadmap.field07.option01" default="Yes"/> &nbsp;
-                    <input type="radio" name="scale" value="off" /> <g:message code="map.downloadmap.field07.option02" default="No"/>
-                </p>
-                <p>
-                    <label for="outline"><g:message code="map.downloadmap.field08.label" default="Outline points"/></label>
-                    <input type="radio" name="outline" value="true" id="outline" checked="checked"/> <g:message code="map.downloadmap.field08.option01" default="Yes"/> &nbsp;
-                    <input type="radio" name="outline" value="false" /> <g:message code="map.downloadmap.field08.option02" default="No"/>
-                </p>
-                <p>
-                    <label for="baselayer"><g:message code="map.downloadmap.field09.label" default="Base layer"/></label>
-                    <select name="baselayer" id="baselayer">
-                        <option value="world"><g:message code="map.downloadmap.field09.option01" default="World outline"/></option>
-                        <option value="aus1" selected="true"><g:message code="map.downloadmap.field09.option02" default="States & Territories"/></option>
-                        <option value="aus2"><g:message code="map.downloadmap.field09.option03" default="Local government areas"/></option>
-                        <option value="ibra_merged"><g:message code="map.downloadmap.field09.option04" default="IBRA"/></option>
-                        <option value="ibra_sub_merged"><g:message code="map.downloadmap.field09.option05" default="IBRA sub regions"/></option>
-                        <option value="imcra4_pb"><g:message code="map.downloadmap.field09.option06" default="IMCRA"/></option>
-                    </select>
-                </p>
-                <p>
-                    <label for="fileName"><g:message code="map.downloadmap.field10.label" default="File name (without extension)"/></label>
-                    <input type="text" name="fileName" id="fileName" value="MyMap"/>
-                </p>
-            </fieldset>
-
-        </div>
-        <div class="modal-footer">
-            <button id="submitDownloadMap" class="btn" style="float:left;"><g:message code="map.downloadmap.button01.label" default="Download map"/></button>
-            <button class="btn" data-dismiss="modal" aria-hidden="true"><g:message code="map.downloadmap.button02.label" default="Close"/></button>
-        </div>
-    </form>
+    </div>
 </div>
 
-<r:require module="colourPicker"/>
 <script type="text/javascript">
 
     $(document).ready(function(){
-        $('#pcolour').colourPicker({
-            ico:    '${r.resource(dir:'images',file:'jquery.colourPicker.gif', plugin:'biocache-hubs')}',
-            title:    false
-        });
 
         // restrict search to current map bounds/view
         $('#wktFromMapBounds').click(function(e) {
             e.preventDefault();
             var b = MAP_VAR.map.getBounds();
-            var wkt = "POLYGON ((" + b.getWest() + " " + b.getNorth() + ", " +
-                    b.getEast()  + " " + b.getNorth() + ", " +
+            var wkt = "POLYGON ((" + b.getWest() + " " + b.getSouth() + ", " +
                     b.getEast()  + " " + b.getSouth() + ", " +
-                    b.getWest()  + " " + b.getSouth() + ", " +
-                    b.getWest() + " " + b.getNorth() + "))";
+                    b.getEast()  + " " + b.getNorth() + ", " +
+                    b.getWest()  + " " + b.getNorth() + ", " +
+                    b.getWest() + " " + b.getSouth() + "))";
             //console.log('wkt', wkt);
             var url = "${g.createLink(uri:'/occurrences/search')}" + MAP_VAR.query + "&wkt=" + encodeURIComponent(wkt);
             //console.log('new url', url);
@@ -1311,7 +1172,7 @@ a.colour-by-legend-toggle {
                 '&dpi=' + $('#dpi').val() +
                 '&pradiusmm=' + $('#pradiusmm').val() +
                 '&popacity=' + $('#popacity').val() +
-                '&pcolour=' + $(':input[name=pcolour]').val().toUpperCase() +
+                '&pcolour=' + $(':input[name=pcolour]').val().replace('#','').toUpperCase() +
                 '&widthmm=' + $('#widthmm').val() +
                 '&scale=' + $(':input[name=scale]:checked').val() +
                 '&outline=' + $(':input[name=outline]:checked').val() +

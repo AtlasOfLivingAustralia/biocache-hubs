@@ -16,7 +16,7 @@
 package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
-import org.apache.commons.lang.StringUtils
+import grails.core.GrailsApplication
 import org.supercsv.cellprocessor.ift.CellProcessor
 import org.supercsv.io.CsvListReader
 import org.supercsv.io.ICsvListReader
@@ -28,7 +28,8 @@ import org.supercsv.prefs.CsvPreference
  * Quality Checks Google spreadsheet</a>
  */
 class DataQualityController {
-    def grailsApplication, webServicesService
+    GrailsApplication grailsApplication
+    def webServicesService
 
     def index() {
         redirect action: "allCodes"

@@ -4,40 +4,21 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <alatag:addApplicationMetaTags/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 
     <title><g:layoutTitle /></title>
-    <r:require modules="bootstrap2, hubCore" />
-    <style type="text/css">
-    body {
-        background-color: #ffffff !important;
-    }
-    #breadcrumb {
-        margin-top: 10px;
-    }
-    #main-content #searchInfoRow #customiseFacetsButton > .dropdown-menu {
-        background-color: #ffffff;
-    }
-    #footer {
-        margin: 20px;
-        padding-top: 10px;
-        border-top: 1px solid #CCC;
-        font-size: 12px;
-    }
-    #content .nav-tabs > li.active > a {
-        background-color: #ffffff;
-    }
-    .nav {
-        margin-top: 20px;
-    }
-    body > #main-content {
-        margin-top: 0px;
-    }
+    <g:render template="/layouts/global"/>
 
-    </style>
-    <r:script disposition='head'>
+    <asset:javascript src="jquery_migration.js"/>
+    <asset:javascript src="bootstrap/js/bootstrap.js"/>
+    <asset:javascript src="hubCore.js"/>
+
+    <asset:stylesheet src="bootstrap/css/bootstrap.css" />
+    <asset:stylesheet src="hubCore.css" />
+    <asset:stylesheet src="generic.css" />
+
+    <asset:script type="text/javascript">
         // initialise plugins
         jQuery(function(){
             // autocomplete on navbar search input
@@ -85,8 +66,7 @@
 
             $('.helphover').popover({animation: true, trigger:'hover'});
         });
-    </r:script>
-    <r:layoutResources/>
+    </asset:script>
     <g:layoutHead />
 </head>
 <body class="${pageProperty(name:'body.class')?:'nav-collections'}" id="${pageProperty(name:'body.id')}" onload="${pageProperty(name:'body.onload')}">
@@ -115,14 +95,17 @@
 </div><!--/.navbar -->
 
 <div class="container" id="main-content">
+    <plugin:isAvailable name="alaAdminPlugin">
+        <ala:systemMessage/>
+    </plugin:isAvailable>
     <g:layoutBody />
 </div><!--/.container-->
 
 <div id="footer">
     <div class="container-fluid">
         <div class="row-fluid">
-            <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons"><img src="http://i.creativecommons.org/l/by/3.0/88x31.png" width="88" height="31" alt=""></a>
-            <g:message code="generic.footer.link01" default="This site is licensed under a"/> <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="external"><g:message code="generic.footer.link02" default="Creative Commons Attribution 3.0 Australia License"/></a>.
+            <a href="https://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons"><img src="https://i.creativecommons.org/l/by/3.0/88x31.png" width="88" height="31" alt=""></a>
+            <g:message code="generic.footer.link01" default="This site is licensed under a"/> <a href="https://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="external"><g:message code="generic.footer.link02" default="Creative Commons Attribution 3.0 Australia License"/></a>.
             <g:message code="generic.footer.link03" default="Provider content may be covered by other"/> <a href="#terms-of-use" title="Terms of Use"><g:message code="generic.footer.link04" default="Terms of Use"/></a>.
         </div>
     </div>
@@ -130,6 +113,6 @@
 <br/>
 
 <!-- JS resources-->
-<r:layoutResources/>
+<asset:deferredScripts/>
 </body>
 </html>

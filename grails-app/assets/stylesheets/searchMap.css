@@ -1,0 +1,88 @@
+#leafletMap {
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 18px;
+}
+#leafletMap, input {
+    margin: 0px;
+}
+.tooltip-inner {
+    max-width: 350px;
+    white-space: nowrap;
+    /* If max-width does not work, try using width instead */
+    /*width: 150px;*/
+}
+.leaflet-control-layers-base  {
+    font-size: 12px;
+}
+.leaflet-control-layers-base label,  .leaflet-control-layers-base input, .leaflet-control-layers-base button, .leaflet-control-layers-base select, .leaflet-control-layers-base textarea {
+    margin:0px;
+    height:20px;
+    font-size: 12px;
+    line-height:18px;
+    width:auto;
+}
+
+.leaflet-control-layers {
+    opacity:0.8;
+    filter:alpha(opacity=80);
+}
+
+.leaflet-control-layers-overlays label {
+    font-size: 12px;
+    line-height: 18px;
+    margin-bottom: 0px;
+}
+#wktInput {
+    height: 280px;
+    width: 95%;
+}
+#addWkt {
+    display: inline-block;
+    margin-top: 5px;
+}
+
+#spatialSearch .panel-group-group {
+    border: none;
+
+}
+
+#spatialSearch .panel-group-heading .panel-group-toggle {
+    padding: 0;
+}
+
+.panel-group-heading .panel-group-toggle {
+    padding: 8px 10px;
+}
+
+.panel-group-inner {
+    /*padding: 10px 10px;*/
+    margin-top: 5px;
+    padding: 0;
+    border: none;
+}
+
+.panel-group-caret .panel-group-toggle:hover {
+    text-decoration: none;
+}
+.panel-group-caret .panel-group-toggle:hover span,
+.panel-group-caret .panel-group-toggle:hover strong {
+    text-decoration: underline;
+}
+.panel-group-caret .panel-group-toggle:before {
+    font-size: 18px;
+    vertical-align: -1px;
+}
+.panel-group-caret .panel-group-toggle:not(.collapsed):before {
+    content: "▾";
+    margin-right: 0px;
+}
+.panel-group-caret .panel-group-toggle.collapsed:before {
+    content: "▸";
+    margin-right: 0px;
+}
+
+.labelFirst {
+    font-weight: bold;
+    background-color: #999;
+}

@@ -10,10 +10,12 @@ import groovyx.net.http.Method
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.io.FileUtils
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONElement
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONElement
+import org.grails.web.json.JSONObject
 import org.springframework.web.client.RestClientException
+
+import javax.annotation.PostConstruct
 
 /**
  * Service to perform web service DAO operations
@@ -22,7 +24,14 @@ class WebServicesService {
 
     public static final String ENVIRONMENTAL = "Environmental"
     public static final String CONTEXTUAL = "Contextual"
-    def grailsApplication, facetsCacheService
+    def grailsApplication, facetsCacheServiceBean
+
+    Map cachedGroupedFacets = [:] // keep a copy in case method throws an exception and then blats the saved version
+
+    @PostConstruct
+    def init(){
+        facetsCacheServiceBean = grailsApplication.mainContext.getBean('facetsCacheService')
+    }
 
     def JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
@@ -58,7 +67,7 @@ class WebServicesService {
                 // do this once
                 facetName = item.fq?.tokenize(':')?.get(0)?.replaceFirst(/^\-/,'')
                 try {
-                    facetLabelsMap = facetsCacheService.getFacetNamesFor(facetName) // cached
+                    facetLabelsMap = facetsCacheServiceBean.getFacetNamesFor(facetName) // cached
                 } catch (IllegalArgumentException iae) {
                     log.info "${iae.message}"
                 }
@@ -112,9 +121,9 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    @Cacheable('longTermCache')
+    @Cacheable(value="longTermCache", key = "#root.method.name")
     def Map getGroupedFacets() {
-        log.info "Getting grouped facets"
+        log.info "Getting grouped facets with key: #root.methodName"
         def url = "${grailsApplication.config.biocache.baseUrl}/search/grouped/facets"
 
         if (grailsApplication.config.biocache.groupedFacetsUrl) {
@@ -132,8 +141,11 @@ class WebServicesService {
                 groupedMap.put(group.title, group.facets.collect { it.field })
             }
 
+            cachedGroupedFacets = deepCopy(groupedMap) // keep a deep copy
+
         } catch (Exception e) {
-            log.debug "$e"
+            log.warn "grouped facets failed to load: $e", e
+            groupedMap = cachedGroupedFacets // fallback to saved copy
         }
 
         groupedMap
@@ -159,11 +171,14 @@ class WebServicesService {
      * @param userDisplayName
      * @return Map postResponse
      */
-    def Map addAssertion(String recordUuid, String code, String comment, String userId, String userDisplayName) {
+    Map addAssertion(String recordUuid, String code, String comment, String userId, String userDisplayName,
+                         String userAssertionStatus, String assertionUuid) {
         Map postBody =  [
                 recordUuid: recordUuid,
                 code: code,
                 comment: comment,
+                userAssertionStatus: userAssertionStatus,
+                assertionUuid: assertionUuid,
                 userId: userId,
                 userDisplayName: userDisplayName,
                 apiKey: grailsApplication.config.biocache.apiKey
@@ -225,9 +240,9 @@ class WebServicesService {
                 subset.units = it.environmentalvalueunits
 
                 if (it.type == ENVIRONMENTAL) {
-                    layersMetaMap.put("el" + it.uid.trim(), subset)
+                    layersMetaMap.put("el" + it.id, subset)
                 } else if (it.type == CONTEXTUAL) {
-                    layersMetaMap.put("cl" + it.uid.trim(), subset)
+                    layersMetaMap.put("cl" + it.id, subset)
                 }
             }
         } catch (RestClientException rce) {
@@ -281,7 +296,8 @@ class WebServicesService {
     @Cacheable('longTermCache')
     def JSONArray getLoggerReasons() {
         def url = "${grailsApplication.config.logger.baseUrl}/logger/reasons"
-        getJsonElements(url)
+        def jsonObj = getJsonElements(url)
+        jsonObj.findAll { !it.deprecated } // skip deprecated reason codes
     }
 
     @Cacheable('longTermCache')
@@ -376,7 +392,7 @@ class WebServicesService {
         } catch (Exception e) {
             def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
             log.error error
-            throw new RestClientException(error)
+            throw new RestClientException(error, e)
         }
     }
 
@@ -399,7 +415,7 @@ class WebServicesService {
             def error = "Failed to get text from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
             log.error error
             //return null
-            throw new RestClientException(error) // exception will result in no caching as opposed to returning null
+            throw new RestClientException(error, e) // exception will result in no caching as opposed to returning null
         }
     }
 
@@ -473,5 +489,22 @@ class WebServicesService {
                         "detail: " + conn?.errorStream?.text
             throw new RestClientException(error) // exception will result in no caching as opposed to returning null
         }
+    }
+
+    /**
+     * Standard deep copy implementation
+     *
+     * Taken from http://stackoverflow.com/a/13155429/249327
+     *
+     * @param orig
+     * @return
+     */
+    private def deepCopy(orig) {
+        def bos = new ByteArrayOutputStream()
+        def oos = new ObjectOutputStream(bos)
+        oos.writeObject(orig); oos.flush()
+        def bin = new ByteArrayInputStream(bos.toByteArray())
+        def ois = new ObjectInputStream(bin)
+        return ois.readObject()
     }
 }

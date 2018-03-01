@@ -9,7 +9,7 @@ import grails.plugin.cache.Cacheable
  * issues with the <g.message> tag (too slow).
  */
 class MessageSourceCacheService {
-    ExtendedPluginAwareResourceBundleMessageSource messageSource // injected with a ExtendedPluginAwareResourceBundleMessageSource (see plugin descriptor file)
+    ExtendedPluginAwareResourceBundleMessageSource customMessageSource // injected with a ExtendedPluginAwareResourceBundleMessageSource (see plugin descriptor file)
 
     @Cacheable('longTermCache')
     def getMessagesMap(Locale locale) {
@@ -18,10 +18,21 @@ class MessageSourceCacheService {
             locale = new Locale("en","us")
         }
 
-        def messagesMap = messageSource.listMessageCodes(locale)
+        def messagesMap = customMessageSource.listMessageCodes(locale)
         log.debug "messagesMap size = ${messagesMap.size()}"
-        log.debug "test: search.facets.heading = ${messageSource.getMessage('search.facets.heading',null, locale)}"
+        log.debug "test: search.facets.heading = ${customMessageSource.getMessage('search.facets.heading',null, locale)}"
 
         messagesMap
+    }
+
+    /**
+     * Trigger the message source cache to be reset (different to the @Cacheable cache)
+     * which effectively grabs a new copy from biocache-service (base properties) and then adds to that from the
+     * i18n messages in the local grails app.
+     *
+     * @return
+     */
+    def void clearMessageCache() {
+        customMessageSource.clearCache()
     }
 }

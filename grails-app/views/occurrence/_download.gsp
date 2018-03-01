@@ -12,7 +12,7 @@
     <div class="modal-body">
         <p id="termsOfUseDownload">
             <g:message code="download.termsofusedownload.01" default="By downloading this content you are agreeing to use it in accordance with the Atlas of Living Australia"/>
-            <a href="http://www.ala.org.au/about/terms-of-use/#TOUusingcontent"><g:message code="download.termsofusedownload.02" default="Terms of Use"/></a>
+            <a href="https://www.ala.org.au/about/terms-of-use/#TOUusingcontent"><g:message code="download.termsofusedownload.02" default="Terms of Use"/></a>
             <g:message code="download.termsofusedownload.03" default="and any Data Provider Terms associated with the data download."/>
             <br/><br/>
             <g:message code="download.termsofusedownload.04" default="Please provide the following details before downloading (* required)"/>:
@@ -62,7 +62,7 @@
                 </div>
 
                 <div style="clear: both; text-align: center;">
-                    <br/><input type="submit" value="<g:message code="download.downloadform.button.submit" default="Start Download"/>" id="downloadStart" class="btn tooltips"/>
+                    <br/><input type="submit" value="<g:message code="download.downloadform.button.submit" default="Start Download"/>" id="downloadStart" class="row btn-default tooltips"/>
                 </div>
 
                 <div style="margin-top:10px;">
@@ -78,7 +78,7 @@
         }
         -->
         </style>
-        <script type="text/javascript">
+        <asset:script type="text/javascript">
 
             $(document).ready(function() {
                 // catch download submit button
@@ -161,9 +161,9 @@
                 return isValid;
             }
 
-        </script>
+        </asset:script>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><g:message code="download.button.close" default="Close"/></button>
+        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message code="download.button.close" default="Close"/></button>
     </div>
 </div>

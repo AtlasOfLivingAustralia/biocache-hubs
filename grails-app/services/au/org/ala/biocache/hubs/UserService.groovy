@@ -1,5 +1,7 @@
 package au.org.ala.biocache.hubs
 
+import au.org.ala.web.UserDetails
+
 class UserService {
     def authService
     /**
@@ -12,7 +14,7 @@ class UserService {
         if (!userid) return [displayName: '', email: '']
         else if ('system' == userid) return [displayName: userid, email: userid]
 
-        def details = null
+        UserDetails details = null
 
         try {
             details = authService.getUserForUserId(userid)
