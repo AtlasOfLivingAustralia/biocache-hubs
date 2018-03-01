@@ -407,6 +407,13 @@
                                         <div class="panel-body">
                                             <p><g:message code="search.map.importText"/></p>
 
+                                            <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
+                                                <p><g:message
+                                                        code="search.map.importText.spatialportal"
+                                                        args="${grailsApplication.config.spatial.baseUrl}"/>
+                                                </p>
+                                            </g:if>
+
                                             <p><g:message code="search.map.wktHelpText"
                                                           default="Optionally, paste a WKT string: "/></p>
                                             <textarea type="text" id="wktInput"></textarea>
