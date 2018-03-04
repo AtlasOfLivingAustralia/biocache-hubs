@@ -133,3 +133,30 @@ alwaysshow.imagetab = false
 
 facets.defaultSelected = "data_resource_uid,taxon_name,year,multimedia"
 
+mapdownloads {
+    baseLayers {
+        default_layer {
+            name = 'world'
+            i18nCode = 'baselayer.world'
+            displayName = 'Simple World Outline'
+        }
+    }
+    baseMaps {
+//        hybrid {
+//            i18nCode = 'basemap.hybrid'
+//            name = 'hybrid'
+//            displayName = 'Google Hybrid'
+//        }
+//        satellite {
+//            i18nCode = 'basemap.satellite'
+//            name = 'satellite'
+//            displayName = 'Google Satellite'
+//        }
+//        roadmap {
+//            i18nCode = 'basemap.hybrid'
+//            name = 'roadmap'
+//            displayName = 'Google Road Map'
+//        }
+    }
+}
+

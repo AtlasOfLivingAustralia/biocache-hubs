@@ -32,7 +32,6 @@
                     <select name="colourBySelect" id="colourBySelect" onchange="changeFacetColours();return true;">
                         <option value=""><g:message code="map.maplayercontrols.tr01td01.option01" default="Points - default colour"/></option>
                         <option value="grid" ${(defaultColourBy == 'grid')?'selected=\"selected\"':''}><g:message code="map.maplayercontrols.tr01td01.option02" default="Record density grid"/></option>
-                        <option value="gridVariable" ${(defaultColourBy == 'gridVariable')?'selected=\"selected\"':''}><g:message code="map.maplayercontrols.tr01td01.option03" default="Grid (variable precision)"/></option>
                         <option disabled role="separator">————————————</option>
                         <g:each var="facetResult" in="${facets}">
                             <g:set var="Defaultselected">
@@ -1104,15 +1103,15 @@
                             </div>
                     </div>
                     <div class="form-group">
-                        <label for="baselayer" class="col-md-5 control-label"><g:message code="map.downloadmap.field09.label" default="Base layer"/></label>
+                        <label for="baseMap" class="col-md-5 control-label"><g:message code="map.downloadmap.field09.label" default="Base layer"/></label>
                         <div class="col-md-6">
-                            <select name="baselayer" id="baselayer" class="form-control">
-                                <option value="world"><g:message code="map.downloadmap.field09.option01" default="World outline"/></option>
-                                <option value="aus1" selected="true"><g:message code="map.downloadmap.field09.option02" default="States & Territories"/></option>
-                                <option value="aus2"><g:message code="map.downloadmap.field09.option03" default="Local government areas"/></option>
-                                <option value="ibra_merged"><g:message code="map.downloadmap.field09.option04" default="IBRA"/></option>
-                                <option value="ibra_sub_merged"><g:message code="map.downloadmap.field09.option05" default="IBRA sub regions"/></option>
-                                <option value="imcra4_pb"><g:message code="map.downloadmap.field09.option06" default="IMCRA"/></option>
+                            <select name="baseMap" id="baseMap" class="form-control">
+                                <g:each in="${grailsApplication.config.mapdownloads.baseMaps}" var="baseMap">
+                                    <option value="basemap.${baseMap.value.name}"><g:message code="${baseMap.value.i18nCode}" default="${baseMap.value.displayName}"/></option>
+                                </g:each>
+                                <g:each in="${grailsApplication.config.mapdownloads.baseLayers}" var="baseLayer">
+                                    <option value="baselayer.${baseLayer.value.name}"><g:message code="${baseLayer.value.i18nCode}" default="${baseLayer.value.displayName}"/></option>
+                                </g:each>
                             </select>
                         </div>
                     </div>
@@ -1131,6 +1130,8 @@
         </div>
     </div>
 </div>
+
+
 
 <script type="text/javascript">
 
@@ -1164,9 +1165,17 @@
         var sw =  bounds.getSouthWest();
         var extents = sw.lng + ',' + sw.lat + ',' + ne.lng + ','+ ne.lat;
 
+        var baseMapValue = $('#baseMap').val();
+        var baseLayer = "";
+        var baseMap = "";
+        if (baseMapValue.startsWith("basemap")){
+            baseMap = baseMapValue.substring(8);
+        } else if (baseMapValue.startsWith("baselayer")){
+            baseLayer = baseMapValue.substring(10);
+        }
+
         var downloadUrl =  $('#mapDownloadUrl').val() +
                 '${raw(sr.urlParameters)}' +
-            //'&extents=' + '142,-45,151,-38' +  //need to retrieve the
                 '&extents=' + extents +  //need to retrieve the
                 '&format=' + $('#format').val() +
                 '&dpi=' + $('#dpi').val() +
@@ -1177,7 +1186,8 @@
                 '&scale=' + $(':input[name=scale]:checked').val() +
                 '&outline=' + $(':input[name=outline]:checked').val() +
                 '&outlineColour=0x000000' +
-                '&baselayer=' + $('#baselayer').val()+
+                '&baselayer=' + baseLayer +
+                '&baseMap=' + baseMap +
                 '&fileName=' + $('#fileName').val()+'.'+$('#format').val().toLowerCase();
 
         //console.log('downloadUrl', downloadUrl);
