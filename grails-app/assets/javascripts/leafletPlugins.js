@@ -8,6 +8,6 @@
 //= require leaflet-plugins/draw/leaflet.draw-src.js
 //= require leaflet-plugins/wicket/wicket.js
 //= require leaflet-plugins/wicket/wicket-leaflet.js
-//= require leaflet-plugins/loading/Control.loading.js
+//= require leaflet-plugins/loading/Control.Loading.js
 //= require LeafletToWKT.js
 //= require wicket-world-wrap-fix.js
