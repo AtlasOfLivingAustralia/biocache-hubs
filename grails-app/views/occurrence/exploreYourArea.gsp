@@ -40,6 +40,7 @@
     <g:render template="/layouts/global"/>
     <asset:javascript src="exploreYourArea.js" asset-defer="true"/>
     <asset:stylesheet src="exploreYourArea.css" />
+    <asset:stylesheet src="print-area.css" media="print" />
 
     <asset:script type="text/javascript">
         // Global variables for yourAreaMap.js

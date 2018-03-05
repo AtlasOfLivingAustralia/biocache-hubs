@@ -83,6 +83,7 @@
 <asset:stylesheet src="print.css" media="print" />
 <asset:stylesheet src="searchMap.css"/>
 <asset:stylesheet src="search.css"/>
+<asset:stylesheet src="print-search.css" media="print" />
 <asset:stylesheet src="ala/images-client.css"/>
 <asset:stylesheet src="leafletPlugins.css"/>
 <asset:stylesheet src="listThirdParty.css"/>

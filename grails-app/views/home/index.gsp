@@ -62,6 +62,7 @@
     <asset:stylesheet src="leafletPlugins.css"/>
     <asset:stylesheet src="searchMap.css"/>
     <asset:stylesheet src="search.css" />
+    <asset:stylesheet src="print-search.css" media="print" />
     <asset:stylesheet src="bootstrapCombobox.css"/>
 
     <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
