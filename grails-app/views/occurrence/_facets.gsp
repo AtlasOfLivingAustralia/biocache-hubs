@@ -44,14 +44,14 @@
                     <%--  Do a lookup on groupedFacetsMap for the current facet --%>
                     <g:set var="facetResult" value="${groupedFacetsMap.get(facetFromGroup)}"/>
                    <%--  Tests for when to display a facet --%>
-                    <g:if test="${facetResult && facetResult.fieldResult.length() >= 1 && facetResult.fieldResult[0].count != sr.totalRecords && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
+                    <g:if test="${facetResult && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
                         <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
                         <h4><span class="FieldName">${fieldDisplayName?:facetResult.fieldName}</span></h4>
                         <div class="subnavlist nano" style="clear:left">
                             <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}"/>
                         </div>
                         %{--<div class="fadeout"></div>--}%
-                        <g:if test="${facetResult.fieldResult.length() > 0}">
+                        <g:if test="${facetResult.fieldResult.length() > 1}">
                             <div class="showHide">
                                 <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-target="#multipleFacets" data-displayname="${fieldDisplayName}"
                                    title="See more options or refine with multiple values"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span> <g:message code="facets.facetfromgroup.link" default="choose more"/>...</a>
