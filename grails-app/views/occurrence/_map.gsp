@@ -78,7 +78,7 @@
         <form class="leaflet-control-layers-list">
             <div class="leaflet-control-layers-overlays">
                 <div style="overflow:auto; max-height:400px;">
-                    <a href="#" class="hideColourControl pull-right" style="padding-left:10px;"><i class="icon-remove icon-grey"></i></a>
+                    <button type="button" class="close hideColourControl" style="padding-left:7px;opacity:0.5;">&times;</button>
                     <table class="legendTable"></table>
                 </div>
             </div>
