@@ -647,22 +647,25 @@ function processSpeciesJsonData(data, appendResults) {
                 data[i].name+'"><i>'+data[i].name+'</i></a>';
             // add common name
             if (data[i].commonName) {
-                tr = tr + ' : '+data[i].commonName+'';
+                tr = tr + ' : ' + data[i].commonName+'';
             }
             // add links to species page and ocurrence search (inside hidden div)
-            var speciesInfo = '<div class="speciesInfo">';
-            if (data[i].guid) {
-                speciesInfo = speciesInfo + '<a title="'+infoTitle+'" href="'+EYA_CONF.speciesPageUrl + data[i].guid+
-                    '"><img src="'+ EYA_CONF.imagesUrlPrefix + '/page_white_go.png" alt="species page icon" style="margin-bottom:-3px;" class="no-rounding"/>'+
-                    ' species profile</a> | ';
+            if(EYA_CONF.speciesPageUrl) {
+
+                var speciesInfo = '<div class="speciesInfo">';
+                if (data[i].guid) {
+                    speciesInfo = speciesInfo + '<a class="speciesPageLink" title="' + infoTitle + '" href="' + EYA_CONF.speciesPageUrl + data[i].guid +
+                        '"><img src="' + EYA_CONF.imagesUrlPrefix + '/page_white_go.png" alt="species page icon" style="margin-bottom:-3px;" class="no-rounding"/>' +
+                        ' species profile</a> | ';
+                }
+                speciesInfo = speciesInfo + '<a href="' + EYA_CONF.contextPath + '/occurrences/search?q=taxon_name:%22' + data[i].name +
+                    '%22&lat=' + $('input#latitude').val() + '&lon=' + $('input#longitude').val() + '&radius=' + $('select#radius').val() + '" title="' +
+                    recsTitle + '"><img src="' + EYA_CONF.imagesUrlPrefix + '/database_go.png" ' +
+                    'alt="search list icon" style="margin-bottom:-3px;" class="no-rounding"/> list of records</a></div>';
+                tr = tr + speciesInfo;
             }
-            speciesInfo = speciesInfo + '<a href="'+ EYA_CONF.contextPath +'/occurrences/search?q=taxon_name:%22'+data[i].name+
-                '%22&lat='+$('input#latitude').val()+'&lon='+$('input#longitude').val()+'&radius='+$('select#radius').val()+'" title="'+
-                recsTitle+'"><img src="'+ EYA_CONF.imagesUrlPrefix + '/database_go.png" '+
-                'alt="search list icon" style="margin-bottom:-3px;" class="no-rounding"/> list of records</a></div>';
-            tr = tr + speciesInfo;
             // add number of records
-            tr = tr + '</td><td class="rightCounts">'+data[i].count+' </td></tr>';
+            tr = tr + '</td><td class="rightCounts">' + data[i].count + ' </td></tr>';
             // write list item to page
             $('#rightList tbody').append(tr);
             //if (console) console.log("tr = "+tr);
