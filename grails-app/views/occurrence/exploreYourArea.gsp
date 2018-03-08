@@ -28,7 +28,7 @@
     <meta name="section" content="yourArea"/>
     <meta name="breadcrumbParent" content="${grailsApplication.config.skin.exploreUrl},${message(code:"eya.parent.title")}"/>
     <meta name="breadcrumb" content="Explore your area"/>
-    <title><g:message code="eya.title01" default="Explore Your Area"/> | <g:message code="eya.title02" default="Atlas of Living Australia"/></title>
+    <title><g:message code="eya.title01" default="Explore Your Area"/> | ${grailsApplication.config.skin.orgNameLong} </title>
 
     <g:if test="${grailsApplication.config.google.apikey}">
         <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
