@@ -34,15 +34,13 @@ class ExtendedPluginAwareResourceBundleMessageSource extends ReloadableResourceB
     /** Cache to hold merged loaded properties per locale */
     private final ConcurrentMap<Locale, CacheEntry<Properties>> cachedMergedExtendedProperties = new ConcurrentHashMap<Locale, CacheEntry<Properties>>();
 
-
     private PluginAwareResourceBundleMessageSource messageSource
 
     @Autowired
     void setMessageSource(PluginAwareResourceBundleMessageSource messageSource) {
         this.messageSource = messageSource
+        this.setDefaultEncoding("UTF-8")
     }
-
-
 
     /**
      * Provide a complete listing of properties for a given locale, as a Map
@@ -54,7 +52,7 @@ class ExtendedPluginAwareResourceBundleMessageSource extends ReloadableResourceB
     Map<String, String> listMessageCodes(Locale locale) {
         return CacheEntry.getValue(cachedMergedExtendedProperties, locale, cacheMillis, new Callable<Properties>() {
             @Override
-            public Properties call() throws Exception {
+            Properties call() throws Exception {
                 Properties pluginProperties = messageSource.getMergedPluginProperties(locale).properties
                 Properties properties = getMergedProperties(locale).properties
                 return pluginProperties.plus(properties)

@@ -32,7 +32,7 @@ class MessageSourceCacheService {
      *
      * @return
      */
-    def void clearMessageCache() {
+    void clearMessageCache() {
         customMessageSource.clearCache()
     }
 }

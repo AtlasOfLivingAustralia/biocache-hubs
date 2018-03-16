@@ -26,6 +26,10 @@ class MessagesController {
      * @return
      */
     def i18n(String id) {
+
+        response.setHeader("Content-type", "text/plain; charset=UTF-8")
+        response.setCharacterEncoding("UTF-8")
+
         Locale locale = request.locale
 
         if (id && id.startsWith("messages_")) {
@@ -41,10 +45,10 @@ class MessagesController {
 
         //Alan modified it for outstream utf-8 on 16/08/2014 --- START
         //response.setHeader("Content-type", "text/plain")
-        response.setHeader("Content-type", "text/plain; charset=UTF-8")
+
         //Alan modified it --- END
 
-        def messages = props.collect{ "${it.key}=${it.value}" }
+        def messages = props.collect{ new String("${it.key}=${it.value}".getBytes("UTF-8"), "UTF-8") }
 
         render ( text: messages.sort().join("\n") )
     }

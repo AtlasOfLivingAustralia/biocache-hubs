@@ -223,7 +223,7 @@ class WebServicesService {
     }
 
     @Cacheable('longTermCache')
-    def Map getLayersMetaData() {
+    Map getLayersMetaData() {
         Map layersMetaMap = [:]
         def url = "${grailsApplication.config.layersservice.baseUrl}/layers"
 
@@ -381,14 +381,13 @@ class WebServicesService {
      * @param url
      * @return
      */
-    def JSONElement getJsonElements(String url) {
+    JSONElement getJsonElements(String url) {
         log.debug "(internal) getJson URL = " + url
         def conn = new URL(url).openConnection()
         try {
             conn.setConnectTimeout(10000)
             conn.setReadTimeout(50000)
-            def json = conn.content.text
-            return JSON.parse(json)
+            return JSON.parse(conn.getInputStream(), "UTF-8")
         } catch (Exception e) {
             def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
             log.error error
@@ -402,7 +401,7 @@ class WebServicesService {
      * @param url
      * @return
      */
-    def String getText(String url) {
+    String getText(String url) {
         log.debug "(internal text) getText URL = " + url
         def conn = new URL(url).openConnection()
 
