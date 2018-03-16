@@ -125,7 +125,7 @@ table.displayDynamicProperties = false
 
 geocode.region = "AU"
 
-geopip.database.path="/data/${grails.util.Metadata.current.'app.name'}/config/GeoLite2-City.mmdb"
+geopip.database.path="/data/${grails.util.Metadata.current.getApplicationName()}/config/GeoLite2-City.mmdb"
 
 fieldguide.url="https://fieldguide.ala.org.au"
 stateConservationListPath = [:] // to prevent NPE - set in ext config
