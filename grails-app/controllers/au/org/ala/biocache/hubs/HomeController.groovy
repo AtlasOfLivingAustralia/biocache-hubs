@@ -29,7 +29,16 @@ class HomeController {
         //flash.message = "Advanced search for: ${requestParams.toString()}"
         redirect(controller: "occurrences", action:"search", params: requestParams.toParamMap())
     }
-    
+
+    /**
+     * Loads some model attributes into the page for advanced search tab.
+     * Fields appearing should be specified in config var facets.cached and
+     * also need to be set as fields on AdvancedSearchParams.class
+     *
+     * @see au.org.ala.biocache.hubs.AdvancedSearchParams
+     *
+     * @return
+     */
     private Map addCommonModel() {
         def model = [:]
 

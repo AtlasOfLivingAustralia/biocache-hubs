@@ -24,7 +24,7 @@
         </div>
     </g:each>
 
-    <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.title03" default="Find records that specify the following scientific name (verbatim/unprocessed name)"/></h4>
+    <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.allfields.title" default="Find records that specify the following fields"/></h4>
     <div class="form-group">
         <label class="col-md-2 control-label" for="raw_taxon_name"><g:message code="advancedsearch.table03col01.title" default="Raw Scientific Name"/></label>
         <div class="col-md-6">
@@ -32,7 +32,6 @@
         </div>
     </div>
 
-    <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.title04" default="Find records from the following species group"/></h4>
     <div class="form-group">
         <label class="col-md-2 control-label" for="species_group"><g:message code="advancedsearch.table04col01.title" default="Species Group"/></label>
         <div class="col-md-6">
@@ -45,7 +44,6 @@
         </div>
     </div>
 
-    <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.title05" default="Find records from the following institution or collection"/></h4>
     <div class="form-group">
         <label class="col-md-2 control-label" for="institution_collection"><g:message code="advancedsearch.table05col01.title" default="Institution or Collection"/></label>
         <div class="col-md-6">
@@ -72,7 +70,6 @@
         </div>
     </div>
 
-    <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.title06" default="Find records from the following regions"/></h4>
     <div class="form-group">
         <label class="col-md-2 control-label" for="country"><g:message code="advancedsearch.table06col01.title" default="Country"/></label>
         <div class="col-md-6">
@@ -139,7 +136,6 @@
     </g:if>
 
     <g:if test="${request.getAttribute("type_status") && request.getAttribute("type_status").size() > 1}">
-        <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.title07" default="Find records from the following type status"/></h4>
         <div class="form-group">
             <label class="col-md-2 control-label" for="type_status"><g:message code="advancedsearch.table07col01.title" default="Type Status"/></label>
             <div class="col-md-6">
@@ -155,7 +151,6 @@
     </g:if>
 
     <g:if test="${request.getAttribute("basis_of_record") && request.getAttribute("basis_of_record").size() > 1}">
-        <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.title08" default="Find records from the following basis of record (record type)"/></h4>
         <div class="form-group">
             <label class="col-md-2 control-label" for="basis_of_record"><g:message code="advancedsearch.table08col01.title" default="Basis of record"/></label>
             <div class="col-md-6">
@@ -169,7 +164,14 @@
         </div>
     </g:if>
 
-    <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.title09" default="Find records with the following dataset fields"/></h4>
+    <g:if test="${request.getAttribute("collector_text") && request.getAttribute("collector_text").size() > 1}">
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="collector_text"><g:message code="advancedsearch.collector_text.title" default="Collector"/></label>
+            <div class="col-md-6">
+                <input type="text" name="collector_text" id="collector_text" class="dataset form-control" placeholder="" value=""/>
+            </div>
+        </div>
+    </g:if>
 
     <g:if test="${request.getAttribute("data_resource_uid") && request.getAttribute("data_resource_uid").size() > 1}">
         <div class="form-group">
@@ -200,7 +202,6 @@
         </div>
     </div>
 
-    <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.title10" default="Find records within the following date range"/></h4>
     <div class="form-group">
         <label class="col-md-2 control-label" for="startDate"><g:message code="advancedsearch.table10col01.title" default="Begin Date"/></label>
         <div class="col-md-2 ">
