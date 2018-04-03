@@ -200,6 +200,20 @@ form {
     margin: 3px 6px;
 }
 
+.nav-tabs li:not(.active)  a {
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+    margin-right: 4px;
+}
+
+.tab-content {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+}
+
+
 /*.nav-tabs li a {*/
     /*background-color: #f0f0e8;*/
     /*border: 1px solid #ddd;*/
@@ -210,13 +224,13 @@ form {
     font-size: 15px;
 }
 
-.tab-content {
+/*.tab-content {
     border-bottom: 1px solid #999;
     border-right: 1px solid #999;
     border-left: 1px solid #999;
     padding: 15px;
 }
-
+*/
 #listMapToggle {
     margin-top: 2px;
 }
