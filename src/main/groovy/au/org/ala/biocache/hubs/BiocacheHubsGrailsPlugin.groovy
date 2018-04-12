@@ -88,7 +88,8 @@ from the ALA biocache-service app (no local DB is required for this app).
             customMessageSource(ExtendedPluginAwareResourceBundleMessageSource) {
                 // The standard messageSource will already use "WEB-INF/grails-app/i18n/messages"
                 // ExtendedPluginAwareResourceBundleMessageSource uses messageSource as an additional backing message source
-                basename = "${application.config.biocache.baseUrl}/facets/i18n"
+                //basename = "${application.config.biocache.baseUrl}/facets/i18n"
+                basenames = ["${application.config.biocache.baseUrl}/facets/i18n","classpath:messages"] as String[]
                 cacheSeconds = (60 * 60 * 6) // 6 hours
                 useCodeAsDefaultMessage = false
             }
