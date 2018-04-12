@@ -175,8 +175,17 @@ form {
 /*#advancedSearchLink a {*/
     /*font-size: 10px;*/
 /*}*/
+
+#advancedSearchLink  {
+    padding: 0 5px 5px 0;
+}
+
 #advancedSearchLink > a {
-    font-size: 12px;
+    font-size: 14px;
+}
+
+#advancedSearchLink > a > i {
+    padding-right: 3px;
 }
 
 #advanceSearch .control-label {
@@ -856,6 +865,12 @@ img.optionsIcon {
     margin-top: 6px;
     margin-left: 0px;
     margin-right: 0px;
+}
+
+#facetWell .facetGroupName{
+    border-top: 1px solid #D3D3D3;
+    padding: 10px 10px 5px 10px;
+    margin-bottom: 4px;
 }
 
 .right-caret, .facetGroupName .right-caret {

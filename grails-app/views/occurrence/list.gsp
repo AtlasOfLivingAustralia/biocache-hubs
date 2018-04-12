@@ -109,9 +109,12 @@
 
         <div id="searchBoxZ" class="text-right col-sm-7 col-md-7">
             <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="form-horizontal">
-                <div id="advancedSearchLink"><a href="${g.createLink(uri: '/search')}#tab_advanceSearch"><g:message
-                        code="list.advancedsearchlink.navigator" default="Advanced search"></g:message></a></div>
-
+                <div id="advancedSearchLink">
+                    <a href="${g.createLink(uri: '/search')}#tab_advanceSearch" class="tooltips" title="<g:message code="list.advancedsearchlink.tooltip" default="Go to advanced search form"></g:message>">
+                        <i class="fa fa-cogs"></i>
+                        <g:message code="list.advancedsearchlink.navigator" default="Advanced search"></g:message>
+                    </a>
+                </div>
                 <div class="input-group pull-right col-sm-7 col-md-7">
                     <input type="text" id="taxaQuery" name="${searchQuery}" class="form-control"
                            value="${params.list(searchQuery).join(' OR ')}"/>
