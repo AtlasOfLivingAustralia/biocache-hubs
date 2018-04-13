@@ -20,6 +20,11 @@ import grails.plugins.Plugin
 import grails.util.Environment
 import org.grails.config.PropertySourcesConfig
 
+/**
+ *
+ * Biocache-hubs plugin descriptor file
+ *
+ */
 class BiocacheHubsGrailsPlugin extends Plugin {
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "3.2.11 > *"
@@ -85,11 +90,8 @@ from the ALA biocache-service app (no local DB is required for this app).
             //println "config.security = ${config.security}"
 
             // Custom message source
-            customMessageSource(ExtendedPluginAwareResourceBundleMessageSource) {
-                // The standard messageSource will already use "WEB-INF/grails-app/i18n/messages"
-                // ExtendedPluginAwareResourceBundleMessageSource uses messageSource as an additional backing message source
-                //basename = "${application.config.biocache.baseUrl}/facets/i18n"
-                basenames = ["${application.config.biocache.baseUrl}/facets/i18n","classpath:messages"] as String[]
+            messageSource(ExtendedPluginAwareResourceBundleMessageSource) {
+                basenames = ["${application.config.biocache.baseUrl}/facets/i18n","WEB-INF/grails-app/i18n/messages","classpath:messages"] as String[]
                 cacheSeconds = (60 * 60 * 6) // 6 hours
                 useCodeAsDefaultMessage = false
             }

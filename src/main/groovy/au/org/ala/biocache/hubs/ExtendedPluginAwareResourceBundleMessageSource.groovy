@@ -14,14 +14,7 @@
  */
 package au.org.ala.biocache.hubs
 
-import grails.util.CacheEntry
 import org.grails.spring.context.support.PluginAwareResourceBundleMessageSource
-import org.grails.spring.context.support.ReloadableResourceBundleMessageSource
-import org.springframework.beans.factory.annotation.Autowired
-
-import java.util.concurrent.Callable
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 
 /**
  * Extend PluginAwareResourceBundleMessageSource so we can access the (protected)
@@ -29,18 +22,8 @@ import java.util.concurrent.ConcurrentMap
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
-class ExtendedPluginAwareResourceBundleMessageSource extends ReloadableResourceBundleMessageSource {
-
-    /** Cache to hold merged loaded properties per locale */
-    private final ConcurrentMap<Locale, CacheEntry<Properties>> cachedMergedExtendedProperties = new ConcurrentHashMap<Locale, CacheEntry<Properties>>();
-
-    private PluginAwareResourceBundleMessageSource messageSource
-
-    @Autowired
-    void setMessageSource(PluginAwareResourceBundleMessageSource messageSource) {
-        this.messageSource = messageSource
-        this.setDefaultEncoding("UTF-8")
-    }
+class ExtendedPluginAwareResourceBundleMessageSource extends PluginAwareResourceBundleMessageSource {
+    private long pluginCacheMillis = Long.MIN_VALUE
 
     /**
      * Provide a complete listing of properties for a given locale, as a Map
@@ -50,18 +33,20 @@ class ExtendedPluginAwareResourceBundleMessageSource extends ReloadableResourceB
      * @return
      */
     Map<String, String> listMessageCodes(Locale locale) {
-        return CacheEntry.getValue(cachedMergedExtendedProperties, locale, cacheMillis, new Callable<Properties>() {
-            @Override
-            Properties call() throws Exception {
-                Properties pluginProperties = messageSource.getMergedPluginProperties(locale).properties
-                Properties properties = getMergedProperties(locale).properties
-                return pluginProperties.plus(properties)
-            }
-        });
+        Properties pluginProperties = getMergedPluginProperties(locale).properties
+        Properties properties = getMergedProperties(locale).properties
+        return pluginProperties.plus(properties)
     }
 
+    /**
+     * Overriding this method allows the i18n source via HTTP call to biocache-service
+     *
+     * @throws Exception
+     */
     @Override
-    protected String getMessageInternal(String code, Object[] args, Locale locale) {
-        return messageSource.getMessageInternal(code, args, locale) ?: super.getMessageInternal(code, args, locale)
+    void afterPropertiesSet() throws Exception {
+        if (pluginCacheMillis == Long.MIN_VALUE) {
+            pluginCacheMillis = cacheMillis;
+        }
     }
 }
