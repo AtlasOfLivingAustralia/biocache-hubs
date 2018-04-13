@@ -559,11 +559,11 @@ class OccurrenceTagLib {
 
         def occurrence = attrs.occurrence
         def mb = new MarkupBuilder(out)
-        def outputResultsLabel = { label, value, test ->
+        def outputResultsLabel = { cssClass, label, value, test ->
             if (test) {
-                mb.span(class:'resultValue') {
+                mb.span(class:'resultValue ' + cssClass) {
                     span(class:'resultsLabel') {
-                        mkp.yieldUnescaped(label)
+                        mkp.yieldUnescaped(label + ": ")
                     }
                     mkp.yieldUnescaped(value)
                 }
@@ -572,7 +572,7 @@ class OccurrenceTagLib {
 
         def outputDynamicResultsLabel = { label, value, test ->
             if (test) {
-                mb.span(class:'resultValue') {
+                mb.span(class:'resultValue ' + label) {
                     span(class:'resultsLabel') {
                         mkp.yieldUnescaped(formatDynamicLabel(label))
                     }
@@ -602,14 +602,14 @@ class OccurrenceTagLib {
 
                 span(class:'eventAndLocation') {
                     if (occurrence.eventDate) {
-                        outputResultsLabel("Date: ", g.formatDate(date: new Date(occurrence.eventDate), format:"yyyy-MM-dd"), true)
+                        outputResultsLabel('eventdate', alatag.message(code:"record.eventdate.label"), g.formatDate(date: new Date(occurrence.eventDate), format:"yyyy-MM-dd"), true)
                     } else if (occurrence.year) {
-                        outputResultsLabel("Year: ", occurrence.year, true)
+                        outputResultsLabel('year', alatag.message(code:"record.year.label"), occurrence.year, true)
                     }
                     if (occurrence.stateProvince) {
-                        outputResultsLabel("State: ", alatag.message(code:occurrence.stateProvince), true)
+                        outputResultsLabel('state', alatag.message(code:"record.state.label"), alatag.message(code:occurrence.stateProvince), true)
                     } else if (occurrence.country) {
-                        outputResultsLabel("Country: ", alatag.message(code:occurrence.country), true)
+                        outputResultsLabel('country', alatag.message(code:"record.country.label"), alatag.message(code:occurrence.country), true)
                     }
                 }
 
@@ -640,12 +640,13 @@ class OccurrenceTagLib {
                     }
                 }
             }
+
             p(class:'rowB') {
-                outputResultsLabel("Institution: ", alatag.message(code:occurrence.institutionName), occurrence.institutionName)
-                outputResultsLabel("Collection: ", alatag.message(code:occurrence.collectionName), occurrence.collectionName)
-                outputResultsLabel("Data&nbsp;Resource: ", alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
-                outputResultsLabel("Basis&nbsp;of&nbsp;record: ", alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
-                outputResultsLabel("Catalog&nbsp;number: ", "${occurrence.raw_collectionCode ? occurrence.raw_collectionCode + ':' : ''}${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber)
+                outputResultsLabel('institutionName', alatag.message(code:"record.institutionName.label"), alatag.message(code:occurrence.institutionName), occurrence.institutionName)
+                outputResultsLabel('collectionName', alatag.message(code:"record.collectionName.label"), alatag.message(code:occurrence.collectionName), occurrence.collectionName)
+                outputResultsLabel('dataResourceName', alatag.message(code:"record.dataResourceName.label"), alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
+                outputResultsLabel('basisofrecord', alatag.message(code:"record.basisofrecord.label"), alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
+                outputResultsLabel('catalognumber', alatag.message(code:"record.catalogNumber.label"), "${occurrence.raw_collectionCode ? occurrence.raw_collectionCode + ':' : ''}${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber)
                 a(
                         href: g.createLink(url:"${request.contextPath}/occurrences/${occurrence.uuid}"),
                         class:"occurrenceLink",
