@@ -227,9 +227,9 @@ class OccurrenceTagLib {
                                 }
                                 span(class: "facet-item") {
                                     if(fieldResult.i18nCode){
-                                        mkp.yield(alatag.message(code: fieldResult.i18nCode ?: 'unknown'))
+                                        mkp.yield(alatag.message(code: fieldResult.i18nCode ?: 'unknown', default: fieldResult.label))
                                     } else {
-                                        mkp.yield(alatag.message(code: fieldResult.label ?: 'unknown'))
+                                        mkp.yield(alatag.message(code: fieldResult.label ?: 'unknown', default: fieldResult.label))
                                     }
                                     addCounts(fieldResult.count)
                                 }
