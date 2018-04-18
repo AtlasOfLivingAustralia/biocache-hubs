@@ -16,7 +16,8 @@
 package au.org.ala.biocache.hubs
 
 class MessagesController {
-    ExtendedPluginAwareResourceBundleMessageSource customMessageSource
+    def messageSourceCacheService
+
     static defaultAction = "i18n"
 
     /**
@@ -40,13 +41,8 @@ class MessagesController {
             locale = new Locale(locBits[1], locBits[2]?:'')
         }
 
-        Map props = customMessageSource.listMessageCodes(locale?:request.locale)
+        Map props = messageSourceCacheService.getMessagesMap(locale?:request.locale)
         //log.debug "props = ${props}"
-
-        //Alan modified it for outstream utf-8 on 16/08/2014 --- START
-        //response.setHeader("Content-type", "text/plain")
-
-        //Alan modified it --- END
 
         def messages = props.collect{ new String("${it.key}=${it.value}".getBytes("UTF-8"), "UTF-8") }
 

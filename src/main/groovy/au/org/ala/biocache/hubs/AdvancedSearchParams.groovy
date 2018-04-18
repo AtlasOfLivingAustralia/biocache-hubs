@@ -70,6 +70,7 @@ class AdvancedSearchParams implements Validateable {
     String seed_quantity_end = ""
     String start_year = ""
     String end_year = ""
+    String collector_text = ""
 
     private final String QUOTE = "\""
     private final String BOOL_OP = "AND"
@@ -106,6 +107,7 @@ class AdvancedSearchParams implements Validateable {
         if (loan_identifier) queryItems.add("loan_identifier:" + loan_identifier)
         if (duplicate_inst) queryItems.add("duplicate_inst:" + duplicate_inst)
         if (state_conservation) queryItems.add("state_conservation:" + state_conservation)
+        if (collector_text) queryItems.add("collector_text:" + collector_text)
         //if (collectors_number) queryItems.add("collector:" + collectors_number); // TODO field in SOLR not active
 
         ArrayList<String> lsids = new ArrayList<String>()

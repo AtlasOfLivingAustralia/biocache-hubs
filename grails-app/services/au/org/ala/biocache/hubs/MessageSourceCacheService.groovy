@@ -9,7 +9,7 @@ import grails.plugin.cache.Cacheable
  * issues with the <g.message> tag (too slow).
  */
 class MessageSourceCacheService {
-    ExtendedPluginAwareResourceBundleMessageSource customMessageSource // injected with a ExtendedPluginAwareResourceBundleMessageSource (see plugin descriptor file)
+    def messageSource // injected with a ExtendedPluginAwareResourceBundleMessageSource (see plugin descriptor file)
 
     @Cacheable('longTermCache')
     def getMessagesMap(Locale locale) {
@@ -18,9 +18,9 @@ class MessageSourceCacheService {
             locale = new Locale("en","us")
         }
 
-        def messagesMap = customMessageSource.listMessageCodes(locale)
-        log.debug "messagesMap size = ${messagesMap.size()}"
-        log.debug "test: search.facets.heading = ${customMessageSource.getMessage('search.facets.heading',null, locale)}"
+        def messagesMap = messageSource.listMessageCodes(locale)
+        //log.debug "messagesMap size = ${messagesMap.size()}"
+        //log.debug "test: search.facets.heading = ${messageSource.getMessage('search.facets.heading',null, locale)}"
 
         messagesMap
     }
@@ -33,6 +33,6 @@ class MessageSourceCacheService {
      * @return
      */
     void clearMessageCache() {
-        customMessageSource.clearCache()
+        messageSource.clearCache()
     }
 }

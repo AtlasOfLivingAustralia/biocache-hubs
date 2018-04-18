@@ -109,9 +109,12 @@
 
         <div id="searchBoxZ" class="text-right col-sm-7 col-md-7">
             <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="form-horizontal">
-                <div id="advancedSearchLink"><a href="${g.createLink(uri: '/search')}#tab_advanceSearch"><g:message
-                        code="list.advancedsearchlink.navigator" default="Advanced search"></g:message></a></div>
-
+                <div id="advancedSearchLink">
+                    <a href="${g.createLink(uri: '/search')}#tab_advanceSearch" class="tooltips" title="<g:message code="list.advancedsearchlink.tooltip" default="Go to advanced search form"></g:message>">
+                        <i class="fa fa-cogs"></i>
+                        <g:message code="list.advancedsearchlink.navigator" default="Advanced search"></g:message>
+                    </a>
+                </div>
                 <div class="input-group pull-right col-sm-7 col-md-7">
                     <input type="text" id="taxaQuery" name="${searchQuery}" class="form-control"
                            value="${params.list(searchQuery).join(' OR ')}"/>
@@ -178,7 +181,6 @@
         <div class="clearfix row" id="searchInfoRow">
             <!-- facet column -->
             <div class="col-md-3 col-sm-3">
-
                 <!-- Trigger the modal with a button -->
                 <a class="btn tooltips btn-default btn-sm" data-toggle="modal" data-target="#facetConfigDialog" href="#"
                    title="Customise the contents of this column">
@@ -187,33 +189,18 @@
 
                 <!-- Modal -->
                 <div id="facetConfigDialog" class="modal fade" role="dialog" aria-labelledby="customiseFacetsLabel">
-                    <div class="modal-dialog">
-
+                    <div class="modal-dialog modal-lg">
                         <!-- Modal content-->
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 <h4 class="modal-title" id="customiseFacetsLabel">
                                     <g:message code="list.customisefacetsbutton.div01.title" default="Customise filter options"/>
+                                    <span id="customiseFacetsHint"><g:message code="list.customisefacetsbutton.title.hint" default="Scroll to see full list"/></span>
                                 </h4>
                             </div>
                             <div class="modal-body">
                                 <div id="facetCheckboxes">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <g:message code="list.facetcheckboxes.label01" default="Select"/>:
-                                            <div class="btn-group" role="group" aria-label="...">
-                                                <button id="selectAll" class="btn btn-default btn-sm"><g:message code="list.facetcheckboxes.navigator01" default="All"/></button>
-                                                <button id="selectNone" class="btn btn-default btn-sm"><g:message code="list.facetcheckboxes.navigator02" default="None"/></button>
-                                            </div>
-                                            <g:set var="resetTitle" value="Restore default settings"/>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <button id="resetFacetOptions" class="btn btn-default btn-sm margin-left-5 pull-right" title="${resetTitle}"><g:message
-                                                    code="list.facetcheckboxes.button.resetfacetoptions"
-                                                    default="Reset to defaults"/></button>
-                                        </div>
-                                    </div>
                                     <div class="row padding-left-1">
                                         <%-- iterate over the groupedFacets, checking the default facets for each entry --%>
                                         <g:set var="count" value="0"></g:set>
@@ -238,6 +225,10 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
+                                <span id="facetConfigErrors" class="collapse bg-danger pull-left"></span>
+                                <button id="resetFacetOptions" class="btn btn-default btn-sm margin-left-5" title="${resetTitle}"><g:message
+                                        code="list.facetcheckboxes.button.resetfacetoptions"
+                                        default="Reset to defaults"/></button>
                                 <button class="btn btn-default btn-sm" data-dismiss="modal"><g:message
                                         code="list.facetcheckboxes.button.closeFacetoptions" default="Close"/></button>
                                 <button id="updateFacetOptions" class="btn btn-primary btn-sm"><g:message

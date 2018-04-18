@@ -276,7 +276,7 @@
         <div class="sidebar">
             <g:set var="rawLastModifiedString" value="${record.raw.lastModifiedTime.substring(0,10)}"/>
             <g:set var="processedLastModifiedString" value="${record.processed.lastModifiedTime.substring(0,10)}"/>
-            <p style="margin-bottom:20px;">
+            <p style="margin-bottom:20px;margin-top:20px;">
                 <g:message code="show.sidebar05.p01" default="Date loaded"/>: ${rawLastModifiedString}<br/>
                 <g:message code="show.sidebar05.p02" default="Date last processed"/>: ${processedLastModifiedString}<br/>
             </p>

@@ -82,7 +82,7 @@
     </g:if>
 </alatag:occurrenceTableRow>
 <!-- Catalog Number -->
-<alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="catalogueNumber" fieldName="Catalogue number">
+<alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="catalogNumber" fieldName="Catalogue Number">
     ${fieldsMap.put("catalogNumber", true)}
     <g:if test="${record.processed.occurrence.catalogNumber && record.raw.occurrence.catalogNumber}">
         ${record.processed.occurrence.catalogNumber}
@@ -118,7 +118,7 @@
     ${record.raw.attribution.citation}
 </alatag:occurrenceTableRow>
 <!-- not shown
-        <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="recordUuid" fieldName="Record UUID">
+<alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="recordUuid" fieldName="Record UUID">
     ${fieldsMap.put("recordUuid", true)}
     <g:if test="${record.processed.uuid}">
         ${record.processed.uuid}
@@ -154,7 +154,7 @@
     ${record.raw.occurrence.preparations}
 </alatag:occurrenceTableRow>
 <!-- Identifier Name -->
-<alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identifierName" fieldNameIsMsgCode="true" fieldName="Identified by">
+<alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identifiedBy" fieldName="Identified by">
     ${fieldsMap.put("identifiedBy", true)}
     ${record.raw.identification.identifiedBy}
 </alatag:occurrenceTableRow>
@@ -227,7 +227,6 @@
             </g:if>
         </g:else>
 </alatag:occurrenceTableRow>
-
 <!-- Type Status -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="typeStatus" fieldName="Type status">
     ${fieldsMap.put("typeStatus", true)}

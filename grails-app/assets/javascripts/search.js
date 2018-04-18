@@ -18,6 +18,18 @@
 
 // Jquery Document.onLoad equivalent
 $(document).ready(function() {
+
+    /**
+     * Load Spring i18n messages into JS
+     */
+    jQuery.i18n.properties({
+        name: 'messages',
+        path: BC_CONF.contextPath + '/messages/i18n/',
+        mode: 'map',
+        language: BC_CONF.locale // default is to use browser specified locale
+        //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
+    });
+
     //alert("doc is loaded");
     // listeners for sort & paging widgets
     $("select#sort").change(function() {
@@ -176,6 +188,21 @@ $(document).ready(function() {
     });
 
     // user selectable facets...
+    $("input.facetOpts").change(function() {
+        var selectedFacets = 0;
+        $('#facetConfigErrors').html('').hide();
+
+        //var val = $("option:selected", this).val();
+        // count selected facets to check if facets.max has been exceeded
+        $('input.facetOpts:checkbox:checked').each(function(){
+            selectedFacets++;
+        });
+
+        if (BC_CONF.maxFacets && BC_CONF.maxFacets > 0 && selectedFacets > BC_CONF.maxFacets) {
+            $('#facetConfigErrors').html(jQuery.i18n.prop('facets.max.exceeded', (selectedFacets - BC_CONF.maxFacets))).show();
+        }
+    });
+
     $("#updateFacetOptions").click(function(e) {
         e.preventDefault();
         // alert("about to reload with new facets...");
@@ -192,9 +219,9 @@ $(document).ready(function() {
             // reload page
             document.location.reload(true);
         } else if (selectedFacets.length > BC_CONF.maxFacets) {
-            alert("Maximum filters exceeded, please select " + BC_CONF.maxFacets + " or less filter categories to display. You currently have " + selectedFacets.length + " filters selected");
+            alert(jQuery.i18n.prop('facets.max.exceeded', (selectedFacets.length - BC_CONF.maxFacets)));
         } else {
-            alert("Please select at least 1 filter category to display");
+            alert(jQuery.i18n.prop('facets.max.select1'));
         }
     });
 
@@ -220,11 +247,11 @@ $(document).ready(function() {
     } //  note removed else that did page refresh by triggering cookie update code.
 
     // select all and none buttons
-    $("#selectNone").click(function(e) {
+    $(".selectNone").click(function(e) {
         e.preventDefault();
         $(":input.facetOpts").removeAttr("checked");
     });
-    $("#selectAll").click(function(e) {
+    $(".selectAll").click(function(e) {
         e.preventDefault();
         $(":input.facetOpts").attr("checked","checked");
     });
@@ -527,17 +554,6 @@ $(document).ready(function() {
         url += "&resourceName=" + encodeURIComponent(BC_CONF.resourceName);
         //console.log("url", query, methodName, url);
         window.location.href = url;
-    });
-
-    /**
-     * Load Spring i18n messages into JS
-     */
-    jQuery.i18n.properties({
-        name: 'messages',
-        path: BC_CONF.contextPath + '/messages/i18n/',
-        mode: 'map',
-        language: BC_CONF.locale // default is to use browser specified locale
-        //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
     });
 
     // Show/hide the facet groups
@@ -954,6 +970,7 @@ function loadImages(start) {
                 $.each(data.occurrences, function (i, el) {
                     //console.log("el", el.image);
                     count++;
+                    var sciNameRawOrMatched = (el.raw_scientificName === undefined? el.scientificName : el.raw_scientificName); //e.g. if data submitted using species ID's instead of scientific names
                     // clone template div & populate with metadata
                     var $ImgConTmpl = $('.imgConTmpl').clone();
                     $ImgConTmpl.removeClass('imgConTmpl').removeClass('hide');
@@ -964,17 +981,17 @@ function loadImages(start) {
                     link.attr('title', 'click to enlarge');
                     link.attr('data-occurrenceuid', el.uuid);
                     link.attr('data-image-id', el.image);
-                    link.attr('data-scientific-name', el.raw_scientificName);
+                    link.attr('data-scientific-name', sciNameRawOrMatched);
                     
                     $ImgConTmpl.find('img').attr('src', el.smallImageUrl);
                     // brief metadata
-                    var briefHtml = el.raw_scientificName;
+                    var briefHtml = sciNameRawOrMatched;
                     var br = "<br>";
                     if (el.typeStatus) briefHtml += br + el.typeStatus;
                     if (el.institutionName) briefHtml += ((el.typeStatus) ? ' | ' : br) + el.institutionName;
                     $ImgConTmpl.find('.brief').html(briefHtml);
                     // detail metadata
-                    var detailHtml = el.raw_scientificName;
+                    var detailHtml = sciNameRawOrMatched;
                     if (el.typeStatus) detailHtml += br + 'Type: ' + el.typeStatus;
                     if (el.collector) detailHtml += br + 'By: ' + el.collector;
                     if (el.eventDate) detailHtml += br + 'Date: ' + moment(el.eventDate).format('YYYY-MM-DD');

@@ -43,7 +43,7 @@ class OccurrenceTagLib {
      * @attr fieldName REQUIRED the field name
      */
     def formatDynamicFacetName = { attrs ->
-        out << formatFieldName(attrs.fieldName)
+        out << formatFieldName(attrs.fieldName, attrs.fieldName)
     }
 
     /**
@@ -52,7 +52,7 @@ class OccurrenceTagLib {
      * @param fieldName
      * @return
      */
-    def formatFieldName(fieldName){
+    def formatFieldName(fieldCode, fieldName){
         def output
         if (fieldName.endsWith('_s') || fieldName.endsWith('_i') || fieldName.endsWith('_d')) {
             def temp = fieldName[0..-2].replaceAll("_", " ")
@@ -60,9 +60,16 @@ class OccurrenceTagLib {
         } else if (fieldName.endsWith('_RNG')) {
             output = fieldName[0..-4].replaceAll("_", " ") + " (range)"
         } else {
-            output = "${alatag.message(code:"facet.${fieldName}", default: fieldName)}"
+
+            def label = message(code:fieldCode, default:"")
+            if(!label){
+                label = message(code:"facet." + fieldCode, default:fieldName)
+            }
+
+            label = label ?: camelCaseToHuman(text: fieldName)
+            output = label
         }
-        StringUtils.capitalise(output)
+        output
     }
 
     /**
@@ -219,7 +226,11 @@ class OccurrenceTagLib {
                                     mkp.yieldUnescaped("&nbsp;")
                                 }
                                 span(class: "facet-item") {
-                                    mkp.yield(alatag.message(code: fieldResult.label ?: 'unknown'))
+                                    if(fieldResult.i18nCode){
+                                        mkp.yield(alatag.message(code: fieldResult.i18nCode ?: 'unknown'))
+                                    } else {
+                                        mkp.yield(alatag.message(code: fieldResult.label ?: 'unknown'))
+                                    }
                                     addCounts(fieldResult.count)
                                 }
 
@@ -472,8 +483,8 @@ class OccurrenceTagLib {
         def userDetails
 
         if(fieldCode == 'transcriber'){
-            userDetails = userService.detailsForUserId(bodyText);
-            bodyText = userDetails.displayName;
+            userDetails = userService.detailsForUserId(bodyText)
+            bodyText = userDetails.displayName
         }
 
         if (StringUtils.isNotBlank(bodyText)) {
@@ -481,12 +492,8 @@ class OccurrenceTagLib {
             def mb = new MarkupBuilder(out)
 
             mb.tr(id:"${fieldCode}") {
-                td(class:"dwcLabel") {
-                    if (fieldNameIsMsgCode) {
-                        mkp.yield(alatag.message(code: "${fieldName}"))
-                    } else {
-                        mkp.yieldUnescaped(formatFieldName(fieldName))
-                    }
+                td(class:"dwcLabel " + fieldCode) {
+                    mkp.yieldUnescaped(formatFieldName(fieldCode, fieldName))
                 }
                 td(class:"value") {
                     if (link) {
@@ -518,7 +525,7 @@ class OccurrenceTagLib {
 
         compareRecord.get(group).each { cr ->
             def key = cr.name
-            def label = alatag.message(code:key, default:"")?:alatag.camelCaseToHuman(text: key)?:StringUtils.capitalize(key)
+            def label = message(code:key, default:"") ?: camelCaseToHuman(text: key) ?: StringUtils.capitalize(key)
 
             // only output fields not already included (by checking fieldsMap Map) && not in excluded list
             if (!fieldsMap.containsKey(key) && !StringUtils.containsIgnoreCase(exclude, key)) {
@@ -534,7 +541,7 @@ class OccurrenceTagLib {
                 } else {
                     tagBody = "${cr.processed} <br/><span class='originalValue'>Supplied as ${cr.raw}</span>"
                 }
-                output += alatag.occurrenceTableRow(annotate:"true", section:"dataset", fieldCode:"${key}", fieldName:"<span class='dwc'>${label}</span>") {
+                output += occurrenceTableRow(annotate:"true", section:"dataset", fieldCode:"${key}", fieldName:"${label}") {
                     tagBody
                 }
             }
@@ -650,8 +657,7 @@ class OccurrenceTagLib {
                 a(
                         href: g.createLink(url:"${request.contextPath}/occurrences/${occurrence.uuid}"),
                         class:"occurrenceLink",
-//                        style:"margin-left: 15px;",
-                        "View record"
+                        alatag.message(code:"record.view.record")
                 )
             }
         }
