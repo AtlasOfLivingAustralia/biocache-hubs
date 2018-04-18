@@ -120,7 +120,11 @@
                             <g:message code="list.downloads.navigator" default="Download"/></a>
                     </g:if>
                     <g:else>
-                        <a href="#download" role="button" data-toggle="modal" class="btn btn-sm btn-default tooltips" title="Download all records OR species checklist">
+                        <a href="#downloadModal"
+                           role="button"
+                           data-toggle="modal"
+                           class="btn btn-sm btn-default tooltips"
+                           title="Download all records OR species checklist">
                             <i class="glyphicon glyphicon-download-alt"></i> <g:message code="eya.searchform.a.downloads" default="Downloads"/></a>
                     </g:else>
                 </span>
@@ -183,6 +187,8 @@
         </div>
     </div><!-- .col-md-5 -->
 </div><!-- .row -->
+
+<g:render template="download"/>
 
 <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
     <g:render template="download"/>
