@@ -293,7 +293,8 @@
                             </g:if>
                         </div>
                     </g:if>
-                <%-- jQuery template used for taxon drop-downs --%>
+
+                    <%-- jQuery template used for taxon drop-downs --%>
                     <div class="btn-group hide" id="template">
                         <a class="btn btn-default btn-sm" href="" id="taxa_" title="view species page" target="BIE"><g:message
                                 code="list.resultsretuened.navigator01" default="placeholder"/></a>

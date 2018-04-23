@@ -784,6 +784,72 @@ function removeFacet(el) {
     window.location.href = window.location.pathname + '?' + paramList.join('&') + window.location.hash +"";
 }
 
+function removeFacetFilterFromParam(value) {
+    //var facet = $(el).data("facet").replace(/^\-/g,''); // remove leading "-" for exclude searches
+    var q = $.url().param('q'); //$.query.get('q')[0];
+    var fqList = $.url().param('fq'); //$.query.get('fq');
+    var lat = $.url().param('lat');
+    var lon = $.url().param('lon');
+    var rad = $.url().param('radius');
+    var taxa = $.url().param('taxa');
+    var wkt = $.url().param('wkt');
+    var paramList = [];
+    if (q != null) {
+        paramList.push("q=" + q);
+    }
+    //console.log("0. fqList", fqList);
+    // add filter query param
+    if (fqList && typeof fqList === "string") {
+        fqList = [ fqList ];
+    }
+
+    if (lat && lon && rad) {
+        paramList.push("lat=" + lat);
+        paramList.push("lon=" + lon);
+        paramList.push("radius=" + rad);
+    }
+
+    if (wkt) {
+        paramList.push("wkt=" + wkt);
+    }
+
+    if (taxa) {
+        paramList.push("taxa=" + taxa);
+    }
+
+   // var fqToRemove = param.split(':')
+    var fqToRemoveField = value;
+    if (fqToRemoveField) {
+
+        var finalfqList = [];
+        for (var i in fqList) {
+
+            var pos = fqList[i].indexOf(fqToRemoveField)
+            if (pos != -1) {
+                fqList[i] = fqList[i].replace(value, "");
+
+                // check if there are other fqs in the string
+                if (fqList[i].indexOf(':') != -1) {
+                  //  fqList[i] = fqList[i].replace("%20", " ");
+                    var regex1 = /((s*OR) | (ORs*))/i;
+                    fqList[i] = fqList[i].replace(regex1, " ");
+                    finalfqList.push(fqList[i]);
+                    console.log(fqList[i])
+                }
+            } else {
+                finalfqList.push (fqList[i]);
+            }
+        }
+    }
+
+    if (fqList != null) {
+        paramList.push("fq=" + finalfqList.join("&fq="));
+    }
+
+    window.location.href = window.location.pathname + '?' + paramList.join('&') + window.location.hash +"";
+}
+
+
 function removeFilter(el) {
     var facet = $(el).data("facet").replace(/^\-/g,''); // remove leading "-" for exclude searches
     var q = $.url().param('q'); //$.query.get('q')[0];

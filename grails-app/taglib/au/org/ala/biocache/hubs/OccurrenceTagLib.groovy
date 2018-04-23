@@ -174,6 +174,47 @@ class OccurrenceTagLib {
         }
     }
 
+    def genomicFilter = {attrs ->
+        def facetResults = attrs.facetResult
+     //   def queryParam = attrs.queryParam
+        def mb = new MarkupBuilder(out)
+    //    def linkTitle = "Include ${facetResult.fieldName} records"
+
+        facetResults.each { facetResult ->
+            mb.div(class: 'col-xs-12') {
+                String value = (facetResult.label && facetResult.label != '')? facetResult.label : 'Unknown'
+                if (!facetResult.isExcluded) {
+                    input(type: 'checkbox', name: facetResult.label, value: facetResult.label)
+                } else {
+                    input(type: 'checkbox', name: facetResult.label, value: facetResult.label, checked: "")
+                }
+                span {
+                    mkp.yield(value)
+                }
+
+            }
+
+        }
+
+        mb
+
+    }
+
+ /*   def basisOfRecordFilterScript = { attrs ->
+        def facetResults = attrs.facetResult
+        def mb = new MarkupBuilder(out)
+        //    def linkTitle = "Include ${facetResult.fieldName} records"
+
+        facetResults.each { facetResult ->
+            mb.script(type:'text/javascript'){mkp.yield("")}
+
+        }
+
+        mb
+
+
+    }
+*/
     /**
      *  Generate facet links in the left hand column
      *
