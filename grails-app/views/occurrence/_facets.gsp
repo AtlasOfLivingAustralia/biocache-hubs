@@ -14,24 +14,30 @@
             <g:set var="paramList" value=""/>
             <g:set var="queryParam" value="${sr.urlParameters.stripIndent(1)}" />
         </g:if>
-        <g:if test="${sr.activeFacetMap}">
-            <div id="currentFilter">
-                <h4><span class="FieldName"><alatag:message code="search.filters.heading" default="Current filters"/></span></h4>
-                <div class="subnavlist">
-                    <ul id="refinedFacets">
-                        <g:each var="item" in="${sr.activeFacetMap}">
-                            <li><alatag:currentFilterItem item="${item}" addCheckBox="${true}"/></li>
-                        </g:each>
-                        <g:if test="${sr.activeFacetMap?.size() > 1}">
-                            <li><a href="#" class="activeFilter" data-facet="all" title="Click to clear all filters">
-                                <span class="closeX" style="margin-left:7px;">&gt;&nbsp;</span><g:message code="facets.currentfilter.link" default="Clear all"/></a>
-                            </li>
-                        </g:if>
-                    </ul>
+        <g:if test="${!grailsApplication.config.facets.genomic}">
+            <g:if test="${sr.activeFacetMap}">
+                <div id="currentFilter">
+                    <h4><span class="FieldName"><alatag:message code="search.filters.heading" default="Current filters"/></span></h4>
+                    <div class="subnavlist">
+                        <ul id="refinedFacets">
+                            <g:each var="item" in="${sr.activeFacetMap}">
+                                <li><alatag:currentFilterItem item="${item}" addCheckBox="${true}"/></li>
+                            </g:each>
+                            <g:if test="${sr.activeFacetMap?.size() > 1}">
+                                <li><a href="#" class="activeFilter" data-facet="all" title="Click to clear all filters">
+                                    <span class="closeX" style="margin-left:7px;">&gt;&nbsp;</span><g:message code="facets.currentfilter.link" default="Clear all"/></a>
+                                </li>
+                            </g:if>
+                        </ul>
+                    </div>
                 </div>
-            </div>
+            </g:if>
         </g:if>
         ${alatag.logMsg(msg:"Before grouped facets facets.gsp")}
+        <div id="genomicFilters">
+            <g:render template="genomicFilterOptions"/>
+        </div>
+
         <g:set var="facetMax" value="${10}"/><g:set var="i" value="${1}"/>
         <g:each var="group" in="${groupedFacets}">
             <g:set var="keyCamelCase" value="${group.key.replaceAll(/\s+/,'')}"/>
@@ -41,21 +47,23 @@
             <div class="facetsGroup" id="group_${keyCamelCase}" style="display:none;">
                 <g:set var="firstGroup" value="${false}"/>
                 <g:each in="${group.value}" var="facetFromGroup">
-                    <%--  Do a lookup on groupedFacetsMap for the current facet --%>
-                    <g:set var="facetResult" value="${groupedFacetsMap.get(facetFromGroup)}"/>
-                   <%--  Tests for when to display a facet --%>
-                    <g:if test="${facetResult && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
-                        <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
-                        <h4><span class="FieldName">${fieldDisplayName?:facetResult.fieldName}</span></h4>
-                        <div class="subnavlist nano" style="clear:left">
-                            <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}"/>
-                        </div>
-                        %{--<div class="fadeout"></div>--}%
-                        <g:if test="${facetResult.fieldResult.length() > 1}">
-                            <div class="showHide">
-                                <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-target="#multipleFacets" data-displayname="${fieldDisplayName}"
-                                   title="See more options or refine with multiple values"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span> <g:message code="facets.facetfromgroup.link" default="choose more"/>...</a>
+                    <g:if test="${!grailsApplication.config.facets?.genomic?.contains(facetFromGroup)}" >
+                        <%--  Do a lookup on groupedFacetsMap for the current facet --%>
+                        <g:set var="facetResult" value="${groupedFacetsMap.get(facetFromGroup)}"/>
+                       <%--  Tests for when to display a facet --%>
+                        <g:if test="${facetResult && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
+                            <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
+                            <h4><span class="FieldName">${fieldDisplayName?:facetResult.fieldName}</span></h4>
+                            <div class="subnavlist nano" style="clear:left">
+                                <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}"/>
                             </div>
+                            %{--<div class="fadeout"></div>--}%
+                            <g:if test="${facetResult.fieldResult.length() > 1}">
+                                <div class="showHide">
+                                    <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-target="#multipleFacets" data-displayname="${fieldDisplayName}"
+                                       title="See more options or refine with multiple values"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span> <g:message code="facets.facetfromgroup.link" default="choose more"/>...</a>
+                                </div>
+                            </g:if>
                         </g:if>
                     </g:if>
                 </g:each>

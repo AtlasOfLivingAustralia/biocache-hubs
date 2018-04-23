@@ -130,10 +130,13 @@ class OccurrenceController {
             //create a facet lookup map
             Map groupedFacetsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
 
+            Map activeFacetMap = postProcessingService.getActiveFacetMapFromQuery(request, filteredFacets)
+
             //grouped facets
             Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)
 
             //remove qc from active facet map
+            // For AVH or Ozcam
             if (params?.qc && searchResults?.activeFacetMap) {
                 def remove = null
                 searchResults?.activeFacetMap.each { k, v ->
@@ -149,6 +152,13 @@ class OccurrenceController {
                 hasImages = true
             }
 
+            Map genomicFacets = [:]
+            if (grailsApplication.config.facets?.genomic) {
+                def configuredGenomicFacets = (grailsApplication.config.facets?.genomic).split(',') as List
+                genomicFacets = postProcessingService.getGenomicFacets (configuredGenomicFacets, activeFacetMap, groupedFacetsMap, groupedFacets)
+             //   postProcessingService.filterGroupedFacets (configuredGenomicFacets, groupedFacetsMap, groupedFacets)
+            }
+
             log.debug "defaultFacets = ${defaultFacets}"
 
             [
@@ -158,6 +168,7 @@ class OccurrenceController {
                     groupedFacets: groupedFacets,
                     groupedFacetsMap: groupedFacetsMap,
                     dynamicFacets: dynamicFacets,
+                    genomicFacets: genomicFacets,
                     selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: hasImages,
                     showSpeciesImages: false,

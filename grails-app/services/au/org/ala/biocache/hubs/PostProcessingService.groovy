@@ -20,6 +20,7 @@ import org.grails.web.json.JSONObject
 
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
+import grails.web.servlet.mvc.GrailsParameterMap
 
 /**
  * Service to perform processing of data between the DAO and View layers
@@ -338,6 +339,130 @@ class PostProcessingService {
 
         facetMap
     }
+
+    def Map getGenomicFacets (List configuredGenomicFacets, Map activeFacetMap, Map groupedFacetsMap,  Map groupedFacets) {
+
+        Map genomicFacetsGroup = [:].withDefault{key -> return [:]}
+        configuredGenomicFacets.each { configuredGenomicFacet ->
+            Map genomicFacets = [:].withDefault{key -> return []}
+            def facetGroup = groupedFacets.find {it.value.contains(configuredGenomicFacet)}
+            if (facetGroup) {
+                def facetMapResult = groupedFacetsMap.get(configuredGenomicFacet)?.fieldResult
+                facetMapResult.each {
+                    Map map = [:]
+                   // map = it.clone()
+                    map << it
+                    if (!it.label) {
+                       map.label = "Unknown"
+                    }
+                    map.put("isExcluded", false)
+                    genomicFacets.get(configuredGenomicFacet).add(map)
+                }
+
+                // Only interested in excluded filter.
+                List activeGenomicFacetList = activeFacetMap.get("-" + configuredGenomicFacet)
+                activeGenomicFacetList.each {activeGenomicFacet ->
+                    Map map = [:]
+                    map.label = activeGenomicFacet
+                    map.count = 0
+                    map.isExcluded = true
+                    map.fq = configuredGenomicFacet + ":\"" + activeGenomicFacet + "\""
+                    genomicFacets.get(configuredGenomicFacet).add(map)
+                }
+
+                //genomicFacets = genomicFacets.value.sort(it.label)
+                List sortedList = genomicFacets.get(configuredGenomicFacet).sort{ a, b -> a.label <=> b.label }
+                genomicFacets.put(configuredGenomicFacet, sortedList)
+                //genomicFacetsGroup.get(facetGroup.key).add (genomicFacets)
+                genomicFacetsGroup.get(facetGroup.key) << genomicFacets
+//                genomicFacets.put(facetGroup.key, facetMap)
+ //               def facet = facetGroup.value.grep {it.contains(configuredGenomicFacet)}
+  //              facet.put("isExcludedActive", activeFacetMap.get("-" + it) ? true : false)
+
+
+            }
+        }
+        genomicFacetsGroup
+    }
+
+    def filterGroupedFacets (List configuredGenomicFacets, Map groupedFacetsMap, Map groupedFacets) {
+        configuredGenomicFacets.each {genomicFacet ->
+           // List list = groupedFacetsMap.get(it)
+            groupedFacetsMap.remove(genomicFacet)
+            groupedFacets.each {
+                it.value.remove(genomicFacet)
+            }
+        }
+       // groupedFacetsMap
+    }
+
+    private Map getFacet(def facetList, String s) {
+        Map map = [:]
+        String prefix = ''
+        if (s.charAt(0) == '-'){
+            prefix = '-'
+        }
+        facetList.each {
+            def matcher = (s =~ (/${it}:"(.+?)"/))
+            int i = 1
+            List<String> list = []
+            while (i <= matcher.count) {
+                list.add(matcher[i - 1][1])
+                map.put(prefix + it, list)
+                i++;
+            }
+        }
+        return map
+    }
+
+    /**
+     * This is a workaround to obtain activeFacetMap
+     * https://github.com/AtlasOfLivingAustralia/biocache-service/issues/209
+     * https://github.com/AtlasOfLivingAustralia/biocache-service/issues/210
+     *
+     * @param facetResults
+     * @return
+     */
+    def Map getActiveFacetMapFromQuery(def request, def filteredFacets) {
+        Map facetMap = [:]
+
+        //String decodedQuery = URLDecoder.decode (query)
+
+        def originalParams = new GrailsParameterMap(request);
+
+        def fqs = originalParams.get('fq')
+
+        if (fqs instanceof  String) {
+            Map fkvp = getFacet(filteredFacets, fqs)
+            if (!fkvp.isEmpty()) {
+                String key = fkvp.keySet()[0]
+                facetMap.put(key, fkvp.get(key))
+            }
+
+        } else if (fqs instanceof String[]) {
+            (fqs as List).each {
+                if (it.trim() != "") {
+                    Map fkvp = getFacet(filteredFacets, it)
+                    if (!fkvp.isEmpty()) {
+                        String key = fkvp.keySet()[0]
+                        if (facetMap.containsKey(key)) {
+                            List<String> list = facetMap.get(key)
+                            if (!list.find{it == fkvp.get(key)[0]}) {
+                                list.addAll(fkvp.get(key))
+                                facetMap.put(key, list)
+                            }
+                        } else {
+                            facetMap.put(key, fkvp.get(key))
+                        }
+                    }
+                }
+            }
+        }
+
+        facetMap
+    }
+
+
 
     /**
      * Add any ungrouped facets from search results to the groupedFacetsMap
