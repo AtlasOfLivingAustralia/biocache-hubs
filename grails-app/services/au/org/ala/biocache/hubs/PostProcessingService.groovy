@@ -399,7 +399,7 @@ class PostProcessingService {
     private Map getFacet(def facetList, String s) {
         Map map = [:]
         String prefix = ''
-        if (s.charAt(0) == '-'){
+        if (s.trim() != "" && s.charAt(0) == '-'){
             prefix = '-'
         }
         facetList.each {
@@ -432,27 +432,29 @@ class PostProcessingService {
 
         def fqs = originalParams.get('fq')
 
-        if (fqs instanceof  String) {
-            Map fkvp = getFacet(filteredFacets, fqs)
-            if (!fkvp.isEmpty()) {
-                String key = fkvp.keySet()[0]
-                facetMap.put(key, fkvp.get(key))
-            }
+        if (fqs) {
+            if (fqs instanceof String) {
+                Map fkvp = getFacet(filteredFacets, fqs)
+                if (!fkvp.isEmpty()) {
+                    String key = fkvp.keySet()[0]
+                    facetMap.put(key, fkvp.get(key))
+                }
 
-        } else if (fqs instanceof String[]) {
-            (fqs as List).each {
-                if (it.trim() != "") {
-                    Map fkvp = getFacet(filteredFacets, it)
-                    if (!fkvp.isEmpty()) {
-                        String key = fkvp.keySet()[0]
-                        if (facetMap.containsKey(key)) {
-                            List<String> list = facetMap.get(key)
-                            if (!list.find{it == fkvp.get(key)[0]}) {
-                                list.addAll(fkvp.get(key))
-                                facetMap.put(key, list)
+            } else if (fqs instanceof String[]) {
+                (fqs as List).each {
+                    if (it.trim() != "") {
+                        Map fkvp = getFacet(filteredFacets, it)
+                        if (!fkvp.isEmpty()) {
+                            String key = fkvp.keySet()[0]
+                            if (facetMap.containsKey(key)) {
+                                List<String> list = facetMap.get(key)
+                                if (!list.find { it == fkvp.get(key)[0] }) {
+                                    list.addAll(fkvp.get(key))
+                                    facetMap.put(key, list)
+                                }
+                            } else {
+                                facetMap.put(key, fkvp.get(key))
                             }
-                        } else {
-                            facetMap.put(key, fkvp.get(key))
                         }
                     }
                 }
