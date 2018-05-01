@@ -35,6 +35,7 @@ class WebServicesService {
 
     def JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
+        log.debug(url)
         getJsonElements(url)
     }
 

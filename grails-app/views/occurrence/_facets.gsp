@@ -34,11 +34,12 @@
             </g:if>
         </g:if>
         ${alatag.logMsg(msg:"Before grouped facets facets.gsp")}
-        <div id="genomicFilters">
+        <g:if test="${(genomicFacetKeys && genomicFacetKeys.size() > 0)}">
             <g:render template="genomicFilterOptions"/>
-        </div>
+        </g:if>
 
         <g:set var="facetMax" value="${10}"/><g:set var="i" value="${1}"/>
+
         <g:each var="group" in="${groupedFacets}">
             <g:set var="keyCamelCase" value="${group.key.replaceAll(/\s+/,'')}"/>
             <div class="facetGroupName" id="heading_${keyCamelCase}">
@@ -47,9 +48,11 @@
             <div class="facetsGroup" id="group_${keyCamelCase}" style="display:none;">
                 <g:set var="firstGroup" value="${false}"/>
                 <g:each in="${group.value}" var="facetFromGroup">
-                    <g:if test="${!grailsApplication.config.facets?.genomic?.contains(facetFromGroup)}" >
+                    <g:set var="facetResult" value="${groupedFacetsMap.get(facetFromGroup)}"/>
+
+                    <g:if test="${!(genomicFacetKeys) || (genomicFacetKeys.size() == 0) || !genomicFacetKeys.contains(facetResult?.fieldName)}" >
                         <%--  Do a lookup on groupedFacetsMap for the current facet --%>
-                        <g:set var="facetResult" value="${groupedFacetsMap.get(facetFromGroup)}"/>
+
                        <%--  Tests for when to display a facet --%>
                         <g:if test="${facetResult && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
                             <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
@@ -57,7 +60,6 @@
                             <div class="subnavlist nano" style="clear:left">
                                 <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}"/>
                             </div>
-                            %{--<div class="fadeout"></div>--}%
                             <g:if test="${facetResult.fieldResult.length() > 1}">
                                 <div class="showHide">
                                     <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-target="#multipleFacets" data-displayname="${fieldDisplayName}"
@@ -69,6 +71,7 @@
                 </g:each>
             </div>
         </g:each>
+
         ${alatag.logMsg(msg:"After grouped facets facets.gsp")}
     </div>
 </div><!--end facets-->

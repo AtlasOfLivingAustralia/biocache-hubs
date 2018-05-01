@@ -385,6 +385,17 @@ class PostProcessingService {
         genomicFacetsGroup
     }
 
+    List collectGenomicFacetKeys (def genomicFacets) {
+        List genomicFacetKeys = []
+        genomicFacets.each {
+            Map mapFacets = it.value
+            mapFacets.each {facet ->
+                genomicFacetKeys.push (facet.key)
+            }
+        }
+        genomicFacetKeys
+    }
+
     def filterGroupedFacets (List configuredGenomicFacets, Map groupedFacetsMap, Map groupedFacets) {
         configuredGenomicFacets.each {genomicFacet ->
            // List list = groupedFacetsMap.get(it)

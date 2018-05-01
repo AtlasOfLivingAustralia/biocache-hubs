@@ -111,6 +111,21 @@ class OccurrenceController {
                 }
             }
 
+            final genomicFacetsConfig = grailsApplication.config.facets?.genomic
+
+            // Add genomicFacets as requested facet if not already there
+            if (genomicFacetsConfig) {
+                if (!userFacets) {
+                    userFacets = []
+                }
+                List genomicFacetConfigList = genomicFacetsConfig.trim().split(",")
+                genomicFacetConfigList.each {
+                    if (!userFacets.contains(it)) {
+                        userFacets = userFacets + it
+                    }
+                }
+            }
+
             List dynamicFacets = []
 
             String[] requestedFacets = userFacets ?: filteredFacets
@@ -153,10 +168,13 @@ class OccurrenceController {
             }
 
             Map genomicFacets = [:]
-            if (grailsApplication.config.facets?.genomic) {
-                def configuredGenomicFacets = (grailsApplication.config.facets?.genomic).split(',') as List
-                genomicFacets = postProcessingService.getGenomicFacets (configuredGenomicFacets, activeFacetMap, groupedFacetsMap, groupedFacets)
-             //   postProcessingService.filterGroupedFacets (configuredGenomicFacets, groupedFacetsMap, groupedFacets)
+            List genomicFacetKeys = []
+            if (genomicFacetsConfig) {
+                List genomicFacetConfigList = genomicFacetsConfig.trim().split(",")
+                genomicFacets = postProcessingService.getGenomicFacets (genomicFacetConfigList, activeFacetMap, groupedFacetsMap, groupedFacets)
+                if (genomicFacets && genomicFacets.size() > 0) {
+                    genomicFacetKeys = postProcessingService.collectGenomicFacetKeys(genomicFacets)
+                }
             }
 
             log.debug "defaultFacets = ${defaultFacets}"
@@ -169,6 +187,7 @@ class OccurrenceController {
                     groupedFacetsMap: groupedFacetsMap,
                     dynamicFacets: dynamicFacets,
                     genomicFacets: genomicFacets,
+                    genomicFacetKeys: genomicFacetKeys,
                     selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: hasImages,
                     showSpeciesImages: false,

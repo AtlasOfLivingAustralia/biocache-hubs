@@ -846,6 +846,28 @@ img.optionsIcon {
     margin-bottom: 10px;
 }
 
+.genomic-panel {
+    background-color: transparent;
+    border: 1px solid #ddd; /*#dbe3e7; */
+    box-shadow: none;
+    border-radius: 3px;
+
+}
+
+.genomicFacetsGroup {
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.genomicFacet {
+    font-size: 13px;
+    margin-bottom: 2px;
+/*    border: none;
+    margin: 0; */
+}
+
+
 .facetsGroup  h4 {
     margin-top: 0;
 }

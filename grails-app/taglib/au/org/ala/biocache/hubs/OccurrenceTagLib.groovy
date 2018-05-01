@@ -188,7 +188,8 @@ class OccurrenceTagLib {
     //    def linkTitle = "Include ${facetResult.fieldName} records"
 
         facetResults.each { facetResult ->
-            mb.div(class: 'col-xs-12') {
+            /*mb.div(class: 'col-xs-12 genomicFacet') { */
+            mb.div(class: 'genomicFacet') {
                 String value = (facetResult.label && facetResult.label != '')? facetResult.label : 'Unknown'
                 if (!facetResult.isExcluded) {
                     input(type: 'checkbox', name: facetResult.label, value: facetResult.label)
@@ -196,7 +197,7 @@ class OccurrenceTagLib {
                     input(type: 'checkbox', name: facetResult.label, value: facetResult.label, checked: "")
                 }
                 span {
-                    mkp.yield(value)
+                    mkp.yield("${value}" + " (" + g.formatNumber(number: "${facetResult.count}", format:"#,###,###") + ")")
                 }
 
             }
