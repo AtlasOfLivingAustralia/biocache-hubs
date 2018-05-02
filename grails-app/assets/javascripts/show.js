@@ -7,6 +7,8 @@
 //= require wms2.js
 //= require amplify.js
 //= require moment.min.js
+//= require linkifyjs/linkify.js
+//= require linkifyjs/linkify-jquery.js
 //= require_self
  */
 /**

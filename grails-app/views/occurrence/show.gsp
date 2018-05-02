@@ -82,6 +82,12 @@
                     document.location.href = '${record.raw.occurrence.occurrenceID}';
                 });
             </g:if>
+
+            // Detect fields in the value class and convert to links
+            $("table > tbody > tr > td.value").linkify({
+                target: "_blank"
+            });
+
         }); // end $(document).ready()
 
     </asset:script>
