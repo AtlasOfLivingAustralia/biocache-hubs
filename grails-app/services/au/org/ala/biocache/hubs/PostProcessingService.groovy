@@ -354,19 +354,34 @@ class PostProcessingService {
                     map << it
                     if (!it.label) {
                        map.label = "Unknown"
+                       if (map?.fq?.length() > 0 && map.fq.charAt(0) == "-" ) {
+                           map.fq = map.fq.substring(1)
+                       }
                     }
                     map.put("isExcluded", false)
                     genomicFacets.get(configuredGenomicFacet).add(map)
                 }
 
                 // Only interested in excluded filter.
-                List activeGenomicFacetList = activeFacetMap.get("-" + configuredGenomicFacet)
+                List activeGenomicFacetList = []
+                def currentActiveFacet = activeFacetMap.get("-" + configuredGenomicFacet)
+                if (currentActiveFacet) {
+                    activeGenomicFacetList.addAll(currentActiveFacet)
+                }
+                def wildcardMap = activeFacetMap.find{(it?.key == configuredGenomicFacet) && (it?.value?.size() > 0 && it?.value[0] == "*")}
+                if (wildcardMap && wildcardMap.value?.size() > 0) {
+                    activeGenomicFacetList.add(wildcardMap.value[0])
+                }
                 activeGenomicFacetList.each {activeGenomicFacet ->
                     Map map = [:]
-                    map.label = activeGenomicFacet
+                    map.label = (activeGenomicFacet == '*'? 'Unknown': activeGenomicFacet)
                     map.count = 0
                     map.isExcluded = true
-                    map.fq = configuredGenomicFacet + ":\"" + activeGenomicFacet + "\""
+                    if (activeGenomicFacet == '*') {
+                        map.fq = configuredGenomicFacet + ":*"
+                    } else {
+                        map.fq = configuredGenomicFacet + ":\"" + activeGenomicFacet + "\""
+                    }
                     genomicFacets.get(configuredGenomicFacet).add(map)
                 }
 
@@ -414,13 +429,27 @@ class PostProcessingService {
             prefix = '-'
         }
         facetList.each {
-            def matcher = (s =~ (/${it}:"(.+?)"/))
-            int i = 1
-            List<String> list = []
-            while (i <= matcher.count) {
-                list.add(matcher[i - 1][1])
+
+            if (s.trim() == "${it}:*") {
+                List<String> list = []
+                list.add("*")
                 map.put(prefix + it, list)
-                i++;
+                return map
+            } else {
+                //def matcher = (s =~ (/${it}:"(.+?)"/))
+                def matcher = (s =~ /${it}:("?)(\w+)\1/)
+                int i = 1
+                List<String> list = []
+                // while condition for cases of (basis_of_record:"HumanObservation" OR basis_of_record:"MachineObservation")
+                while (matcher.count > 0 && i <= matcher.count) {
+                    list.add(matcher[i - 1][2])
+               // if (matcher.count > 0) {
+
+                   // list.add(matcher[0][2])
+                    map.put(prefix + it, list)
+                    i++;
+                }
+                //return map
             }
         }
         return map

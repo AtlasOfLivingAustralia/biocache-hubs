@@ -266,10 +266,11 @@
                     <g:if test="${sr.activeFacetMap?.size() > 0 || params.wkt || params.radius}">
                         <div class="activeFilters">
                             <b><alatag:message code="search.filters.heading" default="Current filters"/></b>:&nbsp;
-                            <g:each var="fq" in="${sr.activeFacetMap}">
+                            <g:each var="fq" in="${activeFacetMap}">
                                 <g:if test="${fq.key}">
                                     <g:set var="hasFq" value="${true}"/>
-                                    <alatag:currentFilterItem item="${fq}" cssClass="btn btn-default btn-xs" addCloseBtn="${true}"/>
+                                    %{--<alatag:currentFilterItem item="${fq}" value="${activeFacetMap}" cssClass="btn btn-default btn-xs" addCloseBtn="${true}"/>--}%
+                                    <alatag:displayCurrentFilterItem item="${fq}" cssClass="btn btn-default btn-xs" addCloseBtn="${true}"/>
                                 </g:if>
                             </g:each>
                             <g:if test="${params.wkt}"><%-- WKT spatial filter   --%>

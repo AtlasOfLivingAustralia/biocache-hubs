@@ -185,6 +185,7 @@ class OccurrenceController {
                     defaultFacets: defaultFacets,
                     groupedFacets: groupedFacets,
                     groupedFacetsMap: groupedFacetsMap,
+                    activeFacetMap: activeFacetMap,
                     dynamicFacets: dynamicFacets,
                     genomicFacets: genomicFacets,
                     genomicFacetKeys: genomicFacetKeys,

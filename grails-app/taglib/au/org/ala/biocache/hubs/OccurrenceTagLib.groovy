@@ -181,6 +181,51 @@ class OccurrenceTagLib {
         }
     }
 
+    def displayCurrentFilterItem = { attrs ->
+        def item = attrs.item
+        def filterLabel = item.key.replaceFirst(/^\-/, "") // remove leading "-" for exclude searches
+        def formattedFacetName = formatDynamicFacetName(fieldName:"${filterLabel}")
+        def preFix = (item.key.startsWith('-')) ? "<span class='excludeFq'>[exclude]</span> " : ""
+        def fqLabel = preFix + formattedFacetName + ": " + item.value.toString()
+        String facetKey = item.key.replaceFirst("\\(","") // remove brace
+        String i18nLabel = alatag.message(code: "facet.${facetKey}", default: "") // i18n lookup
+
+        if (i18nLabel) {
+            // replace with i18n values, if found
+            fqLabel = fqLabel.replaceAll(facetKey, i18nLabel)
+        }
+
+        def mb = new MarkupBuilder(out)
+        mb.a(   href:"#",
+                class: "${attrs.cssClass} tooltips activeFilter",
+                title: alatag.message(code:"title.filter.remove", default:"Click to remove this filter"),
+                "data-facet": facetKey
+                //"data-facet":"${item.key}:${item.value.value.encodeAsURL()}",
+                //onClick:"removeFacet(this); return false;"
+        ) {
+            if (attrs.addCheckBox) {
+                span(class:'fa fa-check-square-o') {
+                    mkp.yieldUnescaped("&nbsp;")
+                }
+            }
+            if (item.key.contains("occurrence_year")) {
+                fqLabel = fqLabel.replaceAll(':',': ').replaceAll('occurrence_year', alatag.message(code: 'facet.occurrence_year', default:'occurrence_year'))
+                mkp.yieldUnescaped( fqLabel.replaceAll(/(\d{4})\-.*?Z/) { all, year ->
+                    def year10 = year?.toInteger() + 10
+                    "${year} - ${year10}"
+                })
+            } else {
+                mkp.yieldUnescaped(alatag.message(code: fqLabel, default: fqLabel).replaceFirst(':',': '))
+            }
+            if (attrs.addCloseBtn) {
+                mkp.yieldUnescaped("&nbsp;")
+                span(class:'closeX') {
+                    mkp.yieldUnescaped("&times;")
+                }
+            }
+        }
+    }
+
     def genomicFilter = {attrs ->
         def facetResults = attrs.facetResult
      //   def queryParam = attrs.queryParam
