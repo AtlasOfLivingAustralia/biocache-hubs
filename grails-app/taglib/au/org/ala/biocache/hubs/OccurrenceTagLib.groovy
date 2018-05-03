@@ -237,9 +237,9 @@ class OccurrenceTagLib {
             mb.div(class: 'genomicFacet') {
                 String value = (facetResult.label && facetResult.label != '')? facetResult.label : 'Unknown'
                 if (!facetResult.isExcluded) {
-                    input(type: 'checkbox', name: facetResult.label, value: facetResult.label)
+                    input(type: 'checkbox', name: facetResult.fq, value: facetResult.label, class: "genomicFacetInput")
                 } else {
-                    input(type: 'checkbox', name: facetResult.label, value: facetResult.label, checked: "")
+                    input(type: 'checkbox', name: facetResult.fq, value: facetResult.label, checked: "", class: "genomicFacetInput")
                 }
                 span {
                     mkp.yield("${value}" + " (" + g.formatNumber(number: "${facetResult.count}", format:"#,###,###") + ")")
