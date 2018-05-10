@@ -145,7 +145,7 @@ class OccurrenceController {
             //create a facet lookup map
             Map groupedFacetsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
 
-            Map activeFacetMap = postProcessingService.getActiveFacetMapFromQuery(request, filteredFacets)
+            Map activeFacetMap = postProcessingService.getActiveFacetMapFromQuery(request)
 
             //grouped facets
             Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)

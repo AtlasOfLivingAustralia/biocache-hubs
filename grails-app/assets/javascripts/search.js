@@ -662,6 +662,9 @@ $(document).ready(function() {
  * Catch sort drop-down and build GET URL manually
  */
 function reloadWithParam(paramName, paramValue) {
+
+    $("[class='genomicFacetInput']").bootstrapSwitch('toggleDisabled');
+
     var paramList = [];
     var q = $.url().param('q'); //$.query.get('q')[0];
     var fqList = $.url().param('fq'); //$.query.get('fq');
@@ -784,8 +787,16 @@ function removeFacet(el) {
     window.location.href = window.location.pathname + '?' + paramList.join('&') + window.location.hash +"";
 }
 
+/**
+ * Remove value from the url param
+ *
+ * @param value can fq string or list of fq strings to be removed
+ *         if value is "allfacets", all facet queries are cleared.
+ *         for eg: value can be ["-basis_of_record:HumanObservation", "basis_of_record:FossilSpecimen"]
+ */
 function removeFacetFilterFromParam(value) {
-    //var facet = $(el).data("facet").replace(/^\-/g,''); // remove leading "-" for exclude searches
+    $("[class='genomicFacetInput']").bootstrapSwitch('toggleDisabled');
+
     var q = $.url().param('q'); //$.query.get('q')[0];
     var fqList = $.url().param('fq'); //$.query.get('fq');
     var lat = $.url().param('lat');
@@ -817,96 +828,152 @@ function removeFacetFilterFromParam(value) {
         paramList.push("taxa=" + taxa);
     }
 
-   // var fqToRemove = param.split(':')
-    var fqToRemoveField = value;
-    if (fqToRemoveField) {
 
-        var finalfqList = [];
-        for (var i in fqList) {
-
-            var pos = fqList[i].indexOf(fqToRemoveField)
-            if (pos != -1) {
-                fqList[i] = fqList[i].replace(value, "");
-
-                // check if there are other fqs in the string
-                if (fqList[i].indexOf(':') != -1) {
-                  //  fqList[i] = fqList[i].replace("%20", " ");
-                    var regex1 = /((s*OR) | (ORs*))/i;
-                    fqList[i] = fqList[i].replace(regex1, " ");
-                    finalfqList.push(fqList[i]);
-                    console.log(fqList[i])
-                }
-            } else {
-                finalfqList.push (fqList[i]);
-            }
-        }
+    var finalfqList = [];
+    if (value != 'allfacets') {
+        getFinalFqs(finalfqList, fqList, value);
     }
 
-    if (fqList != null) {
+    if (finalfqList != null && finalfqList.length > 0) {
         paramList.push("fq=" + finalfqList.join("&fq="));
     }
 
     window.location.href = window.location.pathname + '?' + paramList.join('&') + window.location.hash +"";
 }
 
-
-function removeFilter(el) {
-    var facet = $(el).data("facet").replace(/^\-/g,''); // remove leading "-" for exclude searches
-    var q = $.url().param('q'); //$.query.get('q')[0];
-    var fqList = $.url().param('fq'); //$.query.get('fq');
-    var lat = $.url().param('lat');
-    var lon = $.url().param('lon');
-    var rad = $.url().param('radius');
-    var taxa = $.url().param('taxa');
-    var wkt = $.url().param('wkt');
-    var paramList = [];
-    if (q != null) {
-        paramList.push("q=" + q);
+/**
+ * Check if the fq string is an excluded facet query
+ *
+ * @param fq is facet query string
+ *
+ */
+function isExcludedFq (fq) {
+    var str = fq.replace(/^\(|\)"/, ""); // replace leading and trailing parenthesis
+    if (str && str.length > 0 && str.charAt(0) == "-") {
+        return true;
     }
-    //console.log("0. fqList", fqList);
-    // add filter query param
-    if (fqList && typeof fqList === "string") {
-        fqList = [ fqList ];
-    }
+    return false;
+}
 
-    //console.log("1. fqList", fqList);
-
-    if (lat && lon && rad) {
-        paramList.push("lat=" + lat);
-        paramList.push("lon=" + lon);
-        paramList.push("radius=" + rad);
-    }
-
-    if (wkt) {
-        paramList.push("wkt=" + wkt);
-    }
-
-    if (taxa) {
-        paramList.push("taxa=" + taxa);
-    }
-
-    for (var i in fqList) {
-        var fqParts = fqList[i].split(':');
-        var fqField = fqParts[0].replace(/[\(\)\-]/g,"");
-        //alert("fqField = " + fqField + " vs " + facet);
-
-        if (fqField.indexOf(facet) != -1) {  // if(str1.indexOf(str2) != -1){
-            //alert("removing fq: "+fqList[i]);
-            fqList.splice($.inArray(fqList[i], fqList), 1);
+/**
+ * Extract fq into a list consisting key and value
+ *
+ * @param fq string
+ *
+ */
+function extractFqInfo (fq) {
+    var fqInfoArray = [];
+    var excludedParam = fq;
+    if (fq && fq.length > 0) {
+        if(isExcludedFq(fq)) {
+            excludedParam = fq.substring(1);
+        }
+        fqInfoArray = excludedParam.split(':');
+        if (fqInfoArray && fqInfoArray.length > 1) {
+            return fqInfoArray;
+        } else {
+            return [];
         }
     }
 
-    if (facet == "all") {
-        fqList = [];
+    return fqInfoArray;
+}
+
+/**
+ * transform a string into regular expression string containing optional 0 or more double quote and escape parenthesis
+ *   for eg: basis_of_record:FossilSpecimen becomes basis_of_record:("?)FossilSpecimen("?)
+ *
+ * @param value string
+ * @returns string for regex expression
+ */
+function getFormattedRegExp (value) {
+    var arr = extractFqInfo(value);
+    if (arr.length > 0) {
+        // Replace " and escape parenthesis
+        var val = arr[1].replace(/\"/g, "").replace(/\(/g, "\\("). replace(/\)/g, "\\)");
+        var formattedRegExp = arr[0] + ":" + "(\"?)" + val + "(\"?)";
+        return formattedRegExp;
     }
+    return value;
+}
 
-    if (fqList != null) {
-        paramList.push("fq=" + fqList.join("&fq="));
+/**
+ * Return the effective fq. if fqToRemove is not relevant, the original fqParam is returned.
+ *
+ * @param fqParam string
+ * @param fqToRemoveList list of values fqs to be removed from fqParam
+ * @returns string of fqParam that has those fqs values removed
+ *
+ */
+function filterFinalFq (fqParam, fqToRemoveList) {
+    var finalfqParam = fqParam;
+    fqToRemoveList.forEach(function (fqToRemove) {
+        // Javascript false && false == false
+        var shouldFilter = (isExcludedFq(finalfqParam) && isExcludedFq(fqToRemove)) || (!isExcludedFq(finalfqParam) && !isExcludedFq(fqToRemove));
+        if (shouldFilter) {
+            var formatRegExpVal = getFormattedRegExp(fqToRemove);
+            var regex1Exp = "((${val}(\\s)+OR) | (OR(\\s)+${val}))".replace(/\${val}/g, formatRegExpVal);
+            var regex1 = new RegExp(regex1Exp, "i");
+            var regex2 = new RegExp(formatRegExpVal, "i");
+            if (finalfqParam.match(regex1)) {
+                finalfqParam = finalfqParam.replace(regex1, "");
+            } else if (finalfqParam.match(regex2)) {
+                finalfqParam = finalfqParam.replace(regex2, "");
+            }
+        }
+    });
+
+    if (finalfqParam.indexOf(':') > 0) {
+        return finalfqParam.trim();
+    } else {
+        return "";
     }
+}
 
-    //alert("paramList = " + paramList.join('&'));
 
-    window.location.href = window.location.pathname + '?' + paramList.join('&') + window.location.hash +"";
+/**
+ * Returns the finalfqs lists
+ *
+ * @param fqList list of fqs params
+ * @param fqToRemoveList list of values fqs to be removed from fqList
+ * @returns finalfqList
+ *
+ */
+function getFinalFqs (finalfqList, fqList, fqToRemoveList) {
+    var fqListArr = !Array.isArray(fqList) ? [ fqList ] : fqList;
+    var fqToRemoveListArr = !Array.isArray(fqToRemoveList) ? [ fqToRemoveList ] : fqToRemoveList;
+    fqListArr.forEach(function (fqParam) {
+        var finalFq = filterFinalFq(fqParam, fqToRemoveListArr);
+        if (finalFq != "") {
+            finalfqList.push (finalFq);
+        }
+    });
+    return finalfqList;
+}
+
+/**
+ * Triggered via the clear active filters
+ *
+ * @param el activefilter class
+ * @returns 
+ *
+ */
+function removeFilter(el) {
+    var facet = $(el).data("facet"); //.replace(/^\-/g,''); // remove leading "-" for exclude searches
+    if (facet != 'all') {
+        var facetValues = $(el).data("facet-values").replace(/((?:^\[)|(?:\]$))/g, '');
+        var facetValueListToRemove = [];
+        var facetValuesList = [];
+        if (facetValues) {
+            facetValuesList = facetValues.split(',')
+            facetValuesList.forEach(function(facetValue){
+                facetValueListToRemove.push(facet + ":" + facetValue.trim());
+            });
+        }
+        removeFacetFilterFromParam(facetValueListToRemove);
+    } else {
+        removeFacetFilterFromParam('allfacets');
+    }
 }
 
 /**

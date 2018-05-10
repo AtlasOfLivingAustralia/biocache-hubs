@@ -199,7 +199,8 @@ class OccurrenceTagLib {
         mb.a(   href:"#",
                 class: "${attrs.cssClass} tooltips activeFilter",
                 title: alatag.message(code:"title.filter.remove", default:"Click to remove this filter"),
-                "data-facet": facetKey
+                "data-facet": facetKey,
+                "data-facet-values": item.value
                 //"data-facet":"${item.key}:${item.value.value.encodeAsURL()}",
                 //onClick:"removeFacet(this); return false;"
         ) {
@@ -226,20 +227,22 @@ class OccurrenceTagLib {
         }
     }
 
+    /**
+     * Generate HTML for genomic facets of checkboxes based on facetResults
+     *
+     * @attr facetResult REQUIRED
+     */
     def genomicFilter = {attrs ->
         def facetResults = attrs.facetResult
-     //   def queryParam = attrs.queryParam
         def mb = new MarkupBuilder(out)
-    //    def linkTitle = "Include ${facetResult.fieldName} records"
 
         facetResults.each { facetResult ->
-            /*mb.div(class: 'col-xs-12 genomicFacet') { */
             mb.div(class: 'genomicFacet') {
                 String value = (facetResult.label && facetResult.label != '')? facetResult.label : 'Unknown'
                 if (!facetResult.isExcluded) {
                     input(type: 'checkbox', name: facetResult.fq, value: facetResult.label, class: "genomicFacetInput")
                 } else {
-                    input(type: 'checkbox', name: facetResult.fq, value: facetResult.label, checked: "", class: "genomicFacetInput")
+                    input(type: 'checkbox', name: facetResult.fq, value: "", checked: "", class: "genomicFacetInput")
                 }
                 span {
                     mkp.yield("${value}" + " (" + g.formatNumber(number: "${facetResult.count}", format:"#,###,###") + ")")
@@ -253,21 +256,6 @@ class OccurrenceTagLib {
 
     }
 
- /*   def basisOfRecordFilterScript = { attrs ->
-        def facetResults = attrs.facetResult
-        def mb = new MarkupBuilder(out)
-        //    def linkTitle = "Include ${facetResult.fieldName} records"
-
-        facetResults.each { facetResult ->
-            mb.script(type:'text/javascript'){mkp.yield("")}
-
-        }
-
-        mb
-
-
-    }
-*/
     /**
      *  Generate facet links in the left hand column
      *

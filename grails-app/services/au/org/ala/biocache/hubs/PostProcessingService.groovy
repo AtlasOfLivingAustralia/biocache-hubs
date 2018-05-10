@@ -340,6 +340,18 @@ class PostProcessingService {
         facetMap
     }
 
+    /**
+     * Obtain a list of genomic facets from the groupedFacetsMap and combine with the activeFacets as those were excluded from search results of groupedFacetMap
+     * If configuredGenomicFacets is not configured, it returns an empty map
+     *
+     *
+     * @param configuredGenomicFacets
+     * @param activeFacetMap
+     * @param groupedFacetsMap
+     * @param groupedFacets
+     * @return Map of Grouped Facets and grouped facets map of facet keys and values list map including the those from activeFacetMap
+     *          For eg: {record:{basis_of_record:[{label:FossilSpecimen, .., isExcluded:false}, {label:HumanObservation, .., isExcluded:true}]}}
+     */
     def Map getGenomicFacets (List configuredGenomicFacets, Map activeFacetMap, Map groupedFacetsMap,  Map groupedFacets) {
 
         Map genomicFacetsGroup = [:].withDefault{key -> return [:]}
@@ -385,22 +397,22 @@ class PostProcessingService {
                     genomicFacets.get(configuredGenomicFacet).add(map)
                 }
 
-                //genomicFacets = genomicFacets.value.sort(it.label)
                 List sortedList = genomicFacets.get(configuredGenomicFacet).sort{ a, b -> a.label <=> b.label }
                 genomicFacets.put(configuredGenomicFacet, sortedList)
-                //genomicFacetsGroup.get(facetGroup.key).add (genomicFacets)
                 genomicFacetsGroup.get(facetGroup.key) << genomicFacets
-//                genomicFacets.put(facetGroup.key, facetMap)
- //               def facet = facetGroup.value.grep {it.contains(configuredGenomicFacet)}
-  //              facet.put("isExcludedActive", activeFacetMap.get("-" + it) ? true : false)
-
-
             }
         }
         genomicFacetsGroup
     }
 
-    List collectGenomicFacetKeys (def genomicFacets) {
+    /**
+     * Obtain list of facetkeys from genomicFacets
+     *
+     * @param genomicFacets
+     * @return list of facet keys
+     *          For eg: [basis_of_record,multimedia]
+     */
+    def List collectGenomicFacetKeys (def genomicFacets) {
         List genomicFacetKeys = []
         genomicFacets.each {
             Map mapFacets = it.value
@@ -411,62 +423,48 @@ class PostProcessingService {
         genomicFacetKeys
     }
 
-    def filterGroupedFacets (List configuredGenomicFacets, Map groupedFacetsMap, Map groupedFacets) {
-        configuredGenomicFacets.each {genomicFacet ->
-           // List list = groupedFacetsMap.get(it)
-            groupedFacetsMap.remove(genomicFacet)
-            groupedFacets.each {
-                it.value.remove(genomicFacet)
+    /**
+     * Extract facet and it's values from facetquery string
+     *
+     * @param string
+     * @return map of facet key and values list
+     *          For eg: if s is "-(basis_of_record:"FossilSpecimen" OR basis_of_record:"HumanObservation")" it returns {-basis_of_record:[FossilSpecimen, HumanObservation]}
+     */
+    private Map getFacet(String s) {
+
+        Map map = [:].withDefault{key -> return []}
+
+        List arrList = []
+        if (s.indexOf ('OR') != -1) {
+            arrList = s.split ('OR')
+        } else {
+            arrList = [s]
+        }
+
+        arrList.each {it ->
+            def facetInfo = it.split (':')
+            if (facetInfo.size() > 0 && facetInfo.size() <=2 ) {
+                def facet = facetInfo[0]?.replaceAll(/^\(|\)$/, "").trim()
+                def facetVal = facetInfo[1]?.replaceAll(/^\(|\)$/, "").replaceAll(/\"/, "").trim()
+                map.get(facet).add(facetVal)
             }
         }
-       // groupedFacetsMap
-    }
 
-    private Map getFacet(def facetList, String s) {
-        Map map = [:]
-        String prefix = ''
-        if (s.trim() != "" && s.charAt(0) == '-'){
-            prefix = '-'
-        }
-        facetList.each {
-
-            if (s.trim() == "${it}:*") {
-                List<String> list = []
-                list.add("*")
-                map.put(prefix + it, list)
-                return map
-            } else {
-                //def matcher = (s =~ (/${it}:"(.+?)"/))
-                def matcher = (s =~ /${it}:("?)(\w+)\1/)
-                int i = 1
-                List<String> list = []
-                // while condition for cases of (basis_of_record:"HumanObservation" OR basis_of_record:"MachineObservation")
-                while (matcher.count > 0 && i <= matcher.count) {
-                    list.add(matcher[i - 1][2])
-               // if (matcher.count > 0) {
-
-                   // list.add(matcher[0][2])
-                    map.put(prefix + it, list)
-                    i++;
-                }
-                //return map
-            }
-        }
         return map
     }
 
+
     /**
-     * This is a workaround to obtain activeFacetMap
+     * This is a workaround to obtain activeFacetMap based on the query url
      * https://github.com/AtlasOfLivingAustralia/biocache-service/issues/209
      * https://github.com/AtlasOfLivingAustralia/biocache-service/issues/210
      *
      * @param facetResults
-     * @return
+     * @return map of facet keys and values list
+     *          For eg: -basis_of_record:[FossilSpecimen, HumanObservation]
      */
-    def Map getActiveFacetMapFromQuery(def request, def filteredFacets) {
+    def Map getActiveFacetMapFromQuery(def request) {
         Map facetMap = [:]
-
-        //String decodedQuery = URLDecoder.decode (query)
 
         def originalParams = new GrailsParameterMap(request);
 
@@ -474,7 +472,7 @@ class PostProcessingService {
 
         if (fqs) {
             if (fqs instanceof String) {
-                Map fkvp = getFacet(filteredFacets, fqs)
+                Map fkvp = getFacet(fqs)
                 if (!fkvp.isEmpty()) {
                     String key = fkvp.keySet()[0]
                     facetMap.put(key, fkvp.get(key))
@@ -483,7 +481,7 @@ class PostProcessingService {
             } else if (fqs instanceof String[]) {
                 (fqs as List).each {
                     if (it.trim() != "") {
-                        Map fkvp = getFacet(filteredFacets, it)
+                        Map fkvp = getFacet(it)
                         if (!fkvp.isEmpty()) {
                             String key = fkvp.keySet()[0]
                             if (facetMap.containsKey(key)) {
@@ -503,8 +501,6 @@ class PostProcessingService {
 
         facetMap
     }
-
-
 
     /**
      * Add any ungrouped facets from search results to the groupedFacetsMap
