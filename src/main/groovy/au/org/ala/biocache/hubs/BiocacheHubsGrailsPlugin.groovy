@@ -64,7 +64,10 @@ from the ALA biocache-service app (no local DB is required for this app).
     def scm = [ url: "https://github.com/AtlasOfLivingAustralia/biocache-hubs" ]
 
     def loadBefore = ['alaBootstrap2']
-    def loadAfter = ['dataBinding'] // needed for custom ValueConverter bean
+
+    // Dependency on dataBinding is needed for custom ValueConverter bean
+    // Dependency on i18n is to override the messageSource with our own
+    def loadAfter = ['dataBinding', 'i18n']
 
     def doWithWebDescriptor = { xml ->
         // Note this code only gets executed at compile time (not runtime)
@@ -94,6 +97,7 @@ from the ALA biocache-service app (no local DB is required for this app).
                 basenames = ["WEB-INF/grails-app/i18n/messages","classpath:messages","${application.config.biocache.baseUrl}/facets/i18n"] as String[]
                 cacheSeconds = (60 * 60 * 6) // 6 hours
                 useCodeAsDefaultMessage = false
+                defaultEncoding = "UTF-8"
             }
 
             // Define Custom ValueConverter beans (force EN formatting of Floats)
