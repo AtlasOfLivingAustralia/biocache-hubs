@@ -30,14 +30,6 @@ import java.util.concurrent.ConcurrentMap
 class ExtendedPluginAwareResourceBundleMessageSource extends PluginAwareResourceBundleMessageSource {
     private long pluginCacheMillis = Long.MIN_VALUE
 
-    private PluginAwareResourceBundleMessageSource messageSource
-
-    @Autowired
-    void setMessageSource(PluginAwareResourceBundleMessageSource messageSource) {
-        this.messageSource = messageSource
-        this.setDefaultEncoding("UTF-8")
-    }
-
     /**
      * Provide a complete listing of properties for a given locale, as a Map
      * Client app properties override those from this plugin
