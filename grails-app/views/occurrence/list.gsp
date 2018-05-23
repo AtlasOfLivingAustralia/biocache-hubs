@@ -172,7 +172,7 @@
             </g:elseif>
             <g:else>
                 <p><g:message code="list.03.p03" default="No records found for"/> <span
-                        class="queryDisplay">${raw(queryDisplay) ?: params.q}</span></p>
+                        class="queryDisplay">${raw(queryDisplay) ?: params.q ?: params.taxa}</span></p>
             </g:else>
         </div>
     </g:elseif>
