@@ -1303,6 +1303,8 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                         label = jQuery.i18n.prop("duplication." + label);
                     } else if (facetName.indexOf("taxonomic_issue") != -1 || /^el\d+/.test(label)) {
                         label = jQuery.i18n.prop(label);
+                    } else if (!label && el.i18nCode.indexOf("novalue") != -1) {
+                        label = "[no value]";
                     } else {
                         var code = facetName + "." + label;
                         var i18nLabel = jQuery.i18n.prop(code);
