@@ -79,11 +79,12 @@ public class SearchRequestParams implements Validateable{
         req.append("&sort=").append(sort);
         req.append("&dir=").append(dir);
         req.append("&qc=").append(conditionalEncode(qc, encodeParams));
+
         if (facet && facets?.length > 0) {
-            for (String f : facets) {
-                req.append("&facets=").append(conditionalEncode(f, encodeParams));
-            }
+            String facetsListString = facets.join(",")
+            req.append("&facets=").append(conditionalEncode(facetsListString, encodeParams))
         }
+        
         if (flimit != 30)
             req.append("&flimit=").append(flimit);
         if (fl.length() > 0)
