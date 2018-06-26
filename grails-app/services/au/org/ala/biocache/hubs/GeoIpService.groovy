@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServletRequest
  * Some code for getIpAddress has been taken from https://github.com/donbeave/grails-geoip/
  * Download City DB from https://dev.maxmind.com/geoip/geoip2/geolite2/
 
- * DB Download should be automated and installed to grailsApplication.config.geopip.database.path as part of
- * ala-install ansible playbooks
+ * DB Download is automated and installed to grailsApplication.config.geopip.database.path as part of
+ * ala-install ansible playbooks and roles (https://github.com/AtlasOfLivingAustralia/ala-install/blob/82d2f13e462680c20f805e0f5e061d21fbe8a352/ansible/roles/biocache-hub/tasks/main.yml#L137)
  * @author Javier Molina
  */
 @Slf4j
@@ -83,8 +83,14 @@ class GeoIpService {
         if (!ipAddressStr)
             ipAddressStr = request.remoteAddr
 
-        InetAddress.getByName(ipAddressStr);
+        if(ipAddressStr && ipAddressStr.contains(',')) {
+            // Address is of the form ip1, ip2, ...
+            // Let's take the first address only
+            String[] ipAddressesStr = ipAddressStr.split(/,\s*/)
+            ipAddressStr = ipAddressesStr[0]
+        }
 
+        InetAddress.getByName(ipAddressStr);
     }
 
     /**
@@ -98,9 +104,9 @@ class GeoIpService {
                 InetAddress ipAddress = getIpAddress(request)
                 CityResponse response = reader.city(ipAddress);
                 return response.location
-            } catch (AddressNotFoundException ex) {
-                log.warn(ex.message)
-                log.debug("Error getting location. ", ex)
+            } catch (Exception ex) {
+                log.warn("Error getting MaxMind location: " + ex.message)
+                log.debug("Error getting MaxMind location. ", ex)
             }
         }
         return null
