@@ -115,7 +115,12 @@
                 var wktString = $('#wktInput').val();
 
                 if (wktString) {
-                    drawWktObj($('#wktInput').val());
+                    try{
+                        drawWktObj($('#wktInput').val());
+                    } catch (e) {
+                        console.log(e);
+                        alert("Please paste a valid WKT string"); // TODO i18n this
+                    }
                 } else {
                     alert("Please paste a valid WKT string"); // TODO i18n this
                 }

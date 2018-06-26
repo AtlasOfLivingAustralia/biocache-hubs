@@ -151,7 +151,7 @@ function drawWktObj(wktString) {
     var wkt = new Wkt.Wkt();
     wkt.read(wktString);
     var wktObject = wkt.toObject({color: '#bada55'});
-    generatePopup(wktObject,null);
+    generatePopup(wktObject.getLayers()[0], null);
     addClickEventForVector(wktObject);
     MAP_VAR.drawnItems.addLayer(wktObject);
 
