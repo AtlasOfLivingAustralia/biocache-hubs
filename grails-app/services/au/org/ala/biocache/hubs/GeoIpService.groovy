@@ -73,24 +73,44 @@ class GeoIpService {
 
     private InetAddress getIpAddress(HttpServletRequest  request) {
         String unknown = 'unknown'
-        String ipAddressStr = unknown
+        String inetAddressStr = unknown
 
         ipHeaders.each { header ->
-            if (!ipAddressStr || unknown.equalsIgnoreCase(ipAddressStr))
-                ipAddressStr = request.getHeader(header)
+            if (!inetAddressStr || unknown.equalsIgnoreCase(inetAddressStr))
+                inetAddressStr = request.getHeader(header)
         }
 
-        if (!ipAddressStr)
-            ipAddressStr = request.remoteAddr
+        if (!inetAddressStr)
+            inetAddressStr = request.remoteAddr
 
-        if(ipAddressStr && ipAddressStr.contains(',')) {
+        inetAddressStr = findExternalInetAddress(inetAddressStr)
+
+        InetAddress.getByName(inetAddressStr);
+    }
+
+    /**
+     * For a comma separated list of addresses discards private ones.
+     * @param inetAddressStr A possibly comma separated list of addresses
+     * @return the non private address if the original inetAddressStr was a list, inetAddressStr otherwise
+     */
+    private String findExternalInetAddress(String inetAddressStr) {
+
+
+        if(inetAddressStr && inetAddressStr.contains(',')) {
             // Address is of the form ip1, ip2, ...
             // Let's take the first address only
-            String[] ipAddressesStr = ipAddressStr.split(/,\s*/)
-            ipAddressStr = ipAddressesStr[0]
-        }
+            String[] ipAddressesStr = inetAddressStr.trim().split(/,\s*/)
 
-        InetAddress.getByName(ipAddressStr);
+            String result = ipAddressesStr.find {
+                InetAddress inetAddress = InetAddress.getByName(it.trim());
+
+                !inetAddress.isAnyLocalAddress() && !inetAddress.isSiteLocalAddress() &&
+                !inetAddress.isLinkLocalAddress() && !inetAddress.isLoopbackAddress()
+            }
+            result
+        } else {
+            inetAddressStr
+        }
     }
 
     /**
