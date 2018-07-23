@@ -479,7 +479,7 @@ class OccurrenceTagLib {
     /**
      * Generate an occurrence table row
      *
-     * @attr fieldName REQUIREDI'l
+     * @attr fieldName REQUIRED
      * @attr fieldNameIsMsgCode
      * @attr fieldCode
      * @attr section REQUIRED
