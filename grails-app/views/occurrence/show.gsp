@@ -432,13 +432,12 @@
                                                 section="duplicate"
                                                 fieldName="Record UUID">
                                             <a href="${request.contextPath}/occurrences/${duplicateRecordDetails.uuid}">${duplicateRecordDetails.uuid}</a></alatag:occurrenceTableRow>
-                                    </g:if>
-                                    <g:if test="${duplicateRecordDetails.rowKey}">
+
                                         <alatag:occurrenceTableRow
                                                 annotate="false"
                                                 section="duplicate"
                                                 fieldName="Data Resource">
-                                            <g:set var="dr">${duplicateRecordDetails.rowKey?.substring(0, duplicateRecordDetails.rowKey?.indexOf("|"))}</g:set>
+                                            <g:set var="dr"><alatag:getDruid uuid="${duplicateRecordDetails.uuid}"/></g:set>
                                             <a href="${collectionsWebappContext}/public/show/${dr}">${dataResourceCodes?.get(dr)}</a>
                                         </alatag:occurrenceTableRow>
                                     </g:if>
@@ -493,13 +492,12 @@
                                                     section="duplicate"
                                                     fieldName="Record UUID">
                                                 <a href="${request.contextPath}/occurrences/${dup.uuid}">${dup.uuid}</a></alatag:occurrenceTableRow>
-                                        </g:if>
-                                        <g:if test="${dup.rowKey}">
+
                                             <alatag:occurrenceTableRow
                                                     annotate="false"
                                                     section="duplicate"
                                                     fieldName="Data Resource">
-                                                <g:set var="dr">${dup.rowKey.substring(0, dup.rowKey.indexOf("|"))}</g:set>
+                                                <g:set var="dr"><alatag:getDruid uuid="${dup.uuid}"/></g:set>
                                                 <a href="${collectionsWebappContext}/public/show/${dr}">${dataResourceCodes?.get(dr)}</a>
                                             </alatag:occurrenceTableRow>
                                         </g:if>
