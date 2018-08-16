@@ -107,6 +107,7 @@ map.zoomOutsideScopedRegion = true
 map.defaultLatitude
 map.defaultLongitude
 map.defaultZoom
+map.outlineDots
 // 3rd part WMS layer to show on maps. TODO: Allow multiple overlays
 map.overlay.url
 map.overlay.name
