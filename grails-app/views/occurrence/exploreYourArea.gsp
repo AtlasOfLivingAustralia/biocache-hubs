@@ -137,7 +137,7 @@
     </div>
 </form>
 <div class="row">
-    <div class="col-md-7">
+    <div class="col-md-7 col-xs-12">
         <div id="taxaBox">
             <div id="leftList">
                 <table id="taxa-level-0">
@@ -167,7 +167,7 @@
             </div>
         </div>
     </div><!-- .col-md-7 -->
-    <div class="col-md-5">
+    <div class="col-md-5 col-xs-12">
         <div id="mapCanvas" style="width: 100%; height: 490px;"></div>
         <div style="font-size:11px;width:100%;color:black;height:20px;" class="show-80">
             <table id="cellCountsLegend">
