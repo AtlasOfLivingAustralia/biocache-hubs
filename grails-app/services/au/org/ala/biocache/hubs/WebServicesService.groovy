@@ -275,7 +275,7 @@ class WebServicesService {
 
         taxaQueries.each { key ->
             def match = guidsJson.get(key)[0]
-            def guid = match?.acceptedIdentifier
+            def guid = (match?.acceptedIdentifier) ? match?.acceptedIdentifier : match?.identifier
             guids.add(guid)
         }
 
