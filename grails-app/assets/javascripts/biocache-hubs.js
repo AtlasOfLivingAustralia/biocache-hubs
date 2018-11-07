@@ -9,7 +9,7 @@ if (typeof BC_CONF != 'undefined' && BC_CONF.hasOwnProperty('contextPath')) {
         name: 'messages',
         path: BC_CONF.contextPath + '/messages/i18n/',
         mode: 'map',
-        async: false,
+        async: true,
         cache: true,
         language: BC_CONF.locale // default is to use browser specified locale
     });
