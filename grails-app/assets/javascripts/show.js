@@ -1,7 +1,7 @@
 /*
  * // require jquery
 //= require jquery_i18n
-//= require audiojs/audio.min.js
+//= require audiojs/audio.js
 //= require jquery.i18n.properties-1.0.9.js
 //= require charts2.js
 //= require wms2.js
