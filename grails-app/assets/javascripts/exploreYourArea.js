@@ -55,6 +55,8 @@ jQuery.i18n.properties({
     name: 'messages',
     path: BC_CONF.contextPath + '/messages/i18n/',
     mode: 'map',
+    async: true,
+    cache: true,
     language: BC_CONF.locale // default is to use browser specified locale
     //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
 });

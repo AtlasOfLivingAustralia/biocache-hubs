@@ -19,16 +19,8 @@
 // Jquery Document.onLoad equivalent
 $(document).ready(function() {
 
-    /**
-     * Load Spring i18n messages into JS
-     */
-    jQuery.i18n.properties({
-        name: 'messages',
-        path: BC_CONF.contextPath + '/messages/i18n/',
-        mode: 'map',
-        language: BC_CONF.locale // default is to use browser specified locale
-        //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
-    });
+    // jQuery.i18n.properties was removed, as it already loaded on the seach page via 'biocache-hubs.js' file
+    // which requires jQuery.i18n.properties to be loaded earlier for leaflet plugin. NdR Nov 2018.
 
     //alert("doc is loaded");
     // listeners for sort & paging widgets

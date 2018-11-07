@@ -2,7 +2,7 @@
  * // require jquery
 //= require jquery_i18n
 //= require audiojs/audio.js
-//= require jquery.i18n.properties-1.0.9.js
+//= require jquery.i18n.properties.js
 //= require charts2.js
 //= require wms2.js
 //= require amplify.js
@@ -28,6 +28,8 @@ $(document).ready(function() {
         name: 'messages',
         path: OCC_REC.contextPath + '/messages/i18n/',
         mode: 'map',
+        async: true,
+        cache: true,
         language: OCC_REC.locale // default is to use browser specified locale
         //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
     });
