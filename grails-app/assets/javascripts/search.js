@@ -1287,8 +1287,6 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                         label = jQuery.i18n.prop(el.i18nCode);
                     } else if (facetName.indexOf("outlier_layer") != -1 || /^el\d+/.test(label)) {
                         label = jQuery.i18n.prop("layer." + label);
-                    } else if (facetName.indexOf("geospatial_kosher") != -1 || /^el\d+/.test(label)) {
-                        label = jQuery.i18n.prop("geospatial_kosher." + label);
                     } else if (facetName.indexOf("user_assertions") != -1 || /^el\d+/.test(label)) {
                         label = jQuery.i18n.prop("user_assertions." + label);
                     } else if (facetName.indexOf("duplicate_type") != -1 || /^el\d+/.test(label)) {
