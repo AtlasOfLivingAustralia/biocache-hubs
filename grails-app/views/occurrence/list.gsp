@@ -207,15 +207,13 @@
                                         <g:each var="group" in="${groupedFacets}">
                                             <g:if test="${defaultFacets.find { key, value -> group.value.any { it == key } }}">
                                                 <div class="facetsColumn">
-                                                    <div class="facetGroupName"><g:message code="facet.group.${group.key}"
-                                                                                           default="${group.key}"/></div>
+                                                    <div class="facetGroupName"><g:message code="facet.group.${group.key}" default="${group.key}"/></div>
                                                     <g:each in="${group.value}" var="facetFromGroup">
                                                         <g:if test="${defaultFacets.containsKey(facetFromGroup)}">
                                                             <g:set var="count" value="${count + 1}"/>
-                                                            <input type="checkbox" name="facets" class="facetOpts"
-                                                                   value="${facetFromGroup}"
+                                                            <input type="checkbox" name="facets" class="facetOpts" value="${facetFromGroup}"
                                                                 ${(defaultFacets.get(facetFromGroup)) ? 'checked=checked' : ''}>&nbsp;<alatag:message
-                                                                code="facet.${facetFromGroup}"/><br/>
+                                                                code="facet.${facetFromGroup}" default="${facetFromGroup}"/><br/>
                                                         </g:if>
                                                     </g:each>
                                                 </div>
