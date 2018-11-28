@@ -262,7 +262,7 @@
                     <span class="queryDisplay"><strong>${raw(queryDisplay)}</strong></span>&nbsp;&nbsp;
                     <g:if test="${params.taxa && queryDisplay.startsWith("text:")}">
                         %{--Fallback taxa search to "text:", so provide feedback to user about this--}%
-                        (<g:message code="list.taxa.notfound" args="${[params.taxa]}" default="Note: no recognised taxon name found for {0}"/>)
+                        (<g:message code="list.taxa.notfound" args="${[params.taxa]}" default="(Note: no matched taxon name found for {0})"/>)
                     </g:if>
                     %{--<g:set var="hasFq" value="${false}"/>--}%
                     <g:if test="${sr.activeFacetMap?.size() > 0 || params.wkt || params.radius}">
