@@ -277,15 +277,15 @@ class PostProcessingService {
                 if (guid) {
                     expandedQueries.add("lsid:" + guid)
                 } else {
-                    expandedQueries.add("text:" + taxaQueries[i])
+                    expandedQueries.add("text:\"" + taxaQueries[i] + "\"")
                 }
             }
             query = "(" + expandedQueries.join(" OR ") + ")"
         } else {
             // single taxa param
-            log.info "taxaQueries[0] = ${taxaQueries[0]}"
+            log.info "taxaQueries[0] = ${taxaQueries[0]} || guidsForTaxa[0] = ${guidsForTaxa[0]}"
             if (taxaQueries[0]) {
-                query = (guidsForTaxa[0]) ? "lsid:" + guidsForTaxa[0] : "text:" + taxaQueries[0]
+                query = (guidsForTaxa[0]) ? "lsid:" + guidsForTaxa[0] : "text:\"" + taxaQueries[0] + "\""
             } else {
                 query = (guidsForTaxa[0]) ? "lsid:" + guidsForTaxa[0] : ""
             }
