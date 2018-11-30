@@ -865,7 +865,16 @@ class OccurrenceTagLib {
         }
     }
 
-    public String sanitizeBodyText(String input, Boolean openInNewWindow = true) {
+    /**
+     * Utility to sanitise HTML text and only allow links to be kept, removing any
+     * other HTML markup. Links get <code>target="_blank"</code> added unless
+     * <code>openInNewWindow</code> is set to false.
+     *
+     * @param input HTML String
+     * @param openInNewWindow Boolean default to to true
+     * @return output sanitized HTML String
+     */
+    String sanitizeBodyText(String input, Boolean openInNewWindow = true) {
         // text with HTML tags will be escaped, so first we need to unescape it
         String unescapedHtml =  StringEscapeUtils.unescapeHtml(input)
         // Sanitize the HTML and only allow links with valid URLs
