@@ -877,13 +877,16 @@ class OccurrenceTagLib {
     String sanitizeBodyText(String input, Boolean openInNewWindow = true) {
         // text with HTML tags will be escaped, so first we need to unescape it
         String unescapedHtml =  StringEscapeUtils.unescapeHtml(input)
-        // Sanitize the HTML and only allow links with valid URLs
+        // Sanitize the HTML and only allow links with valid URLs, span and br tags
         PolicyFactory policy = new HtmlPolicyBuilder()
                 .allowElements("a")
+                .allowElements("br")
+                .allowElements("span")
                 .allowStandardUrlProtocols()
                 .allowAttributes("href").matching(Pattern.compile("^(http|https|mailto).+", Pattern.CASE_INSENSITIVE))
                 .onElements("a")
                 .requireRelNofollowOnLinks()
+                .allowAttributes("class").onElements("span")
                 .toFactory()
         String sanitizedHtml = policy.sanitize(unescapedHtml)
 

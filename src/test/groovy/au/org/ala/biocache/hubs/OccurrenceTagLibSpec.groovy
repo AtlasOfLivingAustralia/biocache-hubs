@@ -82,4 +82,24 @@ class OccurrenceTagLibSpec extends Specification {
             html == "<a target=\"_blank\" href=\"http://biocache.ala.org.au/occurrences/search?q&#61;institution_code:NMV%20AND%20collection_code:Ichthyology%20AND%20catalogue_number:A30460-29\" rel=\"nofollow\">source specimen NMV:Ichthyology:A30460-29</a>"
     }
 
+    void "test sanitizeBodyText ALA generated html text 2"() {
+        // taken from record ID df9c78e6-6908-4ae4-8b72-09b22ef9c9ff
+        given:
+            def text = "Collectors were identical <br> Occurrence was compared without day <br> Coordinates were identical <br>"
+        when:
+            def html = tagLib.sanitizeBodyText(text)
+        then:
+            html == "Collectors were identical <br /> Occurrence was compared without day <br /> Coordinates were identical <br />"
+    }
+
+    void "test sanitizeBodyText ALA generated html text 3"() {
+        // taken from record ID df9c78e6-6908-4ae4-8b72-09b22ef9c9ff
+        given:
+            def text = "<a href=\"https://collections.ala.org.au/public/show/in16\"> Museums Victoria </a> <br/> <span class=\"originalValue\">Supplied institution code \"NMV\"</span>"
+        when:
+            def html = tagLib.sanitizeBodyText(text)
+        then:
+            html == "<a target=\"_blank\" href=\"https://collections.ala.org.au/public/show/in16\" rel=\"nofollow\"> Museums Victoria </a> <br /> <span class=\"originalValue\">Supplied institution code &#34;NMV&#34;</span>"
+    }
+
 }
