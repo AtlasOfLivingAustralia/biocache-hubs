@@ -16,11 +16,20 @@
 package au.org.ala.biocache.hubs
 
 import groovy.xml.MarkupBuilder
+import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang.StringUtils
 import org.grails.web.util.WebUtils
+import org.owasp.html.HtmlPolicyBuilder
+import org.owasp.html.PolicyFactory
 import org.springframework.web.servlet.support.RequestContextUtils
 import grails.util.Environment
 
+import java.util.regex.Pattern
+
+/**
+ * Custom taglib for biocache-hubs
+ *
+ */
 class OccurrenceTagLib {
     // injected beans
     def authService
@@ -502,6 +511,7 @@ class OccurrenceTagLib {
         }
 
         if (StringUtils.isNotBlank(bodyText)) {
+
             def link = (guid) ? "${path}${guid}" : ""
             def mb = new MarkupBuilder(out)
 
@@ -515,7 +525,8 @@ class OccurrenceTagLib {
                             mkp.yieldUnescaped(bodyText)
                         }
                     } else {
-                        mkp.yieldUnescaped(bodyText)
+                        // allow sanitized HTML to be rendered in output
+                        mkp.yieldUnescaped(sanitizeBodyText(bodyText, true))
                     }
                 }
             }
@@ -852,5 +863,29 @@ class OccurrenceTagLib {
             email = email.replaceAll("@", strEncodedAtSign)
             out << "<a href='#' class='link under' onclick=\"return sendEmail('${email}')\">${body()}</a>"
         }
+    }
+
+    public String sanitizeBodyText(String input, Boolean openInNewWindow = true) {
+        // text with HTML tags will be escaped, so first we need to unescape it
+        String unescapedHtml =  StringEscapeUtils.unescapeHtml(input)
+        // Sanitize the HTML and only allow links with valid URLs
+        PolicyFactory policy = new HtmlPolicyBuilder()
+                .allowElements("a")
+                .allowStandardUrlProtocols()
+                .allowAttributes("href").matching(Pattern.compile("^(http|https|mailto).+", Pattern.CASE_INSENSITIVE))
+                .onElements("a")
+                .requireRelNofollowOnLinks()
+                .toFactory()
+        String sanitizedHtml = policy.sanitize(unescapedHtml)
+
+        if (openInNewWindow) {
+            // hack to force links to be opedned in new window/tab
+            sanitizedHtml =  sanitizedHtml.replace("<a ", "<a target=\"_blank\" ")
+        }
+
+        //log.debug "#occurrenceTableRow - unescapedHtml = ${unescapedHtml}"
+        //log.debug "#occurrenceTableRow - sanitizedHtml = ${sanitizedHtml}"
+
+        sanitizedHtml
     }
 }

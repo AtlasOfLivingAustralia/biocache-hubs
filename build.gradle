@@ -71,6 +71,7 @@ dependencies {
     runtime "commons-lang:commons-lang:2.6"
     compile "net.sf.supercsv:super-csv:2.1.0"
     //compile 'com.google.guava:guava:19.0' // replaces ehcache
+    compile "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1"
 
     //plugins
     //compile 'org.grails.plugins:cache-ehcache:3.0.0.M1'
