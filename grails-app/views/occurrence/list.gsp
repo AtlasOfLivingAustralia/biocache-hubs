@@ -163,12 +163,13 @@
                                                                  default="text"/>:${params.taxa}</a>
                 </p>
             </g:if>
-            <g:elseif test="${queryDisplay =~ /text:/ && queryDisplay =~ /\s+/ && !(queryDisplay =~ /\bOR\b/)}">
+            <g:elseif test="${queryDisplay =~ /^text:/ && queryDisplay =~ /\s+/ && !(queryDisplay =~ /\bOR\b/)}">
                 <p><g:message code="list.03.p01" default="No records found for"/> <span
                         class="queryDisplay">${raw(queryDisplay)}</span></p>
                 <g:set var="queryTerms" value="${queryDisplay.split(" ")}"/>
+                <g:set var="newQueryStr" value="${queryTerms.join(" OR ").replaceAll("\"","").replaceAll("text:","")}"/>
                 <p><g:message code="list.03.p02" default="Trying search for"/> <a
-                        href="?q=${queryTerms.join(" OR ")}">${queryTerms.join(" OR ")}</a></p>
+                        href="?q=${newQueryStr}">${newQueryStr}</a></p>
             </g:elseif>
             <g:else>
                 <p><g:message code="list.03.p03" default="No records found for"/> <span
