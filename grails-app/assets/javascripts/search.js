@@ -422,24 +422,37 @@ $(document).ready(function() {
     $("#submitFacets :input.submit").live("click", function(e) {
         e.preventDefault();
         var inverseModifier = ($(this).attr('id') == 'exclude') ? "-" : "";
-        var fq = ""; // build up OR'ed fq query
+        var fqArray = [];
         var facetName = $("table#fullFacets").data("facet");
         var checkedFound = false;
         var selectedCount = 0;
         var maxSelected = 15;
-        $("form#facetRefineForm").find(":input.fqs").each(function(i, el) {
-            //console.log("checking ", el);
-            if ($(el).is(':checked')) {
-                checkedFound = true;
-                selectedCount++;
-                fq += $(el).val() + " OR ";
-                //return false; // break loop
+        var selectedItemsArray = $("form#facetRefineForm").find(":input.fqs:checked")
+        var numberOfSelectedItems = selectedItemsArray.length;
+
+        selectedItemsArray.each(function(i, el) {
+            checkedFound = true;
+            selectedCount++;
+
+            if (numberOfSelectedItems == 1 && inverseModifier && $(el).val().startsWith("-")) {
+                // exclude "no value"/"not specified" facet values
+                // is effectively an include all facet values (therefore "no values" are not included)
+                fqArray.push( $(el).val().substring(1) ); //removes "-"
+                inverseModifier = ""; // remove this as we are doing an inverse of an inverse
+            } else if ($(el).val().startsWith("-")) {
+                // "no value"/"not specified" facet values are special case
+                // see https://stackoverflow.com/a/22616568/249327
+                fqArray.push( "(*:* " + $(el).val() + ")" );
+            } else {
+                fqArray.push($(el).val());
             }
         });
-        fq = fq.replace(/ OR $/, ""); // remove trailing OR
+
+        // join selected fq values together with OR operator
+        fq = fqArray.join(" OR ");
 
         if (fq.indexOf(' OR ') != -1) {
-            fq = "(" + fq + ")"; // so that exclude (inverse) searches work
+            fq = "(" + fq + ")"; // surround with braces so that exclude (inverse) searches work
         }
 
         if (checkedFound && selectedCount > maxSelected) {
@@ -1314,7 +1327,7 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                     var rowType = (i % 2 == 0) ? "normalRow" : "alternateRow";
                     html += "<tr class='" + rowType + "'><td>" +
                         "<input type='checkbox' name='fqs' class='fqs' value='"  + fqParam +
-                        "'/></td><td class='multiple-facet-value'><a href=\"" + link + "\"> " + label + "</a></td><td class='multiple-facet-count'>" + el.count + "</td></tr>";
+                        "'/></td><td class='multiple-facet-value'><a href=\"" + link + "\"> " + label + "</a></td><td class='multiple-facet-count'>" + el.count.toLocaleString() + "</td></tr>";
                 }
                 if (i == facetLimit - 1) {
                     //console.log("got to end of page of facets: " + i);
