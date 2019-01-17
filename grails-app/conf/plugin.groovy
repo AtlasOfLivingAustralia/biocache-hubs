@@ -45,12 +45,12 @@ skin.exploreUrl = "${serverName}"
 
 // web services
 bie.baseUrl = "https://bie.ala.org.au"
-bieService.baseUrl = "https://bie.ala.org.au/ws"
+bieService.baseUrl = "https://bie-ws.ala.org.au/ws"
 //bie.autocompleteHints.fq = "kingdom:Plantae"  // optional
 collectory.baseUrl = "http://collections.ala.org.au"
 logger.baseUrl = "http://logger.ala.org.au/service"
 biocache.apiKey = "api-key-to-use"
-biocache.baseUrl = "https://biocache.ala.org.au/ws"
+biocache.baseUrl = "https://biocache-ws.ala.org.au/ws"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
 biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
