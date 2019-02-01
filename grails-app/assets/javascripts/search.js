@@ -551,13 +551,14 @@ $(document).ready(function() {
         }
         var methodName = $(this).data("method");
         var url = alertsUrlPrefix + "/ws/" + methodName + "?";
+        var searchParamsEncoded = encodeURIComponent(decodeURIComponent(BC_CONF.searchString)); // prevent double encoding of chars
         url += "queryDisplayName="+encodeURIComponent(query);
         url += "&baseUrlForWS=" + encodeURIComponent(BC_CONF.biocacheServiceUrl.replace(/\/ws$/,""));
         url += "&baseUrlForUI=" + encodeURIComponent(BC_CONF.serverName);
-        url += "&webserviceQuery=%2Fws%2Foccurrences%2Fsearch" + BC_CONF.searchString;
-        url += "&uiQuery=%2Foccurrences%2Fsearch%3Fq%3D*%3A*";
+        url += "&webserviceQuery=%2Fws%2Foccurrences%2Fsearch" + searchParamsEncoded;
+        url += "&uiQuery=%2Foccurrences%2Fsearch" + searchParamsEncoded;
         url += "&resourceName=" + encodeURIComponent(BC_CONF.resourceName);
-        //console.log("url", query, methodName, url);
+        //console.log("url", query, methodName, searchParamsEncoded, url);
         window.location.href = url;
     });
 
