@@ -135,8 +135,7 @@ class AdvancedSearchParams implements Validateable {
                 taxa = StringUtils.join(taxas*.trim(), " OR " ).replaceAll('"','') // remove quotes which break the "taxa=foo bar" query type
             } else {
                 // build up OR'ed taxa query with braces if more than one taxon
-                queryItems.add(braces[0] + nameType + ":")
-                queryItems.add(StringUtils.join(taxas, " OR " + nameType + ":") + braces[1])
+                queryItems.add(braces[0] + nameType + ":" + StringUtils.join(taxas, " OR " + nameType + ":") + braces[1])
             }
         }
 
