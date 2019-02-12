@@ -264,7 +264,8 @@ function loadMap() {
         navigationControlOptions: {
             style: google.maps.NavigationControlStyle.SMALL // DEFAULT
         },
-        mapTypeId: google.maps.MapTypeId.HYBRID
+        mapTypeId: google.maps.MapTypeId.HYBRID,
+        controlSize: 26 // prevents larger sized controls which are default from 2018 onwards
     });
     marker = new google.maps.Marker({
         position: latLng,
