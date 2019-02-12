@@ -124,7 +124,7 @@
 	            formatted = formatted.toFixed(6);
 
 
-	            if (coordinate.direction && (coordinate.direction == SOUTH || coordinate.direction == WEST) && decimal > 0) formatted = '-' + formatted;
+	            if (coordinate.direction && (coordinate.direction == SOUTH || coordinate.direction == WEST) && decimal >= 0) formatted = '-' + formatted;
 	            else if (!coordinate.direction && isPositive === false && decimal > 0) formatted = '-' + formatted;
 
 	            return formatted;
