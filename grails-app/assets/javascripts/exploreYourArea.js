@@ -324,12 +324,14 @@ function loadMap() {
     });
 
     google.maps.event.addListener(map, 'zoom_changed', function() {
+        //console.log('loadMap() -> loadRecordsLayer()');
         loadRecordsLayer();
     });
 
     if (!points || points.length == 0) {
         //$('#taxa-level-0 tbody td:first').click(); // click on "all species" group
-        loadRecordsLayer();
+        // commented out by NdR - groupClicked() calls loadRecordsLayer() on new page load
+        // loadRecordsLayer();
     }
 }
 
@@ -388,7 +390,7 @@ function loadRecordsLayer(retry) {
     }
 
     // URL for GeoJSON web service
-    var geoJsonUrl = EYA_CONF.biocacheServiceUrl + "/geojson/radius-points.jsonp?callback=?";
+    var geoJsonUrl = EYA_CONF.biocacheServiceUrl + "/geojson/radius-points";
     var zoom = (map && map.getZoom()) ? map.getZoom() : 12;
     // request params for ajax geojson call
     var params = {
@@ -549,6 +551,7 @@ function geocodeAddress(reverseGeocode) {
             updateMarkerAddress("GPS coordinates: " + lat.toDD() + ", " + lng.toDD());
             updateMarkerPosition(latLng);
             // reload map pin, etc
+            //console.log("geocodeAddress() calling loadRecordsLayer()");
             initialize();
             loadRecordsLayer();
         }
@@ -615,10 +618,10 @@ function groupClicked(el) {
     // load records layer on map
     //console.log('about to run: loadRecordsLayer()');
     // update links to downloads and records list
-
+    //console.log("groupClicked() calling loadRecordsLayer()");
     if (map) loadRecordsLayer();
     // AJAX...
-    var uri = EYA_CONF.biocacheServiceUrl + "/explore/group/"+speciesGroup+".json?callback=?";
+    var uri = EYA_CONF.biocacheServiceUrl + "/explore/group/"+speciesGroup+".json";
     var params = {
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
@@ -754,7 +757,7 @@ function processSpeciesJsonData(data, appendResults) {
             }
             $("div#rightList").data("sort", sortOrder); // save it to the DOM
             // AJAX...
-            var uri = EYA_CONF.biocacheServiceUrl + "/explore/group/"+speciesGroup+".json?callback=?";
+            var uri = EYA_CONF.biocacheServiceUrl + "/explore/group/"+speciesGroup+".json";
             //var params = "&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&group="+speciesGroup;
             var params = {
                 lat: $('#latitude').val(),
@@ -792,7 +795,7 @@ function processSpeciesJsonData(data, appendResults) {
  * Perform normal spatial searcj for spceies groups and species counts
  */
 function loadGroups() {
-    var url = EYA_CONF.biocacheServiceUrl +"/explore/groups.json?callback=?";
+    var url = EYA_CONF.biocacheServiceUrl +"/explore/groups.json";
     var params = {
         //"group": $(this).attr('title'),
         lat: $('#latitude').val(),
