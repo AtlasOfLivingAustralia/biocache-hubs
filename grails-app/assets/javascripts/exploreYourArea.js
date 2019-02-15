@@ -375,20 +375,20 @@ function loadLeafletMap() {
     });
 
     // Add a Circle overlay to the map.
-    radius = parseInt($('select#radius').val()) * 1000;
+    radius = parseInt($('select#radius').val()) * 1010;
     var circlProps = {
-        radius: radius,
+        //radius: radius, leaflet 1+ uses this syntax
         stroke: true,
-        weight: 1,
-        color: 'white',
-        opacity: 0.5,
-        fillColor: '#222', // '#2C48A6'
+        weight: 2,
+        color: 'black',
+        opacity: 0.2,
+        fillColor: '#888', // '#2C48A6'
         fillOpacity: 0.2,
         zIndex: -10
     }
 
     //console.log("circlProps", circlProps, latLng);
-    circle = L.circle(latLng, circlProps).addTo(map);
+    circle = L.circle(latLng, radius, circlProps).addTo(map);
 
     // bind circle to marker
     marker.on('dragend', function(e){
@@ -399,7 +399,7 @@ function loadLeafletMap() {
         map.panTo({lon:lon,lat:lat})
         map.removeLayer(circle);
         circlProps.radius = radius;
-        circle = L.circle([lat,lon],circlProps).addTo(map);
+        circle = L.circle([lat, lon], radius, circlProps).addTo(map);
         updateMarkerAddress('Drag ended');
         updateMarkerPosition(newLatLng);
         geocodePosition(newLatLng);
