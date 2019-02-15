@@ -38,8 +38,9 @@
 //    queryContext: ""
 //}
 
-var geocoder, map, marker, circle, markerInfowindow, lastInfoWindow, taxon, taxonGuid, alaWmsLayer;
+var geocoder, map, marker, circle, markerInfowindow, lastInfoWindow, taxon, taxonGuid, alaWmsLayer, radius;
 var points = [], infoWindows = [], speciesGroup = "ALL_SPECIES";
+var coordinatePrecision = 4; // roughly 11m at equator || 5 = 1.1 m at equator
 var zoomForRadius = {
     1000: 14,
     5000: 12,
@@ -104,11 +105,11 @@ $(document).ready(function() {
     $('select#radius').change(
         function(e) {
             EYA_CONF.radius = parseInt($(this).val());
-            var radiusInMetres = EYA_CONF.radius * 1000;
-            circle.setRadius(radiusInMetres);
-            EYA_CONF.zoom = zoomForRadius[radiusInMetres];
-            map.setZoom((EYA_CONF.zoom)?EYA_CONF.zoom:12);
-            updateMarkerPosition(marker.getPosition()); // so bookmarks is updated
+            radius = EYA_CONF.radius * 1000;
+            circle.setRadius(radius);
+            EYA_CONF.zoom = zoomForRadius[radius];
+            map.setZoom((EYA_CONF.zoom) ? EYA_CONF.zoom : 12);
+            //updateMarkerPosition(marker.getLatLng()); // so bookmarks is updated
             //loadRecordsLayer();
             loadGroups();
         }
@@ -254,123 +255,127 @@ function initialize() {
 /**
  * Google map API v3
  */
-function loadMap() {
-    var latLng = new google.maps.LatLng($('#latitude').val(), $('#longitude').val());
-    map = new google.maps.Map(document.getElementById('mapCanvas'), {
-        zoom: EYA_CONF.zoom,
-        center: latLng,
-        scrollwheel: false,
-        streetViewControl: true,
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-        },
-        navigationControl: true,
-        navigationControlOptions: {
-            style: google.maps.NavigationControlStyle.SMALL // DEFAULT
-        },
-        mapTypeId: google.maps.MapTypeId.HYBRID,
-        controlSize: 26 // prevents larger sized controls which are default from 2018 onwards
-    });
-    marker = new google.maps.Marker({
-        position: latLng,
-        title: 'Marker Location',
-        map: map,
-        draggable: true
-    });
-
-    markerInfowindow = new google.maps.InfoWindow({
-        content: '<div class="infoWindow">marker address</div>' // gets updated by geocodePosition()
-    });
-
-    google.maps.event.addListener(marker, 'click', function(event) {
-        if (lastInfoWindow) lastInfoWindow.close();
-        markerInfowindow.setLatLng(event.latLng);
-        markerInfowindow.open(map, marker);
-        lastInfoWindow = markerInfowindow;
-    });
-
-    // Add a Circle overlay to the map.
-    var radius = parseInt($('select#radius').val()) * 1010;
-    circle = new google.maps.Circle({
-        map: map,
-        radius: radius,
-        strokeWeight: 1,
-        strokeColor: 'white',
-        strokeOpacity: 0.5,
-        fillColor: '#222', // '#2C48A6'
-        fillOpacity: 0.2,
-        zIndex: -10
-    });
-    // bind circle to marker
-    circle.bindTo('center', marker, 'position');
-
-    // Update current position info.
-    //updateMarkerPosition(latLng);
-    geocodePosition(latLng);
-
-    // Add dragging event listeners.
-    google.maps.event.addListener(marker, 'dragstart', function() {
-        updateMarkerAddress('Dragging...');
-    });
-
-    google.maps.event.addListener(marker, 'drag', function() {
-        updateMarkerAddress('Dragging...');
-        //updateMarkerPosition(marker.getPosition());
-    });
-
-    google.maps.event.addListener(marker, 'dragend', function() {
-        updateMarkerAddress('Drag ended');
-        updateMarkerPosition(marker.getPosition());
-        geocodePosition(marker.getPosition());
-        //LoadTaxaGroupCounts();
-        loadGroups();
-        map.panTo(marker.getPosition());
-    });
-
-    google.maps.event.addListener(map, 'zoom_changed', function() {
-        //console.log('loadMap() -> loadRecordsLayer()');
-        loadRecordsLayer();
-    });
-
-    if (!points || points.length == 0) {
-        //$('#taxa-level-0 tbody td:first').click(); // click on "all species" group
-        // commented out by NdR - groupClicked() calls loadRecordsLayer() on new page load
-        // loadRecordsLayer();
-    }
-}
+// function loadMap() {
+//     var latLng = new google.maps.LatLng($('#latitude').val(), $('#longitude').val());
+//     map = new google.maps.Map(document.getElementById('mapCanvas'), {
+//         zoom: EYA_CONF.zoom,
+//         center: latLng,
+//         scrollwheel: false,
+//         streetViewControl: true,
+//         mapTypeControl: true,
+//         mapTypeControlOptions: {
+//             style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+//         },
+//         navigationControl: true,
+//         navigationControlOptions: {
+//             style: google.maps.NavigationControlStyle.SMALL // DEFAULT
+//         },
+//         mapTypeId: google.maps.MapTypeId.HYBRID,
+//         controlSize: 26 // prevents larger sized controls which are default from 2018 onwards
+//     });
+//     marker = new google.maps.Marker({
+//         position: latLng,
+//         title: 'Marker Location',
+//         map: map,
+//         draggable: true
+//     });
+//
+//     markerInfowindow = new google.maps.InfoWindow({
+//         content: '<div class="infoWindow">marker address</div>' // gets updated by geocodePosition()
+//     });
+//
+//     google.maps.event.addListener(marker, 'click', function(event) {
+//         if (lastInfoWindow) lastInfoWindow.close();
+//         markerInfowindow.setLatLng(event.latLng);
+//         markerInfowindow.open(map, marker);
+//         lastInfoWindow = markerInfowindow;
+//     });
+//
+//     // Add a Circle overlay to the map.
+//     var radius = parseInt($('select#radius').val()) * 1010;
+//     circle = new google.maps.Circle({
+//         map: map,
+//         radius: radius,
+//         strokeWeight: 1,
+//         strokeColor: 'white',
+//         strokeOpacity: 0.5,
+//         fillColor: '#222', // '#2C48A6'
+//         fillOpacity: 0.2,
+//         zIndex: -10
+//     });
+//     // bind circle to marker
+//     circle.bindTo('center', marker, 'position');
+//
+//     // Update current position info.
+//     //updateMarkerPosition(latLng);
+//     geocodePosition(latLng);
+//
+//     // Add dragging event listeners.
+//     google.maps.event.addListener(marker, 'dragstart', function() {
+//         updateMarkerAddress('Dragging...');
+//     });
+//
+//     google.maps.event.addListener(marker, 'drag', function() {
+//         updateMarkerAddress('Dragging...');
+//         //updateMarkerPosition(marker.getPosition());
+//     });
+//
+//     google.maps.event.addListener(marker, 'dragend', function() {
+//         updateMarkerAddress('Drag ended');
+//         updateMarkerPosition(marker.getPosition());
+//         geocodePosition(marker.getPosition());
+//         //LoadTaxaGroupCounts();
+//         loadGroups();
+//         map.panTo(marker.getPosition());
+//     });
+//
+//     google.maps.event.addListener(map, 'zoom_changed', function() {
+//         //console.log('loadMap() -> loadRecordsLayer()');
+//         loadRecordsLayer();
+//     });
+//
+//     if (!points || points.length == 0) {
+//         //$('#taxa-level-0 tbody td:first').click(); // click on "all species" group
+//         // commented out by NdR - groupClicked() calls loadRecordsLayer() on new page load
+//         // loadRecordsLayer();
+//     }
+// }
 
 function loadLeafletMap() {
     var latLng = L.latLng($('#latitude').val(), $('#longitude').val());
 
-    map = L.map('mapCanvas', {
-        center: latLng,
-        zoom: EYA_CONF.zoom,
-        scrollWheelZoom: false
-    });
+    if (!map) {
+        map = L.map('mapCanvas', {
+            center: latLng,
+            zoom: EYA_CONF.zoom,
+            scrollWheelZoom: false
+        });
 
-    var defaultBaseLayer = L.tileLayer(EYA_CONF.mapMinimalUrl, {
-        attribution: EYA_CONF.mapMinimalAttribution,
-        subdomains: EYA_CONF.mapMinimalSubdomains
-    });
+        var defaultBaseLayer = L.tileLayer(EYA_CONF.mapMinimalUrl, {
+            attribution: EYA_CONF.mapMinimalAttribution,
+            subdomains: EYA_CONF.mapMinimalSubdomains
+        });
 
-    // add the default base layer
-    map.addLayer(defaultBaseLayer);
+        // add the default base layer
+        map.addLayer(defaultBaseLayer);
 
+    }
+
+    marker = null, circle = null; // reset
     marker = L.marker(latLng, {
         title: 'Marker Location',
         draggable: true
     }).addTo(map);
 
-    markerInfowindow = marker.bindPopup('<div class="infoWindow">marker address</div>', { autoClose:true });
+    markerInfowindow = marker.bindPopup('<div class="infoWindow">marker address</div>', {autoClose: true});
 
-    marker.on('click', function(event) {
+    marker.on('click', function (event) {
         //console.log("event",event);
         lastInfoWindow = markerInfowindow;
     });
 
     // Add a Circle overlay to the map.
-    var radius = parseInt($('select#radius').val()) * 1010;
+    radius = parseInt($('select#radius').val()) * 1000;
     var circlProps = {
         radius: radius,
         stroke: true,
@@ -388,26 +393,31 @@ function loadLeafletMap() {
     // bind circle to marker
     marker.on('dragend', function(e){
         var coords = e.target.getLatLng();
-        var lat = coords.lat;
-        var lon = coords.lng;
+        var lat = coords.lat.toFixed(coordinatePrecision);
+        var lon = coords.lng.toFixed(coordinatePrecision);
+        var newLatLng = L.latLng(lat, lon);
         map.panTo({lon:lon,lat:lat})
         map.removeLayer(circle);
+        circlProps.radius = radius;
         circle = L.circle([lat,lon],circlProps).addTo(map);
-
-        geocodePosition(marker.getLatLng());
+        updateMarkerAddress('Drag ended');
+        updateMarkerPosition(newLatLng);
+        geocodePosition(newLatLng);
+        //LoadTaxaGroupCounts();
         loadGroups();
+        loadRecordsLayer();
     });
 
     // Update current position info.
-    geocodePosition(new google.maps.LatLng(latLng.lat, latLng.lng));
+    geocodePosition(L.latLng(latLng.lat, latLng.lng));
 
     map.on('zoomend', function() {
-        loadRecordsLayer();
+        //loadRecordsLayer();
     });
 
     if (!points || points.length == 0) {
         //$('#taxa-level-0 tbody td:first').click(); // click on "all species" group
-        loadRecordsLayer();
+        //loadRecordsLayer();
     }
 
 }
@@ -445,10 +455,11 @@ function updateMarkerAddress(str) {
  * Update the lat & lon hidden input elements
  */
 function updateMarkerPosition(latLng) {
-    $('#latitude').val(latLng.lat());
-    $('#longitude').val(latLng.lng());
+    $('#latitude').val(latLng.lat);
+    $('#longitude').val(latLng.lng);
     // Update URL hash for back button, etc
-    location.hash = latLng.lat() + "|" + latLng.lng() + "|" + EYA_CONF.zoom + "|" + speciesGroup;
+    console.log("updating hash lat", latLng.lat, $('#latitude').val());
+    location.hash = latLng.lat + "|" + latLng.lng + "|" + EYA_CONF.zoom + "|" + speciesGroup;
     $('#dialog-confirm #rad').html(EYA_CONF.radius);
 }
 
@@ -589,7 +600,7 @@ function attemptGeolocation() {
             //alert('coords: '+position.coords.latitude+','+position.coords.longitude);
             //console.log('geolocation request accepted');
             $('#mapCanvas').empty();
-            updateMarkerPosition(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+            updateMarkerPosition(L.latLng(position.coords.latitude, position.coords.longitude));
             //LoadTaxaGroupCounts();
             initialize();
         }
@@ -599,7 +610,7 @@ function attemptGeolocation() {
             $('#mapCanvas').empty();
             //zoom = 12;
             //alert('latitude = '+$('#latitude').val());
-            updateMarkerPosition(new google.maps.LatLng($('#latitude').val(), $('#longitude').val()));
+            updateMarkerPosition(L.latLng($('#latitude').val(), $('#longitude').val()));
             //LoadTaxaGroupCounts();
             initialize();
         }
@@ -614,7 +625,7 @@ function attemptGeolocation() {
     } else if (google.loader && google.loader.ClientLocation) {
         // Google AJAX API fallback GeoLocation
         //alert("getting coords using google geolocation");
-        updateMarkerPosition(new google.maps.LatLng(google.loader.ClientLocation.latitude, google.loader.ClientLocation.longitude));
+        updateMarkerPosition(L.latLng(google.loader.ClientLocation.latitude, google.loader.ClientLocation.longitude));
         //LoadTaxaGroupCounts();
         initialize();
     } else {
@@ -640,7 +651,7 @@ function geocodeAddress(reverseGeocode) {
         //console.log("magellan", parts, lat, lng);
 
         if (lat && lng) {
-            latLng = new google.maps.LatLng(lat.toDD(), lng.toDD());
+            latLng = L.latLng(lat.toDD(), lng.toDD());
             updateMarkerAddress("GPS coordinates: " + lat.toDD() + ", " + lng.toDD());
             updateMarkerPosition(latLng);
             // reload map pin, etc
@@ -685,7 +696,7 @@ function addAddressToPage(response) {
         var lon = location.Point.coordinates[0];
         var locationStr = response.Placemark[0].address;
         updateMarkerAddress(locationStr);
-        updateMarkerPosition(new google.maps.LatLng(lat, lon));
+        updateMarkerPosition(L.latLng(lat, lon));
     }
 }
 
@@ -938,7 +949,7 @@ function bookmarkedSearch(lat, lng, zoom1, group) {
     EYA_CONF.zoom = parseInt(zoom1);
     $('select#radius').val(EYA_CONF.radius); // update drop-down widget
     if (group) speciesGroup = group;
-    updateMarkerPosition(new google.maps.LatLng(lat, lng));
+    updateMarkerPosition(L.latLng(lat, lng));
     // load map and groups
     initialize();
 }
