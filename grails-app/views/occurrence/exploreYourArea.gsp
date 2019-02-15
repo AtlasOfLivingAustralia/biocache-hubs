@@ -53,6 +53,9 @@
             radius: Number(${radius}),
             speciesPageUrl: "${speciesPageUrl}",
             queryContext: "${queryContext}",
+            mapMinimalUrl: "${grailsApplication.config.map.minimal.url}",
+            mapMinimalAttribution: "${raw(grailsApplication.config.map.minimal.attr)}",
+            mapMinimalSubdomains: "${grailsApplication.config.map.minimal.subdomains}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             geocodeRegion: "${grailsApplication.config.geocode.region}",
             hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}

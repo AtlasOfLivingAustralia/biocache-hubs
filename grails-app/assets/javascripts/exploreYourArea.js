@@ -17,6 +17,10 @@
 /*
  * // require jquery
 //= require purl.js
+//= require leaflet/leaflet.js
+//= require leaflet-plugins/layer/tile/Google.js
+//= require leaflet-plugins/spin/spin.min.js
+//= require leaflet-plugins/spin/leaflet.spin.js
 //= require magellan.js
 //= require jquery.qtip.min.js
 //= require_self
@@ -34,7 +38,7 @@
 //    queryContext: ""
 //}
 
-var geocoder, map, marker, circle, markerInfowindow, lastInfoWindow, taxon, taxonGuid;
+var geocoder, map, marker, circle, markerInfowindow, lastInfoWindow, taxon, taxonGuid, alaWmsLayer;
 var points = [], infoWindows = [], speciesGroup = "ALL_SPECIES";
 var zoomForRadius = {
     1000: 14,
@@ -243,7 +247,8 @@ $(document).ready(function() {
 
 // pointer fn
 function initialize() {
-    loadMap();
+    //loadMap();
+    loadLeafletMap();
     loadGroups();
 }
 /**
@@ -280,7 +285,7 @@ function loadMap() {
 
     google.maps.event.addListener(marker, 'click', function(event) {
         if (lastInfoWindow) lastInfoWindow.close();
-        markerInfowindow.setPosition(event.latLng);
+        markerInfowindow.setLatLng(event.latLng);
         markerInfowindow.open(map, marker);
         lastInfoWindow = markerInfowindow;
     });
@@ -335,6 +340,78 @@ function loadMap() {
     }
 }
 
+function loadLeafletMap() {
+    var latLng = L.latLng($('#latitude').val(), $('#longitude').val());
+
+    map = L.map('mapCanvas', {
+        center: latLng,
+        zoom: EYA_CONF.zoom,
+        scrollWheelZoom: false
+    });
+
+    var defaultBaseLayer = L.tileLayer(EYA_CONF.mapMinimalUrl, {
+        attribution: EYA_CONF.mapMinimalAttribution,
+        subdomains: EYA_CONF.mapMinimalSubdomains
+    });
+
+    // add the default base layer
+    map.addLayer(defaultBaseLayer);
+
+    marker = L.marker(latLng, {
+        title: 'Marker Location',
+        draggable: true
+    }).addTo(map);
+
+    markerInfowindow = marker.bindPopup('<div class="infoWindow">marker address</div>', { autoClose:true });
+
+    marker.on('click', function(event) {
+        //console.log("event",event);
+        lastInfoWindow = markerInfowindow;
+    });
+
+    // Add a Circle overlay to the map.
+    var radius = parseInt($('select#radius').val()) * 1010;
+    var circlProps = {
+        radius: radius,
+        stroke: true,
+        weight: 1,
+        color: 'white',
+        opacity: 0.5,
+        fillColor: '#222', // '#2C48A6'
+        fillOpacity: 0.2,
+        zIndex: -10
+    }
+
+    //console.log("circlProps", circlProps, latLng);
+    circle = L.circle(latLng, circlProps).addTo(map);
+
+    // bind circle to marker
+    marker.on('dragend', function(e){
+        var coords = e.target.getLatLng();
+        var lat = coords.lat;
+        var lon = coords.lng;
+        map.panTo({lon:lon,lat:lat})
+        map.removeLayer(circle);
+        circle = L.circle([lat,lon],circlProps).addTo(map);
+
+        geocodePosition(marker.getLatLng());
+        loadGroups();
+    });
+
+    // Update current position info.
+    geocodePosition(new google.maps.LatLng(latLng.lat, latLng.lng));
+
+    map.on('zoomend', function() {
+        loadRecordsLayer();
+    });
+
+    if (!points || points.length == 0) {
+        //$('#taxa-level-0 tbody td:first').click(); // click on "all species" group
+        loadRecordsLayer();
+    }
+
+}
+
 /**
  * Google geocode function
  */
@@ -348,7 +425,7 @@ function geocodePosition(pos) {
             updateMarkerAddress(address);
             // update the info window for marker icon
             var content = '<div class="infoWindow"><b>Your Location:</b><br/>'+address+'</div>';
-            markerInfowindow.setContent(content);
+            markerInfowindow.bindPopup(content);
         } else {
             updateMarkerAddress('Cannot determine address at this location.');
         }
@@ -389,26 +466,42 @@ function loadRecordsLayer(retry) {
         return;
     }
 
+    if (alaWmsLayer) map.removeLayer(alaWmsLayer);
+
     // URL for GeoJSON web service
-    var geoJsonUrl = EYA_CONF.biocacheServiceUrl + "/geojson/radius-points";
-    var zoom = (map && map.getZoom()) ? map.getZoom() : 12;
-    // request params for ajax geojson call
-    var params = {
+    //var geoJsonUrl = EYA_CONF.biocacheServiceUrl + "/geojson/radius-points";
+    var speciesGroupParam = "species_group:" + (speciesGroup == "ALL_SPECIES" ? "*" : speciesGroup);
+    var alaParams = jQuery.param({
+        q: (taxon) ? "taxon_name:\"" + taxon + "\"" : "*:*",
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
         radius: $('#radius').val(),
-        fq: "geospatial_kosher:true",
-        qc: EYA_CONF.queryContext,
-        zoom: zoom
+        fq: [ "geospatial_kosher:true",
+              speciesGroupParam
+        ],
+        qc: EYA_CONF.queryContext
+        //zoom: (map && map.getZoom()) ? map.getZoom() : 12
+    }, true);
+    console.log("alaParams = ", alaParams, speciesGroupParam);
+
+    var alaMapUrl = EYA_CONF.biocacheServiceUrl + "/ogc/wms/reflect?" + alaParams;
+    var wmsParams = {
+        layers: 'ALA:occurrences',
+        format: 'image/png',
+        transparent: true,
+        attribution: "Atlas of Living Australia",
+        bgcolor:"0x000000",
+        outline:"false",
+        GRIDDETAIL: 32, // 64 || 32
+        ENV: "color:DF4A21;name:circle;size:4;opacity:0.7",
+        //ENV: "colormode:grid;name:square;size:3;opacity:0.7",
+        uppercase: true
     };
-    if (taxon) {
-        params.q = "taxon_name:\"" + taxon + "\"";
-    } else {
-        params.group = speciesGroup;
-    }
+
     //console.log('About to call $.get', map);
     // JQuery AJAX call
-    $.getJSON(geoJsonUrl, params, loadNewGeoJsonData);
+    //$.getJSON(alaMaprUrl, params, loadNewGeoJsonData);
+    alaWmsLayer = L.tileLayer.wms(alaMapUrl, wmsParams).addTo(map);
 }
 
 /**
@@ -476,7 +569,7 @@ function loadNewGeoJsonData(data) {
             disableAutoPan: false
         });
         google.maps.event.addListener(points[i], 'click', function(event) {
-            if (lastInfoWindow) lastInfoWindow.close(); // close any previously opened infoWindow
+            //if (lastInfoWindow) lastInfoWindow.close(); // close any previously opened infoWindow
             infoWindows[i].setPosition(event.latLng);
             infoWindows[i].open(map, points[i]);
             lastInfoWindow = infoWindows[i]; // keep reference to current infoWindow
@@ -512,7 +605,7 @@ function attemptGeolocation() {
         }
         // Add message to browser - FF needs this as it is not easy to see
         var msg = 'Waiting for confirmation to use your current location (see browser message at top of window)'+
-            '<br/><a href="#" onClick="loadMap(); return false;">Click here to load map</a>';
+            '<br/><a href="#" onClick="loadLeafletMap(); return false;">Click here to load map</a>';
         $('#mapCanvas').html(msg).css('color','red').css('font-size','14px');
         navigator.geolocation.getCurrentPosition(getMyPostion, positionWasDeclined);
         //console.log("line after navigator.geolocation.getCurrentPosition...");  
