@@ -186,7 +186,7 @@
             </table>
         </div>
         <div id="mapTips">
-            <b><g:message code="eya.maptips.01" default="Tip"/></b>: <g:message code="eya.maptips.02" default="you can fine-tune the location of the area by dragging the red marker icon"/>
+            <b><g:message code="eya.maptips.01" default="Tip"/></b>: <g:message code="eya.maptips.02" default="you can fine-tune the location of the area by dragging the blue marker icon"/>
         </div>
     </div><!-- .col-md-5 -->
 </div><!-- .row -->
