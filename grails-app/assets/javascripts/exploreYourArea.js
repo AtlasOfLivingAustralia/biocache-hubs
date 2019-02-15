@@ -21,6 +21,7 @@
 //= require leaflet-plugins/layer/tile/Google.js
 //= require leaflet-plugins/spin/spin.min.js
 //= require leaflet-plugins/spin/leaflet.spin.js
+//= require leaflet-google.js
 //= require magellan.js
 //= require jquery.qtip.min.js
 //= require_self
@@ -345,20 +346,37 @@ function loadLeafletMap() {
     var latLng = L.latLng($('#latitude').val(), $('#longitude').val());
 
     if (!map) {
-        map = L.map('mapCanvas', {
-            center: latLng,
-            zoom: EYA_CONF.zoom,
-            scrollWheelZoom: false
-        });
-
         var defaultBaseLayer = L.tileLayer(EYA_CONF.mapMinimalUrl, {
             attribution: EYA_CONF.mapMinimalAttribution,
             subdomains: EYA_CONF.mapMinimalSubdomains
         });
 
+        var baseLayers = {
+            "Minimal": defaultBaseLayer,
+            "Road":  new L.Google('ROADMAP'),
+            //"Terrain": new L.Google('TERRAIN'),
+            "Satellite": new L.Google('HYBRID')
+        };
+
+        var overlays = {
+            "Occurrences": L.TileLayer()
+        };
+
+        map = L.map('mapCanvas', {
+            center: latLng,
+            zoom: EYA_CONF.zoom,
+            scrollWheelZoom: false,
+            layerControl: null
+        });
+
+        // add layer control
+        map.layerControl = L.control.layers(baseLayers).addTo(map);
+
         // add the default base layer
         map.addLayer(defaultBaseLayer);
 
+        map.locate({setView: true, watch: true, maxZoom: 17});
+        map.on('locationfound', onLocationFound);
     }
 
     marker = null, circle = null; // reset
@@ -513,6 +531,7 @@ function loadRecordsLayer(retry) {
     // JQuery AJAX call
     //$.getJSON(alaMaprUrl, params, loadNewGeoJsonData);
     alaWmsLayer = L.tileLayer.wms(alaMapUrl, wmsParams).addTo(map);
+    map.layerControl.addOverlay(alaWmsLayer, 'Occurrences');
 }
 
 /**
