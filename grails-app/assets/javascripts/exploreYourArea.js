@@ -155,7 +155,7 @@ $(document).ready(function() {
             attemptGeolocation();
         }
     } else {
-        //console.log("url not set, geolocating...");
+        console.log("defaultParam not set, geolocating...");
         attemptGeolocation();
     }
 
@@ -374,12 +374,16 @@ function loadLeafletMap() {
 
         // add the default base layer
         map.addLayer(defaultBaseLayer);
-
-        map.locate({setView: true, watch: true, maxZoom: 17});
-        map.on('locationfound', onLocationFound);
+    } else {
+        // map loaded already
+        map.setView(latLng, EYA_CONF.zoom);
+        // reset layers/markers
+        if (map.hasLayer(circle)) map.removeLayer(circle);
+        if (map.hasLayer(marker)) map.removeLayer(marker);
+        marker = null;
+        circle = null;
     }
 
-    marker = null, circle = null; // reset
     marker = L.marker(latLng, {
         title: 'Marker Location',
         draggable: true
@@ -429,30 +433,23 @@ function loadLeafletMap() {
     // Update current position info.
     geocodePosition(L.latLng(latLng.lat, latLng.lng));
 
-    map.on('zoomend', function() {
-        //loadRecordsLayer();
-    });
-
-    if (!points || points.length == 0) {
-        //$('#taxa-level-0 tbody td:first').click(); // click on "all species" group
-        //loadRecordsLayer();
-    }
-
 }
 
 /**
  * Google geocode function
  */
 function geocodePosition(pos) {
+    var gLatLng = new google.maps.LatLng(pos.lat, pos.lng); // convert leaflet Latlng to Google Latlng
+
     geocoder.geocode({
-        latLng: pos
+        latLng: gLatLng
     }, function(responses) {
         if (responses && responses.length > 0) {
-            //console.log("geocoded position", responses[0]);
+            console.log("geocoded position", responses[0]);
             var address = responses[0].formatted_address;
             updateMarkerAddress(address);
             // update the info window for marker icon
-            var content = '<div class="infoWindow"><b>Your Location:</b><br/>'+address+'</div>';
+            var content = '<div class="infoWindow"><b>Location:</b><br/>'+address+'</div>';
             markerInfowindow.bindPopup(content);
         } else {
             updateMarkerAddress('Cannot determine address at this location.');
@@ -473,11 +470,15 @@ function updateMarkerAddress(str) {
  * Update the lat & lon hidden input elements
  */
 function updateMarkerPosition(latLng) {
-    $('#latitude').val(latLng.lat);
-    $('#longitude').val(latLng.lng);
+    console.log("updateMarkerPosition", latLng, latLng.lat);
+    var lat = latLng.lat.toFixed(coordinatePrecision);
+    var lng = latLng.lng.toFixed(coordinatePrecision);
+    // store values in hidden fields
+    $('#latitude').val(lat);
+    $('#longitude').val(lng);
     // Update URL hash for back button, etc
-    console.log("updating hash lat", latLng.lat, $('#latitude').val());
-    location.hash = latLng.lat + "|" + latLng.lng + "|" + EYA_CONF.zoom + "|" + speciesGroup;
+    //console.log("updating hash lat", lat, $('#latitude').val());
+    location.hash = lat + "|" + lng + "|" + EYA_CONF.zoom + "|" + speciesGroup;
     $('#dialog-confirm #rad').html(EYA_CONF.radius);
 }
 
@@ -486,7 +487,7 @@ function updateMarkerPosition(latLng) {
  */
 function loadRecordsLayer(retry) {
     if (!map && !retry) {
-        // in case AJAX calls this function before map has initialised
+        // in case a callback calls this function before map has initialised
         setTimeout(function() {if (!points || points.length == 0) {loadRecordsLayer(true)}}, 2000);
         //console.log('retry triggered');
         return;
@@ -495,7 +496,11 @@ function loadRecordsLayer(retry) {
         return;
     }
 
-    if (alaWmsLayer) map.removeLayer(alaWmsLayer);
+    // remove any existing records layers and controls
+    if (alaWmsLayer) {
+        map.removeLayer(alaWmsLayer);
+        map.layerControl.removeLayer(alaWmsLayer);
+    }
 
     // URL for GeoJSON web service
     //var geoJsonUrl = EYA_CONF.biocacheServiceUrl + "/geojson/radius-points";
@@ -532,10 +537,16 @@ function loadRecordsLayer(retry) {
     //$.getJSON(alaMaprUrl, params, loadNewGeoJsonData);
     alaWmsLayer = L.tileLayer.wms(alaMapUrl, wmsParams).addTo(map);
     map.layerControl.addOverlay(alaWmsLayer, 'Occurrences');
+
+    alaWmsLayer.on('tileload', function(te){
+        // populate points array so we can tell if data is loaded - legacy from geoJson version
+        points.push(te.url);
+    });
 }
 
 /**
  * Callback for geoJSON ajax call
+ * @deprecated
  */
 function loadNewGeoJsonData(data) {
     // clear vector featers and popups
@@ -614,10 +625,10 @@ function loadNewGeoJsonData(data) {
 function attemptGeolocation() {
     // HTML5 GeoLocation
     if (navigator && navigator.geolocation) {
-        //console.log("trying to get coords with navigator.geolocation...");  
+        console.log("trying to get coords with navigator.geolocation...");  
         function getMyPostion(position) {
             //alert('coords: '+position.coords.latitude+','+position.coords.longitude);
-            //console.log('geolocation request accepted');
+            console.log('geolocation "navigator" request accepted');
             $('#mapCanvas').empty();
             updateMarkerPosition(L.latLng(position.coords.latitude, position.coords.longitude));
             //LoadTaxaGroupCounts();
@@ -625,7 +636,7 @@ function attemptGeolocation() {
         }
 
         function positionWasDeclined() {
-            //console.log('geolocation request declined or errored');
+            console.log('geolocation request declined or errored');
             $('#mapCanvas').empty();
             //zoom = 12;
             //alert('latitude = '+$('#latitude').val());
@@ -643,7 +654,7 @@ function attemptGeolocation() {
         setTimeout(function() {if (!map) positionWasDeclined();}, 9000);
     } else if (google.loader && google.loader.ClientLocation) {
         // Google AJAX API fallback GeoLocation
-        //alert("getting coords using google geolocation");
+        console.log("getting coords using google geolocation", google.loader.ClientLocation);
         updateMarkerPosition(L.latLng(google.loader.ClientLocation.latitude, google.loader.ClientLocation.longitude));
         //LoadTaxaGroupCounts();
         initialize();
@@ -683,12 +694,16 @@ function geocodeAddress(reverseGeocode) {
 
     if (!latLng && geocoder && address) {
         //geocoder.getLocations(address, addAddressToPage);
+        console.log("geocodeAddress with address string");
         geocoder.geocode( {'address': address, region: EYA_CONF.geocodeRegion}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 // geocode was successful
                 //console.log('geocodeAddress results', results);
                 updateMarkerAddress(results[0].formatted_address);
-                updateMarkerPosition(results[0].geometry.location);
+                var gLatLng = results[0].geometry.location;
+                console.log("gLatLng", gLatLng.lat(), gLatLng.lng());
+                var latLng = L.latLng(gLatLng.lat(), gLatLng.lng());
+                updateMarkerPosition(latLng);
                 // reload map pin, etc
                 initialize();
                 loadRecordsLayer();
