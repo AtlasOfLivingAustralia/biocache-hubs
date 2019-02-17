@@ -172,7 +172,7 @@
     </div><!-- .col-md-7 -->
     <div class="col-md-5 col-xs-12">
         <div id="mapCanvas" style="width: 100%; height: 490px;"></div>
-        <div style="font-size:11px;width:100%;color:black;height:20px;" class="show-80">
+        <div style="font-size:11px;width:100%;color:black;height:20px;" class="show-80 collapse">
             <table id="cellCountsLegend">
                 <tr>
                     <td style="background-color:#000; color:white; text-align:right;"><g:message code="eya.table.03.td" default="Records"/>:&nbsp;</td>

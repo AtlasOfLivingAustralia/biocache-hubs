@@ -21,6 +21,7 @@
 //= require leaflet-plugins/layer/tile/Google.js
 //= require leaflet-plugins/spin/spin.min.js
 //= require leaflet-plugins/spin/leaflet.spin.js
+//= require leaflet-plugins/EasyButton/easy-button.js
 //= require leaflet-google.js
 //= require magellan.js
 //= require jquery.qtip.min.js
@@ -234,6 +235,9 @@ $(document).ready(function() {
         }
     });
 
+    // BS tooltip
+    $('.easy-button-button').qtip();
+
     // Catch enter key press on form
     $("#searchForm").bind("keypress", function(e) {
         if (e.keyCode == 13) {
@@ -358,10 +362,6 @@ function loadLeafletMap() {
             "Satellite": new L.Google('HYBRID')
         };
 
-        var overlays = {
-            "Occurrences": L.TileLayer()
-        };
-
         map = L.map('mapCanvas', {
             center: latLng,
             zoom: EYA_CONF.zoom,
@@ -374,6 +374,12 @@ function loadLeafletMap() {
 
         // add the default base layer
         map.addLayer(defaultBaseLayer);
+
+        // "locate me" button
+        L.easyButton( '<i class="fa fa-location-arrow" data-toggle="tooltip" data-placement="right"></i>', function(e){
+            attemptGeolocation();
+        },"Use my location").addTo(map);
+
     } else {
         // map loaded already
         map.setView(latLng, EYA_CONF.zoom);
@@ -536,7 +542,7 @@ function loadRecordsLayer(retry) {
     // JQuery AJAX call
     //$.getJSON(alaMaprUrl, params, loadNewGeoJsonData);
     alaWmsLayer = L.tileLayer.wms(alaMapUrl, wmsParams).addTo(map);
-    map.layerControl.addOverlay(alaWmsLayer, 'Occurrences');
+    map.layerControl.addOverlay(alaWmsLayer, 'Records');
 
     alaWmsLayer.on('tileload', function(te){
         // populate points array so we can tell if data is loaded - legacy from geoJson version
@@ -545,82 +551,7 @@ function loadRecordsLayer(retry) {
 }
 
 /**
- * Callback for geoJSON ajax call
- * @deprecated
- */
-function loadNewGeoJsonData(data) {
-    // clear vector featers and popups
-    if (points && points.length > 0) {
-        $.each(points, function (i, p) {
-            p.setMap(null); // remove from map
-        });
-        points = [];
-    } else {
-        points = [];
-    }
-
-    if (infoWindows && infoWindows.length > 0) {
-        $.each(infoWindows, function (i, n) {
-            n.close(); // close any open popups
-        });
-        infoWindows = [];
-    } else {
-        infoWindows = [];
-    }
-
-    $.each(data.features, function (i, n) {
-        var latLng1 = new google.maps.LatLng(n.geometry.coordinates[1], n.geometry.coordinates[0]);
-        var iconUrl = EYA_CONF.imagesUrlPrefix+"/circle-"+n.properties.color.replace('#','')+".png";
-        var markerImage = new google.maps.MarkerImage(iconUrl,
-            new google.maps.Size(9, 9),
-            new google.maps.Point(0,0),
-            new google.maps.Point(4, 5)
-        );
-        points[i] = new google.maps.Marker({
-            map: map,
-            position: latLng1,
-            title: n.properties.count+" occurrences",
-            icon: markerImage
-        });
-
-        var solrQuery;
-        if ($.inArray("|", taxa) > 0) {
-            var parts = taxa.split("|");
-            var newParts = [];
-            for (j in parts) {
-                newParts.push(rank+":"+parts[j]);
-            }
-            solrQuery = newParts.join(" OR ");
-        } else {
-            solrQuery = "*:*"; //rank+':'+taxa;
-        }
-        var fqParam = "";
-        if (taxonGuid) {
-            fqParam = "&fq=species_guid:" + taxonGuid;
-        } else if (speciesGroup != "ALL_SPECIES") {
-            fqParam = "&fq=species_group:" + speciesGroup;
-        }
-
-        var content = '<div class="infoWindow">Number of records: '+n.properties.count+'<br/>'+
-            '<a href="'+ EYA_CONF.contextPath +'/occurrences/search?q='+solrQuery+fqParam+
-            '&lat='+n.geometry.coordinates[1]+'&lon='+n.geometry.coordinates[0]+'&radius=0.05">View list of records</a></div>';
-        infoWindows[i] = new google.maps.InfoWindow({
-            content: content,
-            maxWidth: 200,
-            disableAutoPan: false
-        });
-        google.maps.event.addListener(points[i], 'click', function(event) {
-            //if (lastInfoWindow) lastInfoWindow.close(); // close any previously opened infoWindow
-            infoWindows[i].setPosition(event.latLng);
-            infoWindows[i].open(map, points[i]);
-            lastInfoWindow = infoWindows[i]; // keep reference to current infoWindow
-        });
-    });
-
-}
-
-/**
- * Try to get a lat/long using HTML5 geoloation API
+ * Try to get a lat/long using HTML5 geolocation API
  */
 function attemptGeolocation() {
     // HTML5 GeoLocation
@@ -629,25 +560,30 @@ function attemptGeolocation() {
         function getMyPostion(position) {
             //alert('coords: '+position.coords.latitude+','+position.coords.longitude);
             console.log('geolocation "navigator" request accepted');
-            $('#mapCanvas').empty();
+            //$('#mapCanvas').empty();
             updateMarkerPosition(L.latLng(position.coords.latitude, position.coords.longitude));
             //LoadTaxaGroupCounts();
             initialize();
         }
 
         function positionWasDeclined() {
-            console.log('geolocation request declined or errored');
-            $('#mapCanvas').empty();
-            //zoom = 12;
-            //alert('latitude = '+$('#latitude').val());
+            alert('Geolocation request was declined or failed due to an error. Try searching for your address using the search box above the map.');
+            // scroll window so search bar is visible
+            $('html, body').animate({
+                scrollTop: $("#searchForm").offset().top - 120 // banner offset 120px
+            }, 1000);
+
             updateMarkerPosition(L.latLng($('#latitude').val(), $('#longitude').val()));
             //LoadTaxaGroupCounts();
             initialize();
         }
+
         // Add message to browser - FF needs this as it is not easy to see
-        var msg = 'Waiting for confirmation to use your current location (see browser message at top of window)'+
-            '<br/><a href="#" onClick="loadLeafletMap(); return false;">Click here to load map</a>';
-        $('#mapCanvas').html(msg).css('color','red').css('font-size','14px');
+        //var msg = 'Waiting for confirmation to use your current location (see browser message at top of window)'+
+        //    '<br/><a href="#" onClick="initialize(); return false;">Click here to load map</a>';
+        //$('#mapCanvas').html(msg).css('color','red').css('font-size','14px');
+        //map.remove;
+        //map = null;
         navigator.geolocation.getCurrentPosition(getMyPostion, positionWasDeclined);
         //console.log("line after navigator.geolocation.getCurrentPosition...");  
         // Neither functions gets called for some reason, so I've added a delay to initalize map anyway
@@ -673,7 +609,7 @@ function geocodeAddress(reverseGeocode) {
     var address = $('input#address').val();
     var latLng = null;
 
-    // Check if input contains a comma and try and patch coordinates
+    // Check if input contains a comma and try and parse coordinates
     if (address && address.indexOf(",") > -1 && magellan) {
         var parts = address.split(",");
         var lat = magellan(parts[0].trim()).latitude(); //.toDD();
@@ -930,7 +866,7 @@ function processSpeciesJsonData(data, appendResults) {
 }
 
 /*
- * Perform normal spatial searcj for spceies groups and species counts
+ * Perform normal spatial search for species groups and species counts
  */
 function loadGroups() {
     var url = EYA_CONF.biocacheServiceUrl +"/explore/groups.json";
@@ -952,7 +888,7 @@ function loadGroups() {
 }
 
 /*
- * Populate the spceies group column (via callback from AJAX)
+ * Populate the species group column (via callback from AJAX)
  */
 function populateSpeciesGroups(data) {
     if (data.length > 0) {

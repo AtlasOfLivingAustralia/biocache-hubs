@@ -15,6 +15,7 @@
  *= require print-area.css
  *= require jquery.qtip.min.css
  *= require leaflet/leaflet.css
+ *= require leaflet-plugins/EasyButton/easy-button.css
  *= require_self
  */
 
