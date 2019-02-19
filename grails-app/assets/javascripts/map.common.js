@@ -334,7 +334,7 @@ function insertRecordInfo(recordIndex) {
         $popupClone.find('.currentRecord').html(recordIndex + 1);
         $popupClone.find('.totalrecords').html(MAP_VAR.recordList.length.toString().replace(/100/, '100+'));
         var occLookup = "&radius=" + MAP_VAR.popupRadius + "&lat=" + MAP_VAR.popupLatlng.lat + "&lon=" + MAP_VAR.popupLatlng.lng;
-        $popupClone.find('a.viewAllRecords').attr('href', BC_CONF.contextPath + "/occurrences/search" + MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + occLookup);
+        $popupClone.find('a.viewAllRecords').attr('href', BC_CONF.contextPath + "/occurrences/search" + MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + MAP_VAR.removeFqs + occLookup);
         // populate popup footer
         $popupClone.find('.multiRecordFooter').show();
         if (recordIndex < MAP_VAR.recordList.length - 1) {
@@ -380,49 +380,52 @@ function formatPopupHtml(record) {
     var displayHtml = "";
 
     // catalogNumber
-    if(record.raw.occurrence.catalogNumber != null){
+    if (record.raw.occurrence.catalogNumber != null) {
         displayHtml += jQuery.i18n.prop('record.catalogNumber.label') + ": " + record.raw.occurrence.catalogNumber + '<br />';
-    } else if(record.processed.occurrence.catalogNumber != null){
+    } else if (record.processed.occurrence.catalogNumber != null) {
         displayHtml += jQuery.i18n.prop('record.catalogNumber.label') + ": " + record.processed.occurrence.catalogNumber + '<br />';
     }
 
     // record or field number
-    if(record.raw.occurrence.recordNumber != null){
+    if (record.raw.occurrence.recordNumber != null) {
         displayHtml += jQuery.i18n.prop('record.recordNumber.label') + ": " + record.raw.occurrence.recordNumber + '<br />';
-    } else if(record.raw.occurrence.fieldNumber != null){
+    } else if (record.raw.occurrence.fieldNumber != null) {
         displayHtml += jQuery.i18n.prop('record.fieldNumber.label') + ": " + record.raw.occurrence.fieldNumber + '<br />';
     }
 
-
-    if(record.raw.classification.vernacularName!=null ){
-        displayHtml += record.raw.classification.vernacularName + '<br />';
-    } else if(record.processed.classification.vernacularName!=null){
-        displayHtml += record.processed.classification.vernacularName + '<br />';
-    }
-
-    if (record.processed.classification.scientificName) {
-        displayHtml += formatSciName(record.processed.classification.scientificName, record.processed.classification.taxonRankID)  + '<br />';
-    } else {
-        displayHtml += record.raw.classification.scientificName  + '<br />';
-    }
-
-    if(record.processed.attribution.institutionName != null){
+    // institution or dataset name
+    if (record.processed.attribution.institutionName != null) {
         displayHtml += jQuery.i18n.prop('record.institutionName.label') + ": " + record.processed.attribution.institutionName + '<br />';
-    } else if(record.processed.attribution.dataResourceName != null){
+    } else if (record.processed.attribution.dataResourceName != null) {
         displayHtml += jQuery.i18n.prop('record.dataResourceName.label') + ": " + record.processed.attribution.dataResourceName + '<br />';
     }
 
-    if(record.processed.attribution.collectionName != null){
-        displayHtml += jQuery.i18n.prop('record.collectionName.label') + ": " + record.processed.attribution.collectionName  + '<br />';
+    // collection name
+    if (record.processed.attribution.collectionName != null) {
+        displayHtml += jQuery.i18n.prop('record.collectionName.label') + ": " + record.processed.attribution.collectionName + '<br />';
     }
 
-    if(record.raw.occurrence.recordedBy != null){
+    // common name
+    if (record.raw.classification.vernacularName != null) {
+        displayHtml += record.raw.classification.vernacularName + '<br />';
+    } else if (record.processed.classification.vernacularName != null) {
+        displayHtml += record.processed.classification.vernacularName + '<br />';
+    }
+
+    // scientific name
+    if (record.processed.classification.scientificName) {
+        displayHtml += formatSciName(record.processed.classification.scientificName, record.processed.classification.taxonRankID) + '<br />';
+    } else {
+        displayHtml += record.raw.classification.scientificName + '<br />';
+    }
+
+    if (record.raw.occurrence.recordedBy != null) {
         displayHtml += jQuery.i18n.prop('record.recordedBy.label') + ": " + record.raw.occurrence.recordedBy + '<br />';
-    } else if(record.processed.occurrence.recordedBy != null){
+    } else if (record.processed.occurrence.recordedBy != null) {
         displayHtml += jQuery.i18n.prop('record.recordedBy.label') + ": " + record.processed.occurrence.recordedBy + '<br />';
     }
 
-    if(record.processed.event.eventDate != null){
+    if (record.processed.event.eventDate != null) {
         //displayHtml += "<br/>";
         var label = jQuery.i18n.prop('record.eventDate.label') + ": ";
         displayHtml += label + record.processed.event.eventDate;

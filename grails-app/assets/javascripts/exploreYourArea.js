@@ -25,21 +25,11 @@
 //= require leaflet-google.js
 //= require magellan.js
 //= require jquery.qtip.min.js
+//= require biocache-hubs.js
 //= require map.common.js
 //= require_self
  */
 
-// Note there are some global variables that are set by the calling page (which has access to
-// the ${pageContet} object, which are required by this file.:
-//
-//var MAP_VAR = {
-//    contextPath: "${pageContext.request.contextPath}",
-//    biocacheServiceUrl: "${biocacheServiceUrl}",
-//    zoom: ${zoom},
-//    radius: ${radius},
-//    speciesPageUrl: "${speciesPageUrl}",
-//    queryContext: ""
-//}
 
 var geocoder, marker, circle, markerInfowindow, lastInfoWindow, taxon, taxonGuid, alaWmsLayer, radius;
 var points = [], infoWindows = [], speciesGroup = "ALL_SPECIES";
@@ -54,23 +44,6 @@ var radiusForZoom = {
     12: 5,
     14: 1
 };
-
-if (false && typeof MAP_VAR === 'undefined') {
-    MAP_VAR = {};
-}
-
-/**
- * Load Spring i18n messages into JS
- */
-jQuery.i18n.properties({
-    name: 'messages',
-    path: BC_CONF.contextPath + '/messages/i18n/',
-    mode: 'map',
-    async: true,
-    cache: true,
-    language: BC_CONF.locale // default is to use browser specified locale
-    //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
-});
 
 /**
  * Document onLoad event using JQuery
@@ -497,9 +470,7 @@ function updateMarkerPosition(latLng) {
     // store values in hidden fields
     $('#latitude').val(lat);
     $('#longitude').val(lng);
-    // Update URL hash for back button, etc
     //console.log("updating hash lat", lat, $('#latitude').val());
-    location.hash = lat + "|" + lng + "|" + MAP_VAR.zoom + "|" + speciesGroup;
     $('#dialog-confirm #rad').html(MAP_VAR.radius);
     MAP_VAR.query = "?q=*%3A*&lat=" + lat + "&lon=" + lng + "&radius=" + MAP_VAR.radius;
 }
@@ -517,6 +488,9 @@ function loadRecordsLayer(retry) {
         //console.log('retry failed');
         return;
     }
+
+    // Update URL hash for back button, etc
+    location.hash = $('#latitude').val() + "|" + $('#longitude').val() + "|" + MAP_VAR.zoom + "|" + speciesGroup;
 
     // remove any existing records layers and controls
     if (alaWmsLayer) {
