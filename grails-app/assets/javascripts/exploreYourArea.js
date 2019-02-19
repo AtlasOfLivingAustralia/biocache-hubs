@@ -375,7 +375,7 @@ function loadLeafletMap() {
     }
 
     //MAP_VAR.map = map; // needed for map.commom
-
+    L.Icon.Default.imagePath = MAP_VAR.contextPath + "/static/js/leaflet/images";
     marker = L.marker(latLng, {
         title: 'Marker Location',
         draggable: true
