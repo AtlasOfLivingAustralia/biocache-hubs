@@ -60,7 +60,8 @@
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             geocodeRegion: "${grailsApplication.config.geocode.region}",
             hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean},
-            removeFqs: ''
+            removeFqs: '',
+            mapIconUrlPath: "${assetPath(src:'/leaflet/images')}"
         }
 
         //make the taxa and rank global variable so that they can be used in the download
