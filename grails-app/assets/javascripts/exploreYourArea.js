@@ -581,7 +581,7 @@ function attemptGeolocation() {
         navigator.geolocation.getCurrentPosition(getMyPostion, positionWasDeclined);
         //console.log("line after navigator.geolocation.getCurrentPosition...");  
         // Neither functions gets called for some reason, so I've added a delay to initalize map anyway
-        setTimeout(function() {if (!map) positionWasDeclined();}, 9000);
+        setTimeout(function() {if (!MAP_VAR.map) positionWasDeclined();}, 9000);
     } else if (google.loader && google.loader.ClientLocation) {
         // Google AJAX API fallback GeoLocation
         console.log("getting coords using google geolocation", google.loader.ClientLocation);
