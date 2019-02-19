@@ -35,6 +35,32 @@
     line-height: 1.5em;
 }
 
+/*
+ map.common.js styles
+*/
+.multiRecordHeader {
+    font-weight: bold;
+    min-width: 260px;
+}
+
+.recordSummary {
+    min-width: 260px;
+}
+
+.recordLink, .multiRecordFooter {
+    width: 50%;
+    margin-top: 5px;
+}
+
+.multiRecordFooter {
+    float: right;
+    text-align: right;
+}
+
+.leaflet-popup-content .btn btn-default btn-default-xs {
+    font-size: 12px;
+    font-weight: bold;
+}
 
 /*!*#content2 {*!*/
     /*!*width: 720px;*!*/

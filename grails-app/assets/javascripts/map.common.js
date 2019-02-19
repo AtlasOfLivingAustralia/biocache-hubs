@@ -15,6 +15,22 @@
 
 /*  Common map (Leaflet) functions */
 
+/**
+ * Load Spring i18n messages into JS
+ */
+if (!(jQuery.i18n.properties && jQuery.i18n.properties.path) && typeof BC_CONF != 'undefined' && BC_CONF.hasOwnProperty('contextPath')) {
+    //console.log("loading Query.i18n");
+    jQuery.i18n.properties({
+        name: 'messages',
+        path: BC_CONF.contextPath + '/messages/i18n/',
+        mode: 'map',
+        async: true,
+        cache: true,
+        language: BC_CONF.locale // default is to use browser specified locale
+        //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
+    });
+}
+
 // used to generate unique handler name for user drawn areas.
 var areaCounter = 0;
 
@@ -60,6 +76,24 @@ L.PointClickHandler = L.Handler.extend({
         L.DomEvent.off(this.obj, 'click', pointLookupClickRegister, this);
     }
 });
+
+/**
+ * Fudge to allow double clicks to propagate to map while allowing single clicks to be registered
+ *
+ */
+var clickCount = 0;
+function pointLookupClickRegister(e) {
+    //console.log('pointLookupClickRegister', clickCount);
+    clickCount += 1;
+    if (clickCount <= 1) {
+        setTimeout(function() {
+            if (clickCount <= 1) {
+                pointLookup(e);
+            }
+            clickCount = 0;
+        }, 400);
+    }
+}
 
 function generatePopup(layer, latlng) {
     var params = "";
@@ -163,4 +197,250 @@ function drawWktObj(wktString) {
             MAP_VAR.map.panTo(wktObject.getLatLng());
         }
     }
+}
+
+/**
+ * Event handler for point lookup.
+ * @param e
+ */
+function pointLookup(e) {
+
+    MAP_VAR.popup = L.popup().setLatLng(e.latlng);
+    var radius = 0;
+    var size = $('sizeslider-val').html();
+    var zoomLevel = MAP_VAR.map.getZoom();
+    switch (zoomLevel){
+        case 0:
+            radius = 800;
+            break;
+        case 1:
+            radius = 400;
+            break;
+        case 2:
+            radius = 200;
+            break;
+        case 3:
+            radius = 100;
+            break;
+        case 4:
+            radius = 50;
+            break;
+        case 5:
+            radius = 25;
+            break;
+        case 6:
+            radius = 20;
+            break;
+        case 7:
+            radius = 7.5;
+            break;
+        case 8:
+            radius = 3;
+            break;
+        case 9:
+            radius = 1.5;
+            break;
+        case 10:
+            radius = .75;
+            break;
+        case 11:
+            radius = .25;
+            break;
+        case 12:
+            radius = .15;
+            break;
+        case 13:
+            radius = .1;
+            break;
+        case 14:
+            radius = .05;
+            break;
+        case 15:
+            radius = .025;
+            break;
+        case 16:
+            radius = .015;
+            break;
+        case 17:
+            radius = 0.0075;
+            break;
+        case 18:
+            radius = 0.004;
+            break;
+        case 19:
+            radius = 0.002;
+            break;
+        case 20:
+            radius = 0.001;
+            break;
+    }
+
+    if (size >= 5 && size < 8){
+        radius = radius * 2;
+    }
+    if (size >= 8){
+        radius = radius * 3;
+    }
+
+    MAP_VAR.popupRadius = radius;
+    var mapQuery = MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, ''); // remove existing lat/lon/radius/wkt params
+    MAP_VAR.map.spin(true);
+
+    $.ajax({
+        url: MAP_VAR.mappingUrl + "/occurrences/info" + mapQuery + MAP_VAR.removeFqs,
+        jsonp: "callback",
+        dataType: "jsonp",
+        timeout: 30000,
+        data: {
+            zoom: MAP_VAR.map.getZoom(),
+            lat: e.latlng.wrap().lat,
+            lon: e.latlng.wrap().lng,
+            radius: radius,
+            format: "json"
+        },
+        success: function(response) {
+            MAP_VAR.map.spin(false);
+
+            if (response.occurrences && response.occurrences.length > 0) {
+
+                MAP_VAR.recordList = response.occurrences; // store the list of record uuids
+                MAP_VAR.popupLatlng = e.latlng.wrap(); // store the coordinates of the mouse click for the popup
+
+                // Load the first record details into popup
+                insertRecordInfo(0);
+            }
+        },
+        error: function(x, t, m) {
+            MAP_VAR.map.spin(false);
+        },
+
+    });
+}
+
+/**
+ * Populate the map popup with record details
+ *
+ * @param recordIndex
+ */
+function insertRecordInfo(recordIndex) {
+    //console.log("insertRecordInfo", recordIndex, MAP_VAR.recordList);
+    var recordUuid = MAP_VAR.recordList[recordIndex];
+    var $popupClone = $('.popupRecordTemplate').clone();
+    MAP_VAR.map.spin(true);
+
+    if (MAP_VAR.recordList.length > 1) {
+        // populate popup header
+        $popupClone.find('.multiRecordHeader').show();
+        $popupClone.find('.currentRecord').html(recordIndex + 1);
+        $popupClone.find('.totalrecords').html(MAP_VAR.recordList.length.toString().replace(/100/, '100+'));
+        var occLookup = "&radius=" + MAP_VAR.popupRadius + "&lat=" + MAP_VAR.popupLatlng.lat + "&lon=" + MAP_VAR.popupLatlng.lng;
+        $popupClone.find('a.viewAllRecords').attr('href', BC_CONF.contextPath + "/occurrences/search" + MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + occLookup);
+        // populate popup footer
+        $popupClone.find('.multiRecordFooter').show();
+        if (recordIndex < MAP_VAR.recordList.length - 1) {
+            $popupClone.find('.nextRecord a').attr('onClick', 'insertRecordInfo('+(recordIndex + 1)+'); return false;');
+            $popupClone.find('.nextRecord a').removeClass('disabled');
+        }
+        if (recordIndex > 0) {
+            $popupClone.find('.previousRecord a').attr('onClick', 'insertRecordInfo('+(recordIndex - 1)+'); return false;');
+            $popupClone.find('.previousRecord a').removeClass('disabled');
+        }
+    }
+
+    $popupClone.find('.recordLink a').attr('href', BC_CONF.contextPath + "/occurrences/" + recordUuid);
+
+    // Get the current record details
+    $.ajax({
+        url: MAP_VAR.mappingUrl + "/occurrences/" + recordUuid + ".json",
+        jsonp: "callback",
+        dataType: "jsonp",
+        success: function(record) {
+            MAP_VAR.map.spin(false);
+
+            if (record.raw) {
+                var displayHtml = formatPopupHtml(record);
+                $popupClone.find('.recordSummary').html( displayHtml ); // insert into clone
+            } else {
+                // missing record - disable "view record" button and display message
+                $popupClone.find('.recordLink a').attr('disabled', true).attr('href','javascript: void(0)');
+                $popupClone.find('.recordSummary').html( "<br>" + jQuery.i18n.prop("search.recordNotFoundForId") + ": <span style='white-space:nowrap;'>" + recordUuid + '</span><br><br>' ); // insert into clone
+            }
+
+            MAP_VAR.popup.setContent($popupClone.html()); // push HTML into popup content
+            MAP_VAR.popup.openOn(MAP_VAR.map);
+        },
+        error: function() {
+            MAP_VAR.map.spin(false);
+        }
+    });
+
+}
+
+function formatPopupHtml(record) {
+    var displayHtml = "";
+
+    // catalogNumber
+    if(record.raw.occurrence.catalogNumber != null){
+        displayHtml += jQuery.i18n.prop('record.catalogNumber.label') + ": " + record.raw.occurrence.catalogNumber + '<br />';
+    } else if(record.processed.occurrence.catalogNumber != null){
+        displayHtml += jQuery.i18n.prop('record.catalogNumber.label') + ": " + record.processed.occurrence.catalogNumber + '<br />';
+    }
+
+    // record or field number
+    if(record.raw.occurrence.recordNumber != null){
+        displayHtml += jQuery.i18n.prop('record.recordNumber.label') + ": " + record.raw.occurrence.recordNumber + '<br />';
+    } else if(record.raw.occurrence.fieldNumber != null){
+        displayHtml += jQuery.i18n.prop('record.fieldNumber.label') + ": " + record.raw.occurrence.fieldNumber + '<br />';
+    }
+
+
+    if(record.raw.classification.vernacularName!=null ){
+        displayHtml += record.raw.classification.vernacularName + '<br />';
+    } else if(record.processed.classification.vernacularName!=null){
+        displayHtml += record.processed.classification.vernacularName + '<br />';
+    }
+
+    if (record.processed.classification.scientificName) {
+        displayHtml += formatSciName(record.processed.classification.scientificName, record.processed.classification.taxonRankID)  + '<br />';
+    } else {
+        displayHtml += record.raw.classification.scientificName  + '<br />';
+    }
+
+    if(record.processed.attribution.institutionName != null){
+        displayHtml += jQuery.i18n.prop('record.institutionName.label') + ": " + record.processed.attribution.institutionName + '<br />';
+    } else if(record.processed.attribution.dataResourceName != null){
+        displayHtml += jQuery.i18n.prop('record.dataResourceName.label') + ": " + record.processed.attribution.dataResourceName + '<br />';
+    }
+
+    if(record.processed.attribution.collectionName != null){
+        displayHtml += jQuery.i18n.prop('record.collectionName.label') + ": " + record.processed.attribution.collectionName  + '<br />';
+    }
+
+    if(record.raw.occurrence.recordedBy != null){
+        displayHtml += jQuery.i18n.prop('record.recordedBy.label') + ": " + record.raw.occurrence.recordedBy + '<br />';
+    } else if(record.processed.occurrence.recordedBy != null){
+        displayHtml += jQuery.i18n.prop('record.recordedBy.label') + ": " + record.processed.occurrence.recordedBy + '<br />';
+    }
+
+    if(record.processed.event.eventDate != null){
+        //displayHtml += "<br/>";
+        var label = jQuery.i18n.prop('record.eventDate.label') + ": ";
+        displayHtml += label + record.processed.event.eventDate;
+    }
+
+    return displayHtml;
+}
+
+/**
+ * Format the display of a scientific name.
+ * E.g. genus and below should be italicised
+ */
+function formatSciName(name, rankId) {
+    var output = "";
+    if (rankId && rankId >= 6000) {
+        output = "<i>" + name + "</i>";
+    } else {
+        output = name;
+    }
+    return output;
 }

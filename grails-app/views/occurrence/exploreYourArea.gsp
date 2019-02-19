@@ -44,9 +44,10 @@
 
     <asset:script type="text/javascript">
         // Global variables for yourAreaMap.js
-        var EYA_CONF = {
+        var MAP_VAR = {
             contextPath: "${request.contextPath}",
             biocacheServiceUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}",
+            mappingUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}", // duplicate var for map.commom.js
             forwardURI: "${request.forwardURI}",
             imagesUrlPrefix: "${request.contextPath}/assets/eya-images",
             zoom: Number(${zoom}),
@@ -58,7 +59,8 @@
             mapMinimalSubdomains: "${grailsApplication.config.map.minimal.subdomains}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             geocodeRegion: "${grailsApplication.config.geocode.region}",
-            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
+            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean},
+            removeFqs: ''
         }
 
         //make the taxa and rank global variable so that they can be used in the download
@@ -191,6 +193,7 @@
     </div><!-- .col-md-5 -->
 </div><!-- .row -->
 
+<g:render template="mapPopup"/>
 <g:render template="download"/>
 
 <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
