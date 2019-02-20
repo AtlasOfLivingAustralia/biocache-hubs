@@ -424,6 +424,9 @@ function loadLeafletMap() {
         loadRecordsLayer();
     });
 
+    // adjust map view for new location
+    MAP_VAR.map.setView(latLng, MAP_VAR.zoom);
+    
     // Update current position info.
     geocodePosition(latLng);
     updateMarkerPosition(latLng);
