@@ -415,7 +415,7 @@ function loadLeafletMap() {
         MAP_VAR.map.panTo({lon:lon,lat:lat})
         MAP_VAR.map.removeLayer(circle);
         circlProps.radius = radius;
-        circle = L.circle([lat, lon], radius, circlProps).addTo(map);
+        circle = L.circle([lat, lon], radius, circlProps).addTo(MAP_VAR.map);
         updateMarkerAddress('Drag ended');
         updateMarkerPosition(newLatLng);
         geocodePosition(newLatLng);
