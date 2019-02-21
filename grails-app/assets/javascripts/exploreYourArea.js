@@ -234,95 +234,10 @@ function initialize() {
     loadLeafletMap();
     loadGroups();
 }
-/**
- * Google map API v3
- */
-// function loadMap() {
-//     var latLng = new google.maps.LatLng($('#latitude').val(), $('#longitude').val());
-//     map = new google.maps.Map(document.getElementById('mapCanvas'), {
-//         zoom: MAP_VAR.zoom,
-//         center: latLng,
-//         scrollwheel: false,
-//         streetViewControl: true,
-//         mapTypeControl: true,
-//         mapTypeControlOptions: {
-//             style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-//         },
-//         navigationControl: true,
-//         navigationControlOptions: {
-//             style: google.maps.NavigationControlStyle.SMALL // DEFAULT
-//         },
-//         mapTypeId: google.maps.MapTypeId.HYBRID,
-//         controlSize: 26 // prevents larger sized controls which are default from 2018 onwards
-//     });
-//     marker = new google.maps.Marker({
-//         position: latLng,
-//         title: 'Marker Location',
-//         map: map,
-//         draggable: true
-//     });
-//
-//     markerInfowindow = new google.maps.InfoWindow({
-//         content: '<div class="infoWindow">marker address</div>' // gets updated by geocodePosition()
-//     });
-//
-//     google.maps.event.addListener(marker, 'click', function(event) {
-//         if (lastInfoWindow) lastInfoWindow.close();
-//         markerInfowindow.setLatLng(event.latLng);
-//         markerInfowindow.open(map, marker);
-//         lastInfoWindow = markerInfowindow;
-//     });
-//
-//     // Add a Circle overlay to the map.
-//     var radius = parseInt($('select#radius').val()) * 1010;
-//     circle = new google.maps.Circle({
-//         map: map,
-//         radius: radius,
-//         strokeWeight: 1,
-//         strokeColor: 'white',
-//         strokeOpacity: 0.5,
-//         fillColor: '#222', // '#2C48A6'
-//         fillOpacity: 0.2,
-//         zIndex: -10
-//     });
-//     // bind circle to marker
-//     circle.bindTo('center', marker, 'position');
-//
-//     // Update current position info.
-//     //updateMarkerPosition(latLng);
-//     geocodePosition(latLng);
-//
-//     // Add dragging event listeners.
-//     google.maps.event.addListener(marker, 'dragstart', function() {
-//         updateMarkerAddress('Dragging...');
-//     });
-//
-//     google.maps.event.addListener(marker, 'drag', function() {
-//         updateMarkerAddress('Dragging...');
-//         //updateMarkerPosition(marker.getPosition());
-//     });
-//
-//     google.maps.event.addListener(marker, 'dragend', function() {
-//         updateMarkerAddress('Drag ended');
-//         updateMarkerPosition(marker.getPosition());
-//         geocodePosition(marker.getPosition());
-//         //LoadTaxaGroupCounts();
-//         loadGroups();
-//         map.panTo(marker.getPosition());
-//     });
-//
-//     google.maps.event.addListener(map, 'zoom_changed', function() {
-//         //console.log('loadMap() -> loadRecordsLayer()');
-//         loadRecordsLayer();
-//     });
-//
-//     if (!points || points.length == 0) {
-//         //$('#taxa-level-0 tbody td:first').click(); // click on "all species" group
-//         // commented out by NdR - groupClicked() calls loadRecordsLayer() on new page load
-//         // loadRecordsLayer();
-//     }
-// }
 
+/*
+ * Initiate Leaflet map
+ */
 function loadLeafletMap() {
     var latLng = L.latLng($('#latitude').val(), $('#longitude').val());
 
@@ -354,10 +269,6 @@ function loadLeafletMap() {
         // add the default base layer
         MAP_VAR.map.addLayer(defaultBaseLayer);
 
-        MAP_VAR.map.on("click", function (event) {
-            pointLookupClickRegister(event); // via map.common.js
-        });
-
         // "locate me" button
         L.easyButton( '<i class="fa fa-location-arrow" data-toggle="tooltip" data-placement="right"></i>', function(e){
             attemptGeolocation();
@@ -365,8 +276,6 @@ function loadLeafletMap() {
 
     } else {
         // map loaded already
-        //MAP_VAR.map.setView(latLng, MAP_VAR.zoom);
-        //updateMarkerPosition(latLng);
         // reset layers/markers
         if (MAP_VAR.map.hasLayer(circle)) MAP_VAR.map.removeLayer(circle);
         if (MAP_VAR.map.hasLayer(marker)) MAP_VAR.map.removeLayer(marker);
@@ -374,21 +283,20 @@ function loadLeafletMap() {
         circle = null;
     }
 
-    //MAP_VAR.map = map; // needed for map.commom
-    L.Icon.Default.imagePath = MAP_VAR.mapIconUrlPath; //MAP_VAR.contextPath + "/static/js/leaflet/images";
+    // Fix for asset pipeline confusing Leaflet WRT to path to images
+    L.Icon.Default.imagePath = MAP_VAR.mapIconUrlPath;
+
+    // Add marker
     marker = L.marker(latLng, {
         title: 'Marker Location',
         draggable: true
     }).addTo(MAP_VAR.map);
 
+    MAP_VAR.map.layerControl.addOverlay(marker, 'Marker');
+
     markerInfowindow = marker.bindPopup('<div class="infoWindow">marker address</div>',
         {autoClose: true}
     );
-
-    // marker.on('click', function (event) {
-    //     //console.log("event",event);
-    //     //lastInfoWindow = markerInfowindow;
-    // });
 
     // Add a Circle overlay to the map.
     radius = parseInt($('select#radius').val()) * 1010;
@@ -405,6 +313,11 @@ function loadLeafletMap() {
 
     //console.log("circlProps", circlProps, latLng);
     circle = L.circle(latLng, radius, circlProps).addTo(MAP_VAR.map);
+
+    // detect click event and trigger record info popup
+    circle.on("click", function (event) {
+        pointLookupClickRegister(event);
+    });
 
     // bind circle to marker
     marker.on('dragend', function(e){
@@ -426,7 +339,7 @@ function loadLeafletMap() {
 
     // adjust map view for new location
     MAP_VAR.map.setView(latLng, MAP_VAR.zoom);
-    
+
     // Update current position info.
     geocodePosition(latLng);
     updateMarkerPosition(latLng);
