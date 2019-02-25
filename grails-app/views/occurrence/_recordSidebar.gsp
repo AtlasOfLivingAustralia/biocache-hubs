@@ -163,46 +163,53 @@
         <div class="sidebar">
             <asset:script type="text/javascript">
                 $(document).ready(function() {
-                    var latlng = new google.maps.LatLng(${latLngStr.trim()});
-                    var myOptions = {
-                        zoom: 5,
-                        center: latlng,
-                        scrollwheel: false,
-                        scaleControl: true,
-                        streetViewControl: false,
-                        mapTypeControl: true,
-                        mapTypeControlOptions: {
-                            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                            mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN ]
-                        },
-                        mapTypeId: google.maps.MapTypeId.ROADMAP
-                    };
-
-                    var map = new google.maps.Map(document.getElementById("occurrenceMap"), myOptions);
-
-                    var marker = new google.maps.Marker({
-                        position: latlng,
-                        map: map,
-                        title:"Occurrence Location"
+                    // Leaflet map
+                    var defaultBaseLayer = L.tileLayer("${grailsApplication.config.map.minimal.url}", {
+                        attribution: "${raw(grailsApplication.config.map.minimal.attr)}",
+                        subdomains: "${grailsApplication.config.map.minimal.subdomains}"
                     });
 
+                    var baseLayers = {
+                        "Minimal": defaultBaseLayer,
+                        "Road":  new L.Google('ROADMAP'),
+                        //"Terrain": new L.Google('TERRAIN'),
+                        "Satellite": new L.Google('HYBRID')
+                    };
+
+                    var latLng = L.latLng(${latLngStr.trim()});
+                    var map = L.map('occurrenceMap', {
+                        center: latLng,
+                        zoom: 5,
+                        scrollWheelZoom: false
+                    });
+
+                    L.control.layers(baseLayers).addTo(map);
+                    map.addLayer(defaultBaseLayer);
+
+                    // Add marker
+                    L.marker(latLng, {
+                        title: 'Occurrence location',
+                        draggable: false
+                    }).addTo(map);
+
                     <g:if test="${record.processed.location.coordinateUncertaintyInMeters}">
-                    var radius = parseInt('${record.processed.location.coordinateUncertaintyInMeters}');
-                    if (!isNaN(radius)) {
-                        // Add a Circle overlay to the map.
-                        circle = new google.maps.Circle({
-                            map: map,
-                            radius: radius, // 3000 km
-                            strokeWeight: 1,
-                            strokeColor: 'white',
-                            strokeOpacity: 0.5,
-                            fillColor: '#2C48A6',
-                            fillOpacity: 0.2
-                        });
-                        // bind circle to marker
-                        circle.bindTo('center', marker, 'position');
-                    }
+                        var radius = parseInt('${record.processed.location.coordinateUncertaintyInMeters}');
+                        if (!isNaN(radius)) {
+                            // Add a Circle overlay to the map.
+                            var circlProps = {
+                                stroke: true,
+                                weight: 2,
+                                color: 'black',
+                                opacity: 0.2,
+                                fillColor: '#888', // '#2C48A6'
+                                fillOpacity: 0.2,
+                                zIndex: -10
+                            };
+                            // console.log("circlProps", circlProps, latLng, radius);
+                            L.circle(latLng, radius, circlProps).addTo(map);
+                        }
                     </g:if>
+
                 });
             </asset:script>
             %{--<h3><g:message code="show.occurrencemap.title" default="Location of record"/></h3>--}%
