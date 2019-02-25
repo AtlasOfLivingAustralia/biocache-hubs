@@ -88,8 +88,7 @@ $(document).ready(function() {
             circle.setRadius(radius);
             MAP_VAR.zoom = zoomForRadius[radius];
             MAP_VAR.map.setZoom((MAP_VAR.zoom) ? MAP_VAR.zoom : 12);
-            //updateMarkerPosition(marker.getLatLng()); // so bookmarks is updated
-            //loadRecordsLayer();
+            MAP_VAR.layerControl.removeLayer(marker); // prevent duplicate controls
             loadGroups();
         }
     );
