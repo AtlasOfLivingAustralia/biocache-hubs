@@ -192,6 +192,9 @@
                         draggable: false
                     }).addTo(map);
 
+                    // Fix for asset pipeline confusing Leaflet WRT to path to images
+                    L.Icon.Default.imagePath = "${assetPath(src:'/leaflet/images')}";
+
                     <g:if test="${record.processed.location.coordinateUncertaintyInMeters}">
                         var radius = parseInt('${record.processed.location.coordinateUncertaintyInMeters}');
                         if (!isNaN(radius)) {
