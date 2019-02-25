@@ -293,6 +293,7 @@ function loadLeafletMap() {
     } else {
         // map loaded already
         // reset layers/markers
+        MAP_VAR.layerControl.removeLayer(marker); // prevent duplicate controls
         if (MAP_VAR.map.hasLayer(circle)) MAP_VAR.map.removeLayer(circle);
         if (MAP_VAR.map.hasLayer(marker)) MAP_VAR.map.removeLayer(marker);
         marker = null;
