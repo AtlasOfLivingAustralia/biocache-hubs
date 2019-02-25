@@ -106,37 +106,54 @@ $(document).ready(function() {
     });
 
     // Handle back button and saved URLs
-    // hash coding: #lat|lng|zoom
-    var hash = window.location.hash.replace( /^#/, '');
-    var hash2;
-    var defaultParam = $.url().param('default'); // requires JS import: purl.js
-    //console.log("defaultParam", defaultParam);
 
-    if (hash.indexOf("%7C") != -1) {
-        // already escaped
-        hash2 = hash;
-    } else {
-        // escape used to prevent injection attacks
-        hash2 = encodeURIComponent(hash);
-    }
+    var defaultParam = $.url().param('default'); // requires JS import: purl.js
+    var encodedHash = getEncodedHash();
 
     if (defaultParam) {
         initialize();
-    } else if (hash2) {
-        //console.log("url hash", hash2);
-        var hashParts = hash2.split("%7C"); // note escaped version of |
-        if (hashParts.length == 3) {
-            bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], null);
-        } else if (hashParts.length == 4) {
-            bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], hashParts[3]);
-        } else {
-            attemptGeolocation();
+    } else if ( $.url().param('lat') &&  $.url().param('lon') && $.url().param('radius')) {
+        // triggered if user has clicked "return to search results" from download confirmation page
+        // URL with have params: lat, lon, radius & fq
+        // e.g. q=*:*&lat=-35.2509&lon=149.1638&radius=1&fq=geospatial_kosher:true&fq=species_group:Insects
+        var lat = $.url().param('lat');
+        var lon = $.url().param('lon');
+        var radiusInMetres = $.url().param('radius') * 1000; // assume radius is in km (SOLR radius param)
+        var radius = zoomForRadius[radiusInMetres];
+        var species_group;
+        var fqs = $.url().param('fq'); // can be array or string
+
+        if (Array.isArray(fqs)) {
+            // multiple fq params
+            fqs.forEach(function(fq) {
+                var parts = fq.split(":"); // e.g. speciesGroup:Insects
+                if (parts[0] == "species_group") {
+                    species_group = parts[1];
+                }
+            });
+        } else if (fqs) {
+            var parts = fqs.split(":");
+            if (parts[0] == "species_group") {
+                species_group = parts[1];
+            }
         }
+
+        // strip params from URL
+        window.history.replaceState(null, null, window.location.pathname);
+        // update map state for provided coordinates, etc.
+        bookmarkedSearch(lat, lon, radius, species_group);
+    } else if (encodedHash) {
+        // update map state from URL hash
+        loadStateFromHash(encodedHash);
     } else {
         //console.log("defaultParam not set, geolocating...");
         attemptGeolocation();
     }
 
+    window.onhashchange = function() {
+        // trigger state change (back button mostly - TODO check for duplicate function calls)
+        loadStateFromHash(getEncodedHash());
+    };
 
     // catch the link for "View all records"
     $('#viewAllRecords').live("click", function(e) {
@@ -257,14 +274,14 @@ function loadLeafletMap() {
         MAP_VAR.map = L.map('mapCanvas', {
             center: latLng,
             zoom: MAP_VAR.zoom,
-            scrollWheelZoom: false,
-            layerControl: null
+            scrollWheelZoom: false
+            //layerControl: null
         });
 
         updateMarkerPosition(latLng);
 
-        // add layer control
-        MAP_VAR.map.layerControl = L.control.layers(baseLayers).addTo(MAP_VAR.map);
+        // add layer control (layerControl is not a leaflet var)
+        MAP_VAR.layerControl = L.control.layers(baseLayers).addTo(MAP_VAR.map);
 
         // add the default base layer
         MAP_VAR.map.addLayer(defaultBaseLayer);
@@ -292,7 +309,8 @@ function loadLeafletMap() {
         draggable: true
     }).addTo(MAP_VAR.map);
 
-    MAP_VAR.map.layerControl.addOverlay(marker, 'Marker');
+    //MAP_VAR.layerControl.removeLayer(marker); // prevent duplicate controls
+    MAP_VAR.layerControl.addOverlay(marker, 'Marker');
 
     markerInfowindow = marker.bindPopup('<div class="infoWindow">marker address</div>',
         {autoClose: true}
@@ -311,7 +329,7 @@ function loadLeafletMap() {
         zIndex: -10
     }
 
-    //console.log("circlProps", circlProps, latLng);
+    // console.log("circlProps", circlProps, latLng, radius);
     circle = L.circle(latLng, radius, circlProps).addTo(MAP_VAR.map);
 
     // detect click event and trigger record info popup
@@ -334,7 +352,10 @@ function loadLeafletMap() {
         geocodePosition(newLatLng);
         //LoadTaxaGroupCounts();
         loadGroups();
-        loadRecordsLayer();
+        //loadRecordsLayer();
+        // adjust map view for new location
+        MAP_VAR.map.setView(latLng, MAP_VAR.zoom);
+        MAP_VAR.layerControl.removeLayer(marker); // prevent duplicate controls
     });
 
     // adjust map view for new location
@@ -355,7 +376,7 @@ function geocodePosition(pos) {
         latLng: gLatLng
     }, function(responses) {
         if (responses && responses.length > 0) {
-            console.log("geocoded position", responses[0]);
+            // console.log("geocoded position", responses[0]);
             var address = responses[0].formatted_address;
             updateMarkerAddress(address);
             // update the info window for marker icon
@@ -380,7 +401,7 @@ function updateMarkerAddress(str) {
  * Update the lat & lon hidden input elements
  */
 function updateMarkerPosition(latLng) {
-    console.log("updateMarkerPosition", latLng, latLng.lat);
+    // console.log("updateMarkerPosition", latLng, latLng.lat);
     var lat = latLng.lat.toFixed(coordinatePrecision);
     var lng = latLng.lng.toFixed(coordinatePrecision);
     // store values in hidden fields
@@ -411,7 +432,8 @@ function loadRecordsLayer(retry) {
     // remove any existing records layers and controls
     if (alaWmsLayer) {
         MAP_VAR.map.removeLayer(alaWmsLayer);
-        MAP_VAR.map.layerControl.removeLayer(alaWmsLayer);
+        MAP_VAR.layerControl.removeLayer(alaWmsLayer);
+        //MAP_VAR.layerControl.removeLayer(marker); // prevent duplicate controls
     }
 
     // URL for GeoJSON web service
@@ -432,7 +454,7 @@ function loadRecordsLayer(retry) {
     // records popups need to know the species group
     MAP_VAR.removeFqs = "&fq=species_group:" + (speciesGroup == "ALL_SPECIES" ? "*" : speciesGroup) + "&fq=taxon_name:" + (taxon ? taxon : "*");
 
-    console.log("alaParams = ", alaParams, speciesGroupParam);
+    // console.log("alaParams = ", alaParams, speciesGroupParam);
 
     var alaMapUrl = MAP_VAR.biocacheServiceUrl + "/ogc/wms/reflect?" + alaParams;
     var wmsParams = {
@@ -452,7 +474,7 @@ function loadRecordsLayer(retry) {
     // JQuery AJAX call
     //$.getJSON(alaMaprUrl, params, loadNewGeoJsonData);
     alaWmsLayer = L.tileLayer.wms(alaMapUrl, wmsParams).addTo(MAP_VAR.map);
-    MAP_VAR.map.layerControl.addOverlay(alaWmsLayer, 'Records');
+    MAP_VAR.layerControl.addOverlay(alaWmsLayer, 'Records');
 
     alaWmsLayer.on('tileload', function(te){
         // populate points array so we can tell if data is loaded - legacy from geoJson version
@@ -466,10 +488,10 @@ function loadRecordsLayer(retry) {
 function attemptGeolocation() {
     // HTML5 GeoLocation
     if (navigator && navigator.geolocation) {
-        console.log("trying to get coords with navigator.geolocation...");  
+        // console.log("trying to get coords with navigator.geolocation...");  
         function getMyPostion(position) {
             //alert('coords: '+position.coords.latitude+','+position.coords.longitude);
-            console.log('geolocation "navigator" request accepted');
+            // console.log('geolocation "navigator" request accepted');
             //$('#mapCanvas').empty();
             updateMarkerPosition(L.latLng(position.coords.latitude, position.coords.longitude));
             //LoadTaxaGroupCounts();
@@ -500,7 +522,7 @@ function attemptGeolocation() {
         setTimeout(function() {if (!MAP_VAR.map) positionWasDeclined();}, 9000);
     } else if (google.loader && google.loader.ClientLocation) {
         // Google AJAX API fallback GeoLocation
-        console.log("getting coords using google geolocation", google.loader.ClientLocation);
+        // console.log("getting coords using google geolocation", google.loader.ClientLocation);
         updateMarkerPosition(L.latLng(google.loader.ClientLocation.latitude, google.loader.ClientLocation.longitude));
         //LoadTaxaGroupCounts();
         initialize();
@@ -540,14 +562,14 @@ function geocodeAddress(reverseGeocode) {
 
     if (!latLng && geocoder && address) {
         //geocoder.getLocations(address, addAddressToPage);
-        console.log("geocodeAddress with address string");
+        // console.log("geocodeAddress with address string");
         geocoder.geocode( {'address': address, region: MAP_VAR.geocodeRegion}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 // geocode was successful
                 //console.log('geocodeAddress results', results);
                 updateMarkerAddress(results[0].formatted_address);
                 var gLatLng = results[0].geometry.location;
-                console.log("gLatLng", gLatLng.lat(), gLatLng.lng());
+                // console.log("gLatLng", gLatLng.lat(), gLatLng.lng());
                 var latLng = L.latLng(gLatLng.lat(), gLatLng.lng());
                 updateMarkerPosition(latLng);
                 // reload map pin, etc
@@ -650,7 +672,7 @@ function processSpeciesJsonData(data, appendResults) {
             if (data[i].commonName) {
                 tr = tr + ' : ' + data[i].commonName+'';
             }
-            // add links to species page and ocurrence search (inside hidden div)
+            // add links to species page and occurrence search (inside hidden div)
             if(MAP_VAR.speciesPageUrl) {
 
                 var speciesInfo = '<div class="speciesInfo">';
@@ -819,12 +841,15 @@ function populateSpeciesGroups(data) {
         var label = group;
         if (group == "ALL_SPECIES") label = "all.species";
         var rc = (group == speciesGroup) ? " class='activeRow'" : ""; // highlight active group
-        var h = "<tr"+rc+" title='click to view group on map'><td class='indent"+indent+"'><a href='#' id='"+group+"' class='taxonBrowse' title='click to view group on map'>"+jQuery.i18n.prop(label, label)+"</a></td><td>"+count+"</td></tr>";
+        var i18nLabel = jQuery.i18n.prop(label);
+        // console.log("i18n check", label, i18nLabel);
+        var h = "<tr"+rc+" title='click to view group on map'><td class='indent"+indent+"'><a href='#' id='"+group+"' class='taxonBrowse' title='click to view group on map'>"+i18nLabel+"</a></td><td>"+count+"</td></tr>";
         $("#taxa-level-0 tbody").append(h);
     }
 }
 
 function bookmarkedSearch(lat, lng, zoom1, group) {
+    // console.log("bookmarkedSearch", lat, lng, zoom1, group);
     MAP_VAR.radius = radiusForZoom[zoom1];  // set global var
     MAP_VAR.zoom = parseInt(zoom1);
     $('select#radius').val(MAP_VAR.radius); // update drop-down widget
@@ -832,4 +857,34 @@ function bookmarkedSearch(lat, lng, zoom1, group) {
     updateMarkerPosition(L.latLng(lat, lng));
     // load map and groups
     initialize();
+}
+
+//
+function loadStateFromHash(encodedHash) {
+    // update map state from URL hash
+    // e.g. #-35.2512|149.1630|12|ALL_SPECIES
+    var hashParts = encodedHash.split("%7C"); // note escaped version of |
+    if (hashParts.length == 3) {
+        bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], null);
+    } else if (hashParts.length == 4) {
+        bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], hashParts[3]);
+    } else {
+        attemptGeolocation();
+    }
+}
+
+function getEncodedHash() {
+    // hash coding: #lat|lng|zoom
+    var hash = window.location.hash.replace( /^#/, '');
+    var encodedHash;
+
+    if (hash.indexOf("%7C") != -1) {
+        // already escaped
+        encodedHash = hash;
+    } else {
+        // escape used to prevent injection attacks
+        encodedHash = encodeURIComponent(hash);
+    }
+
+    return encodedHash;
 }
