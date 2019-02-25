@@ -186,14 +186,14 @@
                     L.control.layers(baseLayers).addTo(map);
                     map.addLayer(defaultBaseLayer);
 
+                    // Fix for asset pipeline confusing Leaflet WRT to path to images
+                    L.Icon.Default.imagePath = "${assetPath(src:'/leaflet/images')}";
+
                     // Add marker
                     L.marker(latLng, {
                         title: 'Occurrence location',
                         draggable: false
                     }).addTo(map);
-
-                    // Fix for asset pipeline confusing Leaflet WRT to path to images
-                    L.Icon.Default.imagePath = "${assetPath(src:'/leaflet/images')}";
 
                     <g:if test="${record.processed.location.coordinateUncertaintyInMeters}">
                         var radius = parseInt('${record.processed.location.coordinateUncertaintyInMeters}');
