@@ -9,6 +9,8 @@
 //= require moment.min.js
 //= require linkifyjs/linkify.js
 //= require linkifyjs/linkify-jquery.js
+//= require leaflet/leaflet.js
+//= require leaflet-plugins/layer/tile/Google.js
 //= require_self
  */
 /**

@@ -14,6 +14,8 @@
  *
  *= require print-area.css
  *= require jquery.qtip.min.css
+ *= require leaflet/leaflet.css
+ *= require leaflet-plugins/EasyButton/easy-button.css
  *= require_self
  */
 
@@ -306,4 +308,11 @@ html>body tbody.scrollContent td + td {
 
 html>body tbody.scrollContent td + td + td {
     width: 30px;
+}
+
+.leaflet-google-layer{
+    z-index: 0 !important;
+}
+.leaflet-map-pane{
+    z-index: 100;
 }

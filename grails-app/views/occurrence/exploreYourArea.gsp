@@ -44,18 +44,24 @@
 
     <asset:script type="text/javascript">
         // Global variables for yourAreaMap.js
-        var EYA_CONF = {
+        var MAP_VAR = {
             contextPath: "${request.contextPath}",
             biocacheServiceUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}",
+            mappingUrl: "${biocacheServiceUrl.encodeAsHTML()?:''}", // duplicate var for map.commom.js
             forwardURI: "${request.forwardURI}",
             imagesUrlPrefix: "${request.contextPath}/assets/eya-images",
             zoom: Number(${zoom}),
             radius: Number(${radius}),
             speciesPageUrl: "${speciesPageUrl}",
             queryContext: "${queryContext}",
+            mapMinimalUrl: "${grailsApplication.config.map.minimal.url}",
+            mapMinimalAttribution: "${raw(grailsApplication.config.map.minimal.attr)}",
+            mapMinimalSubdomains: "${grailsApplication.config.map.minimal.subdomains}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             geocodeRegion: "${grailsApplication.config.geocode.region}",
-            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
+            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean},
+            removeFqs: '',
+            mapIconUrlPath: "${assetPath(src:'/leaflet/images')}"
         }
 
         //make the taxa and rank global variable so that they can be used in the download
@@ -169,7 +175,7 @@
     </div><!-- .col-md-7 -->
     <div class="col-md-5 col-xs-12">
         <div id="mapCanvas" style="width: 100%; height: 490px;"></div>
-        <div style="font-size:11px;width:100%;color:black;height:20px;" class="show-80">
+        <div style="font-size:11px;width:100%;color:black;height:20px;" class="show-80 collapse">
             <table id="cellCountsLegend">
                 <tr>
                     <td style="background-color:#000; color:white; text-align:right;"><g:message code="eya.table.03.td" default="Records"/>:&nbsp;</td>
@@ -183,11 +189,12 @@
             </table>
         </div>
         <div id="mapTips">
-            <b><g:message code="eya.maptips.01" default="Tip"/></b>: <g:message code="eya.maptips.02" default="you can fine-tune the location of the area by dragging the red marker icon"/>
+            <b><g:message code="eya.maptips.01" default="Tip"/></b>: <g:message code="eya.maptips.02" default="you can fine-tune the location of the area by dragging the blue marker icon"/>
         </div>
     </div><!-- .col-md-5 -->
 </div><!-- .row -->
 
+<g:render template="mapPopup"/>
 <g:render template="download"/>
 
 <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">

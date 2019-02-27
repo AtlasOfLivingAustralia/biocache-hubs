@@ -17,25 +17,23 @@
 /*
  * // require jquery
 //= require purl.js
+//= require leaflet/leaflet.js
+//= require leaflet-plugins/layer/tile/Google.js
+//= require leaflet-plugins/spin/spin.min.js
+//= require leaflet-plugins/spin/leaflet.spin.js
+//= require leaflet-plugins/EasyButton/easy-button.js
+//= require leaflet-google.js
 //= require magellan.js
 //= require jquery.qtip.min.js
+//= require biocache-hubs.js
+//= require map.common.js
 //= require_self
  */
 
-// Note there are some global variables that are set by the calling page (which has access to
-// the ${pageContet} object, which are required by this file.:
-//
-//var EYA_CONF = {
-//    contextPath: "${pageContext.request.contextPath}",
-//    biocacheServiceUrl: "${biocacheServiceUrl}",
-//    zoom: ${zoom},
-//    radius: ${radius},
-//    speciesPageUrl: "${speciesPageUrl}",
-//    queryContext: ""
-//}
 
-var geocoder, map, marker, circle, markerInfowindow, lastInfoWindow, taxon, taxonGuid;
+var geocoder, marker, circle, markerInfowindow, lastInfoWindow, taxon, taxonGuid, alaWmsLayer, radius;
 var points = [], infoWindows = [], speciesGroup = "ALL_SPECIES";
+var coordinatePrecision = 4; // roughly 11m at equator || 5 = 1.1 m at equator
 var zoomForRadius = {
     1000: 14,
     5000: 12,
@@ -46,20 +44,6 @@ var radiusForZoom = {
     12: 5,
     14: 1
 };
-
-
-/**
- * Load Spring i18n messages into JS
- */
-jQuery.i18n.properties({
-    name: 'messages',
-    path: BC_CONF.contextPath + '/messages/i18n/',
-    mode: 'map',
-    async: true,
-    cache: true,
-    language: BC_CONF.locale // default is to use browser specified locale
-    //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
-});
 
 /**
  * Document onLoad event using JQuery
@@ -99,13 +83,12 @@ $(document).ready(function() {
     // Register onChange event on radius drop-down - will re-submit form
     $('select#radius').change(
         function(e) {
-            EYA_CONF.radius = parseInt($(this).val());
-            var radiusInMetres = EYA_CONF.radius * 1000;
-            circle.setRadius(radiusInMetres);
-            EYA_CONF.zoom = zoomForRadius[radiusInMetres];
-            map.setZoom((EYA_CONF.zoom)?EYA_CONF.zoom:12);
-            updateMarkerPosition(marker.getPosition()); // so bookmarks is updated
-            //loadRecordsLayer();
+            MAP_VAR.radius = parseInt($(this).val());
+            radius = MAP_VAR.radius * 1000;
+            circle.setRadius(radius);
+            MAP_VAR.zoom = zoomForRadius[radius];
+            MAP_VAR.map.setZoom((MAP_VAR.zoom) ? MAP_VAR.zoom : 12);
+            MAP_VAR.layerControl.removeLayer(marker); // prevent duplicate controls
             loadGroups();
         }
     );
@@ -122,37 +105,54 @@ $(document).ready(function() {
     });
 
     // Handle back button and saved URLs
-    // hash coding: #lat|lng|zoom
-    var hash = window.location.hash.replace( /^#/, '');
-    var hash2;
-    var defaultParam = $.url().param('default'); // requires JS import: purl.js
-    //console.log("defaultParam", defaultParam);
 
-    if (hash.indexOf("%7C") != -1) {
-        // already escaped
-        hash2 = hash;
-    } else {
-        // escape used to prevent injection attacks
-        hash2 = encodeURIComponent(hash);
-    }
+    var defaultParam = $.url().param('default'); // requires JS import: purl.js
+    var encodedHash = getEncodedHash();
 
     if (defaultParam) {
         initialize();
-    } else if (hash2) {
-        //console.log("url hash", hash2);
-        var hashParts = hash2.split("%7C"); // note escaped version of |
-        if (hashParts.length == 3) {
-            bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], null);
-        } else if (hashParts.length == 4) {
-            bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], hashParts[3]);
-        } else {
-            attemptGeolocation();
+    } else if ( $.url().param('lat') &&  $.url().param('lon') && $.url().param('radius')) {
+        // triggered if user has clicked "return to search results" from download confirmation page
+        // URL with have params: lat, lon, radius & fq
+        // e.g. q=*:*&lat=-35.2509&lon=149.1638&radius=1&fq=geospatial_kosher:true&fq=species_group:Insects
+        var lat = $.url().param('lat');
+        var lon = $.url().param('lon');
+        var radiusInMetres = $.url().param('radius') * 1000; // assume radius is in km (SOLR radius param)
+        var radius = zoomForRadius[radiusInMetres];
+        var species_group;
+        var fqs = $.url().param('fq'); // can be array or string
+
+        if (Array.isArray(fqs)) {
+            // multiple fq params
+            fqs.forEach(function(fq) {
+                var parts = fq.split(":"); // e.g. speciesGroup:Insects
+                if (parts[0] == "species_group") {
+                    species_group = parts[1];
+                }
+            });
+        } else if (fqs) {
+            var parts = fqs.split(":");
+            if (parts[0] == "species_group") {
+                species_group = parts[1];
+            }
         }
+
+        // strip params from URL
+        window.history.replaceState(null, null, window.location.pathname);
+        // update map state for provided coordinates, etc.
+        bookmarkedSearch(lat, lon, radius, species_group);
+    } else if (encodedHash) {
+        // update map state from URL hash
+        loadStateFromHash(encodedHash);
     } else {
-        //console.log("url not set, geolocating...");
+        //console.log("defaultParam not set, geolocating...");
         attemptGeolocation();
     }
 
+    window.onhashchange = function() {
+        // trigger state change (back button mostly - TODO check for duplicate function calls)
+        loadStateFromHash(getEncodedHash());
+    };
 
     // catch the link for "View all records"
     $('#viewAllRecords').live("click", function(e) {
@@ -162,7 +162,7 @@ $(document).ready(function() {
         if (speciesGroup != "ALL_SPECIES") {
             params += "&fq=species_group:" + speciesGroup;
         }
-        document.location.href = EYA_CONF.contextPath +'/occurrences/search?' + params;
+        document.location.href = MAP_VAR.contextPath +'/occurrences/search?' + params;
     });
 
     // catch the link for "Download"
@@ -175,7 +175,7 @@ $(document).ready(function() {
             params += "&fq=species_group:" + speciesGroup;
         }
         var searchParams = encodeURIComponent(params);
-        document.location.href = EYA_CONF.contextPath +'/download?searchParams=' + searchParams + "&targetUri=" + EYA_CONF.forwardURI;
+        document.location.href = MAP_VAR.contextPath +'/download?searchParams=' + searchParams + "&targetUri=" + MAP_VAR.forwardURI;
     });
 
 
@@ -186,9 +186,9 @@ $(document).ready(function() {
                 text: "About the matched address",
                 button: "Close"
             },
-            text: "<img src=\"" + EYA_CONF.imagesUrlPrefix + "/spinner.gif\" alt=\"\" class=\"no-rounding\"/>",
+            text: "<img src=\"" + MAP_VAR.imagesUrlPrefix + "/spinner.gif\" alt=\"\" class=\"no-rounding\"/>",
             ajax: {
-                url: EYA_CONF.contextPath + "/proxy/wordpress", // TODO fix proxy
+                url: MAP_VAR.contextPath + "/proxy/wordpress", // TODO fix proxy
                 data: {
                     page_id: 27726,
                     "content-only": 1
@@ -228,6 +228,9 @@ $(document).ready(function() {
         }
     });
 
+    // qtip for easy-button
+    $('.easy-button-button').qtip();
+
     // Catch enter key press on form
     $("#searchForm").bind("keypress", function(e) {
         if (e.keyCode == 13) {
@@ -243,112 +246,142 @@ $(document).ready(function() {
 
 // pointer fn
 function initialize() {
-    loadMap();
+    //loadMap();
+    loadLeafletMap();
     loadGroups();
 }
-/**
- * Google map API v3
+
+/*
+ * Initiate Leaflet map
  */
-function loadMap() {
-    var latLng = new google.maps.LatLng($('#latitude').val(), $('#longitude').val());
-    map = new google.maps.Map(document.getElementById('mapCanvas'), {
-        zoom: EYA_CONF.zoom,
-        center: latLng,
-        scrollwheel: false,
-        streetViewControl: true,
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-        },
-        navigationControl: true,
-        navigationControlOptions: {
-            style: google.maps.NavigationControlStyle.SMALL // DEFAULT
-        },
-        mapTypeId: google.maps.MapTypeId.HYBRID,
-        controlSize: 26 // prevents larger sized controls which are default from 2018 onwards
-    });
-    marker = new google.maps.Marker({
-        position: latLng,
+function loadLeafletMap() {
+    var latLng = L.latLng($('#latitude').val(), $('#longitude').val());
+
+    if (!MAP_VAR.map) {
+        var defaultBaseLayer = L.tileLayer(MAP_VAR.mapMinimalUrl, {
+            attribution: MAP_VAR.mapMinimalAttribution,
+            subdomains: MAP_VAR.mapMinimalSubdomains
+        });
+
+        var baseLayers = {
+            "Minimal": defaultBaseLayer,
+            "Road":  new L.Google('ROADMAP'),
+            //"Terrain": new L.Google('TERRAIN'),
+            "Satellite": new L.Google('HYBRID')
+        };
+
+        MAP_VAR.map = L.map('mapCanvas', {
+            center: latLng,
+            zoom: MAP_VAR.zoom,
+            scrollWheelZoom: false
+            //layerControl: null
+        });
+
+        updateMarkerPosition(latLng);
+
+        // add layer control (layerControl is not a leaflet var)
+        MAP_VAR.layerControl = L.control.layers(baseLayers).addTo(MAP_VAR.map);
+
+        // add the default base layer
+        MAP_VAR.map.addLayer(defaultBaseLayer);
+
+        // "locate me" button
+        L.easyButton( '<i class="fa fa-location-arrow" data-toggle="tooltip" data-placement="right"></i>', function(e){
+            attemptGeolocation();
+        },"Use my location").addTo(MAP_VAR.map);
+
+    } else {
+        // map loaded already
+        // reset layers/markers
+        MAP_VAR.layerControl.removeLayer(marker); // prevent duplicate controls
+        if (MAP_VAR.map.hasLayer(circle)) MAP_VAR.map.removeLayer(circle);
+        if (MAP_VAR.map.hasLayer(marker)) MAP_VAR.map.removeLayer(marker);
+        marker = null;
+        circle = null;
+    }
+
+    // Fix for asset pipeline confusing Leaflet WRT to path to images
+    L.Icon.Default.imagePath = MAP_VAR.mapIconUrlPath;
+
+    // Add marker
+    marker = L.marker(latLng, {
         title: 'Marker Location',
-        map: map,
         draggable: true
-    });
+    }).addTo(MAP_VAR.map);
 
-    markerInfowindow = new google.maps.InfoWindow({
-        content: '<div class="infoWindow">marker address</div>' // gets updated by geocodePosition()
-    });
+    //MAP_VAR.layerControl.removeLayer(marker); // prevent duplicate controls
+    MAP_VAR.layerControl.addOverlay(marker, 'Marker');
 
-    google.maps.event.addListener(marker, 'click', function(event) {
-        if (lastInfoWindow) lastInfoWindow.close();
-        markerInfowindow.setPosition(event.latLng);
-        markerInfowindow.open(map, marker);
-        lastInfoWindow = markerInfowindow;
-    });
+    markerInfowindow = marker.bindPopup('<div class="infoWindow">marker address</div>',
+        {autoClose: true}
+    );
 
     // Add a Circle overlay to the map.
-    var radius = parseInt($('select#radius').val()) * 1010;
-    circle = new google.maps.Circle({
-        map: map,
-        radius: radius,
-        strokeWeight: 1,
-        strokeColor: 'white',
-        strokeOpacity: 0.5,
-        fillColor: '#222', // '#2C48A6'
+    radius = parseInt($('select#radius').val()) * 1010;
+    var circlProps = {
+        //radius: radius, leaflet 1+ uses this syntax
+        stroke: true,
+        weight: 2,
+        color: 'black',
+        opacity: 0.2,
+        fillColor: '#888', // '#2C48A6'
         fillOpacity: 0.2,
         zIndex: -10
+    }
+
+    // console.log("circlProps", circlProps, latLng, radius);
+    circle = L.circle(latLng, radius, circlProps).addTo(MAP_VAR.map);
+
+    // detect click event and trigger record info popup
+    circle.on("click", function (event) {
+        pointLookupClickRegister(event);
     });
+
     // bind circle to marker
-    circle.bindTo('center', marker, 'position');
-
-    // Update current position info.
-    //updateMarkerPosition(latLng);
-    geocodePosition(latLng);
-
-    // Add dragging event listeners.
-    google.maps.event.addListener(marker, 'dragstart', function() {
-        updateMarkerAddress('Dragging...');
-    });
-
-    google.maps.event.addListener(marker, 'drag', function() {
-        updateMarkerAddress('Dragging...');
-        //updateMarkerPosition(marker.getPosition());
-    });
-
-    google.maps.event.addListener(marker, 'dragend', function() {
+    marker.on('dragend', function(e){
+        var coords = e.target.getLatLng();
+        var lat = coords.lat.toFixed(coordinatePrecision);
+        var lon = coords.lng.toFixed(coordinatePrecision);
+        var newLatLng = L.latLng(lat, lon);
+        MAP_VAR.map.panTo({lon:lon,lat:lat})
+        MAP_VAR.map.removeLayer(circle);
+        circlProps.radius = radius;
+        circle = L.circle([lat, lon], radius, circlProps).addTo(MAP_VAR.map);
         updateMarkerAddress('Drag ended');
-        updateMarkerPosition(marker.getPosition());
-        geocodePosition(marker.getPosition());
+        updateMarkerPosition(newLatLng);
+        geocodePosition(newLatLng);
         //LoadTaxaGroupCounts();
         loadGroups();
-        map.panTo(marker.getPosition());
+        //loadRecordsLayer();
+        // adjust map view for new location
+        MAP_VAR.map.setView(latLng, MAP_VAR.zoom);
+        MAP_VAR.layerControl.removeLayer(marker); // prevent duplicate controls
     });
 
-    google.maps.event.addListener(map, 'zoom_changed', function() {
-        //console.log('loadMap() -> loadRecordsLayer()');
-        loadRecordsLayer();
-    });
+    // adjust map view for new location
+    MAP_VAR.map.setView(latLng, MAP_VAR.zoom);
 
-    if (!points || points.length == 0) {
-        //$('#taxa-level-0 tbody td:first').click(); // click on "all species" group
-        // commented out by NdR - groupClicked() calls loadRecordsLayer() on new page load
-        // loadRecordsLayer();
-    }
+    // Update current position info.
+    geocodePosition(latLng);
+    updateMarkerPosition(latLng);
 }
 
 /**
  * Google geocode function
  */
 function geocodePosition(pos) {
+    var gLatLng = new google.maps.LatLng(pos.lat, pos.lng); // convert leaflet Latlng to Google Latlng
+
     geocoder.geocode({
-        latLng: pos
+        latLng: gLatLng
     }, function(responses) {
         if (responses && responses.length > 0) {
-            //console.log("geocoded position", responses[0]);
+            // console.log("geocoded position", responses[0]);
             var address = responses[0].formatted_address;
             updateMarkerAddress(address);
             // update the info window for marker icon
-            var content = '<div class="infoWindow"><b>Your Location:</b><br/>'+address+'</div>';
-            markerInfowindow.setContent(content);
+            var content = '<div class="infoWindow"><b>Location:</b><br/>'+address+'</div>';
+            markerInfowindow.bindPopup(content);
         } else {
             updateMarkerAddress('Cannot determine address at this location.');
         }
@@ -368,166 +401,135 @@ function updateMarkerAddress(str) {
  * Update the lat & lon hidden input elements
  */
 function updateMarkerPosition(latLng) {
-    $('#latitude').val(latLng.lat());
-    $('#longitude').val(latLng.lng());
-    // Update URL hash for back button, etc
-    location.hash = latLng.lat() + "|" + latLng.lng() + "|" + EYA_CONF.zoom + "|" + speciesGroup;
-    $('#dialog-confirm #rad').html(EYA_CONF.radius);
+    // console.log("updateMarkerPosition", latLng, latLng.lat);
+    var lat = latLng.lat.toFixed(coordinatePrecision);
+    var lng = latLng.lng.toFixed(coordinatePrecision);
+    // store values in hidden fields
+    $('#latitude').val(lat);
+    $('#longitude').val(lng);
+    //console.log("updating hash lat", lat, $('#latitude').val());
+    $('#dialog-confirm #rad').html(MAP_VAR.radius);
+    MAP_VAR.query = "?q=*%3A*&lat=" + lat + "&lon=" + lng + "&radius=" + MAP_VAR.radius;
 }
 
 /**
  * Load (reload) geoJSON data into vector layer
  */
 function loadRecordsLayer(retry) {
-    if (!map && !retry) {
-        // in case AJAX calls this function before map has initialised
+    if (!MAP_VAR.map && !retry) {
+        // in case a callback calls this function before map has initialised
         setTimeout(function() {if (!points || points.length == 0) {loadRecordsLayer(true)}}, 2000);
         //console.log('retry triggered');
         return;
-    } else if (!map) {
+    } else if (!MAP_VAR.map) {
         //console.log('retry failed');
         return;
     }
 
+    // Update URL hash for back button, etc
+    location.hash = $('#latitude').val() + "|" + $('#longitude').val() + "|" + MAP_VAR.zoom + "|" + speciesGroup;
+
+    // remove any existing records layers and controls
+    if (alaWmsLayer) {
+        MAP_VAR.map.removeLayer(alaWmsLayer);
+        MAP_VAR.layerControl.removeLayer(alaWmsLayer);
+        //MAP_VAR.layerControl.removeLayer(marker); // prevent duplicate controls
+    }
+
     // URL for GeoJSON web service
-    var geoJsonUrl = EYA_CONF.biocacheServiceUrl + "/geojson/radius-points";
-    var zoom = (map && map.getZoom()) ? map.getZoom() : 12;
-    // request params for ajax geojson call
-    var params = {
+    //var geoJsonUrl = MAP_VAR.biocacheServiceUrl + "/geojson/radius-points";
+    var speciesGroupParam = "species_group:" + (speciesGroup == "ALL_SPECIES" ? "*" : speciesGroup);
+    var alaParams = jQuery.param({
+        q: (taxon) ? "taxon_name:\"" + taxon + "\"" : "*:*",
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
         radius: $('#radius').val(),
-        fq: "geospatial_kosher:true",
-        qc: EYA_CONF.queryContext,
-        zoom: zoom
+        fq: [ "geospatial_kosher:true",
+              speciesGroupParam
+        ],
+        qc: MAP_VAR.queryContext
+        //zoom: (map && map.getZoom()) ? map.getZoom() : 12
+    }, true);
+
+    // records popups need to know the species group
+    MAP_VAR.removeFqs = "&fq=species_group:" + (speciesGroup == "ALL_SPECIES" ? "*" : speciesGroup) + "&fq=taxon_name:" + (taxon ? taxon : "*");
+
+    // console.log("alaParams = ", alaParams, speciesGroupParam);
+
+    var alaMapUrl = MAP_VAR.biocacheServiceUrl + "/ogc/wms/reflect?" + alaParams;
+    var wmsParams = {
+        layers: 'ALA:occurrences',
+        format: 'image/png',
+        transparent: true,
+        attribution: "Atlas of Living Australia",
+        bgcolor:"0x000000",
+        outline:"false",
+        GRIDDETAIL: 32, // 64 || 32
+        ENV: "color:DF4A21;name:circle;size:4;opacity:0.7",
+        //ENV: "colormode:grid;name:square;size:3;opacity:0.7",
+        uppercase: true
     };
-    if (taxon) {
-        params.q = "taxon_name:\"" + taxon + "\"";
-    } else {
-        params.group = speciesGroup;
-    }
+
     //console.log('About to call $.get', map);
     // JQuery AJAX call
-    $.getJSON(geoJsonUrl, params, loadNewGeoJsonData);
-}
+    //$.getJSON(alaMaprUrl, params, loadNewGeoJsonData);
+    alaWmsLayer = L.tileLayer.wms(alaMapUrl, wmsParams).addTo(MAP_VAR.map);
+    MAP_VAR.layerControl.addOverlay(alaWmsLayer, 'Records');
 
-/**
- * Callback for geoJSON ajax call
- */
-function loadNewGeoJsonData(data) {
-    // clear vector featers and popups
-    if (points && points.length > 0) {
-        $.each(points, function (i, p) {
-            p.setMap(null); // remove from map
-        });
-        points = [];
-    } else {
-        points = [];
-    }
-
-    if (infoWindows && infoWindows.length > 0) {
-        $.each(infoWindows, function (i, n) {
-            n.close(); // close any open popups
-        });
-        infoWindows = [];
-    } else {
-        infoWindows = [];
-    }
-
-    $.each(data.features, function (i, n) {
-        var latLng1 = new google.maps.LatLng(n.geometry.coordinates[1], n.geometry.coordinates[0]);
-        var iconUrl = EYA_CONF.imagesUrlPrefix+"/circle-"+n.properties.color.replace('#','')+".png";
-        var markerImage = new google.maps.MarkerImage(iconUrl,
-            new google.maps.Size(9, 9),
-            new google.maps.Point(0,0),
-            new google.maps.Point(4, 5)
-        );
-        points[i] = new google.maps.Marker({
-            map: map,
-            position: latLng1,
-            title: n.properties.count+" occurrences",
-            icon: markerImage
-        });
-
-        var solrQuery;
-        if ($.inArray("|", taxa) > 0) {
-            var parts = taxa.split("|");
-            var newParts = [];
-            for (j in parts) {
-                newParts.push(rank+":"+parts[j]);
-            }
-            solrQuery = newParts.join(" OR ");
-        } else {
-            solrQuery = "*:*"; //rank+':'+taxa;
-        }
-        var fqParam = "";
-        if (taxonGuid) {
-            fqParam = "&fq=species_guid:" + taxonGuid;
-        } else if (speciesGroup != "ALL_SPECIES") {
-            fqParam = "&fq=species_group:" + speciesGroup;
-        }
-
-        var content = '<div class="infoWindow">Number of records: '+n.properties.count+'<br/>'+
-            '<a href="'+ EYA_CONF.contextPath +'/occurrences/search?q='+solrQuery+fqParam+
-            '&lat='+n.geometry.coordinates[1]+'&lon='+n.geometry.coordinates[0]+'&radius=0.05">View list of records</a></div>';
-        infoWindows[i] = new google.maps.InfoWindow({
-            content: content,
-            maxWidth: 200,
-            disableAutoPan: false
-        });
-        google.maps.event.addListener(points[i], 'click', function(event) {
-            if (lastInfoWindow) lastInfoWindow.close(); // close any previously opened infoWindow
-            infoWindows[i].setPosition(event.latLng);
-            infoWindows[i].open(map, points[i]);
-            lastInfoWindow = infoWindows[i]; // keep reference to current infoWindow
-        });
+    alaWmsLayer.on('tileload', function(te){
+        // populate points array so we can tell if data is loaded - legacy from geoJson version
+        points.push(te.url);
     });
-
 }
 
 /**
- * Try to get a lat/long using HTML5 geoloation API
+ * Try to get a lat/long using HTML5 geolocation API
  */
 function attemptGeolocation() {
     // HTML5 GeoLocation
     if (navigator && navigator.geolocation) {
-        //console.log("trying to get coords with navigator.geolocation...");  
+        // console.log("trying to get coords with navigator.geolocation...");  
         function getMyPostion(position) {
             //alert('coords: '+position.coords.latitude+','+position.coords.longitude);
-            //console.log('geolocation request accepted');
-            $('#mapCanvas').empty();
-            updateMarkerPosition(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+            // console.log('geolocation "navigator" request accepted');
+            //$('#mapCanvas').empty();
+            updateMarkerPosition(L.latLng(position.coords.latitude, position.coords.longitude));
             //LoadTaxaGroupCounts();
             initialize();
         }
 
         function positionWasDeclined() {
-            //console.log('geolocation request declined or errored');
-            $('#mapCanvas').empty();
-            //zoom = 12;
-            //alert('latitude = '+$('#latitude').val());
-            updateMarkerPosition(new google.maps.LatLng($('#latitude').val(), $('#longitude').val()));
+            alert('Geolocation request was declined or failed due to an error. Try searching for your address using the search box above the map.');
+            // scroll window so search bar is visible
+            $('html, body').animate({
+                scrollTop: $("#searchForm").offset().top - 120 // banner offset 120px
+            }, 1000);
+
+            updateMarkerPosition(L.latLng($('#latitude').val(), $('#longitude').val()));
             //LoadTaxaGroupCounts();
             initialize();
         }
+
         // Add message to browser - FF needs this as it is not easy to see
-        var msg = 'Waiting for confirmation to use your current location (see browser message at top of window)'+
-            '<br/><a href="#" onClick="loadMap(); return false;">Click here to load map</a>';
-        $('#mapCanvas').html(msg).css('color','red').css('font-size','14px');
+        //var msg = 'Waiting for confirmation to use your current location (see browser message at top of window)'+
+        //    '<br/><a href="#" onClick="initialize(); return false;">Click here to load map</a>';
+        //$('#mapCanvas').html(msg).css('color','red').css('font-size','14px');
+        //map.remove;
+        //map = null;
         navigator.geolocation.getCurrentPosition(getMyPostion, positionWasDeclined);
         //console.log("line after navigator.geolocation.getCurrentPosition...");  
         // Neither functions gets called for some reason, so I've added a delay to initalize map anyway
-        setTimeout(function() {if (!map) positionWasDeclined();}, 9000);
+        setTimeout(function() {if (!MAP_VAR.map) positionWasDeclined();}, 9000);
     } else if (google.loader && google.loader.ClientLocation) {
         // Google AJAX API fallback GeoLocation
-        //alert("getting coords using google geolocation");
-        updateMarkerPosition(new google.maps.LatLng(google.loader.ClientLocation.latitude, google.loader.ClientLocation.longitude));
+        // console.log("getting coords using google geolocation", google.loader.ClientLocation);
+        updateMarkerPosition(L.latLng(google.loader.ClientLocation.latitude, google.loader.ClientLocation.longitude));
         //LoadTaxaGroupCounts();
         initialize();
     } else {
         //alert("Client geolocation failed");
         //geocodeAddress();
-        EYA_CONF.zoom = 12;
+        MAP_VAR.zoom = 12;
         initialize();
     }
 }
@@ -539,7 +541,7 @@ function geocodeAddress(reverseGeocode) {
     var address = $('input#address').val();
     var latLng = null;
 
-    // Check if input contains a comma and try and patch coordinates
+    // Check if input contains a comma and try and parse coordinates
     if (address && address.indexOf(",") > -1 && magellan) {
         var parts = address.split(",");
         var lat = magellan(parts[0].trim()).latitude(); //.toDD();
@@ -547,7 +549,7 @@ function geocodeAddress(reverseGeocode) {
         //console.log("magellan", parts, lat, lng);
 
         if (lat && lng) {
-            latLng = new google.maps.LatLng(lat.toDD(), lng.toDD());
+            latLng = L.latLng(lat.toDD(), lng.toDD());
             updateMarkerAddress("GPS coordinates: " + lat.toDD() + ", " + lng.toDD());
             updateMarkerPosition(latLng);
             // reload map pin, etc
@@ -560,12 +562,16 @@ function geocodeAddress(reverseGeocode) {
 
     if (!latLng && geocoder && address) {
         //geocoder.getLocations(address, addAddressToPage);
-        geocoder.geocode( {'address': address, region: EYA_CONF.geocodeRegion}, function(results, status) {
+        // console.log("geocodeAddress with address string");
+        geocoder.geocode( {'address': address, region: MAP_VAR.geocodeRegion}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 // geocode was successful
                 //console.log('geocodeAddress results', results);
                 updateMarkerAddress(results[0].formatted_address);
-                updateMarkerPosition(results[0].geometry.location);
+                var gLatLng = results[0].geometry.location;
+                // console.log("gLatLng", gLatLng.lat(), gLatLng.lng());
+                var latLng = L.latLng(gLatLng.lat(), gLatLng.lng());
+                updateMarkerPosition(latLng);
                 // reload map pin, etc
                 initialize();
                 loadRecordsLayer();
@@ -592,7 +598,7 @@ function addAddressToPage(response) {
         var lon = location.Point.coordinates[0];
         var locationStr = response.Placemark[0].address;
         updateMarkerAddress(locationStr);
-        updateMarkerPosition(new google.maps.LatLng(lat, lon));
+        updateMarkerPosition(L.latLng(lat, lon));
     }
 }
 
@@ -619,15 +625,15 @@ function groupClicked(el) {
     //console.log('about to run: loadRecordsLayer()');
     // update links to downloads and records list
     //console.log("groupClicked() calling loadRecordsLayer()");
-    if (map) loadRecordsLayer();
+    if (MAP_VAR.map) loadRecordsLayer();
     // AJAX...
-    var uri = EYA_CONF.biocacheServiceUrl + "/explore/group/"+speciesGroup+".json";
+    var uri = MAP_VAR.biocacheServiceUrl + "/explore/group/"+speciesGroup+".json";
     var params = {
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
         radius: $('#radius').val(),
         fq: "geospatial_kosher:true",
-        qc: EYA_CONF.queryContext,
+        qc: MAP_VAR.queryContext,
         pageSize: 50
     };
     //var params = "?latitude=${latitude}&longitude=${longitude}&radius=${radius}&taxa="+taxa+"&rank="+rank;
@@ -666,18 +672,18 @@ function processSpeciesJsonData(data, appendResults) {
             if (data[i].commonName) {
                 tr = tr + ' : ' + data[i].commonName+'';
             }
-            // add links to species page and ocurrence search (inside hidden div)
-            if(EYA_CONF.speciesPageUrl) {
+            // add links to species page and occurrence search (inside hidden div)
+            if(MAP_VAR.speciesPageUrl) {
 
                 var speciesInfo = '<div class="speciesInfo">';
                 if (data[i].guid) {
-                    speciesInfo = speciesInfo + '<a class="speciesPageLink" title="' + infoTitle + '" href="' + EYA_CONF.speciesPageUrl + data[i].guid +
-                        '"><img src="' + EYA_CONF.imagesUrlPrefix + '/page_white_go.png" alt="species page icon" style="margin-bottom:-3px;" class="no-rounding"/>' +
+                    speciesInfo = speciesInfo + '<a class="speciesPageLink" title="' + infoTitle + '" href="' + MAP_VAR.speciesPageUrl + data[i].guid +
+                        '"><img src="' + MAP_VAR.imagesUrlPrefix + '/page_white_go.png" alt="species page icon" style="margin-bottom:-3px;" class="no-rounding"/>' +
                         ' species profile</a> | ';
                 }
-                speciesInfo = speciesInfo + '<a href="' + EYA_CONF.contextPath + '/occurrences/search?q=taxon_name:%22' + data[i].name +
+                speciesInfo = speciesInfo + '<a href="' + MAP_VAR.contextPath + '/occurrences/search?q=taxon_name:%22' + data[i].name +
                     '%22&lat=' + $('input#latitude').val() + '&lon=' + $('input#longitude').val() + '&radius=' + $('select#radius').val() + '" title="' +
-                    recsTitle + '"><img src="' + EYA_CONF.imagesUrlPrefix + '/database_go.png" ' +
+                    recsTitle + '"><img src="' + MAP_VAR.imagesUrlPrefix + '/database_go.png" ' +
                     'alt="search list icon" style="margin-bottom:-3px;" class="no-rounding"/> list of records</a></div>';
                 tr = tr + speciesInfo;
             }
@@ -757,7 +763,7 @@ function processSpeciesJsonData(data, appendResults) {
             }
             $("div#rightList").data("sort", sortOrder); // save it to the DOM
             // AJAX...
-            var uri = EYA_CONF.biocacheServiceUrl + "/explore/group/"+speciesGroup+".json";
+            var uri = MAP_VAR.biocacheServiceUrl + "/explore/group/"+speciesGroup+".json";
             //var params = "&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&group="+speciesGroup;
             var params = {
                 lat: $('#latitude').val(),
@@ -768,7 +774,7 @@ function processSpeciesJsonData(data, appendResults) {
                 common: commonName,
                 sort: sortParam,
                 pageSize: 50,
-                qc: EYA_CONF.queryContext
+                qc: MAP_VAR.queryContext
             };
             //console.log("explore params", params, append);
             //$('#taxaDiv').html('[loading...]');
@@ -792,10 +798,10 @@ function processSpeciesJsonData(data, appendResults) {
 }
 
 /*
- * Perform normal spatial searcj for spceies groups and species counts
+ * Perform normal spatial search for species groups and species counts
  */
 function loadGroups() {
-    var url = EYA_CONF.biocacheServiceUrl +"/explore/groups.json";
+    var url = MAP_VAR.biocacheServiceUrl +"/explore/groups.json";
     var params = {
         //"group": $(this).attr('title'),
         lat: $('#latitude').val(),
@@ -803,7 +809,7 @@ function loadGroups() {
         radius: $('#radius').val(),
         fq: "geospatial_kosher:true",
         facets: "species_group",
-        qc: EYA_CONF.queryContext
+        qc: MAP_VAR.queryContext
     }
 
     $.getJSON(url, params, function(data) {
@@ -814,7 +820,7 @@ function loadGroups() {
 }
 
 /*
- * Populate the spceies group column (via callback from AJAX)
+ * Populate the species group column (via callback from AJAX)
  */
 function populateSpeciesGroups(data) {
     if (data.length > 0) {
@@ -835,17 +841,50 @@ function populateSpeciesGroups(data) {
         var label = group;
         if (group == "ALL_SPECIES") label = "all.species";
         var rc = (group == speciesGroup) ? " class='activeRow'" : ""; // highlight active group
-        var h = "<tr"+rc+" title='click to view group on map'><td class='indent"+indent+"'><a href='#' id='"+group+"' class='taxonBrowse' title='click to view group on map'>"+jQuery.i18n.prop(label, label)+"</a></td><td>"+count+"</td></tr>";
+        var i18nLabel = jQuery.i18n.prop(label);
+        // console.log("i18n check", label, i18nLabel);
+        var h = "<tr"+rc+" title='click to view group on map'><td class='indent"+indent+"'><a href='#' id='"+group+"' class='taxonBrowse' title='click to view group on map'>"+i18nLabel+"</a></td><td>"+count+"</td></tr>";
         $("#taxa-level-0 tbody").append(h);
     }
 }
 
 function bookmarkedSearch(lat, lng, zoom1, group) {
-    EYA_CONF.radius = radiusForZoom[zoom1];  // set global var
-    EYA_CONF.zoom = parseInt(zoom1);
-    $('select#radius').val(EYA_CONF.radius); // update drop-down widget
+    // console.log("bookmarkedSearch", lat, lng, zoom1, group);
+    MAP_VAR.radius = radiusForZoom[zoom1];  // set global var
+    MAP_VAR.zoom = parseInt(zoom1);
+    $('select#radius').val(MAP_VAR.radius); // update drop-down widget
     if (group) speciesGroup = group;
-    updateMarkerPosition(new google.maps.LatLng(lat, lng));
+    updateMarkerPosition(L.latLng(lat, lng));
     // load map and groups
     initialize();
+}
+
+//
+function loadStateFromHash(encodedHash) {
+    // update map state from URL hash
+    // e.g. #-35.2512|149.1630|12|ALL_SPECIES
+    var hashParts = encodedHash.split("%7C"); // note escaped version of |
+    if (hashParts.length == 3) {
+        bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], null);
+    } else if (hashParts.length == 4) {
+        bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], hashParts[3]);
+    } else {
+        attemptGeolocation();
+    }
+}
+
+function getEncodedHash() {
+    // hash coding: #lat|lng|zoom
+    var hash = window.location.hash.replace( /^#/, '');
+    var encodedHash;
+
+    if (hash.indexOf("%7C") != -1) {
+        // already escaped
+        encodedHash = hash;
+    } else {
+        // escape used to prevent injection attacks
+        encodedHash = encodeURIComponent(hash);
+    }
+
+    return encodedHash;
 }

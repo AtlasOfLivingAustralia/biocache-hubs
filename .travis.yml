@@ -7,7 +7,7 @@ branches:
   - master
   - data-quality
   - hotfix
-  - bs3-with-grails3
+  - EYA-enhancements
   - dev
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

@@ -105,9 +105,9 @@
 
     var MAP_VAR = {
         map : null,
-        mappingUrl : "${mappingUrl}",
-        query : "${searchString}",
-        queryDisplayString : "${queryDisplayString}",
+        mappingUrl : "${mappingUrl}", // e.g. "https://biocache.ala.org.au/ws"
+        query : "${searchString}", // e.g. "?q=*%3A*&lat=-34.266296&lon=145.3838&radius=154.8"
+        queryDisplayString : "${queryDisplayString}", // e.g. "[all records] - within 154.8 km of point(-34.266, 145.384)"
         center: [-23.6,133.6],
         defaultLatitude : "${grailsApplication.config.map.defaultLatitude?:'-23.6'}",
         defaultLongitude : "${grailsApplication.config.map.defaultLongitude?:'133.6'}",
@@ -392,25 +392,6 @@
         }
     }
 
-    var clickCount = 0;
-
-    /**
-    * Fudge to allow double clicks to propagate to map while allowing single clicks to be registered
-    *
-    */
-    function pointLookupClickRegister(e) {
-        //console.log('pointLookupClickRegister', clickCount);
-        clickCount += 1;
-        if (clickCount <= 1) {
-            setTimeout(function() {
-                if (clickCount <= 1) {
-                    pointLookup(e);
-                }
-                clickCount = 0;
-            }, 400);
-        }
-    }
-
     function changeFacetColours() {
         MAP_VAR.additionalFqs = '';
         // clear this variable every time a new colour by is chosen.
@@ -603,237 +584,7 @@
         return rgb.toString(16);
     }
 
-    /**
-     * Event handler for point lookup.
-     * @param e
-     */
-    function pointLookup(e) {
 
-        MAP_VAR.popup = L.popup().setLatLng(e.latlng);
-        var radius = 0;
-        var size = $('sizeslider-val').html();
-        var zoomLevel = MAP_VAR.map.getZoom();
-        switch (zoomLevel){
-            case 0:
-                radius = 800;
-                break;
-            case 1:
-                radius = 400;
-                break;
-            case 2:
-                radius = 200;
-                break;
-            case 3:
-                radius = 100;
-                break;
-            case 4:
-                radius = 50;
-                break;
-            case 5:
-                radius = 25;
-                break;
-            case 6:
-                radius = 20;
-                break;
-            case 7:
-                radius = 7.5;
-                break;
-            case 8:
-                radius = 3;
-                break;
-            case 9:
-                radius = 1.5;
-                break;
-            case 10:
-                radius = .75;
-                break;
-            case 11:
-                radius = .25;
-                break;
-            case 12:
-                radius = .15;
-                break;
-            case 13:
-                radius = .1;
-                break;
-            case 14:
-                radius = .05;
-                break;
-            case 15:
-                radius = .025;
-                break;
-            case 16:
-                radius = .015;
-                break;
-            case 17:
-                radius = 0.0075;
-                break;
-            case 18:
-                radius = 0.004;
-                break;
-            case 19:
-                radius = 0.002;
-                break;
-            case 20:
-                radius = 0.001;
-                break;
-        }
-
-        if (size >= 5 && size < 8){
-            radius = radius * 2;
-        }
-        if (size >= 8){
-            radius = radius * 3;
-        }
-
-        MAP_VAR.popupRadius = radius;
-        var mapQuery = MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, ''); // remove existing lat/lon/radius/wkt params
-        MAP_VAR.map.spin(true);
-
-        $.ajax({
-            url: MAP_VAR.mappingUrl + "/occurrences/info" + mapQuery + MAP_VAR.removeFqs,
-            jsonp: "callback",
-            dataType: "jsonp",
-            timeout: 30000,
-            data: {
-                zoom: MAP_VAR.map.getZoom(),
-                lat: e.latlng.wrap().lat,
-                lon: e.latlng.wrap().lng,
-                radius: radius,
-                format: "json"
-            },
-            success: function(response) {
-                MAP_VAR.map.spin(false);
-
-                if (response.occurrences && response.occurrences.length > 0) {
-
-                    MAP_VAR.recordList = response.occurrences; // store the list of record uuids
-                    MAP_VAR.popupLatlng = e.latlng.wrap(); // store the coordinates of the mouse click for the popup
-
-                    // Load the first record details into popup
-                    insertRecordInfo(0);
-                }
-            },
-            error: function(x, t, m) {
-                MAP_VAR.map.spin(false);
-            },
-
-        });
-    }
-
-    /**
-    * Populate the map popup with record details
-    *
-    * @param recordIndex
-    */
-    function insertRecordInfo(recordIndex) {
-        //console.log("insertRecordInfo", recordIndex, MAP_VAR.recordList);
-        var recordUuid = MAP_VAR.recordList[recordIndex];
-        var $popupClone = $('.popupRecordTemplate').clone();
-        MAP_VAR.map.spin(true);
-
-        if (MAP_VAR.recordList.length > 1) {
-            // populate popup header
-            $popupClone.find('.multiRecordHeader').show();
-            $popupClone.find('.currentRecord').html(recordIndex + 1);
-            $popupClone.find('.totalrecords').html(MAP_VAR.recordList.length.toString().replace(/100/, '100+'));
-            var occLookup = "&radius=" + MAP_VAR.popupRadius + "&lat=" + MAP_VAR.popupLatlng.lat + "&lon=" + MAP_VAR.popupLatlng.lng;
-            $popupClone.find('a.viewAllRecords').attr('href', "${request.contextPath}/occurrences/search" + MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + occLookup);
-            // populate popup footer
-            $popupClone.find('.multiRecordFooter').show();
-            if (recordIndex < MAP_VAR.recordList.length - 1) {
-                $popupClone.find('.nextRecord a').attr('onClick', 'insertRecordInfo('+(recordIndex + 1)+'); return false;');
-                $popupClone.find('.nextRecord a').removeClass('disabled');
-            }
-            if (recordIndex > 0) {
-                $popupClone.find('.previousRecord a').attr('onClick', 'insertRecordInfo('+(recordIndex - 1)+'); return false;');
-                $popupClone.find('.previousRecord a').removeClass('disabled');
-            }
-        }
-
-        $popupClone.find('.recordLink a').attr('href', "${request.contextPath}/occurrences/" + recordUuid);
-
-        // Get the current record details
-        $.ajax({
-            url: MAP_VAR.mappingUrl + "/occurrences/" + recordUuid + ".json",
-            jsonp: "callback",
-            dataType: "jsonp",
-            success: function(record) {
-                MAP_VAR.map.spin(false);
-
-                if (record.raw) {
-                    var displayHtml = formatPopupHtml(record);
-                    $popupClone.find('.recordSummary').html( displayHtml ); // insert into clone
-                } else {
-                    // missing record - disable "view record" button and display message
-                    $popupClone.find('.recordLink a').attr('disabled', true).attr('href','javascript: void(0)');
-                    $popupClone.find('.recordSummary').html( "<br><g:message code="search.recordNotFoundForId" default="Error: record not found for ID:"/>: <span style='white-space:nowrap;'>" + recordUuid + '</span><br><br>' ); // insert into clone
-                }
-
-                MAP_VAR.popup.setContent($popupClone.html()); // push HTML into popup content
-                MAP_VAR.popup.openOn(MAP_VAR.map);
-            },
-            error: function() {
-                MAP_VAR.map.spin(false);
-            }
-        });
-
-    }
-
-    function formatPopupHtml(record) {
-        var displayHtml = "";
-
-        // catalogNumber
-        if(record.raw.occurrence.catalogNumber != null){
-            displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.raw.occurrence.catalogNumber + '<br />';
-        } else if(record.processed.occurrence.catalogNumber != null){
-            displayHtml += "${g.message(code:'record.catalogNumber.label', default: 'Catalogue number')}: " + record.processed.occurrence.catalogNumber + '<br />';
-        }
-
-        // record or field number
-        if(record.raw.occurrence.recordNumber != null){
-            displayHtml += "${g.message(code:'record.recordNumber.label', default: 'Collecting number')}: " + record.raw.occurrence.recordNumber + '<br />';
-        } else if(record.raw.occurrence.fieldNumber != null){
-            displayHtml += "${g.message(code:'record.fieldNumber.label', default: 'Collecting number')}: " + record.raw.occurrence.fieldNumber + '<br />';
-        }
-
-
-        if(record.raw.classification.vernacularName!=null ){
-            displayHtml += record.raw.classification.vernacularName + '<br />';
-        } else if(record.processed.classification.vernacularName!=null){
-            displayHtml += record.processed.classification.vernacularName + '<br />';
-        }
-
-        if (record.processed.classification.scientificName) {
-            displayHtml += formatSciName(record.processed.classification.scientificName, record.processed.classification.taxonRankID)  + '<br />';
-        } else {
-            displayHtml += record.raw.classification.scientificName  + '<br />';
-        }
-
-        if(record.processed.attribution.institutionName != null){
-            displayHtml += "${g.message(code:'record.institutionName.label', default: 'Institution')}: " + record.processed.attribution.institutionName + '<br />';
-        } else if(record.processed.attribution.dataResourceName != null){
-            displayHtml += "${g.message(code:'record.dataResourceName.label', default: 'Data Resource')}: " + record.processed.attribution.dataResourceName + '<br />';
-        }
-
-        if(record.processed.attribution.collectionName != null){
-            displayHtml += "${g.message(code:'record.collectionName.label', default: 'Collection')}: " + record.processed.attribution.collectionName  + '<br />';
-        }
-
-        if(record.raw.occurrence.recordedBy != null){
-            displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.raw.occurrence.recordedBy + '<br />';
-        } else if(record.processed.occurrence.recordedBy != null){
-            displayHtml += "${g.message(code:'record.recordedBy.label', default: 'Collector')}: " + record.processed.occurrence.recordedBy + '<br />';
-        }
-
-        if(record.processed.event.eventDate != null){
-            //displayHtml += "<br/>";
-            var label = "${g.message(code:'record.eventDate.label', default: 'Event date')}: ";
-            displayHtml += label + record.processed.event.eventDate;
-        }
-
-        return displayHtml;
-    }
 
     function getRecordInfo(){
         // http://biocache.ala.org.au/ws/occurrences/c00c2f6a-3ae8-4e82-ade4-fc0220529032
@@ -847,19 +598,6 @@
         });
     }
 
-    /**
-     * Format the display of a scientific name.
-     * E.g. genus and below should be italicised
-     */
-    function formatSciName(name, rankId) {
-        var output = "";
-        if (rankId && rankId >= 6000) {
-            output = "<i>" + name + "</i>";
-        } else {
-            output = name;
-        }
-        return output;
-    }
 
     /**
      * Zooms map to either spatial search or from WMS data bounds
@@ -980,25 +718,7 @@
       return false;
     }
 </asset:script>
-<div class="hide">
-    <div class="popupRecordTemplate">
-        <div class="multiRecordHeader collapse">
-            <g:message code="search.map.viewing" default="Viewing"/> <span class="currentRecord"></span> <g:message code="search.map.of" default="of"/>
-            <span class="totalrecords"></span> <g:message code="search.map.occurrences" default="occurrence records"/>
-            &nbsp;&nbsp;<i class="glyphicon glyphicon-share-alt"></i> <a href="#" class="btn+btn-xs viewAllRecords"><g:message code="search.map.viewAllRecords" default="view all records"/></a>
-        </div>
-        <div class="recordSummary">
-
-        </div>
-        <div class="collapse multiRecordFooter">
-            <span class="previousRecord "><a href="#" class="btn btn-default btn-xs disabled" onClick="return false;"><g:message code="search.map.popup.prev" default="&lt; Prev"/></a></span>
-            <span class="nextRecord "><a href="#" class="btn btn-default btn-xs disabled" onClick="return false;"><g:message code="search.map.popup.next" default="Next &gt;"/></a></span>
-        </div>
-        <div class="recordLink">
-            <a href="#" class="btn btn-default btn-xs"><g:message code="search.map.popup.viewRecord" default="View record"/></a>
-        </div>
-    </div>
-</div>
+<g:render template="mapPopup"></g:render>
 
 <div id="downloadMap" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="downloadsMapLabel">
     <div class="modal-dialog" role="document">
