@@ -444,3 +444,10 @@ div.audiojs div.time {
 #main-content .sidebar h3 {
     font-size: 21px;
 }
+
+#occurrenceImages {
+    font-size: 14px;
+}
+#occurrenceImages cite {
+    font-style: normal;
+}

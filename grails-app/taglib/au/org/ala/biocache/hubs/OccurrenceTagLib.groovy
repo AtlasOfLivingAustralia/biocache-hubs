@@ -866,6 +866,17 @@ class OccurrenceTagLib {
     }
 
     /**
+     * Take a block of content with suspected HTML elements (to be outputted) and
+     * sanitizes the HTML to prevent XSS and breaking of DOM due to missing closing tags, etc.
+     *
+     * @body content the text to use as the link text
+     */
+    def sanitizeContent = { attrs, body ->
+        String bodyText = (String) body()
+        out << sanitizeBodyText(bodyText)
+    }
+
+    /**
      * Utility to sanitise HTML text and only allow links to be kept, removing any
      * other HTML markup. Links get <code>target="_blank"</code> added unless
      * <code>openInNewWindow</code> is set to false.
@@ -881,6 +892,8 @@ class OccurrenceTagLib {
         PolicyFactory policy = new HtmlPolicyBuilder()
                 .allowElements("a")
                 .allowElements("br")
+                .allowElements("i")
+                .allowElements("b")
                 .allowElements("span")
                 .allowStandardUrlProtocols()
                 .allowAttributes("href").matching(Pattern.compile("^(http|https|mailto).+", Pattern.CASE_INSENSITIVE))
@@ -891,7 +904,7 @@ class OccurrenceTagLib {
         String sanitizedHtml = policy.sanitize(unescapedHtml)
 
         if (openInNewWindow) {
-            // hack to force links to be opedned in new window/tab
+            // hack to force links to be opened in new window/tab
             sanitizedHtml =  sanitizedHtml.replace("<a ", "<a target=\"_blank\" ")
         }
 

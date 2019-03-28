@@ -6,3 +6,4 @@ wrapper/*
 .slcache/*
 build/*
 .gradle/*
+.DS_Store

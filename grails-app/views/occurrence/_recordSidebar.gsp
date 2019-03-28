@@ -10,7 +10,7 @@
     </button>
 </g:if>
 %{--<div class="nav-affix" data-spy="affix" data-offset-top="236" data-offset-bottom="1080">--}%
-<div class="" >
+<div class="">
     <ul id="navBox" class="nav nav-pills nav-stacked">
         <li><a href="#occurrenceDataset"><g:message code="recordcore.occurencedataset.title" default="Dataset"/></a></li>
         <li><a href="#occurrenceEvent"><g:message code="recordcore.occurenceevent.title" default="Event"/></a></li>
@@ -236,20 +236,26 @@
                             </a>
                         </g:else>
                         <br/>
+                        <g:if test="${record.raw.miscProperties?.TITLE}">
+                            <cite><b><g:message code="show.sidebar03.image.title" default="Title"/>:</b> <alatag:sanitizeContent>${raw(record.raw.miscProperties.TITLE)}</alatag:sanitizeContent></cite><br/>
+                        </g:if>
                         <g:if test="${record.raw.occurrence.photographer || image.metadata?.creator}">
-                            <cite><g:message code="show.sidebar03.cite01" default="Photographer"/>: ${record.raw.occurrence.photographer ?: image.metadata?.creator}</cite><br/>
+                            <cite><b><g:message code="show.sidebar03.cite01" default="Photographer"/>:</b> ${record.raw.occurrence.photographer ?: image.metadata?.creator}</cite><br/>
                         </g:if>
                         <g:if test="${record.raw.occurrence.rights || image.metadata?.rights}">
-                            <cite><g:message code="show.sidebar03.cite02" default="Rights"/>: ${record.raw.occurrence.rights ?: image.metadata?.rights}</cite><br/>
+                            <cite><b><g:message code="show.sidebar03.cite02" default="Rights"/>:</b> ${record.raw.occurrence.rights ?: image.metadata?.rights}</cite><br/>
                         </g:if>
                         <g:if test="${record.raw.occurrence.rightsholder || image.metadata?.rightsholder}">
-                            <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.occurrence.rightsholder ?: image.metadata?.rightsholder}</cite><br/>
+                            <cite><b><g:message code="show.sidebar03.cite03" default="Rights holder"/>:</b> ${record.raw.occurrence.rightsholder ?: image.metadata?.rightsholder}</cite><br/>
                         </g:if>
                         <g:if test="${record.raw.miscProperties.rightsHolder}">
-                            <cite><g:message code="show.sidebar03.cite03" default="Rights holder"/>: ${record.raw.miscProperties.rightsHolder}</cite><br/>
+                            <cite><b><g:message code="show.sidebar03.cite03" default="Rights holder"/>:</b> ${record.raw.miscProperties.rightsHolder}</cite><br/>
                         </g:if>
                         <g:if test="${image.metadata?.license}">
-                            <cite><g:message code="show.sidebar03.image.license" default="License"/>: ${image.metadata?.license}</cite><br/>
+                            <cite><b><g:message code="show.sidebar03.image.license" default="License"/>:</b> ${image.metadata?.license}</cite><br/>
+                        </g:if>
+                        <g:if test="${record.raw.miscProperties?.DESCRIPTION}">
+                                <cite><b><g:message code="show.sidebar03.caption" default="Caption"/>:</b> <alatag:sanitizeContent>${raw(record.raw.miscProperties.DESCRIPTION)}</alatag:sanitizeContent></cite><br/>
                         </g:if>
                         <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
                             <a href="${grailsApplication.config.images.metadataUrl}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
@@ -275,7 +281,7 @@
             </div>
             <g:if test="${record.raw.occurrence.rights}">
                 <br/>
-                <cite><g:message code="show.sidebar04.cite" default="Rights"/>: ${record.raw.occurrence.rights}</cite>
+                <cite><b><g:message code="show.sidebar04.cite" default="Rights"/>:</b> ${record.raw.occurrence.rights}</cite>
             </g:if>
             <p>
                 <g:message code="show.sidebar04.p" default="Please press the play button to hear the sound file associated with this occurrence record."/>
