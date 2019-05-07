@@ -75,11 +75,11 @@ class OccurrenceTagLibSpec extends Specification {
     void "test sanitizeBodyText ALA generated html text"() {
         // taken from record ID df9c78e6-6908-4ae4-8b72-09b22ef9c9ff
         given:
-            def text = "<a href=http://biocache.ala.org.au/occurrences/search?q=institution_code:NMV%20AND%20collection_code:Ichthyology%20AND%20catalogue_number:A30460-29>source specimen NMV:Ichthyology:A30460-29</a>"
+            def text = "<a href=https://biocache.ala.org.au/occurrences/search?q=institution_code:NMV%20AND%20collection_code:Ichthyology%20AND%20catalogue_number:A30460-29>source specimen NMV:Ichthyology:A30460-29</a>"
         when:
             def html = tagLib.sanitizeBodyText(text)
         then:
-            html == "<a target=\"_blank\" href=\"http://biocache.ala.org.au/occurrences/search?q&#61;institution_code:NMV%20AND%20collection_code:Ichthyology%20AND%20catalogue_number:A30460-29\" rel=\"nofollow\">source specimen NMV:Ichthyology:A30460-29</a>"
+            html == "<a target=\"_blank\" href=\"https://biocache.ala.org.au/occurrences/search?q&#61;institution_code:NMV%20AND%20collection_code:Ichthyology%20AND%20catalogue_number:A30460-29\" rel=\"nofollow\">source specimen NMV:Ichthyology:A30460-29</a>"
     }
 
     void "test sanitizeBodyText ALA generated html text 2"() {
