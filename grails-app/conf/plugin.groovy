@@ -49,7 +49,7 @@ bieService.baseUrl = "https://bie-ws.ala.org.au/ws"
 //bie.autocompleteHints.fq = "kingdom:Plantae"  // optional
 collectory.baseUrl = "https://collections.ala.org.au"
 logger.baseUrl = "https://logger.ala.org.au/service"
-biocache.apiKey = "api-key-to-use"
+biocache.apiKey = "not-your-api-key-to-use"
 biocache.baseUrl = "https://biocache-ws.ala.org.au/ws"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
 biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
