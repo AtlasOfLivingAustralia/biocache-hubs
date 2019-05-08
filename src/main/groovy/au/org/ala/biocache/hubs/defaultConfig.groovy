@@ -47,35 +47,35 @@ skin.exploreUrl = "${serverName}"
 
 // web services
 bie.baseUrl = "https://bie.ala.org.au"
-bieService.baseUrl = "https://bie.ala.org.au/ws"
+bieService.baseUrl = "https://bie-ws.ala.org.au/ws"
 //bie.autocompleteHints.fq = "kingdom:Plantae"  // optional
-collectory.baseUrl = "http://collections.ala.org.au"
-logger.baseUrl = "http://logger.ala.org.au/service"
-biocache.apiKey = "api-key-to-use"
-biocache.baseUrl = "https://biocache.ala.org.au/ws"
+collectory.baseUrl = "https://collections.ala.org.au"
+logger.baseUrl = "https://logger.ala.org.au/service"
+biocache.apiKey = "not-your-api-key-to-use"
+biocache.baseUrl = "https://biocache-ws.ala.org.au/ws"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
 biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
 //biocache.groupedFacetsUrl = "${biocache.baseUrl}/search/grouped/facets" // optional - define in hub only
-collections.baseUrl = "http://collections.ala.org.au"
-alerts.baseUrl = "http://alerts.ala.org.au"
+collections.baseUrl = "https://collections.ala.org.au"
+alerts.baseUrl = "https://alerts.ala.org.au"
 speciesList.baseURL = "https://lists.ala.org.au"
 useDownloadPlugin = ""
 
 // for images-client-plugin
-image.baseUrl = "http://images.ala.org.au"
+image.baseUrl = "https://images.ala.org.au"
 
 // images
-images.baseUrl = "http://images.ala.org.au"
-images.viewerUrl = "http://images.ala.org.au/image/viewer?imageId="
-images.metadataUrl = "http://images.ala.org.au/image/details?imageId="
+images.baseUrl = "https://images.ala.org.au"
+images.viewerUrl = "https://images.ala.org.au/image/viewer?imageId="
+images.metadataUrl = "https://images.ala.org.au/image/details?imageId="
 
 sightings.baseUrl = "https://sightings.ala.org.au"
 
 // For sandbox environment
-//spatial.params = "&dynamic=true&ws=http%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=http%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"
-spatial.baseUrl = "http://spatial.ala.org.au/"
-layersservice.baseUrl = "http://spatial.ala.org.au/ws"
+//spatial.params = "&dynamic=true&ws=https%3A%2F%2Fsandbox.ala.org.au%2Fhubs-webapp&bs=https%3A%2F%2Fsandbox.ala.org.au%2Fbiocache-service"
+spatial.baseUrl = "https://spatial.ala.org.au/"
+layersservice.baseUrl = "https://spatial.ala.org.au/ws"
 spatial.params = ""
 test.var = "test"
 // used to link temporary data resources back to an originating sandbox.
@@ -112,7 +112,7 @@ map.defaultZoom
 map.overlay.url
 map.overlay.name
 map.minimal.url = "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
-map.minimal.attr = "Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>, imagery &copy; <a href='http://cartodb.com/attributions'>CartoDB</a>"
+map.minimal.attr = "Map data &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>, imagery &copy; <a href='https://cartodb.com/attributions'>CartoDB</a>"
 map.minimal.subdomains = "abcd"
 //map.mapbox.id = "nickdos.kf2g7gpb" // https://mapbox.com/ Registered by Nick - free to use so anyone can create a new one and add it here
 //map.mapbox.token = "pk.eyJ1Ijoibmlja2RvcyIsImEiOiJ2V2dBdEg0In0.Ep2VyMOaOUnOwN1ZVa9uyQ"
