@@ -416,7 +416,7 @@
                                             <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
                                                 <p><g:message
                                                         code="search.map.importText.spatialportal"
-                                                        args="${grailsApplication.config.spatial.baseUrl}"/>
+                                                        args="${[ grailsApplication.config.spatial.baseUrl ]}"/>
                                                 </p>
                                             </g:if>
 
