@@ -350,7 +350,7 @@ $(document).ready(function() {
     });
 
     // load more images button
-    $("#loadMoreImages .btn").live("click", function(e) {
+    $("#loadMoreImages .btn").on("click", function(e) {
         e.preventDefault();
         $(this).addClass('disabled');
         $(this).find('img').show(); // turn on spinner
@@ -360,7 +360,7 @@ $(document).ready(function() {
     });
 
     // load more species images button
-    $("#loadMoreSpecies").live("click", function(e) {
+    $("#loadMoreSpecies").on("click", function(e) {
         e.preventDefault();
         var start = $("#speciesGallery").data('count');
         var group = $("#speciesGroup :selected").val();
@@ -370,7 +370,7 @@ $(document).ready(function() {
     });
 
     // species tab -> species group drop down
-    $("#speciesGroup, #speciesGallerySort").live("change", function(e) {
+    $("#speciesGroup, #speciesGallerySort").on("change", function(e) {
         var group = $("#speciesGroup :selected").val();
         var sort = $("#speciesGallerySort :selected").val();
         loadSpeciesInTab(0, sort, group);
@@ -407,19 +407,19 @@ $(document).ready(function() {
         loadMoreFacets(facetName, displayName, null);
     });
 
-    $('#multipleFacets').on('hidden', function () {
+    $('#multipleFacets').on('hidden.bs.modal', function () {
         // clear the tbody content
         $("tbody.scrollContent tr").not("#spinnerRow").remove();
     });
 
-    $("#downloadFacet").live("click", function(e) {
+    $("#downloadFacet").on("click", function(e) {
         var facetName = $("table#fullFacets").data("facet");
         //console.log('clicked ' + window.location.href );
         window.location.href = BC_CONF.biocacheServiceUrl + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName + '&count=true&lookup=true';
     });
 
     // form validation for form#facetRefineForm
-    $("#submitFacets :input.submit").live("click", function(e) {
+    $("#submitFacets :input.submit").on("click", function(e) {
         e.preventDefault();
         var inverseModifier = ($(this).attr('id') == 'exclude') ? "-" : "";
         var fqArray = [];
@@ -469,7 +469,7 @@ $(document).ready(function() {
     });
 
     // Drop-down option on facet popup div - for wildcard fq searches
-    $('#submitFacets a.wildcard').live('click', function(e) {
+    $('#submitFacets a.wildcard').on('click', function(e) {
         e.preventDefault();
         var link = this;
         var inverseModifier = ($(link).attr('id').indexOf('exclude') != -1) ? "-" : "";
@@ -493,7 +493,7 @@ $(document).ready(function() {
     });
 
     // maultiple facets popup - sortable column heading links
-    $("a.fsort").live("click", function(e) {
+    $("a.fsort").on("click", function(e) {
         e.preventDefault();
         var fsort = $(this).data('sort');
         var foffset = $(this).data('foffset');
@@ -510,7 +510,7 @@ $(document).ready(function() {
     });
 
     // loadMoreValues (legacy - now handled by inview)
-    $("a.loadMoreValues").live("click", function(e) {
+    $("#multipleFacets").on("click", "a.loadMoreValues", function(e) {
         e.preventDefault();
         var link = $(this);
         var fsort = link.data('sort');
@@ -524,7 +524,7 @@ $(document).ready(function() {
     });
 
     // Inview trigger to load more values when tr comes into view
-    $("tr#loadMore").live("inview", function() {
+    $("#multipleFacets").on("inview", "tr#loadMore", function() {
         var link = $(this).find("a.loadMoreValues");
         //console.log("inview", link);
         var fsort = link.data('sort');
