@@ -56,14 +56,14 @@ $(document).ready(function() {
     // Catch page events...
 
     // Register events for the species_group column
-    $('#taxa-level-0 tbody tr').live("mouseover mouseout", function() {
+    $('#taxa-level-0').on("mouseover mouseout", "tbody tr",  function() {
         // mouse hover on groups
         if ( event.type == "mouseover" ) {
             $(this).addClass('hoverRow');
         } else {
             $(this).removeClass('hoverRow');
         }
-    }).live("click", function(e) {
+    }).on("click", "tbody tr", function(e) {
         // catch the link on the taxon groups table
         e.preventDefault(); // ignore the href text - used for data
         groupClicked(this);
@@ -155,7 +155,7 @@ $(document).ready(function() {
     };
 
     // catch the link for "View all records"
-    $('#viewAllRecords').live("click", function(e) {
+    $('#viewAllRecords').on("click", function(e) {
         e.preventDefault();
         //var params = "q=taxon_name:*|"+$('#latitude').val()+"|"+$('#longitude').val()+"|"+$('#radius').val();
         var params = "q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=geospatial_kosher:true";
@@ -167,7 +167,7 @@ $(document).ready(function() {
 
     // catch the link for "Download"
     // ?searchParams=${sr?.urlParameters?.encodeAsURL()}&targetUri=${(request.forwardURI)}&totalRecords=${sr.totalRecords}
-    $('#downloadData').live("click", function(e) {
+    $('#downloadData').on("click", function(e) {
         e.preventDefault();
         //var params = "q=taxon_name:*|"+$('#latitude').val()+"|"+$('#longitude').val()+"|"+$('#radius').val();
         var params = "?q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=geospatial_kosher:true";

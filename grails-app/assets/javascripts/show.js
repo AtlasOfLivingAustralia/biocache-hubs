@@ -109,7 +109,7 @@ $(document).ready(function() {
 
 
     // bind to form "close" button TODO
-    $("input#close").live("click", function(e) {
+    $("input#close").on("click", function(e) {
         // close the popup
     //    $.fancybox.close();
         // reset form back to default state

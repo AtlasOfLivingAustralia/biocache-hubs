@@ -22,39 +22,43 @@
 jQuery(document).ready(function() {
     // Autocomplete
     var bieBaseUrl = BC_CONF.bieWebServiceUrl;
-    var bieParams = { limit: 100 };
+    var bieParams = { limit: 20 };
     var autoHints = BC_CONF.autocompleteHints; // expects { fq: "kingdom:Plantae" }
     $.extend( bieParams, autoHints ); // merge autoHints into bieParams
-    jQuery(":input#taxaQuery, :input#solrQuery, :input#taxa, :input.name_autocomplete").autocomplete(bieBaseUrl + '/search/auto.json', {
-        extraParams: bieParams,
-        dataType: 'json',
-        parse: function(data) {
-            var rows = new Array();
-            data = data.autoCompleteList;
-            for(var i=0; i<data.length; i++){
-                rows[i] = {
-                    data:data[i],
-                    value: data[i].guid,
-                    result: data[i].matchedNames[0]
-                };
-            }
-            return rows;
-        },
-        matchSubset: false,
-        formatItem: function(row, i, n) {
-            return row.matchedNames[0];
-            //return row.name;
-        },
-        cacheLength: 10,
-        minChars: 3,
-        scroll: false,
-        max: 10,
-        selectFirst: false
-    }).result(function(event, item) {
-        // user has selected an autocomplete item
-        //console.log("item", item);
-        $('input#lsid').val(item.guid);
-    });
+
+    function getMatchingName(item) {
+        if (item.commonNameMatches && item.commonNameMatches.length) {
+            return item.commonName;
+        } else {
+            return item.name;
+        }
+    };
+
+    function formatAutocompleteList(list) {
+        var results = [];
+        if (list && list.length){
+            list.forEach(function (item) {
+                var name = getMatchingName(item);
+                results.push({label: name, value: name});
+            })
+        }
+
+        return results;
+    };
+
+    $.ui.autocomplete({
+        source: function (request, response) {
+            bieParams.q = request.term;
+            $.ajax( {
+                url: bieBaseUrl + '/search/auto.json',
+                dataType: "json",
+                data: bieParams,
+                success: function( data ) {
+                    response( formatAutocompleteList(data.autoCompleteList) );
+                }
+            } );
+        }
+    }, $(":input#taxaQuery, :input#solrQuery, :input#taxa, :input.name_autocomplete"));
 
     // search submit
     jQuery("#solrSearchFormOFF").submit(function(e) {
