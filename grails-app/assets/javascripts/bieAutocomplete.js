@@ -26,13 +26,15 @@ jQuery(document).ready(function() {
     var autoHints = BC_CONF.autocompleteHints; // expects { fq: "kingdom:Plantae" }
     $.extend( bieParams, autoHints ); // merge autoHints into bieParams
 
-    var getMatchingName = function (item) {
+    function getMatchingName(item) {
         if (item.commonNameMatches && item.commonNameMatches.length) {
             return item.commonName;
         } else {
             return item.name;
         }
-    }, formatAutocompleteList = function (list) {
+    };
+
+    function formatAutocompleteList(list) {
         var results = [];
         if (list && list.length){
             list.forEach(function (item) {
@@ -43,6 +45,7 @@ jQuery(document).ready(function() {
 
         return results;
     };
+
     $.ui.autocomplete({
         source: function (request, response) {
             bieParams.q = request.term;
