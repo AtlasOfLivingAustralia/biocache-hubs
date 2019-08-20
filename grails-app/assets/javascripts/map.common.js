@@ -83,7 +83,7 @@ L.PointClickHandler = L.Handler.extend({
  */
 var clickCount = 0;
 function pointLookupClickRegister(e) {
-    //console.log('pointLookupClickRegister', clickCount);
+    // console.log('pointLookupClickRegister', clickCount);
     clickCount += 1;
     if (clickCount <= 1) {
         setTimeout(function() {
@@ -204,7 +204,6 @@ function drawWktObj(wktString) {
  * @param e
  */
 function pointLookup(e) {
-
     MAP_VAR.popup = L.popup().setLatLng(e.latlng);
     var radius = 0;
     var size = $('sizeslider-val').html();
@@ -288,8 +287,6 @@ function pointLookup(e) {
 
     $.ajax({
         url: MAP_VAR.mappingUrl + "/occurrences/info" + mapQuery + MAP_VAR.removeFqs,
-        jsonp: "callback",
-        dataType: "jsonp",
         timeout: 30000,
         data: {
             zoom: MAP_VAR.map.getZoom(),
@@ -323,7 +320,7 @@ function pointLookup(e) {
  * @param recordIndex
  */
 function insertRecordInfo(recordIndex) {
-    //console.log("insertRecordInfo", recordIndex, MAP_VAR.recordList);
+    console.log("insertRecordInfo", recordIndex, MAP_VAR.recordList);
     var recordUuid = MAP_VAR.recordList[recordIndex];
     var $popupClone = $('.popupRecordTemplate').clone();
     MAP_VAR.map.spin(true);
@@ -352,8 +349,6 @@ function insertRecordInfo(recordIndex) {
     // Get the current record details
     $.ajax({
         url: MAP_VAR.mappingUrl + "/occurrences/" + recordUuid + ".json",
-        jsonp: "callback",
-        dataType: "jsonp",
         success: function(record) {
             MAP_VAR.map.spin(false);
 
