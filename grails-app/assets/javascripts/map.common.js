@@ -320,20 +320,20 @@ function pointLookup(e) {
  * @param recordIndex
  */
 function insertRecordInfo(recordIndex) {
-    console.log("insertRecordInfo", recordIndex, MAP_VAR.recordList);
+    //console.log("insertRecordInfo", recordIndex, MAP_VAR.recordList);
     var recordUuid = MAP_VAR.recordList[recordIndex];
     var $popupClone = $('.popupRecordTemplate').clone();
     MAP_VAR.map.spin(true);
 
     if (MAP_VAR.recordList.length > 1) {
         // populate popup header
-        $popupClone.find('.multiRecordHeader').show();
+        $popupClone.find('.multiRecordHeader').removeClass('collapse');
         $popupClone.find('.currentRecord').html(recordIndex + 1);
         $popupClone.find('.totalrecords').html(MAP_VAR.recordList.length.toString().replace(/100/, '100+'));
         var occLookup = "&radius=" + MAP_VAR.popupRadius + "&lat=" + MAP_VAR.popupLatlng.lat + "&lon=" + MAP_VAR.popupLatlng.lng;
         $popupClone.find('a.viewAllRecords').attr('href', BC_CONF.contextPath + "/occurrences/search" + MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + MAP_VAR.removeFqs + occLookup);
         // populate popup footer
-        $popupClone.find('.multiRecordFooter').show();
+        $popupClone.find('.multiRecordFooter').removeClass('collapse');
         if (recordIndex < MAP_VAR.recordList.length - 1) {
             $popupClone.find('.nextRecord a').attr('onClick', 'insertRecordInfo('+(recordIndex + 1)+'); return false;');
             $popupClone.find('.nextRecord a').removeClass('disabled');
@@ -345,7 +345,7 @@ function insertRecordInfo(recordIndex) {
     }
 
     $popupClone.find('.recordLink a').attr('href', BC_CONF.contextPath + "/occurrences/" + recordUuid);
-
+    console.log("$$popupClone (header)", $popupClone.html());
     // Get the current record details
     $.ajax({
         url: MAP_VAR.mappingUrl + "/occurrences/" + recordUuid + ".json",
