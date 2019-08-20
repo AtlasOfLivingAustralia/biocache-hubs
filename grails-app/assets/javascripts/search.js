@@ -256,7 +256,7 @@ $(document).ready(function() {
         var index = i; // keep a copy
         var queryContextParam = (BC_CONF.queryContext) ? "&qc=" + BC_CONF.queryContext : "";
         var jsonUri = BC_CONF.biocacheServiceUrl + "/occurrences/search.json?q=lsid:" + lsid + "&" + BC_CONF.facetQueries +
-            "&facets=raw_taxon_name&pageSize=0&flimit=" + maxFacets + queryContextParam + "&callback=?";
+            "&facets=raw_taxon_name&pageSize=0&flimit=" + maxFacets + queryContextParam;  // + "&callback=?";
 
         var $clone = $('#resultsReturned #template').clone();
         $clone.attr("id",""); // remove the ID
@@ -293,13 +293,9 @@ $(document).ready(function() {
                 synList1 += "[no records found]";
             }
 
-            //synList1 += "</div>";
-
             if (synListSize >= maxFacets) {
                 synList1 += "<div><br>Only showing the first " + maxFacets + " names<br>See the \"Scientific name (unprocessed)\" section in the \"Refine results\" column on the left for a complete list</div>";
             }
-
-//            synList += "</div>";
 
             $clone.find('div.rawTaxaList').html(synList1);
             $clone.removeClass("hide");
@@ -308,21 +304,8 @@ $(document).ready(function() {
                 e.stopPropagation();
             });
 
-//            $("#rawTaxonSearchForm").append(synList);
-            // position it under the drop down
-//            $("#refineTaxaSearch_"+i).position({
-//                my: "right top",
-//                at: "right bottom",
-//                of: $(el), // or this
-//                offset: "0 -1",
-//                collision: "none"
-//            });
-//            $("#refineTaxaSearch_"+i).hide();
         });
-        // format display with drop-down
-        //$("span.lsid").before("<span class='plain'> which matched: </span>");
-//        $(el).html("<a href='#' title='click for details about this taxon search' id='lsid_" + i + "'>" + nameString + "</a>");
-//        $(el).addClass("dropDown");
+
         $(el).html($clone);
     });
 
