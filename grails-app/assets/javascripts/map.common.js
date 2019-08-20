@@ -345,7 +345,6 @@ function insertRecordInfo(recordIndex) {
     }
 
     $popupClone.find('.recordLink a').attr('href', BC_CONF.contextPath + "/occurrences/" + recordUuid);
-    console.log("$$popupClone (header)", $popupClone.html());
     // Get the current record details
     $.ajax({
         url: MAP_VAR.mappingUrl + "/occurrences/" + recordUuid + ".json",
