@@ -102,7 +102,7 @@ $(document).ready(function() {
         $('.nav-tabs a:first').tab('show');
     }
 
-    // Substitute LSID strings for tacon names in facet values for species
+    // Substitute LSID strings for taxon names in facet values for species
     var guidList = [];
     $("li.species_guid, li.genus_guid").each(function(i, el) {
         guidList[i] = $(el).attr("id");
