@@ -427,18 +427,20 @@ function updateDeleteVerificationEvents(relatedAssertionId) {
     });
 }
 
+function deleteAssertionPrompt(event) {
+    var isConfirmed = confirm('Are you sure you want to delete this flagged issue?');
+    if (isConfirmed === true) {
+        $('#' + event.data.qa_uuid + ' .deleteAssertionSubmitProgress').css({'display':'inline'});
+        console.log(event.data.qa_uuid);
+        deleteAssertion(event.data.rec_uuid, event.data.qa_uuid);
+    }
+}
+
 function updateDeleteEvents(enableDelete, disableDelete){
 
     for(var i = 0; i < enableDelete.length; i++){
         $('#userAnnotation_' + enableDelete[i] + ' .deleteAnnotation').off("click");
-        $('#userAnnotation_' + enableDelete[i] + ' .deleteAnnotation').on("click", function (e) {
-            e.preventDefault();
-            var isConfirmed = confirm('Are you sure you want to delete this flagged issue?');
-            if (isConfirmed === true) {
-                $('#' + enableDelete[i] + ' .deleteAssertionSubmitProgress').css({'display':'inline'});
-                deleteAssertion(OCC_REC.recordUuid, enableDelete[i]);
-            }
-        });
+        $('#userAnnotation_' + enableDelete[i] + ' .deleteAnnotation').click({rec_uuid: OCC_REC.recordUuid, qa_uuid: enableDelete[i]}, deleteAssertionPrompt);
         updateVerificationEvents(enableDelete[i]);
     }
 
