@@ -534,6 +534,34 @@ class OccurrenceTagLib {
     }
 
     /**
+     * Create a link for a userId and dataResourceUid combination
+     * E.g. <a href="${grailsApplication.config.sightings.baseUrl}/spotter/${record.raw.occurrence.userId}">${record.alaUserName}</a>
+     *
+     * @attr userId REQUIRED
+     * @attr dataResourceUid REQUIRED
+     * @attr openInNewWindow
+     */
+    def getLinkForUserId = { attrs ->
+        def userId = attrs.userId
+        def dataResourceUid = attrs.dataResourceUid
+        def openInNewWindow = attrs.openInNewWindow
+        def url
+
+        if (dataResourceUid == "dr364") {
+            // ALA sightings
+            url = "<a href=\"${grailsApplication.config.getProperty("sightings.baseUrl")}/spotter/${userId}\">${userId}</a>"
+        } else if (dataResourceUid == "dr1411") {
+            // iNaturalist
+            url = "<a href=\"${grailsApplication.config.getProperty( "iNaturalist.baseUrl", "https://inaturalist.org")}/people/${userId}\">${userId}</a>"
+        } else if (dataResourceUid == "dr360") {
+            // Flickr
+            url = "<a href=\"https://www.flickr.com/photos/${userId}\">${userId}</a>"
+        }
+
+        out << url
+    }
+
+    /**
      * Generate a compare record "row"
      *
      * @attr compareRecord REQUIRED
