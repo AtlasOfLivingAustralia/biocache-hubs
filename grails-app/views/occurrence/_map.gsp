@@ -591,8 +591,8 @@
         //console.log("MAP_VAR.query", MAP_VAR.query);
         $.ajax({
             url: "${alatag.getBiocacheAjaxUrl()}/occurrences/info" + MAP_VAR.query,
-            jsonp: "callback",
-            dataType: "jsonp",
+            //jsonp: "callback",
+            //dataType: "jsonp",
             success: function(response) {
             }
         });

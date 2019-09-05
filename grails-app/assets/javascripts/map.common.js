@@ -83,7 +83,7 @@ L.PointClickHandler = L.Handler.extend({
  */
 var clickCount = 0;
 function pointLookupClickRegister(e) {
-    //console.log('pointLookupClickRegister', clickCount);
+    // console.log('pointLookupClickRegister', clickCount);
     clickCount += 1;
     if (clickCount <= 1) {
         setTimeout(function() {
@@ -204,7 +204,6 @@ function drawWktObj(wktString) {
  * @param e
  */
 function pointLookup(e) {
-
     MAP_VAR.popup = L.popup().setLatLng(e.latlng);
     var radius = 0;
     var size = $('sizeslider-val').html();
@@ -288,8 +287,6 @@ function pointLookup(e) {
 
     $.ajax({
         url: MAP_VAR.mappingUrl + "/occurrences/info" + mapQuery + MAP_VAR.removeFqs,
-        jsonp: "callback",
-        dataType: "jsonp",
         timeout: 30000,
         data: {
             zoom: MAP_VAR.map.getZoom(),
@@ -330,13 +327,13 @@ function insertRecordInfo(recordIndex) {
 
     if (MAP_VAR.recordList.length > 1) {
         // populate popup header
-        $popupClone.find('.multiRecordHeader').show();
+        $popupClone.find('.multiRecordHeader').removeClass('collapse');
         $popupClone.find('.currentRecord').html(recordIndex + 1);
         $popupClone.find('.totalrecords').html(MAP_VAR.recordList.length.toString().replace(/100/, '100+'));
         var occLookup = "&radius=" + MAP_VAR.popupRadius + "&lat=" + MAP_VAR.popupLatlng.lat + "&lon=" + MAP_VAR.popupLatlng.lng;
         $popupClone.find('a.viewAllRecords').attr('href', BC_CONF.contextPath + "/occurrences/search" + MAP_VAR.query.replace(/&(?:lat|lon|radius)\=[\-\.0-9]+/g, '') + MAP_VAR.removeFqs + occLookup);
         // populate popup footer
-        $popupClone.find('.multiRecordFooter').show();
+        $popupClone.find('.multiRecordFooter').removeClass('collapse');
         if (recordIndex < MAP_VAR.recordList.length - 1) {
             $popupClone.find('.nextRecord a').attr('onClick', 'insertRecordInfo('+(recordIndex + 1)+'); return false;');
             $popupClone.find('.nextRecord a').removeClass('disabled');
@@ -348,12 +345,9 @@ function insertRecordInfo(recordIndex) {
     }
 
     $popupClone.find('.recordLink a').attr('href', BC_CONF.contextPath + "/occurrences/" + recordUuid);
-
     // Get the current record details
     $.ajax({
         url: MAP_VAR.mappingUrl + "/occurrences/" + recordUuid + ".json",
-        jsonp: "callback",
-        dataType: "jsonp",
         success: function(record) {
             MAP_VAR.map.spin(false);
 

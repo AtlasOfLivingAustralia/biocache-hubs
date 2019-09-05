@@ -577,7 +577,7 @@ var facetChartGroup = {
         // make request
         $.ajax({
             url: urlConcat(url, "/occurrences/search.json?pageSize=0&flimit=200&q=") + options.query + facets + "&fsort=index",
-            dataType: 'jsonp',
+            //dataType: 'jsonp',
             error: function() {
                 cleanUp(); // TODO:
             },
@@ -649,7 +649,7 @@ var loadAndDrawFacetCharts = function (options) {
     // make request
     $.ajax({
         url: urlConcat(url, "/occurrences/search.json?pageSize=0&q=") + options.query + "&facets=" + facets + "&fsort=index",
-        dataType: 'jsonp',
+        //dataType: 'jsonp',
         error: function() {
             cleanUp(); // TODO:
         },
@@ -754,7 +754,7 @@ function loadFacetCharts(chartOptions) {
     var query = chartOptions.query ? chartOptions.query : buildQueryString(chartOptions.instanceUid);
     $.ajax({
         url: urlConcat(biocacheServicesUrl, "/occurrences/search.json?pageSize=0&q=") + query + "&fsort=index",
-        dataType: 'jsonp',
+        //dataType: 'jsonp',
         error: function() {
             cleanUp();
         },
@@ -1070,7 +1070,7 @@ var taxonomyChart = {
 
         $.ajax({
             url: url,
-            dataType: 'jsonp',
+            //dataType: 'jsonp',
             timeout: 30000,
             complete: function(jqXHR, textStatus) {
                 if (textStatus == 'timeout') {
@@ -1309,7 +1309,7 @@ function initTaxonTree(treeOptions) {
                         }
                         return u;
                     },
-                    dataType: 'jsonp',
+                    //dataType: 'jsonp',
                     success: function(data) {
                         var nodes = [];
                         var rank = data.rank;
