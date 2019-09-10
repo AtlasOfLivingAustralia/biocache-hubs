@@ -941,4 +941,17 @@ class OccurrenceTagLib {
 
         sanitizedHtml
     }
+
+    /**
+     * Remove any text containing the apiKey value from the UI
+     *
+     * @attr message REQUIRED
+     */
+    def stripApiKey = { attrs, body ->
+        String message = attrs.message
+        String output = message.replaceAll(/apiKey=[a-z0-9_\-]*/, "")
+        log.warn "input = ${message}"
+        log.warn "output = ${output}"
+        out << output
+    }
 }
