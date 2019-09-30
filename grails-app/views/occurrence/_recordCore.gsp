@@ -202,9 +202,9 @@
 </alatag:occurrenceTableRow>
 <!-- ALA user id -->
 <g:if test="${record.raw.occurrence.userId}">
+    ${fieldsMap.put("userId", true)}
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="userId" fieldNameIsMsgCode="true" fieldName="User ID">
         <alatag:getLinkForUserId userName="${record.alaUserName}" userId="${record.raw.occurrence.userId}" dataResourceUid="${record.raw.attribution.dataResourceUid}" openInNewWindow="${true}"/>
-%{--        <a href="${grailsApplication.config.sightings.baseUrl}/spotter/${record.raw.occurrence.userId}">${record.alaUserName}</a>--}%
     </alatag:occurrenceTableRow>
 </g:if>
 <!-- Record Number -->

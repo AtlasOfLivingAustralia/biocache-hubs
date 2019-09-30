@@ -548,15 +548,21 @@ class OccurrenceTagLib {
         def dataResourceUid = attrs.dataResourceUid
         def url
 
-        if (dataResourceUid == "dr364") {
-            // ALA sightings
-            url = "<a href=\"${grailsApplication.config.getProperty("sightings.baseUrl")}/spotter/${userId}\">${userName}</a>"
-        } else if (dataResourceUid == "dr1411") {
-            // iNaturalist
-            url = "<a href=\"${grailsApplication.config.getProperty( "iNaturalist.baseUrl", "https://inaturalist.org")}/people/${userName}\">${userName}</a>"
-        } else if (dataResourceUid == "dr360") {
-            // Flickr
-            url = "<a href=\"https://www.flickr.com/photos/${userName}\">${userName}</a>"
+        if (userName) {
+            if (dataResourceUid == "dr364") {
+                // ALA sightings
+                url = "<a href=\"${grailsApplication.config.getProperty("sightings.baseUrl")}/spotter/${userId}\">${userName}</a>"
+            } else if (dataResourceUid == "dr1411") {
+                // iNaturalist
+                url = "<a href=\"${grailsApplication.config.getProperty( "iNaturalist.baseUrl", "https://inaturalist.org")}/people/${userName}\">${userName}</a>"
+            } else if (dataResourceUid == "dr360") {
+                // Flickr
+                url = "<a href=\"https://www.flickr.com/photos/${userName}\">${userName}</a>"
+            } else {
+                url = userName // pass-through
+            }
+        } else if (userId) {
+            url = userId // pass-through
         }
 
         out << url
