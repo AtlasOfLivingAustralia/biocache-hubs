@@ -17,6 +17,7 @@ package au.org.ala.biocache.hubs
 
 import org.apache.commons.lang.StringUtils
 import org.grails.web.json.JSONObject
+import org.springframework.web.client.RestClientException
 
 import javax.annotation.PostConstruct
 
@@ -27,7 +28,7 @@ import javax.annotation.PostConstruct
 class FacetsCacheService {
     def webServicesService, grailsApplication
     Map facetsMap = [:]  // generated via SOLR lookup
-    List facetsList = [] // set via config file below
+    List facetsList = [] // set via config (facets.cached) in init()
 
     /**
      * Init method - load facetsList from config file
@@ -35,8 +36,9 @@ class FacetsCacheService {
      * @return
      */
     @PostConstruct
-    def init() {
-        facetsList = grailsApplication.config?.facets?.cached?.split(',') ?: []
+    void init() {
+        // Note config.getProperties will coerce a comma-separated String into a List automagically
+        facetsList = grailsApplication.config.getProperty("facets.cached", List, [])
     }
 
     /**
@@ -45,7 +47,7 @@ class FacetsCacheService {
      * @param facet
      * @return
      */
-    def Map getFacetNamesFor(String facet) {
+    Map getFacetNamesFor(String facet) {
         if (!facetsMap) {
             loadSearchResults()
         }
@@ -57,7 +59,7 @@ class FacetsCacheService {
      * Can be triggered from the admin page. Note: the longTermCache needs to be
      * cleared as well (admin function does this).
      */
-    def void clearCache() {
+    void clearCache() {
         facetsMap = [:]
         init() //  reload config values
     }
@@ -66,31 +68,43 @@ class FacetsCacheService {
      * Do a search for all records and store facet values for the requested facet fields
      */
     private void loadSearchResults() {
+        if (!facetsList) {
+            init()
+        }
+
         SpatialSearchRequestParams requestParams = new SpatialSearchRequestParams()
         requestParams.setQ("*:*")
         requestParams.setPageSize(0)
-        requestParams.setFlimit(-1)
+        requestParams.setFlimit(999)
         requestParams.setFacets(facetsList as String[])
-        JSONObject sr = webServicesService.cachedFullTextSearch(requestParams)
 
-        sr.facetResults.each { fq ->
-            def fieldName = fq.fieldName
-            def fields = [:]
-            fq.fieldResult.each {
-                if (it.fq) {
-                    def values = it.fq.tokenize(":")
-                    def value = StringUtils.remove(values[1], '"') // some values have surrounding quotes
-                    fields.put(value, it.label)
-                } else {
-                    fields.put(it.label, it.label)
+        try {
+            JSONObject sr = webServicesService.cachedFullTextSearch(requestParams)
+
+            if (sr.has("facetResults") && sr.facetResults.size() > 0) {
+                sr.facetResults.each { fq ->
+                    log.debug "facetResults = ${fq}"
+                    def fieldName = fq.fieldName
+                    def fields = [:]
+                    fq.fieldResult.each {
+                        if (it.fq) {
+                            def values = it.fq.tokenize(":")
+                            def value = StringUtils.remove(values[1], '"') // some values have surrounding quotes
+                            fields.put(value, it.label) // it.label is the display label that can be different from the Solr field value
+                        } else {
+                            fields.put(it.label, it.label)
+                        }
+                    }
+
+                    if (fields.size() > 0) {
+                        facetsMap.put(fieldName, fields)
+                    } else {
+                        log.warn "No facet values found for ${fieldName}"
+                    }
                 }
             }
-
-            if (fields.size() > 0) {
-                facetsMap.put(fieldName, fields)
-            } else {
-                log.warn "No facet values found for ${fieldName}"
-            }
+        } catch (RestClientException rce) {
+            log.warn "Cached facets call failed - ${rce.message}", rce
         }
     }
 
