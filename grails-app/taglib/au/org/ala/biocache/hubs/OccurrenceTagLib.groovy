@@ -540,24 +540,28 @@ class OccurrenceTagLib {
      * @attr userName REQUIRED
      * @attr userId
      * @attr dataResourceUid REQUIRED
+     * @attr occurrenceId
      * @attr openInNewWindow
      */
     def getLinkForUserId = { attrs ->
         def userName = attrs.userName
         def userId = attrs.userId
         def dataResourceUid = attrs.dataResourceUid
+        def occurrenceId = attrs.occurrenceId
         def url
 
         if (userName) {
             if (dataResourceUid == "dr364") {
                 // ALA sightings
-                url = "<a href=\"${grailsApplication.config.getProperty("sightings.baseUrl")}/spotter/${userId}\">${userName}</a>"
+                url = "<a href=\"${grailsApplication.config.getProperty("sightings.baseUrl")}/spotter/${userId.encodeAsURL()}\">${userName}</a>"
             } else if (dataResourceUid == "dr1411") {
                 // iNaturalist
-                url = "<a href=\"${grailsApplication.config.getProperty( "iNaturalist.baseUrl", "https://inaturalist.org")}/people/${userName}\">${userName}</a>"
-            } else if (dataResourceUid == "dr360") {
+                url = "<a href=\"${grailsApplication.config.getProperty( "iNaturalist.baseUrl", "https://inaturalist.org")}/people/${userName.encodeAsURL()}\">${userName}</a>"
+            } else if (dataResourceUid == "dr360" && occurrenceId) {
                 // Flickr
-                url = "<a href=\"https://www.flickr.com/photos/${userName}\">${userName}</a>"
+                // munge occurrenceId to get the URL, as we don't have the user-name stored in biocache in order to generate it
+                String userUrl = occurrenceId.
+                url = "<a href=\"https://www.flickr.com/photos/${userName.encodeAsURL()}\">${userName}</a>"
             } else {
                 url = userName // pass-through
             }
