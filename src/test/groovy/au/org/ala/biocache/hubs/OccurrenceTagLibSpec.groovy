@@ -126,8 +126,8 @@ class OccurrenceTagLibSpec extends Specification {
     void "test Flickr user page link via getLinkForUserId() tag"() {
         // taken from record ID 674aa318-8f9a-4218-a43f-6c47f0070c82
         when:
-            def html = tagLib.getLinkForUserId(userName:"Donald Hobern", dataResourceUid: "dr360")
+            def html = tagLib.getLinkForUserId(userName:"Donald Hobern", dataResourceUid: "dr360", occurrenceId: "https://www.flickr.com/photos/dhobern/5466675452/")
         then:
-            html == "<a href=\"https://www.flickr.com/photos/Donald+Hobern\">Donald Hobern</a>"
+            html == "<a href=\"https://www.flickr.com/photos/dhobern\">Donald Hobern</a>"
     }
 }
