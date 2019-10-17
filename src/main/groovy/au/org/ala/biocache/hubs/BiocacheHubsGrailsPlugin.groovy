@@ -94,7 +94,13 @@ from the ALA biocache-service app (no local DB is required for this app).
 
             // Custom message source
             messageSource(ExtendedPluginAwareResourceBundleMessageSource) {
-                basenames = ["WEB-INF/grails-app/i18n/messages","classpath:messages","${application.config.biocache.baseUrl}/facets/i18n"] as String[]
+                basenames = [
+                        "file:///var/opt/atlas/i18n/biocache-hubs/messages",
+                        "file:///opt/atlas/i18n/biocache-hubs/messages",
+                        "WEB-INF/grails-app/i18n/messages",
+                        "classpath:messages",
+                        "${application.config.biocache.baseUrl}/facets/i18n"
+                ] as String[]
                 cacheSeconds = (60 * 60 * 6) // 6 hours
                 useCodeAsDefaultMessage = false
                 defaultEncoding = "UTF-8"
