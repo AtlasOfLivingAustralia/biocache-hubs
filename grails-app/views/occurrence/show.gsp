@@ -41,6 +41,7 @@
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     </g:else>
 
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
         // Global var OCC_REC to pass GSP data to external JS file
         var OCC_REC = {
@@ -65,6 +66,7 @@
             google.load('maps', '3.3', {other_params: "sensor=false"});
         }
         //google.load("visualization", "1", {packages:["corechart"]});
+        google.charts.load('current', {'packages':['corechart']});
 
     </script>
     <g:render template="/layouts/global"/>
