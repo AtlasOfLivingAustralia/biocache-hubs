@@ -66,7 +66,7 @@
             google.load('maps', '3.3', {other_params: "sensor=false"});
         }
         //google.load("visualization", "1", {packages:["corechart"]});
-        google.charts.load('current', {'packages':['corechart']});
+        google.charts.load('current', {'packages':['bar', 'corechart', 'table']});
 
     </script>
     <g:render template="/layouts/global"/>
@@ -388,7 +388,7 @@
                                     var facetChartOptions = { error: "badQuery", legend: 'right'}
                                     facetChartOptions.query = biocacheQuery;
                                     facetChartOptions.charts = [chartName];
-                                    facetChartOptions.width = "75%";
+                                    facetChartOptions.width = "65%";
                                     facetChartOptions.chartsDiv = "charts";
                                     facetChartOptions[facetName] = {chartType: 'scatter'};
                                     facetChartOptions.biocacheServicesUrl = "${alatag.getBiocacheAjaxUrl()}";
@@ -404,7 +404,7 @@
                                     //console.log('Finished the drawing...' + chartName);
                                 }
                             </script>
-                            <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts"></script>
+                            <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts" defer></script>
 
                         </g:if>
 

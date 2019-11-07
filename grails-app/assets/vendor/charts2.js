@@ -25,7 +25,7 @@ var baseFacetChart = {
     chart: null,    // the google chart object
     width: 600,
     height: 450,
-    chartArea: {left:0, top:30, width:"90%", height: "70%"},
+    chartArea: {left:0, top:30, width:"70%", height: "70%"},
     is3D: false,
     titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
     sliceVisibilityThreshold: 0,
