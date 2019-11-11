@@ -11,3 +11,4 @@
 //= require leaflet-plugins/loading/Control.Loading.js
 //= require LeafletToWKT.js
 //= require wicket-world-wrap-fix.js
+//= require leaflet-drawLocal
