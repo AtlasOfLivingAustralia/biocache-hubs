@@ -148,10 +148,10 @@
     </g:if>
     <g:elseif test="${!sr || sr.totalRecords == 0}">
         <div class="searchInfo searchError">
-            <g:if test="${queryDisplay =~ /lsid/ && params.taxa}"><!-- ${raw(queryDisplay)} -->
+            <g:if test="${queryDisplay =~ /lsid/ && params.taxa}">
                 <g:if test="${queryDisplay =~ /span/}">
                     <p><g:message code="list.02.p01" default="No records found for"/> <span
-                            class="queryDisplay">${raw(queryDisplay.replaceAll('null:', '')).encodeAsJavaScript}</span></p>
+                            class="queryDisplay">${queryDisplay.replaceAll('null:', '')}</span></p>
                 </g:if>
                 <g:else>
                     <p><g:message code="list.02.p02" default="No records found for"/> <span
@@ -164,7 +164,7 @@
             </g:if>
             <g:elseif test="${queryDisplay =~ /^text:/ && queryDisplay =~ /\s+/ && !(queryDisplay =~ /\bOR\b/)}">
                 <p><g:message code="list.03.p01" default="No records found for"/> <span
-                        class="queryDisplay">${raw(queryDisplay).encodeAsJavaScript}</span></p>
+                        class="queryDisplay">${queryDisplay}</span></p>
                 <g:set var="queryTerms" value="${queryDisplay.split(" ")}"/>
                 <g:set var="newQueryStr" value="${queryTerms.join(" OR ").replaceAll("\"","").replaceAll("text:","")}"/>
                 <p><g:message code="list.03.p02" default="Trying search for"/> <a
