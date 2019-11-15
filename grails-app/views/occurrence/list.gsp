@@ -259,7 +259,9 @@
                     <span id="returnedText"><strong><g:formatNumber number="${sr.totalRecords}"
                                                                     format="#,###,###"/></strong> <g:message
                             code="list.resultsretuened.span.returnedtext" default="results for"/></span>
-                    <span class="queryDisplay"><strong>${queryDisplay}</strong></span>&nbsp;&nbsp;
+                    <span class="queryDisplay"><strong>
+                        <alatag:sanitizeContent>${raw(queryDisplay)}</alatag:sanitizeContent>
+                    </strong></span>&nbsp;&nbsp;
                     <g:if test="${params.taxa && queryDisplay.startsWith("text:")}">
                         %{--Fallback taxa search to "text:", so provide feedback to user about this--}%
                         (<g:message code="list.taxa.notfound" args="${[params.taxa]}" default="(Note: no matched taxon name found for {0})"/>)
