@@ -27,8 +27,10 @@ jQuery(document).ready(function() {
     $.extend( bieParams, autoHints ); // merge autoHints into bieParams
 
     function getMatchingName(item) {
-        if (item.commonNameMatches && item.commonNameMatches.length) {
-            return item.commonName;
+        if (item.scientificNameMatches && item.scientificNameMatches.length) {
+            return item.scientificNameMatches[0].replace("<b>","").replace("</b>","");
+        } else if (item.commonNameMatches && item.commonNameMatches.length) {
+            return item.commonNameMatches[0].replace("<b>","").replace("</b>","") + " (" + item.name + ")";
         } else {
             return item.name;
         }
@@ -61,6 +63,7 @@ jQuery(document).ready(function() {
     }, $(":input#taxaQuery, :input#solrQuery, :input#taxa, :input.name_autocomplete"));
 
     // search submit
+    // Deprecated
     jQuery("#solrSearchFormOFF").submit(function(e) {
         e.preventDefault();
         var lsid = $("input#lsid").val();
