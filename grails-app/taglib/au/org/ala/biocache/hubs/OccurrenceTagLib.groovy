@@ -940,6 +940,7 @@ class OccurrenceTagLib {
                 .onElements("a")
                 .requireRelNofollowOnLinks()
                 .allowAttributes("class").onElements("span")
+                .allowAttributes("id").onElements("span")
                 .toFactory()
         String sanitizedHtml = policy.sanitize(unescapedHtml)
 
