@@ -30,7 +30,7 @@ jQuery(document).ready(function() {
         if (item.scientificNameMatches && item.scientificNameMatches.length) {
             return item.scientificNameMatches[0].replace("<b>","").replace("</b>","");
         } else if (item.commonNameMatches && item.commonNameMatches.length) {
-            return item.commonNameMatches[0].replace("<b>","").replace("</b>","") + " (" + item.name + ")";
+            return item.commonNameMatches[0].replace("<b>","").replace("</b>","");
         } else {
             return item.name;
         }
