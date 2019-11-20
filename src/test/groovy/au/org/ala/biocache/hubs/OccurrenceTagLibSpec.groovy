@@ -102,6 +102,37 @@ class OccurrenceTagLibSpec extends Specification {
             html == "<a target=\"_blank\" href=\"https://collections.ala.org.au/public/show/in16\" rel=\"nofollow\"> Museums Victoria </a> <br /> <span class=\"originalValue\">Supplied institution code &#34;NMV&#34;</span>"
     }
 
+    void "test sanitizeBodyText for taxa search span from biocache-service"() {
+        // taken from acacia search - https://biocache-ws.ala.org.au/ws/occurrences/search?q=taxa:acacia
+        given:
+        def text = "<span class='lsid' id='http://id.biodiversity.org.au/node/apni/6719673'>GENUS: Acacia</span>"
+        when:
+        def html = tagLib.sanitizeBodyText(text)
+        then:
+        html == "<span class=\"lsid\" id=\"http://id.biodiversity.org.au/node/apni/6719673\">GENUS: Acacia</span>"
+    }
+
+    void "test sanitizeBodyText XSS test 1"() {
+        // for issue AtlasOfLivingAustralia/biocache-hubs/issues/327
+        // <svg/onload=alert(123)>
+        given:
+        def text = "<svg/onload=alert(123)>"
+        when:
+        def html = tagLib.sanitizeBodyText(text)
+        then:
+        html == "&lt;svg/onload=alert(123)&gt;"
+    }
+
+    void "test sanitizeBodyText HTML test 4"() {
+        // div
+        given:
+        def text = "<div>acacia</div>"
+        when:
+        def html = tagLib.sanitizeBodyText(text)
+        then:
+        html == "acacia"
+    }
+
     void "test Biocollect sightings user link via getLinkForUserId() tag"() {
         // taken from record ID 04eacba3-cec1-4d6b-8822-78444655081d
         given:
