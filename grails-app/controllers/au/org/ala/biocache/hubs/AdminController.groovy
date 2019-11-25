@@ -17,7 +17,7 @@ package au.org.ala.biocache.hubs
 
 /**
  * Admin functions - should be protected by login and ROLE_ADMIN or equiv.
- * See {@link au.org.biocache.hubs.AdminInterceptor}
+ * See {@link au.org.ala.biocache.hubs.AdminInterceptor}
  */
 class AdminController {
     def facetsCacheService
