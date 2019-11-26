@@ -120,7 +120,7 @@ class OccurrenceTagLibSpec extends Specification {
         when:
         def html = tagLib.sanitizeBodyText(text)
         then:
-        html == "&lt;svg/onload=alert(123)&gt;"
+        html == ""
     }
 
     void "test sanitizeBodyText HTML test 4"() {

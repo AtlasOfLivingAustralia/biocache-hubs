@@ -148,28 +148,31 @@
     </g:if>
     <g:elseif test="${!sr || sr.totalRecords == 0}">
         <div class="searchInfo searchError">
-            <g:if test="${queryDisplay =~ /lsid/ && params.taxa}">
-                <g:if test="${queryDisplay =~ /span/}">
-                    <p><g:message code="list.02.p01" default="No records found for"/> <span
-                            class="queryDisplay">${queryDisplay.replaceAll('null:', '')}</span></p>
-                </g:if>
-                <g:else>
-                    <p><g:message code="list.02.p02" default="No records found for"/> <span
-                            class="queryDisplay">${params.taxa}</span></p>
-                </g:else>
-                <p><g:message code="list.02.p03.01" default="Trying search for"/> <a
-                        href="?q=text:${params.taxa}"><g:message code="list.02.p03.02"
-                                                                 default="text"/>:${params.taxa}</a>
+            %{-- search query was interpreted as matching a taxon - thus has a span with `lsid` attribute --}%
+            <g:if test="${queryDisplay =~ /lsid/}">
+                <p><g:message code="list.02.p02" default="No records found for"/>
+                    <span class="queryDisplay"><alatag:sanitizeContent>${raw(queryDisplay.replaceAll('null:', ''))}</alatag:sanitizeContent></span>
+                </p>
+                %{-- Provide a sensible alternative query that may return results --}%
+                <p><g:message code="list.02.p03.01" default="Trying search for"/>
+                   <a href="?q=text:${params.taxa?:params.q}"><g:message code="list.02.p03.02"
+                          default="text"/>:${params.taxa?:params.q}</a>
                 </p>
             </g:if>
-            <g:elseif test="${queryDisplay =~ /^text:/ && queryDisplay =~ /\s+/ && !(queryDisplay =~ /\bOR\b/)}">
+            %{-- queryDisplay starts with "text:" and contains multiple terms (and no OR operator) --}%
+            <g:elseif test="${queryDisplay =~ /^text:/ && queryDisplay =~ /\s+/ && !(queryDisplay =~ /\bOR\b/)}">${queryDisplay}
                 <p><g:message code="list.03.p01" default="No records found for"/> <span
                         class="queryDisplay">${queryDisplay}</span></p>
-                <g:set var="queryTerms" value="${queryDisplay.split(" ")}"/>
-                <g:set var="newQueryStr" value="${queryTerms.join(" OR ").replaceAll("\"","").replaceAll("text:","")}"/>
-                <p><g:message code="list.03.p02" default="Trying search for"/> <a
-                        href="?q=${newQueryStr}">${newQueryStr}</a></p>
+                <p><g:message code="list.03.p02" default="Trying search for"/>:<br/>
+                    %{-- Suggest alternative queries with terms ANDed and ORed --}%
+                    <g:each var="boolOp" in="${["AND","OR"]}">
+                        <g:set var="queryTerms" value="${queryDisplay.split(" ")}"/>
+                        <g:set var="newQueryStr" value="${queryTerms.join(" ${boolOp} ").replaceAll("\"","").replaceAll("text:","")}"/>
+                        <a href="?q=${newQueryStr}">${newQueryStr}</a><br/>
+                    </g:each>
+                </p>
             </g:elseif>
+            %{-- fall-back for remaining searches --}%
             <g:else>
                 <p><g:message code="list.03.p03" default="No records found for"/> <span
                         class="queryDisplay">${queryDisplay ?: params.q ?: params.taxa}</span></p>
@@ -260,7 +263,8 @@
                                                                     format="#,###,###"/></strong> <g:message
                             code="list.resultsretuened.span.returnedtext" default="results for"/></span>
                     <span class="queryDisplay"><strong>
-                        <alatag:sanitizeContent>${raw(queryDisplay)}</alatag:sanitizeContent>
+                        <g:set var="queryToShow"><alatag:sanitizeContent>${raw(queryDisplay)}</alatag:sanitizeContent></g:set>
+                        ${raw(queryToShow) ?: params.taxa ?: params.q}
                     </strong></span>&nbsp;&nbsp;
                     <g:if test="${params.taxa && queryDisplay.startsWith("text:")}">
                         %{--Fallback taxa search to "text:", so provide feedback to user about this--}%

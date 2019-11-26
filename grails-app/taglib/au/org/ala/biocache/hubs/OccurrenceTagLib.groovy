@@ -949,13 +949,6 @@ class OccurrenceTagLib {
             sanitizedHtml =  sanitizedHtml.replace("<a ", "<a target=\"_blank\" ")
         }
 
-        if (sanitizedHtml == "") {
-            sanitizedHtml = StringEscapeUtils.escapeHtml(unescapedHtml) 
-        }
-
-        //log.debug "#occurrenceTableRow - unescapedHtml = ${unescapedHtml}"
-        //log.debug "#occurrenceTableRow - sanitizedHtml = ${sanitizedHtml}"
-
         sanitizedHtml
     }
 
