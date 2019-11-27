@@ -1,5 +1,5 @@
 /*
  * // require jquery
-* //= require purl
+//= require purl
 //= require map.common
  */

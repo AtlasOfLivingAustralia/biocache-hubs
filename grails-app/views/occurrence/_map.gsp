@@ -194,7 +194,7 @@
             worldCopyJump: true
         });
 
-        // add edit drawing toolbar
+        //add edit drawing toolbar
         // Initialise the FeatureGroup to store editable layers
         MAP_VAR.drawnItems = new L.FeatureGroup();
         MAP_VAR.map.addLayer(MAP_VAR.drawnItems);
@@ -217,7 +217,6 @@
                     }
                 },
                 marker: false,
-                circlemarker: false,
                 polygon: {
                     allowIntersection: false, // Restricts shapes to simple polygons
                     drawError: {
