@@ -52,6 +52,7 @@
 
 <!-- Here are the leaflet plugins JS -->
 
+    <asset:javascript src="purl.js"/>
     <asset:javascript src="leaflet/leaflet.js"/>
     <asset:javascript src="leafletPlugins.js"/>
     <asset:javascript src="mapCommon.js"/>
@@ -218,6 +219,7 @@
                         }
                     },
                     marker: false,
+                    circlemarker: false,
                     polygon: {
                         allowIntersection: false, // Restricts shapes to simple polygons
                         drawError: {
@@ -272,13 +274,7 @@
             });
 
             // Hide help tooltip on first click event
-            var once = true;
-            MAP_VAR.map.on('click', function(e) {
-                if (once) {
-                    $('.leaflet-draw-toolbar').tooltip('destroy');
-                    once = false;
-                }
-            });
+            MAP_VAR.map.on('click', destroyHelpTooltip);
         }
 
         var once = true;
