@@ -18,7 +18,10 @@ import grails.validation.Validateable
 import groovy.util.logging.Slf4j
 import org.apache.commons.httpclient.URIException
 import org.apache.commons.httpclient.util.URIUtil
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
+import org.apache.commons.text.StringTokenizer
+import org.apache.commons.text.matcher.StringMatcher
+import org.apache.commons.text.matcher.StringMatcherFactory
 import org.grails.web.util.WebUtils
 
 /**
@@ -26,7 +29,6 @@ import org.grails.web.util.WebUtils
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
-//@Validateable
 @Slf4j
 class AdvancedSearchParams implements Validateable {
     String text = ""
@@ -84,7 +86,7 @@ class AdvancedSearchParams implements Validateable {
     public String toString() {
         List queryItems = []
         // build up q from the simple fields first...
-        if (text) queryItems.add("text:" + text)
+        if (text) queryItems.add(combineTermsWithAND("text",text))
         if (raw_taxon_name) queryItems.add("raw_name:" + quoteText(raw_taxon_name))
         if (species_group) queryItems.add("species_group:" + species_group)
         if (state) queryItems.add("state:" + quoteText(state))
@@ -200,6 +202,32 @@ class AdvancedSearchParams implements Validateable {
         log.debug("query: " + finalQuery)
 
         return finalQuery
+    }
+
+    /**
+     * Advanced search field "ALL of these words (full text)" assumes default Boolean operator will be AND
+     * but bugs happen and someone changed it to be OR. So we explicitly combine terms with AND to work-around
+     * this bug. Can be used with any SOLR field.
+     *
+     * @param field (optional)
+     * @param text
+     * @return
+     */
+    String combineTermsWithAND(String field, String text) {
+        // StringTokenizer code taken from https://stackoverflow.com/a/49845863/249327
+        StringTokenizer st = new StringTokenizer( text )
+        StringMatcher sm = StringMatcherFactory.INSTANCE.quoteMatcher()
+        st.setQuoteMatcher( sm )
+        List termsList = st.tokenList
+        List formattedTermsList = []
+        String fieldPrefix = field ? "${field}:" : ""
+
+        termsList.each {
+            String term = StringUtils.containsWhitespace(it) ? quoteText(it) : it
+            formattedTermsList.add("${fieldPrefix}${term}")
+        }
+
+        formattedTermsList.join(" AND ")
     }
 
     /**
