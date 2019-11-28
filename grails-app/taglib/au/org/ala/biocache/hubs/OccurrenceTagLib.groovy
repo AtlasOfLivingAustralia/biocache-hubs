@@ -946,7 +946,7 @@ class OccurrenceTagLib {
 
         if (openInNewWindow) {
             // hack to force links to be opened in new window/tab
-            sanitizedHtml =  sanitizedHtml.replace("<a ", "<a target=\"_blank\" ")
+            sanitizedHtml =  sanitizedHtml.replaceAll("<a ", "<a target=\"_blank\" ")
         }
 
         sanitizedHtml
