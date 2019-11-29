@@ -120,7 +120,7 @@ files: [
   # The dest allows you to specify a file name on Crowdin
   # e.g. "/messages.json"
   #
-  "dest" : "/biocache-hub/messages.properties",
+  "dest" : "/biocache-hub/messages_en.properties",
 
   #
   # File type
