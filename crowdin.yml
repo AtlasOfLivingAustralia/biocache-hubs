@@ -61,7 +61,7 @@ files: [
   # Source files filter
   # e.g. "/resources/en/*.json"
   #
-  "source" : "/biocache-hubs/grails-app/i18n/messages.properties",
+  "source" : "/biocache-hubs/grails-app/i18n/messages_en.properties",
 
   #
   # where translations live
