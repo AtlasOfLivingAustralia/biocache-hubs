@@ -61,7 +61,7 @@ files: [
   # Source files filter
   # e.g. "/resources/en/*.json"
   #
-  "source" : "/biocache-hubs/grails-app/i18n/messages.properties",
+  "source" : "/biocache-hubs/grails-app/i18n/messages_en.properties",
 
   #
   # where translations live
@@ -120,7 +120,7 @@ files: [
   # The dest allows you to specify a file name on Crowdin
   # e.g. "/messages.json"
   #
-  "dest" : "/biocache-hub/messages.properties",
+  "dest" : "/biocache-hub/messages_en.properties",
 
   #
   # File type
