@@ -607,7 +607,7 @@
         if (true || !isSpatialRadiusSearch()) { // inactive if
             // all other searches (non-spatial)
             // do webservice call to get max extent of WMS data
-            var jsonUrl = "${alatag.getBiocacheAjaxUrl()}/mapping/bounds.json" + MAP_VAR.query + "&callback=?";
+            var jsonUrl = "${alatag.getBiocacheAjaxUrl()}/mapping/bounds.json" + MAP_VAR.query;
             $.getJSON(jsonUrl, function(data) {
                 if (data.length == 4) {
                     //console.log("data", data);

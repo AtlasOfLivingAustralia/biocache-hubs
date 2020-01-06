@@ -404,7 +404,7 @@
                                     //console.log('Finished the drawing...' + chartName);
                                 }
                             </script>
-                            <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts" defer></script>
+                            <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json" defer></script>
 
                         </g:if>
 
