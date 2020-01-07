@@ -403,9 +403,15 @@
                                     facetChartGroup.loadAndDrawFacetCharts(facetChartOptions);
                                     //console.log('Finished the drawing...' + chartName);
                                 }
-                            </script>
-                            <script type="text/javascript" src="${biocacheService}/outlier/record/${uuid}.json?callback=renderOutlierCharts" defer></script>
 
+                                function handleOutlierError(jqXHR, textStatus) {
+                                    var message = "[ <g:message code="show.outlierChart.errorMessage" default="Outlier charts cannot be displayed"/> -- " + textStatus + " (<g:message code="show.outlierChart.errorCode" default="status code"/>: " + jqXHR.status + ") ]";
+                                    $('#charts').html(message);
+                                }
+
+                                $.getJSON("${biocacheService}/outlier/records/${uuid}.json", renderOutlierCharts).fail(handleOutlierError);
+
+                            </script>
                         </g:if>
 
                         <g:if test="${record.processed.occurrence.duplicationStatus}">
