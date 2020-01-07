@@ -409,7 +409,7 @@
                                     $('#charts').html(message);
                                 }
 
-                                $.getJSON("${biocacheService}/outlier/records/${uuid}.json", renderOutlierCharts).fail(handleOutlierError);
+                                $.getJSON("${biocacheService}/outlier/record/${uuid}.json", renderOutlierCharts).fail(handleOutlierError);
 
                             </script>
                         </g:if>
