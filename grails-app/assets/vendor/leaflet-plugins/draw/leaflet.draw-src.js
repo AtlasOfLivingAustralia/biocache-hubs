@@ -132,6 +132,7 @@ L.Draw.Feature = L.Handler.extend({
 			options.shapeOptions = L.Util.extend({}, this.options.shapeOptions, options.shapeOptions);
 		}
 		L.setOptions(this, options);
+        console.log("L.Draw - jQuery.i18n", JSON.parse(JSON.stringify(jQuery.i18n)), jQuery.i18n.prop('advancedsearch.js.map.remove.tooltip'))
 	},
 
 	enable: function () {
