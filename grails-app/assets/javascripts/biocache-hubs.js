@@ -4,7 +4,7 @@
 /************************************************************\
  * i18n
  \************************************************************/
-if (typeof BC_CONF != 'undefined' && BC_CONF.hasOwnProperty('contextPath')) {
+if (typeof BC_CONF != 'undefined') {
     jQuery.i18n.properties({
         name: 'messages',
         path: BC_CONF.contextPath + '/messages/i18n/',
