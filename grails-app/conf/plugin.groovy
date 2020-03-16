@@ -177,8 +177,8 @@ database {
 
 dataSource {
     driverClassName= 'org.h2.Driver'
-    url= "jdbc:h2:file:${database.directory}"
-    dbCreate= 'create-drop'
+    url= "jdbc:h2:file:${database.directory};MVCC=TRUE"
+    dbCreate= 'update'
     pooled= true
     jmxExport= true
 }

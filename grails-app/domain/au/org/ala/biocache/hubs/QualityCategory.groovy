@@ -4,6 +4,8 @@ class QualityCategory {
 
     Long id
 
+    boolean enabled = true
+
     String name
     String label
     String description
@@ -20,6 +22,7 @@ class QualityCategory {
     }
 
     static mapping = {
+        enabled defaultValue: 'true'
         name type: 'text'
         label type: 'text'
         description type: 'text'
