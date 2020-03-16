@@ -43,6 +43,14 @@
             <a href="${g.createLink(action:'clearPropertiesCache')}" class="btn btn-default">Clear i18n messages cache</a>
         </div>
 
+        <h2>Data Quality Filters</h2>
+        <div class="message alert alert-info">
+            Add default filters for all queries run through this hub.
+        </div>
+        <div class="btn-group">
+            <g:link class="btn btn-default" action="data-quality-filters">Filters</g:link>
+        </div>
+
         <div id="alaAdmin">
             <hr>
             <g:render template="/ala-admin-form" plugin="ala-admin-plugin"/>

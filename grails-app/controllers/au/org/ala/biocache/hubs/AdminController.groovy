@@ -15,6 +15,8 @@
 
 package au.org.ala.biocache.hubs
 
+import grails.validation.ValidationException
+
 /**
  * Admin functions - should be protected by login and ROLE_ADMIN or equiv.
  * See {@link au.org.ala.biocache.hubs.AdminInterceptor}
@@ -23,6 +25,7 @@ class AdminController {
     def facetsCacheService
     def webServicesService
     def messageSourceCacheService
+    def qualityService
 
     def index() {
         // [ message: "not used" ]
@@ -73,4 +76,41 @@ class AdminController {
         "i18n messages cache cleared\n"
     }
 
+    def "data-quality-filters"() {
+        respond QualityCategory.list(sort: 'id', lazy: false)
+    }
+
+    def saveQualityCategory(QualityCategory qualityCategory) {
+        try {
+            qualityService.createOrUpdate(qualityCategory)
+        } catch (ValidationException e) {
+            flash.errors = e.errors
+        }
+        redirect(action: 'data-quality-filters')
+    }
+
+    def deleteQualityCategory(QualityCategory qualityCategory) {
+        qualityService.deleteCategory(qualityCategory)
+        redirect(action: 'data-quality-filters')
+    }
+
+    def saveQualityFilter(QualityFilter qualityFilter) {
+        try {
+            qualityService.createOrUpdateFilter(qualityFilter)
+        } catch (ValidationException e) {
+            flash.errors = e.errors
+        } catch (IllegalStateException e) {
+            return render(status: 400, text: 'invalid params')
+        }
+        redirect(action: 'data-quality-filters')
+    }
+
+    def deleteQualityFilter() {
+        def id = params.long('id')
+        if (!id) {
+            return render(status: 404, text: 'filter not found')
+        }
+        qualityService.deleteFilter(id)
+        redirect(action: 'data-quality-filters')
+    }
 }
