@@ -41,14 +41,45 @@
     </div>
     <div class="col-md-12">
         <g:each in="${qualityCategoryInstanceList}" var="category">
-            <div class="panel panel-default">
+            <div class="panel panel-default panel-category">
                 <div class="panel-heading">
                     <g:form action="deleteQualityCategory" class="form-inline pull-right" data-confirmation="${category.qualityFilters.size() > 0}"><g:hiddenField name="id" value="${category.id}"/><button type="submit" class="btn btn-xs btn-danger">&times;</button></g:form>
-                    <h3 class="panel-title">${category.name} (${category.label}) <button class="btn btn-xs btn-default" disabled><i class="fa fa-edit"></i></button></h3>
+                    <h3 class="panel-title">
+                        <span class="panel-title-ro">${category.name} (${category.label}) <button class="btn btn-xs btn-default btn-edit-category"><i class="fa fa-edit"></i></button></span>
+                        <span class="panel-title-rw hidden">
+                            <g:form action="saveQualityCategory" class="form-inline">
+                                <g:hiddenField name="id" value="${category.id}"/>
+                                <g:hiddenField name="description" value="${category.description}" />
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <g:textField class="form-control" name="name" value="${category.name}" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="label">Label</label>
+                                    <g:textField class="form-control" name="label" value="${category.label}" />
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-save"></i></button>
+                                <button type="reset" class="btn btn-sm btn-default"><i class="fa fa-close"></i></button>
+                            </g:form>
+                        </span>
+                    </h3>
                 </div>
                 <g:if test="${category.description}">
                     <div class="panel-body">
-                        <p>${category.description}</p>
+                        <span class="category-description-ro">
+                            <p class="category-description">${category.description}</p>
+                            <button class="btn btn-default"><i class="fa fa-edit"></i></button>
+                        </span>
+                        <span class="category-description-rw hidden">
+                            <g:form action="saveQualityCategory">
+                                <g:hiddenField name="id" value="${category.id}"/>
+                                <g:hiddenField name="name" value="${category.name}"/>
+                                <g:hiddenField name="label" value="${category.label}"/>
+                                <g:textArea class="form-control" name="description" value="${category.description}" />
+                                <button type="submit" class="btn btn-success"><i class="fa fa-save"></i></button>
+                                <button type="reset" class="btn btn-default"><i class="fa fa-close"></i></button>
+                            </g:form>
+                        </span>
                     </div>
                 </g:if>
                 <ul class="list-group">
@@ -79,7 +110,7 @@
                         </li>
                     </g:each>
                     <li class="list-group-item">
-                        <g:form class="form-inline" action="saveQualityFilter">
+                        <g:form class="form-inline form-new-filter" action="saveQualityFilter">
                             <g:hiddenField name="qualityCategory" value="${category.id}" />
                             <div class="form-group">
                                 <label for="filter">Description</label>
@@ -92,6 +123,7 @@
                             <button type="button" class="btn btn-sm btn-default btn-encode" title="URI encode">%3A</button>
                             <button type="button" class="btn btn-sm btn-default btn-decode" title="URI decode">:</button>
                             <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-plus"></i></button>
+                            <button type="reset" class="btn btn-sm btn-warning hidden"><i class="fa fa-close"></i></button>
                         </g:form>
                     </li>
                 </ul>
@@ -125,7 +157,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="add-category-save">Save changes</button>
+                <button type="button" class="btn btn-primary" id="add-category-save">Save category</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -133,18 +165,7 @@
 </div>
 </body>
 <asset:script type="text/javascript">
-    // $('#add-category').on('click', function(e) {
-    //     $("#add-category-modal").modal();
-    // });
-%{--    $('input[type=checkbox][name=raw]').on('change', function(e) {--}%
-%{--        var $this = $(this);--}%
-%{--        var checked = $this.is(':checked');--}%
-%{--        var cls = checked ? '${RawQualityFilter.name}' : '${SimpleQualityFilter.name}';--}%
-%{--        $this.next('input[name=class]').val(cls);--}%
-%{--        var $form = $this.closest('form');--}%
-%{--        $form.find('.new-raw-filter').toggleClass('hidden', !checked);--}%
-%{--        $form.find('.new-simple-filter').toggleClass('hidden', checked);--}%
-%{--    });--}%
+    // confirm delete a category with filters
     $('form[data-confirmation=true]').on('submit', function(e) {
         var $this = $(this);
         if (!confirm("This category has filters defined.  Are you sure you want to delete it?")) { // TODO bootbox
@@ -152,16 +173,19 @@
             return false;
         }
     });
+    // submit add category form using button outside form element
     var $categoryForm = $('#add-category-form');
     $('#add-category-save').on('click', function(e) {
        $categoryForm.submit();
     });
+    // default category label
     $categoryForm.find('input[name=name]').on('change', function(e) {
         var $label = $categoryForm.find('input[name=label]');
         if (!$label.val()) {
             $label.val($(this).val().toLowerCase().replace(' ', '-'));
         }
     });
+    // URL encoder / decoder
     $('.btn-encode').on('click', function(e) {
         var $input = $(this).closest(':has(input[name=filter])').find('input[name=filter]');
         $input.val(encodeURIComponent($input.val()));
@@ -169,6 +193,53 @@
     $('.btn-decode').on('click', function(e) {
         var $input = $(this).closest(':has(input[name=filter])').find('input[name=filter]');
         $input.val(decodeURIComponent($input.val()));
+    });
+    // Edit category title / label
+    $('.panel-title-ro .btn').on('click', function(e) {
+        var $this = $(this);
+        var $title = $this.closest('.panel-title');
+        $title.find('.panel-title-ro').addClass('hidden');
+        $title.find('.panel-title-rw').removeClass('hidden');
+    });
+    // Reset category title / label
+    $('.panel-title-rw button[type=reset]').on('click', function(e) {
+        var $this = $(this);
+        var $title = $this.closest('.panel-title');
+        $title.find('.panel-title-ro').removeClass('hidden');
+        $title.find('.panel-title-rw').addClass('hidden');
+    });
+    // Edit category description
+    $('.category-description-ro .btn').on('click', function(e) {
+        var $this = $(this);
+        var $body = $this.closest('.panel-body');
+        $body.find('.category-description-ro').addClass('hidden');
+        $body.find('.category-description-rw').removeClass('hidden');
+    });
+    // Reset category description
+    $('.category-description-rw button[type=reset]').on('click', function(e) {
+        var $this = $(this);
+        var $body = $this.closest('.panel-body');
+        $body.find('.category-description-ro').removeClass('hidden');
+        $body.find('.category-description-rw').addClass('hidden');
+    });
+    // Any change disables all other controls because this isn't a proper ajax app
+    $('input[type=text], textarea').not('#add-category-modal *').on('change', function(e) {
+        var $this = $(this);
+        var $form = $this.closest('form');
+        $('form').not($form).find('button, input[type=button], input[type=text], textarea').prop('disabled', true);
+        $('input[type=button], button').not($('form input[type=button], form button')).prop('disabled', true);
+    });
+    // Resetting form changes then re-enables all previously disabled controls
+    $('input[type=reset], button[type=reset]').on('click', function(e) {
+        $('form').find('button, input[type=button], input[type=text], textarea').prop('disabled', false);
+        $('input[type=button], button').not($('form input[type=button], form button')).prop('disabled', false);
+    });
+    // New filter form hide the reset button by default
+    $('.form-new-filter input[type=text]').on('change', function(e) {
+        $(this).closest('form').find('button[type=reset]').removeClass('hidden');
+    });
+    $('.form-new-filter button[type=reset]').on('click', function(e) {
+        $(this).addClass('hidden');
     });
 </asset:script>
 </html>
