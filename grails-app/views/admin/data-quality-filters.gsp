@@ -28,7 +28,7 @@
 
         <div class="well">
             <code>
-                ${qualityCategoryInstanceList.findAll { it.enabled }*.qualityFilters.collect { '(' + it*.filter.join(' AND ') +')' }.join(' AND ')}
+                ${qualityCategoryInstanceList.findAll { it.enabled }*.qualityFilters.collect { '(' + it.findAll { it.enabled }*.filter.join(' AND ') +')' }.join(' AND ')}
             </code>
         </div>
         <g:if test="${flash.errors}">
@@ -46,11 +46,15 @@
     </div>
     <div class="col-md-12">
         <g:each in="${qualityCategoryInstanceList}" var="category">
-            <div class="panel panel-default panel-category">
+            <div class="panel ${category.enabled ? 'panel-default' : 'panel-warning'} panel-category">
                 <div class="panel-heading">
                     <g:form action="deleteQualityCategory" class="form-inline pull-right" data-confirmation="${category.qualityFilters.size() > 0}"><g:hiddenField name="id" value="${category.id}"/><button type="submit" class="btn btn-xs btn-danger">&times;</button></g:form>
                     <h3 class="panel-title">
-                        <g:form class="form-inline" action="enableQualityCategory"><g:hiddenField name="id" value="${category.id}"/><g:checkBox name="enabled" value="${category.enabled}"><label>Enabled</label></g:checkBox></g:form>
+                        <g:form class="form-inline" style="display: inline-block;" action="enableQualityCategory">
+                            <g:hiddenField name="id" value="${category.id}"/>
+                            <label class="sr-only">Enabled</label>
+                            <g:checkBox name="enabled" value="${category.enabled}" />
+                        </g:form>
                         <span class="panel-title-ro">${category.name} (${category.label}) <button class="btn btn-xs btn-default btn-edit-category"><i class="fa fa-edit"></i></button></span>
                         <span class="panel-title-rw hidden">
                             <g:form action="saveQualityCategory" class="form-inline">
@@ -90,7 +94,12 @@
                 </g:if>
                 <ul class="list-group">
                     <g:each in="${category.qualityFilters}" var="filter">
-                        <li class="list-group-item">
+                        <li class="list-group-item ${!filter.enabled ? 'list-group-item-warning' : '' }">
+                            <g:form class="form-inline" style="display: inline-block;" action="enableQualityFilter">
+                                <g:hiddenField name="id" value="${filter.id}"/>
+                                <label class="sr-only">Enabled</label>
+                                <g:checkBox name="enabled" value="${filter.enabled}" />
+                            </g:form>
                             <g:form class="form-inline" action="saveQualityFilter" style="display: inline-block;">
                                 <g:hiddenField name="id" value="${filter.id}"/>
                                 <g:hiddenField name="qualityCategory" value="${category.id}" />
