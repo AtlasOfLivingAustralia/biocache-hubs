@@ -26,6 +26,11 @@
     <div class="col-md-12">
         <h1>Data Quality Filters</h1>
 
+        <div class="well">
+            <code>
+                ${qualityCategoryInstanceList.findAll { it.enabled }*.qualityFilters.collect { '(' + it*.filter.join(' AND ') +')' }.join(' AND ')}
+            </code>
+        </div>
         <g:if test="${flash.errors}">
             <div class="alert alert-danger">
                 <g:eachError bean="${flash.errors}">
@@ -45,6 +50,7 @@
                 <div class="panel-heading">
                     <g:form action="deleteQualityCategory" class="form-inline pull-right" data-confirmation="${category.qualityFilters.size() > 0}"><g:hiddenField name="id" value="${category.id}"/><button type="submit" class="btn btn-xs btn-danger">&times;</button></g:form>
                     <h3 class="panel-title">
+                        <g:form class="form-inline" action="enableQualityCategory"><g:hiddenField name="id" value="${category.id}"/><g:checkBox name="enabled" value="${category.enabled}"><label>Enabled</label></g:checkBox></g:form>
                         <span class="panel-title-ro">${category.name} (${category.label}) <button class="btn btn-xs btn-default btn-edit-category"><i class="fa fa-edit"></i></button></span>
                         <span class="panel-title-rw hidden">
                             <g:form action="saveQualityCategory" class="form-inline">
@@ -240,6 +246,9 @@
     });
     $('.form-new-filter button[type=reset]').on('click', function(e) {
         $(this).addClass('hidden');
+    });
+    $('input[type=checkbox][name=enabled]').on('change', function(e) {
+        $(this).closest('form').submit();
     });
 </asset:script>
 </html>

@@ -89,6 +89,14 @@ class AdminController {
         redirect(action: 'data-quality-filters')
     }
 
+    def enableQualityCategory() {
+        log.error "{}", params
+        def qc = QualityCategory.get(params.long('id'))
+        qc.enabled = params.boolean('enabled', false)
+        qc.save(flush: true)
+        redirect(action: 'data-quality-filters')
+    }
+
     def deleteQualityCategory(QualityCategory qualityCategory) {
         qualityService.deleteCategory(qualityCategory)
         redirect(action: 'data-quality-filters')
