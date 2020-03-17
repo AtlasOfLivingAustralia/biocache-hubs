@@ -1,7 +1,6 @@
 package au.org.ala.biocache.hubs
 
 import grails.transaction.Transactional
-import grails.web.servlet.mvc.GrailsParameterMap
 
 @Transactional
 class QualityService {
@@ -20,5 +19,13 @@ class QualityService {
 
     void deleteCategory(QualityCategory qualityCategory) {
         qualityCategory.delete()
+    }
+
+    @Transactional(readOnly = true)
+    def qualityFilter() {
+        QualityCategory.findAllByEnabled(true).findAll { it.enabled }*.qualityFilters.collect {
+            def categoryFilter = it.findAll { it.enabled }*.filter.join(' AND ')
+            categoryFilter // ? "( $categoryFilter )" : ''
+        }.findAll().join(' AND ')
     }
 }

@@ -77,7 +77,7 @@ class AdminController {
     }
 
     def "data-quality-filters"() {
-        respond QualityCategory.list(sort: 'id', lazy: false)
+        respond QualityCategory.list(sort: 'id', lazy: false), model: [ 'qualityFilterString' : qualityService.qualityFilter() ]
     }
 
     def saveQualityCategory(QualityCategory qualityCategory) {

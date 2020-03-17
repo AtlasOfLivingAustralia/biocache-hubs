@@ -28,7 +28,7 @@
 
         <div class="well">
             <code>
-                ${qualityCategoryInstanceList.findAll { it.enabled }*.qualityFilters.collect { '(' + it.findAll { it.enabled }*.filter.join(' AND ') +')' }.join(' AND ')}
+                ${qualityFilterString}
             </code>
         </div>
         <g:if test="${flash.errors}">
