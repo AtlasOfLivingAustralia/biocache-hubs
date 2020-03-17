@@ -22,7 +22,7 @@ class QualityService {
     }
 
     @Transactional(readOnly = true)
-    def qualityFilter() {
+    List<String> getEnabledQualityFilters() {
         QualityFilter.withCriteria {
             eq('enabled', true)
             qualityCategory {
@@ -33,6 +33,10 @@ class QualityService {
             }
 //            order('qualityCategory.dateCreated')
             order('dateCreated')
-        }.join(' AND ')
+        }
+    }
+
+    String getJoinedQualityFilter() {
+        enabledQualityFilters.join(' AND ')
     }
 }
