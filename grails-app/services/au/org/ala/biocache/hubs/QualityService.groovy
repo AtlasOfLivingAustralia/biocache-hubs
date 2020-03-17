@@ -53,6 +53,18 @@ class QualityService {
         }
     }
 
+    @Transactional(readOnly = true)
+    Map<QualityCategory, List<QualityFilter>> getEnabledCategories() {
+        QualityFilter.withCriteria {
+            eq('enabled', true)
+            qualityCategory {
+                eq('enabled', true)
+            }
+        }.groupBy {
+            (it.qualityCategory)
+        }
+    }
+
     String getJoinedQualityFilter() {
         enabledQualityFilters.join(' AND ')
     }
