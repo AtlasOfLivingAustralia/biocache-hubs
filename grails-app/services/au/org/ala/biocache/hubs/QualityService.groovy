@@ -54,7 +54,7 @@ class QualityService {
     }
 
     @Transactional(readOnly = true)
-    Map<QualityCategory, List<QualityFilter>> getEnabledCategories() {
+    Map<QualityCategory, List<QualityFilter>> getEnabledCategoriesAndFilters() {
         QualityFilter.withCriteria {
             eq('enabled', true)
             qualityCategory {
