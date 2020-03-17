@@ -23,9 +23,16 @@ class QualityService {
 
     @Transactional(readOnly = true)
     def qualityFilter() {
-        QualityCategory.findAllByEnabled(true).findAll { it.enabled }*.qualityFilters.collect {
-            def categoryFilter = it.findAll { it.enabled }*.filter.join(' AND ')
-            categoryFilter // ? "( $categoryFilter )" : ''
-        }.findAll().join(' AND ')
+        QualityFilter.withCriteria {
+            eq('enabled', true)
+            qualityCategory {
+                eq('enabled', true)
+            }
+            projections {
+                property('filter')
+            }
+//            order('qualityCategory.dateCreated')
+            order('dateCreated')
+        }.join(' AND ')
     }
 }
