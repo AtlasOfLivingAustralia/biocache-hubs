@@ -21,6 +21,8 @@ class QualityService {
         qualityCategory.delete()
     }
 
+
+
     @Transactional(readOnly = true)
     List<String> getEnabledQualityFilters() {
         QualityFilter.withCriteria {
@@ -33,6 +35,21 @@ class QualityService {
             }
 //            order('qualityCategory.dateCreated')
             order('dateCreated')
+        }
+    }
+
+    @Transactional(readOnly = true)
+    Map<String, List<String>> getGroupedEnabledFilters() {
+        QualityFilter.withCriteria {
+            eq('enabled', true)
+            qualityCategory {
+                eq('enabled', true)
+            }
+            order('dateCreated')
+        }.groupBy { QualityFilter qualityFilter ->
+            qualityFilter.qualityCategory.label
+        }.collectEntries { label, filters ->
+            [ (label): filters*.filter ]
         }
     }
 
