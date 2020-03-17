@@ -1,5 +1,10 @@
 package au.org.ala.biocache.hubs
 
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
+
+@EqualsAndHashCode(includes = ['enabled', 'name', 'label', 'description'])
+@ToString(includes = ['enabled', 'name', 'label', 'description'])
 class QualityCategory {
 
     Long id
