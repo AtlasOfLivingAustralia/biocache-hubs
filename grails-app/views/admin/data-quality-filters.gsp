@@ -238,15 +238,15 @@
         $body.find('.category-description-rw').addClass('hidden');
     });
     // Any change disables all other controls because this isn't a proper ajax app
-    $('input[type=text], textarea').not('#add-category-modal *').on('change', function(e) {
+    $('input[type=text], textarea').not('#add-category-modal *').on('change input paste', function(e) {
         var $this = $(this);
         var $form = $this.closest('form');
-        $('form').not($form).find('button, input[type=button], input[type=text], textarea').prop('disabled', true);
+        $('form').not($form).find('button, input[type=button], input[type=text], input[type=checkbox], textarea').prop('disabled', true);
         $('input[type=button], button').not($('form input[type=button], form button')).prop('disabled', true);
     });
     // Resetting form changes then re-enables all previously disabled controls
     $('input[type=reset], button[type=reset]').on('click', function(e) {
-        $('form').find('button, input[type=button], input[type=text], textarea').prop('disabled', false);
+        $('form').find('button, input[type=button], input[type=text], input[type=checkbox], textarea').prop('disabled', false);
         $('input[type=button], button').not($('form input[type=button], form button')).prop('disabled', false);
     });
     // New filter form hide the reset button by default
