@@ -4,6 +4,8 @@ class QualityFilter {
 
     Long id
 
+    boolean enabled = true
+
     String description
     String filter
 
@@ -18,6 +20,7 @@ class QualityFilter {
     }
 
     static mapping = {
+        enabled defaultValue: 'true'
         sort 'dateCreated'
     }
 

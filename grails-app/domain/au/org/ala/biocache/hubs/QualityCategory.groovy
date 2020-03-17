@@ -27,5 +27,6 @@ class QualityCategory {
         label type: 'text'
         description type: 'text'
         qualityFilters sort: 'dateCreated'
+        sort 'dateCreated'
     }
 }
