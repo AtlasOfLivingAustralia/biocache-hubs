@@ -15,13 +15,13 @@
 
 package au.org.ala.biocache.hubs
 
+import au.org.ala.web.CASRoles
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
-import au.org.ala.web.CASRoles
 
 import java.text.SimpleDateFormat
 
@@ -33,6 +33,7 @@ class OccurrenceController {
     def webServicesService, facetsCacheService, postProcessingService, authService
 
     GeoIpService geoIpService
+    QualityService qualityService
 
     def ENVIRO_LAYER = "el"
     def CONTEXT_LAYER = "cl"
@@ -56,6 +57,17 @@ class OccurrenceController {
     def list(SpatialSearchRequestParams requestParams) {
         def start = System.currentTimeMillis()
         requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
+
+        // to combine user fqs and default fqs
+        List combinedFqs = requestParams.fq as List
+
+        Map<QualityCategory, List<QualityFilter>> filters = qualityService.getEnabledCategoriesAndFilters()
+        filters?.each { category, filterList ->
+            List nameList = filterList.collect { it.filter }
+            combinedFqs.add(nameList?.size() > 1 ? '(' + nameList.join(' OR ') + ')' : nameList[0])
+        }
+
+        requestParams.fq = combinedFqs as String[]
 
         if (!params.pageSize) {
             requestParams.pageSize = 20
