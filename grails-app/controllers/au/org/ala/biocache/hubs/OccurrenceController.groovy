@@ -16,6 +16,7 @@
 package au.org.ala.biocache.hubs
 
 import au.org.ala.web.CASRoles
+import com.google.gson.Gson
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
@@ -23,6 +24,7 @@ import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
 
+import javax.servlet.http.Cookie
 import java.text.SimpleDateFormat
 
 /**
@@ -37,6 +39,7 @@ class OccurrenceController {
 
     def ENVIRO_LAYER = "el"
     def CONTEXT_LAYER = "cl"
+    def DEFAULT_FILTERS_APPLIED = 'defaultFiltersApplied'
 
     def index() {
         redirect action: "search"
@@ -46,6 +49,26 @@ class OccurrenceController {
         requestParams.q = "data_resource_uid:" + params.uid
         def model = list(requestParams)
         render (view: 'list', model: model)
+    }
+
+    def getDefaultFilters() {
+        Map<String, List> categoryToFqMap = [:]
+        Map<List, String> fqToCategoryMap = [:]
+
+        Map<QualityCategory, List<QualityFilter>> filters = qualityService.getEnabledCategoriesAndFilters()
+        filters?.each { category, filterList ->
+            // group by filtername
+            def fqs = filterList.collect { it.filter }.groupBy { it.split(":")[0].trim() }.values()
+
+            categoryToFqMap[category.name] = []
+            fqs.each {
+                def fq = it?.size() > 1 ? '(' + it.join(' OR ') + ')' : it[0]
+                categoryToFqMap[category.name].add(fq)
+                fqToCategoryMap[fq] = category.name
+            }
+        }
+
+        [categoryToFqMap, fqToCategoryMap]
     }
 
     /**
@@ -58,16 +81,14 @@ class OccurrenceController {
         def start = System.currentTimeMillis()
         requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
 
-        // to combine user fqs and default fqs
-        List combinedFqs = requestParams.fq as List
+        def (categoryToFqMap, fqToCategoryMap) = getDefaultFilters()
 
-        Map<QualityCategory, List<QualityFilter>> filters = qualityService.getEnabledCategoriesAndFilters()
-        filters?.each { category, filterList ->
-            List nameList = filterList.collect { it.filter }
-            combinedFqs.add(nameList?.size() > 1 ? '(' + nameList.join(' OR ') + ')' : nameList[0])
+        // if first time visit, apply default filters
+        if (!ifDefaultFiltersApplied()) {
+            // append default filters to user fqs
+            categoryToFqMap.each { requestParams.fq += it.value }
+            response.addCookie(new Cookie(DEFAULT_FILTERS_APPLIED, ""))
         }
-
-        requestParams.fq = combinedFqs as String[]
 
         if (!params.pageSize) {
             requestParams.pageSize = 20
@@ -153,8 +174,34 @@ class OccurrenceController {
                         remove = k
                     }
                 }
-                if (remove) searchResults?.activeFacetMap?.remove(remove)
+                if (remove) {
+                    searchResults?.activeFacetMap?.remove(remove)
+                    searchResults?.activeFacetObj?.remove(remove)
+                }
             }
+
+            Map activeDefaultFilters = [:]
+            Map activeUserFilters = [:]
+            searchResults?.activeFacetObj.each { k, v ->
+                // v is Facet list here, grouped by filtername
+                // fina all user filters
+                def userFilters = v.findAll { !fqToCategoryMap.containsKey(it.displayName) }
+                if (!userFilters.isEmpty())  {
+                    activeUserFilters[k] = userFilters
+                }
+
+                v.findAll{ fqToCategoryMap.containsKey(it.displayName) }?.each { facet ->
+                    activeDefaultFilters.get(fqToCategoryMap[facet.displayName], []).add(facet)
+                }
+            }
+
+            // front end gets list of facets from activeFacetMap
+            // doing this so that front end doesn't need code change
+            // it now includes only user filters
+            searchResults.activeFacetMap = new JSONObject(new Gson().toJson(activeUserFilters))
+            // applied default filters list
+            // its grouped by category like 'location' -> [fq, fq, fq]
+            def activeDefaultFiltersJson = new JSONObject(new Gson().toJson(activeDefaultFilters))
 
             def hasImages = postProcessingService.resultsHaveImages(searchResults)
             if(grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()){
@@ -170,6 +217,7 @@ class OccurrenceController {
                     groupedFacets: groupedFacets,
                     groupedFacetsMap: groupedFacetsMap,
                     dynamicFacets: dynamicFacets,
+                    activeDefaultFilters: activeDefaultFiltersJson,
                     selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: hasImages,
                     showSpeciesImages: false,
@@ -437,5 +485,10 @@ class OccurrenceController {
         combined.record = webServicesService.getRecord(id)
         combined.compareRecord = webServicesService.getCompareRecord(id)
         render combined as JSON
+    }
+
+    def ifDefaultFiltersApplied() {
+        def cookies = request.getCookies()
+        cookies.find {it.name == DEFAULT_FILTERS_APPLIED} != null
     }
 }
