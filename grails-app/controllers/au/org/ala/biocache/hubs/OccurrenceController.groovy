@@ -83,10 +83,13 @@ class OccurrenceController {
 
         def (categoryToFqMap, fqToCategoryMap) = getDefaultFilters()
 
+        def userFqSet = requestParams.fq as Set
         // if first time visit, apply default filters
         if (!ifDefaultFiltersApplied()) {
-            // append default filters to user fqs
-            categoryToFqMap.each { requestParams.fq += it.value }
+            // append default filters to user fqs, if already exists as user fq, don't apply it
+            categoryToFqMap.each { category, fqs ->
+                fqs.each { if (!userFqSet.contains(it)) requestParams.fq += it }
+            }
             response.addCookie(new Cookie(DEFAULT_FILTERS_APPLIED, ""))
         }
 
@@ -185,12 +188,12 @@ class OccurrenceController {
             searchResults?.activeFacetObj.each { k, v ->
                 // v is Facet list here, grouped by filtername
                 // fina all user filters
-                def userFilters = v.findAll { !fqToCategoryMap.containsKey(it.displayName) }
+                def userFilters = v.findAll { userFqSet.contains(it.displayName) }
                 if (!userFilters.isEmpty())  {
                     activeUserFilters[k] = userFilters
                 }
 
-                v.findAll{ fqToCategoryMap.containsKey(it.displayName) }?.each { facet ->
+                v.findAll{ fqToCategoryMap.containsKey(it.displayName) && !userFqSet.contains(it.displayName) }?.each { facet ->
                     activeDefaultFilters.get(fqToCategoryMap[facet.displayName], []).add(facet)
                 }
             }
