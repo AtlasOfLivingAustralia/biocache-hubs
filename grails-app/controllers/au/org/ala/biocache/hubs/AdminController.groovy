@@ -76,7 +76,7 @@ class AdminController {
         "i18n messages cache cleared\n"
     }
 
-    def "data-quality-filters"() {
+    def dataQualityFilters() {
         respond QualityCategory.list(sort: 'id', lazy: false), model: [ 'qualityFilterString' : qualityService.joinedQualityFilter ]
     }
 
@@ -86,20 +86,19 @@ class AdminController {
         } catch (ValidationException e) {
             flash.errors = e.errors
         }
-        redirect(action: 'data-quality-filters')
+        redirect(action: 'dataQualityFilters')
     }
 
     def enableQualityCategory() {
-        log.error "{}", params
         def qc = QualityCategory.get(params.long('id'))
         qc.enabled = params.boolean('enabled', false)
         qc.save(flush: true)
-        redirect(action: 'data-quality-filters')
+        redirect(action: 'dataQualityFilters')
     }
 
     def deleteQualityCategory(QualityCategory qualityCategory) {
         qualityService.deleteCategory(qualityCategory)
-        redirect(action: 'data-quality-filters')
+        redirect(action: 'dataQualityFilters')
     }
 
     def saveQualityFilter(QualityFilter qualityFilter) {
@@ -110,7 +109,7 @@ class AdminController {
         } catch (IllegalStateException e) {
             return render(status: 400, text: 'invalid params')
         }
-        redirect(action: 'data-quality-filters')
+        redirect(action: 'dataQualityFilters')
     }
 
     def deleteQualityFilter() {
@@ -119,14 +118,13 @@ class AdminController {
             return render(status: 404, text: 'filter not found')
         }
         qualityService.deleteFilter(id)
-        redirect(action: 'data-quality-filters')
+        redirect(action: 'dataQualityFilters')
     }
 
     def enableQualityFilter() {
-        log.error "{}", params
         def qf = QualityFilter.get(params.long('id'))
         qf.enabled = params.boolean('enabled', false)
         qf.save(flush: true)
-        redirect(action: 'data-quality-filters')
+        redirect(action: 'dataQualityFilters')
     }
 }
