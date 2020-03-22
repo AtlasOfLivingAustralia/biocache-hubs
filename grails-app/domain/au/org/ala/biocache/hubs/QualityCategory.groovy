@@ -27,10 +27,11 @@ class QualityCategory {
     }
 
     static mapping = {
-        enabled defaultValue: 'true'
+        enabled defaultValue: 'true', index: 'quality_category_enabled_idx'
         name type: 'text'
         label type: 'text'
         description type: 'text'
+        dateCreated index: 'quality_category_date_created_idx'
         qualityFilters sort: 'dateCreated'
         sort 'dateCreated'
     }
