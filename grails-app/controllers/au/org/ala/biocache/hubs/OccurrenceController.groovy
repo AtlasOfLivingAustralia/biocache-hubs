@@ -24,7 +24,6 @@ import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
 
-import javax.servlet.http.Cookie
 import java.text.SimpleDateFormat
 
 /**
@@ -51,26 +50,6 @@ class OccurrenceController {
         render (view: 'list', model: model)
     }
 
-    def getDefaultFilters() {
-        Map<String, List> categoryToFqMap = [:]
-        Map<List, String> fqToCategoryMap = [:]
-
-        Map<QualityCategory, List<QualityFilter>> filters = qualityService.getEnabledCategoriesAndFilters()
-        filters?.each { category, filterList ->
-            // group by filtername
-            def fqs = filterList.collect { it.filter }.groupBy { it.split(":")[0].trim() }.values()
-
-            categoryToFqMap[category.name] = []
-            fqs.each {
-                def fq = it?.size() > 1 ? '(' + it.join(' OR ') + ')' : it[0]
-                categoryToFqMap[category.name].add(fq)
-                fqToCategoryMap[fq] = category.name
-            }
-        }
-
-        [categoryToFqMap, fqToCategoryMap]
-    }
-
     /**
      * Perform a full text search
      *
@@ -79,18 +58,18 @@ class OccurrenceController {
      */
     def list(SpatialSearchRequestParams requestParams) {
         def start = System.currentTimeMillis()
-        requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
 
-        def (categoryToFqMap, fqToCategoryMap) = getDefaultFilters()
+        List<String> appliedDefaultFilters = []
+        Map filterCategory = [:] // filter maps to category, we need to know which category a filter belongs to when displaying result
+        // apply default filters if user doesn't disable all
+        if (!requestParams.disableAllQualityFilters) {
+            def disabled = requestParams.disabledQualityFilters as Set
+            Map filterMap = qualityService.enabledFiltersByLabel
+                    .findAll { category, filters -> !disabled.contains(category) }
 
-        def userFqSet = requestParams.fq as Set
-        // if first time visit, apply default filters
-        if (!ifDefaultFiltersApplied()) {
-            // append default filters to user fqs, if already exists as user fq, don't apply it
-            categoryToFqMap.each { category, fqs ->
-                fqs.each { if (!userFqSet.contains(it)) requestParams.fq += it }
-            }
-            response.addCookie(new Cookie(DEFAULT_FILTERS_APPLIED, ""))
+            filterMap.each { filterCategory.put(it.value, it.key) }
+            appliedDefaultFilters = filterMap.collect { category, filters -> filters }
+            requestParams.dqfq = appliedDefaultFilters
         }
 
         if (!params.pageSize) {
@@ -177,33 +156,23 @@ class OccurrenceController {
                         remove = k
                     }
                 }
-                if (remove) {
-                    searchResults?.activeFacetMap?.remove(remove)
-                    searchResults?.activeFacetObj?.remove(remove)
-                }
+                if (remove) searchResults?.activeFacetMap?.remove(remove)
             }
 
             Map activeDefaultFilters = [:]
-            Map activeUserFilters = [:]
-            searchResults?.activeFacetObj.each { k, v ->
-                // v is Facet list here, grouped by filtername
-                // fina all user filters
-                def userFilters = v.findAll { userFqSet.contains(it.displayName) }
-                if (!userFilters.isEmpty())  {
-                    activeUserFilters[k] = userFilters
+            appliedDefaultFilters.each { filter ->
+                // TODO O(n^2)
+                def entry = searchResults?.activeFacetMap?.find { k, v ->
+                    "$k:${v?.value}" == filter
                 }
-
-                v.findAll{ fqToCategoryMap.containsKey(it.displayName) && !userFqSet.contains(it.displayName) }?.each { facet ->
-                    activeDefaultFilters.get(fqToCategoryMap[facet.displayName], []).add(facet)
+                if (entry) {
+                    searchResults?.activeFacetMap?.remove(entry.key)
+                    activeDefaultFilters.put(filterCategory.get(filter), entry.value)
                 }
             }
 
-            // front end gets list of facets from activeFacetMap
-            // doing this so that front end doesn't need code change
-            // it now includes only user filters
-            searchResults.activeFacetMap = new JSONObject(new Gson().toJson(activeUserFilters))
-            // applied default filters list
-            // its grouped by category like 'location' -> [fq, fq, fq]
+            // applied default filters
+            // its grouped by category like 'location' -> fq
             def activeDefaultFiltersJson = new JSONObject(new Gson().toJson(activeDefaultFilters))
 
             def hasImages = postProcessingService.resultsHaveImages(searchResults)

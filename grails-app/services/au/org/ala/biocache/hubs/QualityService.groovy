@@ -21,7 +21,10 @@ class QualityService {
         qualityCategory.delete()
     }
 
-
+    @Transactional(readOnly = true)
+    Map<String, String> getEnabledFiltersByLabel() {
+        getGroupedEnabledFilters().collectEntries { [(it.key): it.value.join(' AND ')] }
+    }
 
     @Transactional(readOnly = true)
     List<String> getEnabledQualityFilters() {

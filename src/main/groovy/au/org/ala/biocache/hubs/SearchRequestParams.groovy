@@ -42,6 +42,13 @@ public class SearchRequestParams implements Validateable{
     /** To disable facets */
     Boolean facet = true
 
+    /** If to disable all default filters*/
+    boolean disableAllQualityFilters = false
+    /** Default filters to disable (currently can only disable on category, so it's a list of disabled category name)*/
+    List<String> disabledQualityFilters = []
+    /** Default filters to be applied in a query*/
+    List<String> dqfq = []
+
     /**
      * Custom toString method to produce a String to be used as the request parameters
      * for the Biocache Service webservices
@@ -74,6 +81,11 @@ public class SearchRequestParams implements Validateable{
         fq.each { filter ->
             req.append("&fq=").append(conditionalEncode(filter, encodeParams))
         }
+
+        dqfq.each { filter ->
+            req.append("&fq=").append(conditionalEncode(filter, encodeParams))
+        }
+
         req.append("&start=").append(offset?:start);
         req.append("&pageSize=").append(max?:pageSize);
         req.append("&sort=").append(sort);
