@@ -15,14 +15,13 @@
 
 package au.org.ala.biocache.hubs
 
-import au.org.ala.web.CASRoles
-import com.google.gson.Gson
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
+import au.org.ala.web.CASRoles
 
 import java.text.SimpleDateFormat
 
@@ -58,18 +57,7 @@ class OccurrenceController {
     def list(SpatialSearchRequestParams requestParams) {
         def start = System.currentTimeMillis()
 
-        List<String> appliedDefaultFilters = []
-        Map filterCategory = [:] // filter maps to category, we need to know which category a filter belongs to when displaying result
-        // apply default filters if user doesn't disable all
-        if (!requestParams.disableAllQualityFilters) {
-            def disabled = requestParams.disabledQualityFilters as Set
-            Map filterMap = qualityService.enabledFiltersByLabel
-                    .findAll { category, filters -> !disabled.contains(category) }
-
-            filterMap.each { filterCategory.put(it.value, it.key) }
-            appliedDefaultFilters = filterMap.collect { category, filters -> filters }
-            requestParams.dqfq = appliedDefaultFilters
-        }
+        requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
 
         if (!params.pageSize) {
             requestParams.pageSize = 20
@@ -158,25 +146,16 @@ class OccurrenceController {
                 if (remove) searchResults?.activeFacetMap?.remove(remove)
             }
 
-            Map activeDefaultFilters = [:]
-            appliedDefaultFilters.each { filter ->
-                // TODO O(n^2)
-                def entry = searchResults?.activeFacetMap?.find { k, v ->
-                    "$k:${v?.value}" == filter
-                }
-                if (entry) {
-                    searchResults?.activeFacetMap?.remove(entry.key)
-                    activeDefaultFilters.put(filterCategory.get(filter), entry.value)
-                }
-            }
-
-            // applied default filters
-            // its grouped by category like 'location' -> fq
-            def activeDefaultFiltersJson = new JSONObject(new Gson().toJson(activeDefaultFilters))
 
             def hasImages = postProcessingService.resultsHaveImages(searchResults)
             if(grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()){
                 hasImages = true
+            }
+
+            def qualityCategories = QualityCategory.findAllByEnabled(true)
+            def qualityFiltersByLabel = qualityService.enabledFiltersByLabel
+            def qualityExcludeCount = qualityCategories.collectEntries {
+                [(it.id): qualityService.countRecordsExcludedByLabel(it.label) ]
             }
 
             log.debug "defaultFacets = ${defaultFacets}"
@@ -188,7 +167,6 @@ class OccurrenceController {
                     groupedFacets: groupedFacets,
                     groupedFacetsMap: groupedFacetsMap,
                     dynamicFacets: dynamicFacets,
-                    activeDefaultFilters: activeDefaultFiltersJson,
                     selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: hasImages,
                     showSpeciesImages: false,
@@ -197,7 +175,10 @@ class OccurrenceController {
                     userId: authService?.getUserId(),
                     userEmail: authService?.getEmail(),
                     processingTime: (System.currentTimeMillis() - start),
-                    wsTime: wsTime
+                    wsTime: wsTime,
+                    qualityCategories: qualityCategories,
+                    qualityExcludeCount: qualityExcludeCount,
+                    qualityFiltersByLabel: qualityFiltersByLabel
             ]
 
         } catch (Exception ex) {

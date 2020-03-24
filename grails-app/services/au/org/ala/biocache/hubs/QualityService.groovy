@@ -1,9 +1,12 @@
 package au.org.ala.biocache.hubs
 
+import grails.plugin.cache.Cacheable
 import grails.transaction.Transactional
 
 @Transactional
 class QualityService {
+
+    def webServicesService
 
     def createOrUpdate(QualityCategory qualityCategory) {
         qualityCategory.save(validate: true, failOnError: true)
@@ -66,6 +69,46 @@ class QualityService {
         }.groupBy {
             (it.qualityCategory)
         }
+    }
+
+    @Transactional(readOnly = true)
+    Map<QualityCategory, String> getEnabledFiltersByCategory() {
+        getEnabledCategoriesAndFilters().collectEntries { [(it.key): it.value.join(' AND ')] }
+    }
+
+    @Cacheable('shortTermCache')
+    Long countRecordsExcludedByLabel(String label) {
+        def labels = QualityCategory.withCriteria {
+            ne('label', label)
+            eq('enabled', true)
+            projections {
+                property('label')
+            }
+        }
+        def srp = new SpatialSearchRequestParams().with {
+            it.q = '*:*'
+            it.pageSize = 0
+            it.start = 0
+            it.flimit = 999
+            it.disableQualityFilter = labels
+            it
+        }
+        def results = webServicesService.fullTextSearch(srp)
+        countTotalRecords() - results.totalRecords
+    }
+
+    @Cacheable('shortTermCache')
+    Long countTotalRecords() {
+        def srp = new SpatialSearchRequestParams().with {
+            it.q = '*:*'
+            it.pageSize = 0
+            it.start = 0
+            it.flimit = 999
+            it.disableAllQualityFilters = true
+            it
+        }
+        def results = webServicesService.fullTextSearch(srp)
+        results.totalRecords
     }
 
     String getJoinedQualityFilter() {

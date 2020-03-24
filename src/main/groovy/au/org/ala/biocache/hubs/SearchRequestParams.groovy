@@ -2,6 +2,7 @@ package au.org.ala.biocache.hubs
 
 import grails.util.Holders
 import grails.validation.Validateable
+import groovy.transform.AutoClone
 import groovy.util.logging.Slf4j
 import org.apache.commons.httpclient.URIException
 import org.apache.commons.httpclient.util.URIUtil
@@ -13,7 +14,8 @@ import org.apache.commons.httpclient.util.URIUtil
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 @Slf4j
-public class SearchRequestParams implements Validateable{
+@AutoClone
+class SearchRequestParams implements Validateable{
     Long qId // "qid:12312321"
     String formattedQuery
     String q = ""
@@ -45,7 +47,7 @@ public class SearchRequestParams implements Validateable{
     /** If to disable all default filters*/
     boolean disableAllQualityFilters = false
     /** Default filters to disable (currently can only disable on category, so it's a list of disabled category name)*/
-    List<String> disabledQualityFilters = []
+    List<String> disableQualityFilter = []
     /** Default filters to be applied in a query*/
     List<String> dqfq = []
 

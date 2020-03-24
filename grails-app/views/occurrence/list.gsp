@@ -270,6 +270,35 @@
                         %{--Fallback taxa search to "text:", so provide feedback to user about this--}%
                         (<g:message code="list.taxa.notfound" args="${[params.taxa]}" default="(Note: no matched taxon name found for {0})"/>)
                     </g:if>
+                    <g:if test="${searchRequestParams.disableAllQualityFilters}">
+                        <div class="alert alert-warning alert-sm">
+                            <alatag:message code="quality.filters.disabled" default="Data Quality filters have been disabled for this search"/>
+                        </div>
+                    </g:if>
+%{--                    <g:else>--}%
+%{--                        <div class="activeFilters">--}%
+%{--                            <b><alatag:message code="quality.filters.heading" default="Quality filters applied"/></b>:&nbsp;--}%
+%{--                            <g:each var="qualityCategory" in="${qualityCategories}">--}%
+%{--                                <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />--}%
+%{--                                <span title="${qualityCategory.description}">--}%
+%{--                                    ${qualityCategory.name}:--}%
+%{--                                    ${qualityExcludeCount[qualityCategory.id]} <alatag:message code="quality.filters.excludeCount" default="records excluded" />--}%
+%{--                                    <span title="${qualityCategory.qualityFilters*.filter.join(' AND ')}"><i class="fa fa-info-circle"></i></span>--}%
+%{--                                    <g:if test="${qcDisabled}">--}%
+%{--                                            <g:link action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') - qualityCategory.label); it } }">--}%
+%{--                                                <alatag:message code='quality.filters.disabled' default='OFF' />--}%
+%{--                                            </g:link>--}%
+%{--                                    </g:if>--}%
+%{--                                    <g:else>--}%
+%{--                                            <g:link action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') + qualityCategory.label); it } }">--}%
+%{--                                                <alatag:message code='quality.filters.enabled' default='ON' />--}%
+%{--                                            </g:link>--}%
+%{--                                    </g:else>--}%
+
+%{--                                </span>--}%
+%{--                            </g:each>--}%
+%{--                        </div>--}%
+%{--                    </g:else>--}%
                     %{--<g:set var="hasFq" value="${false}"/>--}%
                     <g:if test="${sr.activeFacetMap?.size() > 0 || params.wkt || params.radius}">
                         <div class="activeFilters">

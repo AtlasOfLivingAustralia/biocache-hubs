@@ -9,6 +9,7 @@ import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
+import org.apache.commons.httpclient.util.URIUtil
 import org.apache.commons.io.FileUtils
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
@@ -16,6 +17,8 @@ import org.grails.web.json.JSONObject
 import org.springframework.web.client.RestClientException
 
 import javax.annotation.PostConstruct
+
+import static org.apache.commons.lang3.StringUtils.replace
 
 /**
  * Service to perform web service DAO operations
@@ -25,6 +28,7 @@ class WebServicesService {
     public static final String ENVIRONMENTAL = "Environmental"
     public static final String CONTEXTUAL = "Contextual"
     def grailsApplication, facetsCacheServiceBean
+    QualityService qualityService
 
     Map cachedGroupedFacets = [:] // keep a copy in case method throws an exception and then blats the saved version
 
@@ -34,8 +38,66 @@ class WebServicesService {
     }
 
     def JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
-        getJsonElements(url)
+        def newParams = requestParams.clone()
+        // Transmute the disableQualityFilter params into data quality filter querys (dqfqs)
+        def dqqfs = newParams.disableQualityFilter
+        def skip = newParams.disableAllQualityFilters
+        List<String> appliedFilters = []
+        Map<String, String> appliedFiltersByLabel = [:]
+        if (!skip) {
+            def disabled = dqqfs as Set
+            appliedFilters = qualityService.enabledFiltersByLabel
+                    .findAll { label, filters -> !disabled.contains(label) }
+                    .collect { label, filters -> filters }
+            newParams.dqfq = appliedFilters
+        }
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${newParams.getEncodedParams()}"
+        def result = getJsonElements(url)
+        // Fix the results to remove the dqfqs from queryString and urlParams and active facets
+        def activeFacetMapFilterLookup = result?.activeFacetMap.collectEntries { k, v -> [(String.valueOf(k) + ':' + String.valueOf(v?.value)): k]}
+        log.error('{}', activeFacetMapFilterLookup)
+        appliedFilters.each { filter ->
+            def encoded = URIUtil.encodeWithinQuery(filter) //simpleEncode(filter)
+
+            result.query = fixFq(result.query, encoded)
+            result.urlParameters = fixFq(result.urlParameters, encoded)
+
+            def activeFacetMapKey = activeFacetMapFilterLookup[filter]
+
+            if (activeFacetMapKey) {
+                result?.activeFacetMap?.remove(activeFacetMapKey)
+                result?.activeFacetObjects?.remove(activeFacetMapKey)
+            }
+        }
+        String extraParams = newParams.disableQualityFilter.collect { "disableQualityFilter=$it" }.join('&')
+        result.urlParameters += extraParams ? '&' + extraParams : ''
+        if (newParams.disableAllQualityFilters) {
+            result.urlParameters += '&disableAllQualityFilters=true'
+        }
+        return result
+    }
+
+    def fixFq(String queryParams, String fixFq, String replace = null) {
+        def startsWithQ = queryParams.startsWith('?')
+        if (startsWithQ) {
+            queryParams = queryParams.substring(1)
+        }
+        def tokens = queryParams.tokenize('&')
+        if (replace != null) {
+            tokens = tokens.collect { it == 'fq=' + fixFq ? replace : it }
+        } else {
+            tokens.remove('fq='+ fixFq)
+        }
+        return (startsWithQ ? '?' : '') + tokens.join('&')
+    }
+
+    /**
+     * Try to replicate the URL encoding scheme the service sends back.
+     * @param str The string to encode
+     * @return The encoded string
+     */
+    def simpleEncode(String str) {
+        replace(replace(replace(replace(replace(str, ':', '%3A'), ' ', '%20'), '"', '%22'), '[', '%5B'), ']', '%5D')
     }
 
     def JSONObject cachedFullTextSearch(SpatialSearchRequestParams requestParams) {
