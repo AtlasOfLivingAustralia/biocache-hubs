@@ -38,7 +38,6 @@ class OccurrenceController {
 
     def ENVIRO_LAYER = "el"
     def CONTEXT_LAYER = "cl"
-    def DEFAULT_FILTERS_APPLIED = 'defaultFiltersApplied'
 
     def index() {
         redirect action: "search"
@@ -457,10 +456,5 @@ class OccurrenceController {
         combined.record = webServicesService.getRecord(id)
         combined.compareRecord = webServicesService.getCompareRecord(id)
         render combined as JSON
-    }
-
-    def ifDefaultFiltersApplied() {
-        def cookies = request.getCookies()
-        cookies.find {it.name == DEFAULT_FILTERS_APPLIED} != null
     }
 }
