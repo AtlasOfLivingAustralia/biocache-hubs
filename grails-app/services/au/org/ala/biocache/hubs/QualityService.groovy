@@ -8,7 +8,7 @@ class QualityService {
 
     def webServicesService
 
-    def createOrUpdate(QualityCategory qualityCategory) {
+    def createOrUpdateCategory(QualityCategory qualityCategory) {
         qualityCategory.save(validate: true, failOnError: true)
     }
 

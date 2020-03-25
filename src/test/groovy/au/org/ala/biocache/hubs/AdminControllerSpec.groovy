@@ -35,7 +35,7 @@ class AdminControllerSpec extends Specification {
         controller.saveQualityCategory(qc1)
 
         then:
-        1 * controller.qualityService.createOrUpdate(qc1) >> qc1
+        1 * controller.qualityService.createOrUpdateCategory(qc1) >> qc1
         response.redirectedUrl == '/admin/dataQualityFilters'
     }
 
@@ -48,7 +48,7 @@ class AdminControllerSpec extends Specification {
         controller.saveQualityCategory(qc1)
 
         then:
-        1 * controller.qualityService.createOrUpdate(qc1) >> { throw new ValidationException('msg', ve) }
+        1 * controller.qualityService.createOrUpdateCategory(qc1) >> { throw new ValidationException('msg', ve) }
         flash.errors == ve
         response.redirectedUrl == '/admin/dataQualityFilters'
     }

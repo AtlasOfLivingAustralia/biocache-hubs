@@ -14,7 +14,7 @@ class QualityServiceSpec extends Specification {
         QualityCategory qc = new QualityCategory(name: 'name', label: 'label', description: 'description')
 
         when:
-        def result = service.createOrUpdate(qc)
+        def result = service.createOrUpdateCategory(qc)
 
         then:
         result != null
@@ -31,7 +31,7 @@ class QualityServiceSpec extends Specification {
 
         when:
         qc.description = 'description'
-        def result = service.createOrUpdate(qc)
+        def result = service.createOrUpdateCategory(qc)
 
         then:
         result.description == 'description'
@@ -42,7 +42,7 @@ class QualityServiceSpec extends Specification {
         QualityCategory qc = new QualityCategory(name: name, label: label, description: 'desc')
 
         when:
-        def result = service.createOrUpdate(qc)
+        def result = service.createOrUpdateCategory(qc)
 
         then:
         thrown ValidationException

@@ -82,7 +82,7 @@ class AdminController {
 
     def saveQualityCategory(QualityCategory qualityCategory) {
         try {
-            qualityService.createOrUpdate(qualityCategory)
+            qualityService.createOrUpdateCategory(qualityCategory)
         } catch (ValidationException e) {
             flash.errors = e.errors
         }
