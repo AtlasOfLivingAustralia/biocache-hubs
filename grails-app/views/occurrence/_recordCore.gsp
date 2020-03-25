@@ -884,9 +884,12 @@
         <table class="occurrenceTable table table-bordered table-striped table-condensed" id="miscellaneousPropertiesTable">
             <!-- Higher Geography -->
             <g:each in="${record.raw.miscProperties.sort()}" var="entry">
-                <g:set var="entryHtml"><span class='dwc'>${entry.key}</span></g:set>
-                <g:set var="label"><alatag:camelCaseToHuman text="${entryHtml}"/></g:set>
-                <alatag:occurrenceTableRow annotate="true" section="geospatial" fieldCode="${entry.key}" fieldName="${label}">${entry.value}</alatag:occurrenceTableRow>
+                <g:if test="${!StringUtils.containsIgnoreCase(dwcExcludeFields, entry.key)}">
+                    <g:set var="entryHtml"><span class='dwc'>${entry.key}</span></g:set>
+                    <g:set var="label"><alatag:camelCaseToHuman text="${entryHtml}"/></g:set>
+                    <alatag:occurrenceTableRow annotate="true" section="geospatial" fieldCode="${entry.key}"
+                                               fieldName="${label}">${entry.value}</alatag:occurrenceTableRow>
+                </g:if>
             </g:each>
         </table>
     </div>

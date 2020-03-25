@@ -20,11 +20,12 @@
         scripts = document.getElementsByTagName('script');
     for (var i = 0, ii = scripts.length; i < ii; i++) {
       var path = scripts[i].getAttribute('src');
-      //if(re.test(path)) {
-      if(true) {  // any JS source will give us the asset path
+      if(re.test(path)) {
+      //if(true) {  // any JS source will give us the asset path
         var f = path.split ( '/' );
         f.pop ();
-        return f.join ( '/' ) + '/audiojs/'; // Grails work-around for asset pipeline
+        //console.log('path',f.join ( '/' ) );
+        return f.join ( '/' ) + '/'; // Grails work-around for asset pipeline
       }
     }
     // when no script found, an empty string causes the least confusion.
