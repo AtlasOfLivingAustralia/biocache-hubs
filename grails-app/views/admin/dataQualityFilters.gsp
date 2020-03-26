@@ -27,9 +27,13 @@
         <h1>Data Quality Filters</h1>
 
         <div class="well">
-            <code>
-                ${qualityFilterString}
-            </code>
+            <ul>
+            <g:each var="qualityFilterString" in="${qualityFilterStrings}">
+                <li>${qualityFilterString.key}<code>
+                    fq=${qualityFilterString.value}
+                </code></li>
+            </g:each>
+            </ul>
         </div>
         <g:hasErrors>
             <div class="alert alert-danger">
