@@ -23,8 +23,9 @@ class AdminControllerSpec extends Specification {
         controller.dataQualityFilters()
 
         then:
-        1 * controller.qualityService.joinedQualityFilter >> ''
-        model == ['qualityFilterString': '', qualityCategoryList: [qc1, qc2]]
+        1 * controller.qualityService.enabledFiltersByLabel >> [label: '', label2: '']
+        model.qualityCategoryList == [qc1, qc2]
+        model.qualityFilterStrings == [label: '', label2: '']
     }
 
     def 'test saveQualityCategory'() {
