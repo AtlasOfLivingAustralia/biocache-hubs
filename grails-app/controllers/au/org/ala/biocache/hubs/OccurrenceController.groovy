@@ -15,6 +15,7 @@
 
 package au.org.ala.biocache.hubs
 
+import com.google.common.base.Stopwatch
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
@@ -154,9 +155,7 @@ class OccurrenceController {
 
             def qualityCategories = QualityCategory.findAllByEnabled(true)
             def qualityFiltersByLabel = qualityService.enabledFiltersByLabel
-            def qualityExcludeCount = qualityCategories.collectEntries {
-                [(it.id): qualityService.countRecordsExcludedByLabel(it.label) ]
-            }
+            def qualityExcludeCount = qualityService.getExcludeCount(qualityCategories, requestParams)
 
             log.debug "defaultFacets = ${defaultFacets}"
 

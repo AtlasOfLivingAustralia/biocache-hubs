@@ -76,6 +76,12 @@ class AdminController {
         "i18n messages cache cleared\n"
     }
 
+    def clearRecordCountCache() {
+        qualityService.clearRecordCountCache()
+        flash.message = "record count cache cleared\n"
+        redirect(action: 'index')
+    }
+
     def dataQualityFilters() {
         respond QualityCategory.list(sort: 'id', lazy: false), model: [ 'qualityFilterStrings' : qualityService.enabledFiltersByLabel, 'errors': flash.errors ]
     }

@@ -41,6 +41,7 @@
             <a href="${g.createLink(action:'clearFacetsCache')}" class="btn btn-default">Clear facets cache</a>
             <a href="${g.createLink(action:'clearLongTermCache')}" class="btn btn-default">Clear long term cache</a>
             <a href="${g.createLink(action:'clearPropertiesCache')}" class="btn btn-default">Clear i18n messages cache</a>
+            <a href="${g.createLink(action:'clearRecordCountCache')}" class="btn btn-default">Clear record count cache</a>
         </div>
 
         <h2>Data Quality Filters</h2>

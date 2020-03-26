@@ -3,6 +3,7 @@ package au.org.ala.biocache.hubs
 import grails.util.Holders
 import grails.validation.Validateable
 import groovy.transform.AutoClone
+import groovy.transform.EqualsAndHashCode
 import groovy.util.logging.Slf4j
 import org.apache.commons.httpclient.URIException
 import org.apache.commons.httpclient.util.URIUtil
@@ -15,6 +16,7 @@ import org.apache.commons.httpclient.util.URIUtil
  */
 @Slf4j
 @AutoClone
+@EqualsAndHashCode
 class SearchRequestParams implements Validateable{
     Long qId // "qid:12312321"
     String formattedQuery

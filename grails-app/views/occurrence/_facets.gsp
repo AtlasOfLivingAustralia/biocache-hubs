@@ -37,22 +37,6 @@
                 <a href="#" class="showHideFacetGroup" data-name="data_quality"><span class="caret right-caret"></span> <g:message code="quality.filters.group.title" default="Quality filters"/></a>
             </div>
             <div class="facetsGroup" id="group_data_quality" style="display:none;">
-%{--                <g:each var="qualityCategory" in="${qualityCategories}">--}%
-
-%{--                    <h4><span class="FieldName">${qualityCategory.name}</span></h4>--}%
-%{--                    <div class="subnavlist nano" style="clear:left">--}%
-%{--                        <ul class="facets nano-content">--}%
-%{--                            <g:each var="filter" in="${qualityCategory.qualityFilters}">--}%
-%{--                                <li>--}%
-%{--                                    <a class="tooltips" title="${filter.description}" href="">--}%
-%{--                                        <span class="fa fa-square-o">&nbsp;</span>--}%
-%{--                                        <span class="facet-item">${filter.description} <span class="facet-count"> (?)</span></span>--}%
-%{--                                    </a>--}%
-%{--                                </li>--}%
-%{--                            </g:each>--}%
-%{--                        </ul>--}%
-%{--                    </div>--}%
-%{--                </g:each>--}%
 
                 <h4><span class="FieldName">Categories</span></h4>
                 <div class="subnavlist nano" style="clear:left">
@@ -63,13 +47,13 @@
                                 <g:if test="${qcDisabled}">
                                     <g:link class="tooltips" title="${qualityCategory.description}" action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') - qualityCategory.label); it } }">
                                         <span class="fa fa-square-o">&nbsp;</span>
-                                        <span class="facet-item">${qualityCategory.name} <span class="facet-count"> (-${qualityExcludeCount[qualityCategory.id]} total)</span></span>
+                                        <span class="facet-item">${qualityCategory.name} <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.id]}" format="#,###,###"/>)</span></span>
                                     </g:link>
                                 </g:if>
                                 <g:else>
                                     <g:link class="tooltips" title="${qualityCategory.description}" action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') + qualityCategory.label); it } }">
                                         <span class="fa fa-check-square-o">&nbsp;</span>
-                                        <span class="facet-item">${qualityCategory.name} <span class="facet-count"> (-${qualityExcludeCount[qualityCategory.id]} total)</span></span>
+                                        <span class="facet-item">${qualityCategory.name} <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.id]}" format="#,###,###"/>)</span></span>
                                     </g:link>
                                 </g:else>
                                 <i class="fa fa-info-circle tooltips" title="${qualityFiltersByLabel[qualityCategory.label]}"></i>
