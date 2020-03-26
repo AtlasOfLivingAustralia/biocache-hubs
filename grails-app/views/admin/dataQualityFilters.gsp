@@ -31,13 +31,15 @@
                 ${qualityFilterString}
             </code>
         </div>
-        <g:if test="${flash.errors}">
+        <g:hasErrors>
             <div class="alert alert-danger">
-                <g:eachError bean="${flash.errors}">
-                    <li><g:message error="${it}"/></li>
-                </g:eachError>
+                <ul>
+                    <g:eachError var="error">
+                        <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+                    </g:eachError>
+                </ul>
             </div>
-        </g:if>
+        </g:hasErrors>
 
         <p>
             <button class="btn btn-primary" id="add-category" data-toggle="modal" data-target="#add-category-modal"><i class="fa fa-plus"></i> Add category</button>
