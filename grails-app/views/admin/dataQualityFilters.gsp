@@ -131,7 +131,7 @@
                         </li>
                     </g:each>
                     <li class="list-group-item">
-                        <g:form class="form-inline form-new-filter" action="saveQualityFilter">
+                        <g:form class="form-inline form-new-filter" useToken="true" action="saveQualityFilter">
                             <g:hiddenField name="qualityCategory" value="${category.id}" />
                             <div class="form-group">
                                 <label for="filter">Description</label>

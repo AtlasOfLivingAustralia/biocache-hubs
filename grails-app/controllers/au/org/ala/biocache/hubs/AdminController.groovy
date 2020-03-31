@@ -108,12 +108,17 @@ class AdminController {
     }
 
     def saveQualityFilter(QualityFilter qualityFilter) {
-        try {
-            qualityService.createOrUpdateFilter(qualityFilter)
-        } catch (ValidationException e) {
-            flash.errors = e.errors
-        } catch (IllegalStateException e) {
-            return render(status: 400, text: 'invalid params')
+        withForm {
+            try {
+                qualityService.createOrUpdateFilter(qualityFilter)
+            } catch (ValidationException e) {
+                flash.errors = e.errors
+            } catch (IllegalStateException e) {
+                return render(status: 400, text: 'invalid params')
+            }
+        }.invalidToken {
+            // bad request
+            log.debug("ignore duplicate save request description:$qualityFilter.description, filter:$qualityFilter.filter")
         }
         redirect(action: 'dataQualityFilters')
     }
