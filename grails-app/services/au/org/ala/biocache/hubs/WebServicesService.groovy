@@ -54,13 +54,17 @@ class WebServicesService {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${newParams.getEncodedParams()}"
         def result = getJsonElements(url)
         // Fix the results to remove the dqfqs from queryString and urlParams and active facets
-        def activeFacetMapFilterLookup = result?.activeFacetMap.collectEntries { k, v -> [(String.valueOf(k) + ':' + String.valueOf(v?.value)): k]}
+        def activeFacetMapFilterLookup = result?.activeFacetMap?.collectEntries { k, v -> [(String.valueOf(k) + ':' + String.valueOf(v?.value)): k]} ?: [:]
         log.error('{}', activeFacetMapFilterLookup)
         appliedFilters.each { filter ->
             def encoded = URIUtil.encodeWithinQuery(filter) //simpleEncode(filter)
 
-            result.query = fixFq(result.query, encoded)
-            result.urlParameters = fixFq(result.urlParameters, encoded)
+            if (result.query) {
+                result.query = fixFq(result.query, encoded)
+            }
+            if (result.urlParameters) {
+                result.urlParameters = fixFq(result.urlParameters, encoded)
+            }
 
             def activeFacetMapKey = activeFacetMapFilterLookup[filter]
 
@@ -70,9 +74,11 @@ class WebServicesService {
             }
         }
         String extraParams = newParams.disableQualityFilter.collect { "disableQualityFilter=$it" }.join('&')
-        result.urlParameters += extraParams ? '&' + extraParams : ''
-        if (newParams.disableAllQualityFilters) {
-            result.urlParameters += '&disableAllQualityFilters=true'
+        if (result.urlParameters) {
+            result.urlParameters += extraParams ? '&' + extraParams : ''
+            if (newParams.disableAllQualityFilters) {
+                result.urlParameters += '&disableAllQualityFilters=true'
+            }
         }
         return result
     }
