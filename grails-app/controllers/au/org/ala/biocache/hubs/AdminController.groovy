@@ -87,23 +87,38 @@ class AdminController {
     }
 
     def saveQualityCategory(QualityCategory qualityCategory) {
-        try {
-            qualityService.createOrUpdateCategory(qualityCategory)
-        } catch (ValidationException e) {
-            flash.errors = e.errors
+        withForm {
+            try {
+                qualityService.createOrUpdateCategory(qualityCategory)
+            } catch (ValidationException e) {
+                flash.errors = e.errors
+            }
+        }.invalidToken {
+            // bad request
+            log.debug("ignore duplicate save category request. name:{}, label:{}", qualityCategory.name, qualityCategory.label)
         }
         redirect(action: 'dataQualityFilters')
     }
 
     def enableQualityCategory() {
-        def qc = QualityCategory.get(params.long('id'))
-        qc.enabled = params.boolean('enabled', false)
-        qc.save(flush: true)
+        withForm {
+            def qc = QualityCategory.get(params.long('id'))
+            qc.enabled = params.boolean('enabled', false)
+            qc.save(flush: true)
+        }.invalidToken {
+            // bad request
+            log.debug("ignore duplicate enable category request")
+        }
         redirect(action: 'dataQualityFilters')
     }
 
     def deleteQualityCategory(QualityCategory qualityCategory) {
-        qualityService.deleteCategory(qualityCategory)
+        withForm {
+            qualityService.deleteCategory(qualityCategory)
+        }.invalidToken {
+            // bad request
+            log.debug("ignore duplicate delete category request. name:{}, label:{}", qualityCategory.name, qualityCategory.label)
+        }
         redirect(action: 'dataQualityFilters')
     }
 
@@ -118,24 +133,33 @@ class AdminController {
             }
         }.invalidToken {
             // bad request
-            log.debug("ignore duplicate save request description:$qualityFilter.description, filter:$qualityFilter.filter")
+            log.debug("ignore duplicate save filter request. description:{}, filter:{}", qualityFilter.description, qualityFilter.filter)
         }
         redirect(action: 'dataQualityFilters')
     }
 
     def deleteQualityFilter() {
-        def id = params.long('id')
-        if (!id) {
-            return render(status: 404, text: 'filter not found')
+        withForm {
+            def id = params.long('id')
+            if (!id) {
+                return render(status: 404, text: 'filter not found')
+            }
+            qualityService.deleteFilter(id)
+        }.invalidToken {
+            log.debug("ignore duplicate delete filter request")
         }
-        qualityService.deleteFilter(id)
         redirect(action: 'dataQualityFilters')
     }
 
     def enableQualityFilter() {
-        def qf = QualityFilter.get(params.long('id'))
-        qf.enabled = params.boolean('enabled', false)
-        qf.save(flush: true)
+        withForm {
+            def qf = QualityFilter.get(params.long('id'))
+            qf.enabled = params.boolean('enabled', false)
+            qf.save(flush: true)
+        }.invalidToken {
+            // bad request
+            log.debug("ignore duplicate enable filter request")
+        }
         redirect(action: 'dataQualityFilters')
     }
 }

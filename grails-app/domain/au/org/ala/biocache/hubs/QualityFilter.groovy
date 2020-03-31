@@ -22,7 +22,7 @@ class QualityFilter {
     static transients = ['filterQueryPart']
 
     static constraints = {
-        filter blank: false, uique: true
+        filter blank: false, unique: true
     }
 
     static mapping = {

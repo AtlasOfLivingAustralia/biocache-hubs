@@ -1,0 +1,172 @@
+diff --git a/grails-app/controllers/au/org/ala/biocache/hubs/AdminController.groovy b/grails-app/controllers/au/org/ala/biocache/hubs/AdminController.groovy
+index 3b6b606d..615601cf 100644
+--- a/grails-app/controllers/au/org/ala/biocache/hubs/AdminController.groovy
++++ b/grails-app/controllers/au/org/ala/biocache/hubs/AdminController.groovy
+@@ -87,23 +87,38 @@ class AdminController {
+     }
+ 
+     def saveQualityCategory(QualityCategory qualityCategory) {
+-        try {
+-            qualityService.createOrUpdateCategory(qualityCategory)
+-        } catch (ValidationException e) {
+-            flash.errors = e.errors
++        withForm {
++            try {
++                qualityService.createOrUpdateCategory(qualityCategory)
++            } catch (ValidationException e) {
++                flash.errors = e.errors
++            }
++        }.invalidToken {
++            // bad request
++            log.debug("ignore duplicate save category request. name:{}, label:{}", qualityCategory.name, qualityCategory.label)
+         }
+         redirect(action: 'dataQualityFilters')
+     }
+ 
+     def enableQualityCategory() {
+-        def qc = QualityCategory.get(params.long('id'))
+-        qc.enabled = params.boolean('enabled', false)
+-        qc.save(flush: true)
++        withForm {
++            def qc = QualityCategory.get(params.long('id'))
++            qc.enabled = params.boolean('enabled', false)
++            qc.save(flush: true)
++        }.invalidToken {
++            // bad request
++            log.debug("ignore duplicate enable category request")
++        }
+         redirect(action: 'dataQualityFilters')
+     }
+ 
+     def deleteQualityCategory(QualityCategory qualityCategory) {
+-        qualityService.deleteCategory(qualityCategory)
++        withForm {
++            qualityService.deleteCategory(qualityCategory)
++        }.invalidToken {
++            // bad request
++            log.debug("ignore duplicate delete category request. name:{}, label:{}", qualityCategory.name, qualityCategory.label)
++        }
+         redirect(action: 'dataQualityFilters')
+     }
+ 
+@@ -118,24 +133,33 @@ class AdminController {
+             }
+         }.invalidToken {
+             // bad request
+-            log.debug("ignore duplicate save request description:$qualityFilter.description, filter:$qualityFilter.filter")
++            log.debug("ignore duplicate save filter request. description:{}, filter:{}", qualityFilter.description, qualityFilter.filter)
+         }
+         redirect(action: 'dataQualityFilters')
+     }
+ 
+     def deleteQualityFilter() {
+-        def id = params.long('id')
+-        if (!id) {
+-            return render(status: 404, text: 'filter not found')
++        withForm {
++            def id = params.long('id')
++            if (!id) {
++                return render(status: 404, text: 'filter not found')
++            }
++            qualityService.deleteFilter(id)
++        }.invalidToken {
++            log.debug("ignore duplicate delete filter request")
+         }
+-        qualityService.deleteFilter(id)
+         redirect(action: 'dataQualityFilters')
+     }
+ 
+     def enableQualityFilter() {
+-        def qf = QualityFilter.get(params.long('id'))
+-        qf.enabled = params.boolean('enabled', false)
+-        qf.save(flush: true)
++        withForm {
++            def qf = QualityFilter.get(params.long('id'))
++            qf.enabled = params.boolean('enabled', false)
++            qf.save(flush: true)
++        }.invalidToken {
++            // bad request
++            log.debug("ignore duplicate enable filter request")
++        }
+         redirect(action: 'dataQualityFilters')
+     }
+ }
+diff --git a/grails-app/domain/au/org/ala/biocache/hubs/QualityFilter.groovy b/grails-app/domain/au/org/ala/biocache/hubs/QualityFilter.groovy
+index 400b248f..10e3fac9 100644
+--- a/grails-app/domain/au/org/ala/biocache/hubs/QualityFilter.groovy
++++ b/grails-app/domain/au/org/ala/biocache/hubs/QualityFilter.groovy
+@@ -22,7 +22,7 @@ class QualityFilter {
+     static transients = ['filterQueryPart']
+ 
+     static constraints = {
+-        filter blank: false, uique: true
++        filter blank: false, unique: true
+     }
+ 
+     static mapping = {
+diff --git a/grails-app/views/admin/dataQualityFilters.gsp b/grails-app/views/admin/dataQualityFilters.gsp
+index 25c66fef..16da72b7 100644
+--- a/grails-app/views/admin/dataQualityFilters.gsp
++++ b/grails-app/views/admin/dataQualityFilters.gsp
+@@ -54,16 +54,16 @@
+         <g:each in="${qualityCategoryInstanceList}" var="category">
+             <div class="panel ${category.enabled ? 'panel-default' : 'panel-warning'} panel-category">
+                 <div class="panel-heading">
+-                    <g:form action="deleteQualityCategory" class="form-inline pull-right" data-confirmation="${category.qualityFilters.size() > 0}"><g:hiddenField name="id" value="${category.id}"/><button type="submit" class="btn btn-xs btn-danger">&times;</button></g:form>
++                    <g:form action="deleteQualityCategory" useToken="true" class="form-inline pull-right" data-confirmation="${category.qualityFilters.size() > 0}"><g:hiddenField name="id" value="${category.id}"/><button type="submit" class="btn btn-xs btn-danger">&times;</button></g:form>
+                     <h3 class="panel-title">
+-                        <g:form class="form-inline" style="display: inline-block;" action="enableQualityCategory">
++                        <g:form class="form-inline" style="display: inline-block;" useToken="true" action="enableQualityCategory">
+                             <g:hiddenField name="id" value="${category.id}"/>
+                             <label class="sr-only">Enabled</label>
+                             <g:checkBox name="enabled" value="${category.enabled}" />
+                         </g:form>
+                         <span class="panel-title-ro">${category.name} (${category.label}) <button class="btn btn-xs btn-default btn-edit-category"><i class="fa fa-edit"></i></button></span>
+                         <span class="panel-title-rw hidden">
+-                            <g:form action="saveQualityCategory" class="form-inline">
++                            <g:form action="saveQualityCategory" useToken="true" class="form-inline">
+                                 <g:hiddenField name="id" value="${category.id}"/>
+                                 <g:hiddenField name="description" value="${category.description}" />
+                                 <div class="form-group">
+@@ -87,7 +87,7 @@
+                             <button class="btn btn-default"><i class="fa fa-edit"></i></button>
+                         </span>
+                         <span class="category-description-rw hidden">
+-                            <g:form action="saveQualityCategory">
++                            <g:form action="saveQualityCategory" useToken="true">
+                                 <g:hiddenField name="id" value="${category.id}"/>
+                                 <g:hiddenField name="name" value="${category.name}"/>
+                                 <g:hiddenField name="label" value="${category.label}"/>
+@@ -101,12 +101,12 @@
+                 <ul class="list-group">
+                     <g:each in="${category.qualityFilters}" var="filter">
+                         <li class="list-group-item ${!filter.enabled ? 'list-group-item-warning' : '' }">
+-                            <g:form class="form-inline" style="display: inline-block;" action="enableQualityFilter">
++                            <g:form class="form-inline" style="display: inline-block;" useToken="true" action="enableQualityFilter">
+                                 <g:hiddenField name="id" value="${filter.id}"/>
+                                 <label class="sr-only">Enabled</label>
+                                 <g:checkBox name="enabled" value="${filter.enabled}" />
+                             </g:form>
+-                            <g:form class="form-inline" action="saveQualityFilter" style="display: inline-block;">
++                            <g:form class="form-inline" action="saveQualityFilter" useToken="true" style="display: inline-block;">
+                                 <g:hiddenField name="id" value="${filter.id}"/>
+                                 <g:hiddenField name="qualityCategory" value="${category.id}" />
+                                 <div class="form-group">
+@@ -124,7 +124,7 @@
+                                 <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-save"></i></button>
+                                 <button type="reset" class="btn btn-sm btn-default"><i class="fa fa-refresh"></i></button>
+                             </g:form>
+-                            <g:form class="form-inline" action="deleteQualityFilter" style="display: inline-block;">
++                            <g:form class="form-inline" action="deleteQualityFilter" useToken="true" style="display: inline-block;">
+                                 <g:hiddenField name="id" value="${filter.id}"/>
+                                 <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+                             </g:form>
+@@ -161,7 +161,7 @@
+                 <h4 class="modal-title">New Data Quality Category</h4>
+             </div>
+             <div class="modal-body">
+-                <g:form name="add-category-form" action="saveQualityCategory" method="POST">
++                <g:form name="add-category-form" useToken="true" action="saveQualityCategory" method="POST">
+                     <div class="form-group">
+                         <label for="name">Category name</label>
+                         <g:textField name="name" placeholder="Outliers" class="form-control" />

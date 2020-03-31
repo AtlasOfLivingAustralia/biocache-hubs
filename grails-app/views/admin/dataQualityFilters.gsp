@@ -54,16 +54,16 @@
         <g:each in="${qualityCategoryInstanceList}" var="category">
             <div class="panel ${category.enabled ? 'panel-default' : 'panel-warning'} panel-category">
                 <div class="panel-heading">
-                    <g:form action="deleteQualityCategory" class="form-inline pull-right" data-confirmation="${category.qualityFilters.size() > 0}"><g:hiddenField name="id" value="${category.id}"/><button type="submit" class="btn btn-xs btn-danger">&times;</button></g:form>
+                    <g:form action="deleteQualityCategory" useToken="true" class="form-inline pull-right" data-confirmation="${category.qualityFilters.size() > 0}"><g:hiddenField name="id" value="${category.id}"/><button type="submit" class="btn btn-xs btn-danger">&times;</button></g:form>
                     <h3 class="panel-title">
-                        <g:form class="form-inline" style="display: inline-block;" action="enableQualityCategory">
+                        <g:form class="form-inline" style="display: inline-block;" useToken="true" action="enableQualityCategory">
                             <g:hiddenField name="id" value="${category.id}"/>
                             <label class="sr-only">Enabled</label>
                             <g:checkBox name="enabled" value="${category.enabled}" />
                         </g:form>
                         <span class="panel-title-ro">${category.name} (${category.label}) <button class="btn btn-xs btn-default btn-edit-category"><i class="fa fa-edit"></i></button></span>
                         <span class="panel-title-rw hidden">
-                            <g:form action="saveQualityCategory" class="form-inline">
+                            <g:form action="saveQualityCategory" useToken="true" class="form-inline">
                                 <g:hiddenField name="id" value="${category.id}"/>
                                 <g:hiddenField name="description" value="${category.description}" />
                                 <div class="form-group">
@@ -87,7 +87,7 @@
                             <button class="btn btn-default"><i class="fa fa-edit"></i></button>
                         </span>
                         <span class="category-description-rw hidden">
-                            <g:form action="saveQualityCategory">
+                            <g:form action="saveQualityCategory" useToken="true">
                                 <g:hiddenField name="id" value="${category.id}"/>
                                 <g:hiddenField name="name" value="${category.name}"/>
                                 <g:hiddenField name="label" value="${category.label}"/>
@@ -101,12 +101,12 @@
                 <ul class="list-group">
                     <g:each in="${category.qualityFilters}" var="filter">
                         <li class="list-group-item ${!filter.enabled ? 'list-group-item-warning' : '' }">
-                            <g:form class="form-inline" style="display: inline-block;" action="enableQualityFilter">
+                            <g:form class="form-inline" style="display: inline-block;" useToken="true" action="enableQualityFilter">
                                 <g:hiddenField name="id" value="${filter.id}"/>
                                 <label class="sr-only">Enabled</label>
                                 <g:checkBox name="enabled" value="${filter.enabled}" />
                             </g:form>
-                            <g:form class="form-inline" action="saveQualityFilter" style="display: inline-block;">
+                            <g:form class="form-inline" action="saveQualityFilter" useToken="true" style="display: inline-block;">
                                 <g:hiddenField name="id" value="${filter.id}"/>
                                 <g:hiddenField name="qualityCategory" value="${category.id}" />
                                 <div class="form-group">
@@ -124,7 +124,7 @@
                                 <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-save"></i></button>
                                 <button type="reset" class="btn btn-sm btn-default"><i class="fa fa-refresh"></i></button>
                             </g:form>
-                            <g:form class="form-inline" action="deleteQualityFilter" style="display: inline-block;">
+                            <g:form class="form-inline" action="deleteQualityFilter" useToken="true" style="display: inline-block;">
                                 <g:hiddenField name="id" value="${filter.id}"/>
                                 <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                             </g:form>
@@ -161,7 +161,7 @@
                 <h4 class="modal-title">New Data Quality Category</h4>
             </div>
             <div class="modal-body">
-                <g:form name="add-category-form" action="saveQualityCategory" method="POST">
+                <g:form name="add-category-form" useToken="true" action="saveQualityCategory" method="POST">
                     <div class="form-group">
                         <label for="name">Category name</label>
                         <g:textField name="name" placeholder="Outliers" class="form-control" />
