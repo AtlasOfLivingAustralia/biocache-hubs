@@ -285,7 +285,8 @@
                                 <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
                                 <span title="${qualityCategory.description}">
                                     ${qualityCategory.name}:
-                                    ${qualityExcludeCount[qualityCategory.id]} <alatag:message code="quality.filters.excludeCount" default="records excluded" />
+                                    <g:formatNumber number="${qualityExcludeCount[qualityCategory.id]}" format="#,###,###"/>
+                                    <alatag:message code="quality.filters.excludeCount" default="records excluded" />
                                     <span title="${qualityFiltersByLabel[qualityCategory.label]}"><i class="fa fa-info-circle"></i></span>
                                     <g:if test="${qcDisabled}">
                                             <g:link action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') - qualityCategory.label); it } }">
