@@ -286,7 +286,7 @@
                                 <span title="${qualityCategory.description}">
                                     ${qualityCategory.name}:
                                     ${qualityExcludeCount[qualityCategory.id]} <alatag:message code="quality.filters.excludeCount" default="records excluded" />
-                                    <span title="${qualityCategory.qualityFilters*.filter.join(' AND ')}"><i class="fa fa-info-circle"></i></span>
+                                    <span title="${qualityFiltersByLabel[qualityCategory.label]}"><i class="fa fa-info-circle"></i></span>
                                     <g:if test="${qcDisabled}">
                                             <g:link action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') - qualityCategory.label); it } }">
                                                 <alatag:message code='quality.filters.disabled' default='OFF' />
