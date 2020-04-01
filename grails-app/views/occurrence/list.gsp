@@ -127,6 +127,9 @@
         <input type="hidden" id="userEmail" value="${userEmail}" class="form-control">
         <input type="hidden" id="lsid" value="${params.lsid}" class="form-control">
     </div>
+    <g:set var="recordsExcluded" value="${(qualityExcludeCount != null) && (qualityExcludeCount.values().sum() != 0)}"/>
+
+
     <g:if test="${flash.message}">
         <div id="errorAlert" class="alert alert-danger alert-dismissible alert-dismissable" role="alert">
             <button type="button" class="close" onclick="$(this).parent().hide()" aria-label="Close"><span
@@ -146,7 +149,7 @@
                 href="mailto:${grailsApplication.config.supportEmail ?: 'support@ala.org.au'}?subject=biocache error">support</a> if this error continues
         </div>
     </g:if>
-    <g:elseif test="${!sr || sr.totalRecords == 0}">
+    <g:elseif test="${!sr || (sr.totalRecords == 0 && !recordsExcluded)}">
         <div class="searchInfo searchError">
             %{-- search query was interpreted as matching a taxon - thus has a span with `lsid` attribute --}%
             <g:if test="${queryDisplay =~ /lsid/}">
@@ -175,7 +178,7 @@
             %{-- fall-back for remaining searches --}%
             <g:else>
                 <p><g:message code="list.03.p03" default="No records found for"/> <span
-                        class="queryDisplay">${queryDisplay ?: params.q ?: params.taxa}</span></p>
+                        class="queryDisplay">${raw(queryDisplay) ?: params.q ?: params.taxa}</span></p>
             </g:else>
         </div>
     </g:elseif>
@@ -275,30 +278,30 @@
                             <alatag:message code="quality.filters.disabled" default="Data Quality filters have been disabled for this search"/>
                         </div>
                     </g:if>
-%{--                    <g:else>--}%
-%{--                        <div class="activeFilters">--}%
-%{--                            <b><alatag:message code="quality.filters.heading" default="Quality filters applied"/></b>:&nbsp;--}%
-%{--                            <g:each var="qualityCategory" in="${qualityCategories}">--}%
-%{--                                <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />--}%
-%{--                                <span title="${qualityCategory.description}">--}%
-%{--                                    ${qualityCategory.name}:--}%
-%{--                                    ${qualityExcludeCount[qualityCategory.id]} <alatag:message code="quality.filters.excludeCount" default="records excluded" />--}%
-%{--                                    <span title="${qualityCategory.qualityFilters*.filter.join(' AND ')}"><i class="fa fa-info-circle"></i></span>--}%
-%{--                                    <g:if test="${qcDisabled}">--}%
-%{--                                            <g:link action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') - qualityCategory.label); it } }">--}%
-%{--                                                <alatag:message code='quality.filters.disabled' default='OFF' />--}%
-%{--                                            </g:link>--}%
-%{--                                    </g:if>--}%
-%{--                                    <g:else>--}%
-%{--                                            <g:link action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') + qualityCategory.label); it } }">--}%
-%{--                                                <alatag:message code='quality.filters.enabled' default='ON' />--}%
-%{--                                            </g:link>--}%
-%{--                                    </g:else>--}%
+                    <g:else>
+                        <div class="activeFilters">
+                            <b><alatag:message code="quality.filters.heading" default="Quality filters applied"/></b>:&nbsp;
+                            <g:each var="qualityCategory" in="${qualityCategories}">
+                                <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
+                                <span title="${qualityCategory.description}">
+                                    ${qualityCategory.name}:
+                                    ${qualityExcludeCount[qualityCategory.id]} <alatag:message code="quality.filters.excludeCount" default="records excluded" />
+                                    <span title="${qualityCategory.qualityFilters*.filter.join(' AND ')}"><i class="fa fa-info-circle"></i></span>
+                                    <g:if test="${qcDisabled}">
+                                            <g:link action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') - qualityCategory.label); it } }">
+                                                <alatag:message code='quality.filters.disabled' default='OFF' />
+                                            </g:link>
+                                    </g:if>
+                                    <g:else>
+                                            <g:link action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') + qualityCategory.label); it } }">
+                                                <alatag:message code='quality.filters.enabled' default='ON' />
+                                            </g:link>
+                                    </g:else>
 
-%{--                                </span>--}%
-%{--                            </g:each>--}%
-%{--                        </div>--}%
-%{--                    </g:else>--}%
+                                </span>
+                            </g:each>
+                        </div>
+                    </g:else>
                     %{--<g:set var="hasFq" value="${false}"/>--}%
                     <g:if test="${sr.activeFacetMap?.size() > 0 || params.wkt || params.radius}">
                         <div class="activeFilters">
