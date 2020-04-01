@@ -7,9 +7,11 @@ This application/plugin provides a web UI for a back-end service called [**bioca
 An example Grails application that uses this plugin, is the [**generic-hub**](https://github.com/AtlasOfLivingAustralia/generic-hub) app. There are other implementations listed in the [ALA Github repository](https://github.com/AtlasOfLivingAustralia?query=-hub) (all implementations have a suffix '-hub').
 
 ## Versions
-The grails2 branch contains the 1.5.x series of the plugin compatible with Grails 2.x
+The grails2 branch contains the 1.5.x series of the plugin compatible with Grails 2.x.
 
-The master branch hosts version 2.x and forward of the plugin compatible with grails 3.x
+The master branch hosts version 2.x and forward of the plugin compatible with grails 3.x.
+
+Data Quality project version is 4.x (see https://www.ala.org.au/data-quality-project/).
 
 ## Getting started
 The easiest way to get started is to clone the **generic-hub** project and then modify it to suit your needs. Any functionality that you wish to alter, is achieved by creating a copy of the groovy/GSP/JS/CSS/i18n file of interest, from **biocache-hubs** and placing it in your client app, so that it overrides the plugin version.
