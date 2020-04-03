@@ -35,6 +35,11 @@
             </g:each>
             </ul>
         </div>
+        <g:if test="${flash.message}">
+            <div class="alert alert-warning">
+                <p>${flash.message}</p>
+            </div>
+        </g:if>
         <g:hasErrors>
             <div class="alert alert-danger">
                 <ul>
@@ -65,6 +70,7 @@
                         <span class="panel-title-rw hidden">
                             <g:form action="saveQualityCategory" useToken="true" class="form-inline">
                                 <g:hiddenField name="id" value="${category.id}"/>
+                                <g:hiddenField name="version" value="${category.version}"/>
                                 <g:hiddenField name="description" value="${category.description}" />
                                 <div class="form-group">
                                     <label for="name">Name</label>
@@ -89,6 +95,7 @@
                         <span class="category-description-rw hidden">
                             <g:form action="saveQualityCategory" useToken="true">
                                 <g:hiddenField name="id" value="${category.id}"/>
+                                <g:hiddenField name="version" value="${category.version}"/>
                                 <g:hiddenField name="name" value="${category.name}"/>
                                 <g:hiddenField name="label" value="${category.label}"/>
                                 <g:textArea class="form-control" name="description" value="${category.description}" />
@@ -108,6 +115,7 @@
                             </g:form>
                             <g:form class="form-inline" action="saveQualityFilter" useToken="true" style="display: inline-block;">
                                 <g:hiddenField name="id" value="${filter.id}"/>
+                                <g:hiddenField name="version" value="${filter.version}"/>
                                 <g:hiddenField name="qualityCategory" value="${category.id}" />
                                 <div class="form-group">
                                     <label for="filter">Description</label>
