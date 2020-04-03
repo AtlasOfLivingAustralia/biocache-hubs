@@ -130,6 +130,11 @@ class OccurrenceController {
             JSONObject searchResults = webServicesService.fullTextSearch(requestParams)
             def wsTime = (System.currentTimeMillis() - wsStart)
 
+            // If there's an error, treat it as an exception so error page can be shown
+            if (searchResults.status == 'ERROR') {
+                throw new Exception(searchResults.errorMessage)
+            }
+
             //create a facet lookup map
             Map groupedFacetsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
 
