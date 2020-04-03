@@ -32,31 +32,32 @@
             </div>
         </g:if>
         ${alatag.logMsg(msg:"Before grouped facets facets.gsp")}
-        <g:if test="${!searchRequestParams.disableAllQualityFilters}">
+        <g:if test="${!searchRequestParams.disableAllQualityFilters && qualityCategories}">
             <div class="facetGroupName" id="heading_data_quality">
                 <a href="#" class="showHideFacetGroup" data-name="data_quality"><span class="caret right-caret"></span> <g:message code="quality.filters.group.title" default="Quality filters"/></a>
             </div>
             <div class="facetsGroup" id="group_data_quality" style="display:none;">
 
-                <h4><span class="FieldName">Categories</span></h4>
+                <h4><span class="FieldName">Categories</span> <i class="fa fa-question-circle tooltips" title="Lorum ipsum... Some help text or a link goes here?"></i></h4>
                 <div class="subnavlist nano" style="clear:left">
                     <ul class="facets nano-content">
                         <g:each var="qualityCategory" in="${qualityCategories}">
                             <li>
                                 <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
                                 <g:if test="${qcDisabled}">
-                                    <g:link class="tooltips" title="${qualityCategory.description}" action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') - qualityCategory.label); it } }">
+                                    <alatag:linkQualityCategory enable="${true}" expand="${false}" category="${qualityCategory}" class="tooltips" title="${qualityCategory.description}">
                                         <span class="fa fa-square-o">&nbsp;</span>
-                                        <span class="facet-item">${qualityCategory.name} <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.id]}" format="#,###,###"/>)</span></span>
-                                    </g:link>
+                                        <span class="facet-item">${qualityCategory.name} <i class="fa fa-info-circle tooltips" title="${qualityFiltersByLabel[qualityCategory.label]}"></i> <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.id]}" format="#,###,###"/>)</span></span>
+                                    </alatag:linkQualityCategory>
+                                    <alatag:linkQualityCategory enable="${true}" expand="${true}" category="${qualityCategory}" class="tooltips" title="Click here to re-enable this data quality filter and remove its corresponding filter queries"><i class="fa fa-sign-in"></i></alatag:linkQualityCategory>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="tooltips" title="${qualityCategory.description}" action="${actionName}" params="${params.clone().with { it.put('disableQualityFilter', it.list('disableQualityFilter') + qualityCategory.label); it } }">
-                                        <span class="fa fa-check-square-o">&nbsp;</span>
-                                        <span class="facet-item">${qualityCategory.name} <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.id]}" format="#,###,###"/>)</span></span>
-                                    </g:link>
+                                    <alatag:linkQualityCategory enable="${false}" expand="${false}" category="${qualityCategory}" class="tooltips" title="${qualityCategory.description}">
+                                        <span class="fa fa-square-o">&nbsp;</span>
+                                        <span class="facet-item">${qualityCategory.name} <i class="fa fa-info-circle tooltips" title="${qualityFiltersByLabel[qualityCategory.label]}"></i> <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.id]}" format="#,###,###"/>)</span></span>
+                                    </alatag:linkQualityCategory>
+                                    <alatag:linkQualityCategory enable="${false}" expand="${true}" category="${qualityCategory}" class="tooltips" title="Click here to convert this data quality filter into separate filter queries you can modify"><i class="fa fa-sign-out"></i></alatag:linkQualityCategory>
                                 </g:else>
-                                <i class="fa fa-info-circle tooltips" title="${qualityFiltersByLabel[qualityCategory.label]}"></i>
                             </li>
                         </g:each>
                     </ul>

@@ -39,14 +39,14 @@ class WebServicesService {
     }
 
     JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
-        def result = invokeWithDataQualitySettingsApplied(requestParams) { newParams ->
+        def result = applyQualityFiltersToJsonRequest(requestParams) { newParams ->
             def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${newParams.getEncodedParams()}"
             getJsonElements(url)
         }
         return result
     }
 
-    private JSONObject invokeWithDataQualitySettingsApplied(SearchRequestParams requestParams, @ClosureParams(FirstParam) Closure<JSONObject> f) {
+    private JSONObject applyQualityFiltersToJsonRequest(SearchRequestParams requestParams, @ClosureParams(FirstParam) Closure<JSONObject> f) {
         SearchRequestParams newParams = convertSearchRequestParamsForDataQualitySettings(requestParams)
         JSONObject result = f(newParams)
         return convertSearchResultsForDataQualitySettings(newParams, result)
@@ -591,7 +591,7 @@ class WebServicesService {
     }
 
     JSONElement facetSearch(SearchRequestParams requestParams) {
-        def result = invokeWithDataQualitySettingsApplied(requestParams) { newParams ->
+        def result = applyQualityFiltersToJsonRequest(requestParams) { newParams ->
             newParams.pageSize = 0
             def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${newParams.getEncodedParams()}"
             getJsonElements(url)

@@ -15,6 +15,7 @@
 
 package au.org.ala.biocache.hubs
 
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang.StringUtils
@@ -963,5 +964,55 @@ class OccurrenceTagLib {
         log.warn "input = ${message}"
         log.warn "output = ${output}"
         out << output
+    }
+
+    /**
+     * Convert a data quality category into user filter queries or vice versa
+     *
+     * @attr category REQUIRED The QualityCategory to enable/disable in the link
+     * @attr enable REQUIRED Whether to enable or disable the QualityCategory in this link
+     * @attr expand REQUIRED Whether to expand (or contract) the QualityCategory into individual filter queries
+     */
+    def linkQualityCategory = { attrs, body ->
+
+        QualityCategory category = attrs.remove('category')
+        boolean enabled = attrs.remove('enable')
+        boolean expand = attrs.remove('expand')
+
+        GrailsParameterMap newParams = params.clone()
+        List<String> disables
+        List<String> filters = []
+        if (enabled) {
+            disables = params.list('disableQualityFilter') - category.label
+            if (expand) {
+                List<String> existingFilters = params.list('fq')
+                List<String> removedFilters = category.qualityFilters.findAll { it.enabled }*.filter
+                filters = existingFilters - removedFilters
+            }
+        } else {
+            disables = params.list('disableQualityFilter') + category.label
+            if (expand) {
+                filters = params.list('fq') + category.qualityFilters.findAll { it.enabled }*.filter
+            }
+        }
+        if (expand) {
+            if (filters) {
+                newParams.fq = filters
+            } else {
+                newParams.remove('fq')
+            }
+        }
+        if (disables) {
+            newParams.disableQualityFilter = disables
+        } else {
+            newParams.remove('disableQualityFilter')
+        }
+
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+        attrs.params = newParams
+
+        out << g.link(attrs, body)
     }
 }
