@@ -350,7 +350,7 @@ $(document).ready(function() {
     $("#downloadFacet").on("click", function(e) {
         var facetName = $("table#fullFacets").data("facet");
         //console.log('clicked ' + window.location.href );
-        window.location.href = BC_CONF.biocacheServiceUrl + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName + '&count=true&lookup=true';
+        window.location.href = BC_CONF.serverName + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName;
     });
 
     // form validation for form#facetRefineForm
@@ -734,6 +734,8 @@ function removeFilter(el) {
     var rad = $.url().param('radius');
     var taxa = $.url().param('taxa');
     var wkt = $.url().param('wkt');
+    var disableQualityFilter = $.url().param('disableQualityFilter');
+    var disableAllQualityFilters = $.url().param('disableAllQualityFilters');
     var paramList = [];
     if (q != null) {
         paramList.push("q=" + q);
@@ -745,6 +747,19 @@ function removeFilter(el) {
     }
 
     //console.log("1. fqList", fqList);
+
+    if (disableQualityFilter) {
+        if (typeof disableQualityFilter === "string") {
+            disableQualityFilter = [ disableQualityFilter ]
+        }
+        disableQualityFilter.forEach(function(value, index, array) {
+            paramList.push('disableQualityFilter=' + value);
+        })
+    }
+
+    if (disableAllQualityFilters) {
+        paramList.push('disableAllQualityFilters=' + disableAllQualityFilters);
+    }
 
     if (lat && lon && rad) {
         paramList.push("lat=" + lat);
@@ -1199,7 +1214,7 @@ function loadMoreFacets(facetName, displayName, fsort, foffset) {
 }
 
 function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets) {
-    var jsonUri = BC_CONF.biocacheServiceUrl + "/occurrences/search.json" + BC_CONF.searchString +
+    var jsonUri = BC_CONF.serverName + "/occurrences/facets" + BC_CONF.searchString +
         "&facets=" + facetName + "&flimit=" + facetLimit + "&foffset=" + foffset + "&pageSize=0"; // + "&fsort=" + fsort
 
     if (fsort) {

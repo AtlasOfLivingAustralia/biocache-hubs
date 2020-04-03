@@ -34,7 +34,7 @@
     <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
     var BC_CONF = {
         contextPath: "${request.contextPath}",
-            serverName: "${grailsApplication.config.serverName}${request.contextPath}",
+            serverName: "<g:createLink absolute="true" uri="" />",
             searchString: "${searchString}", //  JSTL var can contain double quotes // .encodeAsJavaScript()
             facetQueries: "${fqParams.encodeAsURL()}",
             facetDownloadQuery: "${searchString}",

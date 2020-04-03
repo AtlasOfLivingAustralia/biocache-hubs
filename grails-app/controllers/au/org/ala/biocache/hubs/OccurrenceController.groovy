@@ -15,7 +15,7 @@
 
 package au.org.ala.biocache.hubs
 
-import com.google.common.base.Stopwatch
+
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
@@ -419,6 +419,17 @@ class OccurrenceController {
             log.error ex.message, ex
             render view:'../error'
         }
+    }
+
+    def facets(SpatialSearchRequestParams requestParams) {
+        requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
+        render webServicesService.facetSearch(requestParams) as JSON
+    }
+
+    def facetsDownload(SpatialSearchRequestParams requestParams) {
+        requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
+        response.setHeader('Content-Disposition', 'attachment; filename="data.csv"')
+        render webServicesService.facetCSVDownload(requestParams), contentType: 'text/csv', fileName: 'data.csv'
     }
 
     /**
