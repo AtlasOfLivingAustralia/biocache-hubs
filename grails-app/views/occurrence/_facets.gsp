@@ -53,7 +53,7 @@
                                 </g:if>
                                 <g:else>
                                     <alatag:linkQualityCategory enable="${false}" expand="${false}" category="${qualityCategory}" class="tooltips" title="${qualityCategory.description}">
-                                        <span class="fa fa-square-o">&nbsp;</span>
+                                        <span class="fa fa-check-square-o">&nbsp;</span>
                                         <span class="facet-item">${qualityCategory.name} <i class="fa fa-info-circle tooltips" title="${qualityFiltersByLabel[qualityCategory.label]}"></i> <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.id]}" format="#,###,###"/>)</span></span>
                                     </alatag:linkQualityCategory>
                                     <alatag:linkQualityCategory enable="${false}" expand="${true}" category="${qualityCategory}" class="tooltips" title="Click here to convert this data quality filter into separate filter queries you can modify"><i class="fa fa-sign-out"></i></alatag:linkQualityCategory>
