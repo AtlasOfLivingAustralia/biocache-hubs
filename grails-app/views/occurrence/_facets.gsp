@@ -19,11 +19,13 @@
                 <h4><span class="FieldName"><alatag:message code="search.filters.heading" default="Current filters"/></span></h4>
                 <div class="subnavlist">
                     <ul id="refinedFacets">
-                        <g:each var="item" in="${sr.activeFacetMap}">
-                            <li><alatag:currentFilterItem item="${item}" addCheckBox="${true}"/></li>
+                        <g:each var="items" in="${sr.activeFacetObj}">
+                            <g:each var="item" in="${items.value}">
+                                <li><alatag:currentFilterItem key="${items.key}" value="${item}" facetValue="${item.value}" addCheckBox="${true}"/></li>
+                            </g:each>
                         </g:each>
-                        <g:if test="${sr.activeFacetMap?.size() > 1}">
-                            <li><a href="#" class="activeFilter" data-facet="all" title="Click to clear all filters">
+                        <g:if test="${sr.activeFacetObj?.any { it.value.size() > 1 }}">
+                            <li><a href="${alatag.createFilterItemLink(facet: 'all')}" class="activeFilter" title="Click to clear all filters">
                                 <span class="closeX" style="margin-left:7px;">&gt;&nbsp;</span><g:message code="facets.currentfilter.link" default="Clear all"/></a>
                             </li>
                         </g:if>

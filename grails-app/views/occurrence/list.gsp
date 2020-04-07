@@ -307,11 +307,13 @@
                     <g:if test="${sr.activeFacetMap?.size() > 0 || params.wkt || params.radius}">
                         <div class="activeFilters">
                             <b><alatag:message code="search.filters.heading" default="Current filters"/></b>:&nbsp;
-                            <g:each var="fq" in="${sr.activeFacetMap}">
-                                <g:if test="${fq.key}">
-                                    <g:set var="hasFq" value="${true}"/>
-                                    <alatag:currentFilterItem item="${fq}" cssClass="btn btn-default btn-xs" addCloseBtn="${true}"/>
-                                </g:if>
+                            <g:each var="items" in="${sr.activeFacetObj}">
+                                <g:each var="item" in="${items.value}">
+                                    <g:if test="${items.key}">
+                                        <g:set var="hasFq" value="${true}"/>
+                                        <alatag:currentFilterItem key="${items.key}" value="${item}" facetValue="${item.value}" cssClass="btn btn-default btn-xs" addCloseBtn="${true}"/>
+                                    </g:if>
+                                </g:each>
                             </g:each>
                             <g:if test="${params.wkt}"><%-- WKT spatial filter   --%>
                                 <g:set var="spatialType" value="${params.wkt =~ /^\w+/}"/>
@@ -326,11 +328,11 @@
                                     <span class="closeX">&times;</span>
                                 </a>
                             </g:elseif>
-                            <g:if test="${sr.activeFacetMap?.size() > 1}">
-                                <button class="btn btn-primary activeFilter btn-xs" data-facet="all"
-                                        title="Click to clear all filters"><span
+                            <g:if test="${sr.activeFacetObj?.any { it.value.size() > 1 }}">
+                                <a href="${alatag.createFilterItemLink(facet: 'all')}" class="btn btn-primary activeFilter btn-xs"
+                                   title="Click to clear all filters"><span
                                         class="closeX">&gt;&nbsp;</span><g:message code="list.resultsretuened.button01"
-                                                                                   default="Clear all"/></button>
+                                                                                   default="Clear all"/></a>
                             </g:if>
                         </div>
                     </g:if>
@@ -539,7 +541,8 @@
                         <div id="searchNavBar" class="pagination">
                             <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}"
                                         omitLast="true"
-                                        params="${[taxa: params.taxa, q: params.q, fq: params.fq, wkt: params.wkt, lat: params.lat, lon: params.lon, radius: params.radius]}"/>
+                                        params="${params.clone().with { it.remove('max'); it.remove('offset'); it } }"
+                            />
                         </div>
                     </div><!--end solrResults-->
                     <div id="mapView" class="tab-pane">

@@ -71,6 +71,9 @@ class WebServicesService {
     private JSONObject convertSearchResultsForDataQualitySettings(SearchRequestParams newParams, JSONObject result) {
         // Fix the results to remove the dqfqs from queryString and urlParams and active facets
         def activeFacetMapFilterLookup = result?.activeFacetMap?.collectEntries { k, v -> [(String.valueOf(k) + ':' + String.valueOf(v?.value)): k]} ?: [:]
+        def activeFacetObjFilterLookup = result?.activeFacetObj?.collectEntries { String k, List v ->
+            v.withIndex().collectEntries { element, index -> [(element.value ?: '') : [ key: k, idx: index]] }
+        } ?: [:]
         log.debug('{}', activeFacetMapFilterLookup)
         newParams.dqfq?.each { filter ->
             def encoded = URIUtil.encodeWithinQuery(filter) //simpleEncode(filter)
@@ -83,10 +86,16 @@ class WebServicesService {
             }
 
             def activeFacetMapKey = activeFacetMapFilterLookup[filter]
+            def activeFacetObjKey = activeFacetObjFilterLookup[filter]
 
             if (activeFacetMapKey) {
                 result?.activeFacetMap?.remove(activeFacetMapKey)
-                result?.activeFacetObjects?.remove(activeFacetMapKey)
+            }
+            if (activeFacetObjKey) {
+                def key = activeFacetObjKey.key
+                def idx = activeFacetObjKey.idx
+                def activeFacetList = result.activeFacetObj[key]
+                activeFacetList.remove(idx)
             }
         }
         String extraParams = newParams.disableQualityFilter.collect { "disableQualityFilter=$it" }.join('&')

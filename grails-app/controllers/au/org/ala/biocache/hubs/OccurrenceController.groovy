@@ -142,16 +142,34 @@ class OccurrenceController {
             Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)
 
             //remove qc from active facet map
-            if (params?.qc && searchResults?.activeFacetMap) {
-                def remove = null
-                searchResults?.activeFacetMap.each { k, v ->
-                    if (k + ':' + v?.value == params.qc) {
-                        remove = k
+            if (params?.qc) {
+                def qc = params.qc
+                if (searchResults?.activeFacetMap) {
+                    def remove = null
+                    searchResults?.activeFacetMap.each { k, v ->
+                        if (k + ':' + v?.value == qc) {
+                            remove = k
+                        }
+                    }
+                    if (remove) searchResults?.activeFacetMap?.remove(remove)
+                }
+
+                if (searchResults?.activeFacetObj) {
+                    def removeKey = null
+                    def removeIdx = null
+                    searchResults?.activeFacetObj.each { k, v ->
+                        def idx = v.findIndexOf { it.value == qc }
+                        if (idx > -1) {
+                            removeKey = k
+                            removeIdx = idx
+                        }
+                    }
+                    if (removeKey && removeIdx != null) {
+                        searchResults.activeFacetObj[removeKey].remove(removeIdx)
                     }
                 }
-                if (remove) searchResults?.activeFacetMap?.remove(remove)
-            }
 
+            }
 
             def hasImages = postProcessingService.resultsHaveImages(searchResults)
             if(grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()){

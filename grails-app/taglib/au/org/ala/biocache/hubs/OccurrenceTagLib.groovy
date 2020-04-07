@@ -40,7 +40,7 @@ class OccurrenceTagLib {
 
     //static defaultEncodeAs = 'html'
     //static encodeAsForTags = [tagName: 'raw']
-    static returnObjectForTags = ['getLoggerReasons','message']
+    static returnObjectForTags = ['getLoggerReasons','message','createFilterItemLink']
     static namespace = 'alatag'     // namespace for headers and footers
     static rangePattern = ~/\[\d+(\.\d+)? TO \d+(\.\d+)?\]/
 
@@ -142,17 +142,26 @@ class OccurrenceTagLib {
     /**
      * Generate HTML for current filters
      *
-     * @attr item REQUIRED
+     * @attr item the activeFacetMap map entry, required if no key and value provided
+     * @attr key String the filter key
+     * @attr value Map<String,String> the filter result json object
+     * @attr facetValue String the value the corresponds to the existing fq, defaults to $key:${value.value}
      * @attr addCheckBox Boolean
      * @attr cssClass String
      * @attr addCloseBtn Boolean
      */
     def currentFilterItem = { attrs ->
         def item = attrs.item
-        def filterLabel = item.value.displayName.replaceFirst(/^\-/, "") // remove leading "-" for exclude searches
-        def preFix = (item.value.displayName.startsWith('-')) ? "<span class='excludeFq'>[exclude]</span> " : ""
+        def key = attrs.key ?: item.key
+        def value = attrs.value ?: item.value
+        // activeFacetMap regenerates the original fq with key + ':' + value.value
+        // activeFacetObj the original fq is in value.value
+        // the caller can elect to provide facetValue or have it default to the activeFacetMap value
+        def facetValue = attrs.facetValue ?: key + ':' + value.value
+        def filterLabel = value.displayName.replaceFirst(/^\-/, "") // remove leading "-" for exclude searches
+        def preFix = (value.displayName.startsWith('-')) ? "<span class='excludeFq'>[exclude]</span> " : ""
         def fqLabel = preFix + filterLabel
-        String facetKey = item.key.replaceFirst("\\(","") // remove brace
+        String facetKey = key.replaceFirst("\\(","") // remove brace
         String i18nLabel = alatag.message(code: "facet.${facetKey}", default: "") // i18n lookup
 
         if (i18nLabel) {
@@ -160,20 +169,21 @@ class OccurrenceTagLib {
             fqLabel = fqLabel.replaceAll(facetKey, i18nLabel)
         }
 
+        String hrefValue = currentFilterItemLink(attrs, facetValue)
+
         def mb = new MarkupBuilder(out)
-        mb.a(   href:"#",
+        mb.a(   href: hrefValue,
                 class: "${attrs.cssClass} tooltips activeFilter",
                     title: alatag.message(code:"title.filter.remove", default:"Click to remove this filter"),
-                    "data-facet": facetKey
+//                    "data-facet": facetKey
                     //"data-facet":"${item.key}:${item.value.value.encodeAsURL()}",
-                    //onClick:"removeFacet(this); return false;"
             ) {
             if (attrs.addCheckBox) {
                 span(class:'fa fa-check-square-o') {
                     mkp.yieldUnescaped("&nbsp;")
                 }
             }
-            if (item.key.contains("occurrence_year")) {
+            if (key.contains("occurrence_year")) {
                 fqLabel = fqLabel.replaceAll(':',': ').replaceAll('occurrence_year', alatag.message(code: 'facet.occurrence_year', default:'occurrence_year'))
                 mkp.yieldUnescaped( fqLabel.replaceAll(/(\d{4})\-.*?Z/) { all, year ->
                     def year10 = year?.toInteger() + 10
@@ -189,6 +199,41 @@ class OccurrenceTagLib {
                 }
             }
         }
+    }
+
+    def createFilterItemLink = { attrs ->
+        return currentFilterItemLink(attrs, attrs.facet)
+    }
+
+    private String currentFilterItemLink(Map attrs, String facet) {
+        def fqList = params.list('fq')
+
+        List<String> newFqList
+        if (facet == "all") {
+            newFqList = []
+        } else {
+            def idx = fqList.findIndexOf { it == facet }
+            newFqList = new ArrayList<>(fqList)
+            newFqList.remove(idx)
+        }
+
+        GrailsParameterMap newParams = params.clone()
+        if (newFqList) {
+            newParams.fq = newFqList
+        } else {
+            newParams.remove('fq')
+        }
+
+        newParams.remove('startIndex')
+        newParams.remove('offset')
+        newParams.remove('max')
+
+        attrs.params = newParams
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+
+        createLink(attrs)
     }
 
     /**
@@ -985,9 +1030,11 @@ class OccurrenceTagLib {
         if (enabled) {
             disables = params.list('disableQualityFilter') - category.label
             if (expand) {
-                List<String> existingFilters = params.list('fq')
+                List<String> existingFilters = new ArrayList<String>(params.list('fq'))
                 List<String> removedFilters = category.qualityFilters.findAll { it.enabled }*.filter
-                filters = existingFilters - removedFilters
+                // TODO O(mn)
+                removedFilters.each { existingFilters.remove(it) }
+                filters = existingFilters
             }
         } else {
             disables = params.list('disableQualityFilter') + category.label
@@ -1011,6 +1058,9 @@ class OccurrenceTagLib {
         if (!attrs.action) {
             attrs.action = actionName
         }
+        newParams.remove('startIndex')
+        newParams.remove('offset')
+        newParams.remove('max')
         attrs.params = newParams
 
         out << g.link(attrs, body)
