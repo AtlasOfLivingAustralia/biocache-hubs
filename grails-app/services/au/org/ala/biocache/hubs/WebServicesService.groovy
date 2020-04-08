@@ -95,9 +95,10 @@ class WebServicesService {
                 def key = activeFacetObjKey.key
                 def idx = activeFacetObjKey.idx
                 def activeFacetList = result.activeFacetObj[key]
-                activeFacetList.remove(idx)
+                activeFacetList[idx] = null
             }
         }
+        result.activeFacetObj?.each { entry -> entry.value = entry.value.findAll { it != null } }
         String extraParams = newParams.disableQualityFilter.collect { "disableQualityFilter=$it" }.join('&')
         if (result.urlParameters) {
             result.urlParameters += extraParams ? '&' + extraParams : ''

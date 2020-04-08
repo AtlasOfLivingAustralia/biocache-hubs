@@ -14,7 +14,7 @@
             <g:set var="paramList" value=""/>
             <g:set var="queryParam" value="${sr.urlParameters.stripIndent(1)}" />
         </g:if>
-        <g:if test="${sr.activeFacetMap}">
+        <g:if test="${sr.activeFacetObj}">
             <div id="currentFilter">
                 <h4><span class="FieldName"><alatag:message code="search.filters.heading" default="Current filters"/></span></h4>
                 <div class="subnavlist">
@@ -24,7 +24,7 @@
                                 <li><alatag:currentFilterItem key="${items.key}" value="${item}" facetValue="${item.value}" addCheckBox="${true}"/></li>
                             </g:each>
                         </g:each>
-                        <g:if test="${sr.activeFacetObj?.any { it.value.size() > 1 }}">
+                        <g:if test="${sr.activeFacetObj?.collect { it.value.size() }.sum() > 1 }">
                             <li><a href="${alatag.createFilterItemLink(facet: 'all')}" class="activeFilter" title="Click to clear all filters">
                                 <span class="closeX" style="margin-left:7px;">&gt;&nbsp;</span><g:message code="facets.currentfilter.link" default="Clear all"/></a>
                             </li>
@@ -40,7 +40,7 @@
             </div>
             <div class="facetsGroup" id="group_data_quality" style="display:none;">
 
-                <h4><span class="FieldName">Categories</span> <i class="fa fa-question-circle tooltips" title="Lorum ipsum... Some help text or a link goes here?"></i></h4>
+                <h4><span class="FieldName">Categories</span></h4>
                 <div class="subnavlist nano" style="clear:left">
                     <ul class="facets nano-content">
                         <g:each var="qualityCategory" in="${qualityCategories}">

@@ -174,9 +174,7 @@ class OccurrenceTagLib {
         def mb = new MarkupBuilder(out)
         mb.a(   href: hrefValue,
                 class: "${attrs.cssClass} tooltips activeFilter",
-                    title: alatag.message(code:"title.filter.remove", default:"Click to remove this filter"),
-//                    "data-facet": facetKey
-                    //"data-facet":"${item.key}:${item.value.value.encodeAsURL()}",
+                title: alatag.message(code:"title.filter.remove", default:"Click to remove this filter")
             ) {
             if (attrs.addCheckBox) {
                 span(class:'fa fa-check-square-o') {
@@ -1021,28 +1019,29 @@ class OccurrenceTagLib {
     def linkQualityCategory = { attrs, body ->
 
         QualityCategory category = attrs.remove('category')
-        boolean enabled = attrs.remove('enable')
+        boolean enable = attrs.remove('enable')
         boolean expand = attrs.remove('expand')
 
         GrailsParameterMap newParams = params.clone()
         List<String> disables
-        List<String> filters = []
-        if (enabled) {
+        if (enable) {
             disables = params.list('disableQualityFilter') - category.label
-            if (expand) {
+        } else {
+            disables = params.list('disableQualityFilter') + category.label
+        }
+        if (expand) {
+            List<String> filters
+            if (enable) {
                 List<String> existingFilters = new ArrayList<String>(params.list('fq'))
                 List<String> removedFilters = category.qualityFilters.findAll { it.enabled }*.filter
                 // TODO O(mn)
                 removedFilters.each { existingFilters.remove(it) }
                 filters = existingFilters
             }
-        } else {
-            disables = params.list('disableQualityFilter') + category.label
-            if (expand) {
+            else {
                 filters = params.list('fq') + category.qualityFilters.findAll { it.enabled }*.filter
             }
-        }
-        if (expand) {
+
             if (filters) {
                 newParams.fq = filters
             } else {
