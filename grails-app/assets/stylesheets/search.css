@@ -956,11 +956,18 @@ span.red {
     margin-top: 5px;
     font-size: 14px;
     line-height: 2.0em;
+    border: 1px black solid;
 }
 
 .activeFilters .btn {
     /*font-size: 13px;*/
     margin: 2px 0;
+}
+
+.dq-active-filter-item {
+    font-size: 13px;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .closeX {

@@ -14,7 +14,7 @@
             <g:set var="paramList" value=""/>
             <g:set var="queryParam" value="${sr.urlParameters.stripIndent(1)}" />
         </g:if>
-        <g:if test="${sr.activeFacetObj}">
+        <g:if test="${sr.activeFacetObj?.values()?.any()}">
             <div id="currentFilter">
                 <h4><span class="FieldName"><alatag:message code="search.filters.heading" default="Current filters"/></span></h4>
                 <div class="subnavlist">
