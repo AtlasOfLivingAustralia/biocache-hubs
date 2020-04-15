@@ -1064,4 +1064,26 @@ class OccurrenceTagLib {
 
         out << g.link(attrs, body)
     }
+
+    def linkToggeleDQFilters = { attrs ->
+        GrailsParameterMap newParams = params.clone()
+        def cap = ""
+        if (params.disableAllQualityFilters) {
+            attrs.title = 'Click to re-enable Data Quality filters'
+            cap = 'Enable Quality filters'
+            newParams.remove('disableAllQualityFilters')
+        } else {
+            attrs.title = 'Click to disable All Data Quality filters'
+            cap = 'Disable All Quality filters'
+            newParams.put('disableAllQualityFilters', true)
+        }
+
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+
+        attrs.params = newParams
+
+        out << g.link(attrs, cap)
+    }
 }
