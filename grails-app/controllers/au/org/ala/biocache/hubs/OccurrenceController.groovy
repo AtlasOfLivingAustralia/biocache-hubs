@@ -180,6 +180,26 @@ class OccurrenceController {
             def qualityFiltersByLabel = qualityService.enabledFiltersByLabel
             def qualityExcludeCount = qualityService.getExcludeCount(qualityCategories, requestParams)
 
+            def disabled = requestParams.disableQualityFilter as Set
+
+            // map from category to filter names
+            // only those not disabled and have records excluded need to be highlighted
+            def categoryToKeyMap = qualityService.getGroupedEnabledFilters().findAll{ label, list ->
+                !disabled.contains(label) && qualityExcludeCount.get(label) != 0
+            }.collectEntries {label, list ->
+                def keys = list.collect { getKeysFromFilter(it) }.flatten()
+                keys.isEmpty() ? [:] : [(label) : keys as Set]
+            }
+
+            // all used default filter names
+            def keys = categoryToKeyMap.values().flatten() as Set
+
+            // map from DQ filter names to categories
+            def keyToCategoryMap = keys.collectEntries {[(it) : categoryToKeyMap.findAll {k, v -> v.contains(it)}.collect{ it.key }]}
+
+            // map from user fq to category
+            def userFqInteractCategory = requestParams.fq.collectEntries {[(it) : getKeysFromFilter(it).collect{ key -> keyToCategoryMap.get(key) }.findAll { it != null }.flatten() as Set] }.findAll { key, val -> !val.isEmpty() }
+
             log.debug "defaultFacets = ${defaultFacets}"
 
             [
@@ -200,7 +220,8 @@ class OccurrenceController {
                     wsTime: wsTime,
                     qualityCategories: qualityCategories,
                     qualityExcludeCount: qualityExcludeCount,
-                    qualityFiltersByLabel: qualityFiltersByLabel
+                    qualityFiltersByLabel: qualityFiltersByLabel,
+                    userFqInteractCategory: userFqInteractCategory
             ]
 
         } catch (Exception ex) {
@@ -208,6 +229,37 @@ class OccurrenceController {
             flash.message = "${ex.message}"
             render view:'../error'
         }
+    }
+
+    /**
+     * Parse a fq string to get a list of filter names
+     *
+     * @return filter names in the fq as Set
+     */
+    def getKeysFromFilter(String fq) {
+        int pos = 0
+        int start = 0
+        List keys = []
+        while ((pos = fq.indexOf(':', pos)) != -1) {
+            // ':' at pos
+            start = fq.lastIndexOf(' ', pos)
+            if (start == -1) {
+                keys.add(fq.substring(0, pos))
+            } else {
+                keys.add(fq.substring(start + 1, pos))
+            }
+            pos++
+        }
+
+        // the values in the keys can now be "-(xxx", "-xxx", "(xxx"
+        // need to remove '-' and '('
+        keys = keys.collect {
+            it = it.replace("(",  "")
+            if (it?.startsWith("-")) it = it.substring(1)
+            it
+        }
+
+        keys as Set
     }
 
     def taxa(String id) {

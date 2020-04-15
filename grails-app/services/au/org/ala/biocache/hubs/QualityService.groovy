@@ -129,7 +129,7 @@ class QualityService {
         def labels = qualityCategories*.label as Set
         def response = qualityCategories.collectEntries {
                     def otherLabels = (labels - it.label) as List
-                    [(it.id): totalRecords - countRecordsExcludedByLabel(otherLabels, requestParams) ]
+                    [(it.label): totalRecords - countRecordsExcludedByLabel(otherLabels, requestParams) ]
                 }
         log.error("Quality Category facet counts took {}", sw)
         return response
