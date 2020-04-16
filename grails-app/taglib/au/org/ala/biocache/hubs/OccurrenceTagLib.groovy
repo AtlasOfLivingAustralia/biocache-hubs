@@ -170,11 +170,11 @@ class OccurrenceTagLib {
         }
 
         String hrefValue = currentFilterItemLink(attrs, facetValue)
-
+        String cssClassInteractiveUserFq = attrs.cssTarget != null ? " colorInteractUfq" : ""
         def mb = new MarkupBuilder(out)
         mb.a(   href: hrefValue,
-                class: "${attrs.cssClass} tooltips activeFilter",
-                "data-target": "${attrs.cssTarget}",
+                class: "${attrs.cssClass} tooltips activeFilter" + cssClassInteractiveUserFq,
+                "data-target": attrs.cssTarget,
                 title: alatag.message(code:"title.filter.remove", default:"Click to remove this filter")
             ) {
             if (attrs.addCheckBox) {

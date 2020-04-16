@@ -198,7 +198,7 @@ class OccurrenceController {
             def keyToCategoryMap = keys.collectEntries {[(it) : categoryToKeyMap.findAll {k, v -> v.contains(it)}.collect{ it.key }]}
 
             // map from user fq to category
-            def userFqInteractCategory = requestParams.fq.collectEntries {[(it) : getKeysFromFilter(it).collect{ key -> keyToCategoryMap.get(key) }.findAll { it != null }.flatten() as Set] }.findAll { key, val -> !val.isEmpty() }
+            def userFqInteractDQCategory = requestParams.fq.collectEntries {[(it) : getKeysFromFilter(it).collect{ key -> keyToCategoryMap.get(key) }.findAll { it != null }.flatten() as Set] }.findAll { key, val -> !val.isEmpty() }
 
             log.debug "defaultFacets = ${defaultFacets}"
 
@@ -221,7 +221,7 @@ class OccurrenceController {
                     qualityCategories: qualityCategories,
                     qualityExcludeCount: qualityExcludeCount,
                     qualityFiltersByLabel: qualityFiltersByLabel,
-                    userFqInteractCategory: userFqInteractCategory
+                    userFqInteractDQCategory: userFqInteractDQCategory
             ]
 
         } catch (Exception ex) {
