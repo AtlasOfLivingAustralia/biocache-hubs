@@ -274,47 +274,48 @@
                         (<g:message code="list.taxa.notfound" args="${[params.taxa]}" default="(Note: no matched taxon name found for {0})"/>)
                     </g:if>
 
-                    <div class="activeFilters col-sm-12">
-                        <alatag:linkToggeleDQFilters class="btn btn-default btn-xs"/>
-                        <span class="pull-right"><a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse"><i class="fa fa-caret-down"></i></a></span><p><b><alatag:message code="quality.filters.heading" default="Quality filters applied"/></b>:</p>
+                    <g:if test="${qualityCategories}">
+                        <div class="activeFilters col-sm-12">
+                            <span class="pull-right"><a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse"><i class="fa fa-caret-down"></i></a></span><p><b><alatag:message code="quality.filters.heading" default="Quality filters applied"/></b>: <alatag:linkToggeleDQFilters class="btn btn-default btn-xs"/></p>
 
-                        <g:if test="${searchRequestParams.disableAllQualityFilters}">
-                            <div class="alert alert-warning alert-sm">
-                                <alatag:message code="quality.filters.disabled" default="Data Quality filters have been disabled for this search"/>
-                            </div>
-                        </g:if>
-                        <g:elseif test="${qualityCategories}">
-                            <div class="collapse in" id="dq-filters-collapse">
-                            <g:each var="qualityCategory" in="${qualityCategories}">
-                                <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
-                                <div class="col-sm-6 dq-active-filter-item">
-                                    <g:if test="${qcDisabled}">
-                                        <alatag:linkQualityCategory expand="${false}" enable="${true}" category="${qualityCategory}">
-                                            <i class="fa fa-square-o"></i>
-                                        </alatag:linkQualityCategory>
-                                        <alatag:linkQualityCategory expand="${true}" enable="${true}" category="${qualityCategory}">
-                                            <i class="fa fa-sign-in"></i>
-                                        </alatag:linkQualityCategory>
-                                    </g:if>
-                                    <g:else>
-                                        <alatag:linkQualityCategory expand="${false}" enable="${false}" category="${qualityCategory}">
-                                            <i class="fa fa-check-square-o"></i>
-                                        </alatag:linkQualityCategory>
-                                        <alatag:linkQualityCategory expand="${true}" enable="${false}" category="${qualityCategory}">
-                                            <i class="fa fa-sign-out"></i>
-                                        </alatag:linkQualityCategory>
-                                    </g:else>
-                                    <span title="${qualityCategory.description}">
-                                        <span class="colorInteractDQfq" id="${qualityCategory.label}">${qualityCategory.name}</span>
-                                        <span class="tooltips" title="${qualityFiltersByLabel[qualityCategory.label]}"><i class="fa fa-info-circle"></i></span>
-                                        <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
-                                        <alatag:message code="quality.filters.excludeCount" default="records excluded" />
-                                    </span>
+                            <g:if test="${searchRequestParams.disableAllQualityFilters}">
+                                <div class="alert alert-warning alert-sm">
+                                    <alatag:message code="quality.filters.disabled" default="Data Quality filters have been disabled for this search"/>
                                 </div>
-                            </g:each>
-                            </div>
-                        </g:elseif>
-                    </div>
+                            </g:if>
+                            <g:else>
+                                <div class="collapse in" id="dq-filters-collapse">
+                                <g:each var="qualityCategory" in="${qualityCategories}">
+                                    <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
+                                    <div class="col-sm-6 dq-active-filter-item">
+                                        <g:if test="${qcDisabled}">
+                                            <alatag:linkQualityCategory expand="${false}" enable="${true}" category="${qualityCategory}">
+                                                <i class="fa fa-square-o"></i>
+                                            </alatag:linkQualityCategory>
+                                            <alatag:linkQualityCategory expand="${true}" enable="${true}" category="${qualityCategory}">
+                                                <i class="fa fa-sign-in"></i>
+                                            </alatag:linkQualityCategory>
+                                        </g:if>
+                                        <g:else>
+                                            <alatag:linkQualityCategory expand="${false}" enable="${false}" category="${qualityCategory}">
+                                                <i class="fa fa-check-square-o"></i>
+                                            </alatag:linkQualityCategory>
+                                            <alatag:linkQualityCategory expand="${true}" enable="${false}" category="${qualityCategory}">
+                                                <i class="fa fa-sign-out"></i>
+                                            </alatag:linkQualityCategory>
+                                        </g:else>
+                                        <span title="${qualityCategory.description}">
+                                            <span class="colorInteractDQfq" id="${qualityCategory.label}">${qualityCategory.name}</span>
+                                            <span class="tooltips" title="${qualityFiltersByLabel[qualityCategory.label]}"><i class="fa fa-info-circle"></i></span>
+                                            <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
+                                            <alatag:message code="quality.filters.excludeCount" default="records excluded" />
+                                        </span>
+                                    </div>
+                                </g:each>
+                                </div>
+                            </g:else>
+                        </div>
+                    </g:if>
                     %{--<g:set var="hasFq" value="${false}"/>--}%
                     <g:if test="${sr.activeFacetObj?.values()?.any() || params.wkt || params.radius}">
                         <div class="activeFilters col-sm-12">
