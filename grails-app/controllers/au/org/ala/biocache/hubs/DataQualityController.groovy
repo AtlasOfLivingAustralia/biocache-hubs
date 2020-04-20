@@ -30,6 +30,11 @@ import org.supercsv.prefs.CsvPreference
 class DataQualityController {
     GrailsApplication grailsApplication
     def webServicesService
+    def qualityService
+
+    static responseFormats = [
+            list: ['json']
+    ]
 
     def index() {
         redirect action: "allCodes"
@@ -97,4 +102,23 @@ class DataQualityController {
 
         return processors
     }
+
+    def list() {
+        def flatten = params.boolean('flatten', false)
+        def categories = qualityService.enabledCategoriesAndFilters
+
+        if (flatten) {
+//            respond categories.collectMany { it.value*.filter }
+//            respond categories.collect { it.value*.filter.join(' AND ') }
+            respond categories.collectMany { category, filters ->
+                filters.collect { filter -> [ filter: filter.filter, category: category.label, title: filter.description ] }
+            }
+        } else {
+//            respond categories.collect { it.value*.filter }
+//            respond categories.collectEntries { category, filters -> [(category.label): filters*.filter.join (' AND ')] }
+//            respond categories.collectEntries { category, filters -> [(category.label): filters*.filter] }
+            respond categories.collectEntries { category, filters -> [(category.label): filters.collect { [filter: it.filter, title: it.description] } ] }
+        }
+    }
+
 }
