@@ -593,51 +593,6 @@ $(document).ready(function() {
         height *= 0.8
         $("#viewerContainerId").height(height);
     }
-
-    var colors = [
-        "#C10020", //# Vivid Red
-        "#007D34", //# Vivid Green
-        "#FF8E00", //# Vivid Orange Yellow
-        "#803E75", //# Strong Purple
-        "#93AA00", //# Vivid Yellowish Green
-        "#593315", //# Deep Yellowish Brown
-        "#00538A", //# Strong Blue
-        "#F6768E", //# Strong Purplish Pink
-        "#FF7A5C", //# Strong Yellowish Pink
-        "#53377A", //# Strong Violet
-        "#F13A13",// # Vivid Reddish Orange
-        "#B32851", //# Strong Purplish Red
-        "#7F180D", //# Strong Reddish Brown
-        "#232C16",// # Dark Olive Green
-        "#CEA262", //# Grayish Yellow
-        "#817066", //# Medium Gray
-        "#FF6800", //# Vivid Orange
-    ]
-
-    $('.colorInteractUfq').each(function(i, el) {
-        var target = $(el).data("target")
-        if (target != null) {
-            var color = colors[i % colors.length]
-            // set color of user fq
-            $(el).css('color', color)
-
-            // modify tooltip
-            var title = $(el).attr('title')
-            $(el).attr('title', 'This filter may conflict with these default quality filters: ' + target + '.' + title)
-
-            // remove surrounding []
-            if (target.length > 0 && target[0] === '[') target = target.substring(1)
-            if (target.length > 0 && target.slice(-1) === ']') target = target.substr(0, target.length - 1)
-
-            // the DQ categories it interacts with
-            var targets = target.split(", ")
-
-            // color each DQ category it interacts with
-            targets.forEach(function (value) {
-                $('.colorInteractDQfq#' + value).css("color", color)
-            })
-        }
-    })
 }); // end JQuery document ready
 
 /**

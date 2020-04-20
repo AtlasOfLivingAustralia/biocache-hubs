@@ -180,25 +180,7 @@ class OccurrenceController {
             def qualityFiltersByLabel = qualityService.enabledFiltersByLabel
             def qualityExcludeCount = qualityService.getExcludeCount(qualityCategories, requestParams)
 
-            def disabled = requestParams.disableQualityFilter as Set
-
-            // map from category to filter names
-            // only those not disabled and have records excluded need to be highlighted
-            def categoryToKeyMap = qualityService.getGroupedEnabledFilters().findAll{ label, list ->
-                !disabled.contains(label) && qualityExcludeCount.get(label) != 0
-            }.collectEntries {label, list ->
-                def keys = list.collect { getKeysFromFilter(it) }.flatten()
-                keys.isEmpty() ? [:] : [(label) : keys as Set]
-            }
-
-            // all used default filter names
-            def keys = categoryToKeyMap.values().flatten() as Set
-
-            // map from DQ filter names to categories
-            def keyToCategoryMap = keys.collectEntries {[(it) : categoryToKeyMap.findAll {k, v -> v.contains(it)}.collect{ it.key }]}
-
-            // map from user fq to category
-            def userFqInteractDQCategory = requestParams.fq.collectEntries {[(it) : getKeysFromFilter(it).collect{ key -> keyToCategoryMap.get(key) }.findAll { it != null }.flatten() as Set] }.findAll { key, val -> !val.isEmpty() }
+            def (userFqInteractDQNames, UserFQColors, DQColors) = processUserFQInteraction(requestParams, qualityExcludeCount)
 
             log.debug "defaultFacets = ${defaultFacets}"
 
@@ -221,7 +203,9 @@ class OccurrenceController {
                     qualityCategories: qualityCategories,
                     qualityExcludeCount: qualityExcludeCount,
                     qualityFiltersByLabel: qualityFiltersByLabel,
-                    userFqInteractDQCategory: userFqInteractDQCategory
+                    userFqInteractDQNames: userFqInteractDQNames,
+                    UserFQColors: UserFQColors,
+                    DQColors: DQColors
             ]
 
         } catch (Exception ex) {
@@ -229,6 +213,62 @@ class OccurrenceController {
             flash.message = "${ex.message}"
             render view:'../error'
         }
+    }
+
+    def processUserFQInteraction(requestParams, qualityExcludeCount) {
+        def disabled = requestParams.disableQualityFilter as Set
+
+        // map from category label to filter names
+        // only those not disabled and have records excluded need to be highlighted
+        def categoryToKeyMap = qualityService.getGroupedEnabledFilters().findAll { label, list ->
+            !disabled.contains(label) && qualityExcludeCount.get(label) != 0
+        }.collectEntries { label, list ->
+            def keys = list.collect { getKeysFromFilter(it) }.flatten()
+            keys.isEmpty() ? [:] : [(label): keys as Set]
+        }
+
+        // all used default filter names
+        def keys = categoryToKeyMap.values().flatten() as Set
+
+        // map from DQ filter names to categories labels
+        def keyToCategoryMap = keys.collectEntries { [(it): categoryToKeyMap.findAll { k, v -> v.contains(it) }.collect { it.key }] }
+
+        // map from user fq to category labels
+        def userFqInteractDQCategoryLabel = requestParams.fq.collectEntries { [(it): getKeysFromFilter(it).collect { key -> keyToCategoryMap.get(key) }.findAll { it != null }.flatten() as Set] }.findAll { key, val -> !val.isEmpty() }
+
+        // map from user fq to category names
+        def userFqInteractDQNames = userFqInteractDQCategoryLabel.collectEntries { [(it.key): it.value.collect { QualityCategory.findByLabel(it).name }.join(', ')] }
+
+        def colors = [
+                "#C10020", //# Vivid Red
+                "#007D34", //# Vivid Green
+                "#FF8E00", //# Vivid Orange Yellow
+                "#803E75", //# Strong Purple
+                "#93AA00", //# Vivid Yellowish Green
+                "#593315", //# Deep Yellowish Brown
+                "#00538A", //# Strong Blue
+                "#F6768E", //# Strong Purplish Pink
+                "#FF7A5C", //# Strong Yellowish Pink
+                "#53377A", //# Strong Violet
+                "#F13A13",// # Vivid Reddish Orange
+                "#B32851", //# Strong Purplish Red
+                "#7F180D", //# Strong Reddish Brown
+                "#232C16",// # Dark Olive Green
+                "#CEA262", //# Grayish Yellow
+                "#817066", //# Medium Gray
+                "#FF6800", //# Vivid Orange
+        ]
+
+        def DQColors = [:]
+        def UserFQColors = [:]
+
+        userFqInteractDQCategoryLabel.eachWithIndex {it, index ->
+            def color = colors[index % colors.size()]
+            UserFQColors.put(it.key, color)
+            it.value.each { DQColors.put(it, color) }
+        }
+
+        return [userFqInteractDQNames, UserFQColors, DQColors]
     }
 
     /**

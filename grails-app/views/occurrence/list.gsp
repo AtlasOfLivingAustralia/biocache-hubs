@@ -305,7 +305,7 @@
                                             </alatag:linkQualityCategory>
                                         </g:else>
                                         <span title="${qualityCategory.description}">
-                                            <span class="colorInteractDQfq" id="${qualityCategory.label}">${qualityCategory.name}</span>
+                                            <span style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
                                             <span class="tooltips" title="${qualityFiltersByLabel[qualityCategory.label]}"><i class="fa fa-info-circle"></i></span>
                                             <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
                                             <alatag:message code="quality.filters.excludeCount" default="records excluded" />
@@ -324,7 +324,7 @@
                                 <g:if test="${items.key}">
                                     <g:each var="item" in="${items.value}">
                                         <g:set var="hasFq" value="${true}"/>
-                                        <alatag:currentFilterItem key="${items.key}" value="${item}" facetValue="${item.value}" cssClass="btn btn-default btn-xs" cssTarget="${userFqInteractDQCategory.get(item.value)}" addCloseBtn="${true}"/>
+                                        <alatag:currentFilterItem key="${items.key}" value="${item}" facetValue="${item.value}" cssClass="btn btn-default btn-xs" cssColor="${UserFQColors[item.value]}" title="${userFqInteractDQNames[item.value]}" addCloseBtn="${true}"/>
                                     </g:each>
                                 </g:if>
                             </g:each>
