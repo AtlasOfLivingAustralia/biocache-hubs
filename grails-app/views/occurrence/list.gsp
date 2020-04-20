@@ -304,7 +304,7 @@
                                                 <i class="fa fa-sign-out"></i>
                                             </alatag:linkQualityCategory>
                                         </g:else>
-                                        <span title="${qualityCategory.description}">
+                                        <span title="${qualityCategory.description + (dqInteractFQs.containsKey(qualityCategory.label) ? (". This quality filter may conflict with these user selected filters: [" + dqInteractFQs[qualityCategory.label]) +"]": "")}">
                                             <span style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
                                             <span class="tooltips" title="${qualityFiltersByLabel[qualityCategory.label]}"><i class="fa fa-info-circle"></i></span>
                                             <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>

@@ -180,7 +180,7 @@ class OccurrenceController {
             def qualityFiltersByLabel = qualityService.enabledFiltersByLabel
             def qualityExcludeCount = qualityService.getExcludeCount(qualityCategories, requestParams)
 
-            def (userFqInteractDQNames, UserFQColors, DQColors) = processUserFQInteraction(requestParams, qualityExcludeCount)
+            def (userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors) = processUserFQInteraction(requestParams, qualityExcludeCount)
 
             log.debug "defaultFacets = ${defaultFacets}"
 
@@ -204,6 +204,7 @@ class OccurrenceController {
                     qualityExcludeCount: qualityExcludeCount,
                     qualityFiltersByLabel: qualityFiltersByLabel,
                     userFqInteractDQNames: userFqInteractDQNames,
+                    dqInteractFQs: dqInteractFQs,
                     UserFQColors: UserFQColors,
                     DQColors: DQColors
             ]
@@ -235,6 +236,9 @@ class OccurrenceController {
 
         // map from user fq to category labels
         def userFqInteractDQCategoryLabel = requestParams.fq.collectEntries { [(it): getKeysFromFilter(it).collect { key -> keyToCategoryMap.get(key) }.findAll { it != null }.flatten() as Set] }.findAll { key, val -> !val.isEmpty() }
+
+        def labels = userFqInteractDQCategoryLabel.collect { it.value }.flatten() as Set
+        def dqInteractFQs = labels.collectEntries { [(it) : userFqInteractDQCategoryLabel.findAll { k, v -> v.contains(it) }.collect { it.key }.join(', ')] }
 
         // map from user fq to category names
         def userFqInteractDQNames = userFqInteractDQCategoryLabel.collectEntries { [(it.key): it.value.collect { QualityCategory.findByLabel(it).name }.join(', ')] }
@@ -268,7 +272,7 @@ class OccurrenceController {
             it.value.each { DQColors.put(it, color) }
         }
 
-        return [userFqInteractDQNames, UserFQColors, DQColors]
+        return [userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors]
     }
 
     /**
