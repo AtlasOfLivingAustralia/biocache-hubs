@@ -220,9 +220,11 @@ class OccurrenceController {
         def disabled = requestParams.disableQualityFilter as Set
 
         // map from category label to filter names
-        // only those not disabled and have records excluded need to be highlighted
+        // Suppose there's a default quality filter occurrence_decade_i:[1900 TO *] and user has a filter occurrence_decade_i:[1990 TO *].
+        // In this case, the exclude count of the DQ filter is 0 since user filter returns a subset of what DQ filter returns.
+        // This means a user filter can interact with a DQ filter even when its exclude count == 0
         def categoryToKeyMap = qualityService.getGroupedEnabledFilters().findAll { label, list ->
-            !disabled.contains(label) && qualityExcludeCount.get(label) != 0
+            !disabled.contains(label)
         }.collectEntries { label, list ->
             def keys = list.collect { getKeysFromFilter(it) }.flatten()
             keys.isEmpty() ? [:] : [(label): keys as Set]
