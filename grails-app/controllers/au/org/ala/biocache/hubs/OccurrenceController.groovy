@@ -180,7 +180,7 @@ class OccurrenceController {
             def qualityFiltersByLabel = qualityService.enabledFiltersByLabel
             def qualityExcludeCount = qualityService.getExcludeCount(qualityCategories, requestParams)
 
-            def (userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors) = processUserFQInteraction(requestParams, qualityExcludeCount)
+            def (userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors) = processUserFQInteraction(requestParams, qualityExcludeCount, searchResults?.activeFacetObj)
 
             log.debug "defaultFacets = ${defaultFacets}"
 
@@ -216,7 +216,7 @@ class OccurrenceController {
         }
     }
 
-    def processUserFQInteraction(requestParams, qualityExcludeCount) {
+    def processUserFQInteraction(requestParams, qualityExcludeCount, activeFacetObj) {
         def disabled = requestParams.disableQualityFilter as Set
 
         // map from category label to filter names
@@ -238,7 +238,11 @@ class OccurrenceController {
         def userFqInteractDQCategoryLabel = requestParams.fq.collectEntries { [(it): getKeysFromFilter(it).collect { key -> keyToCategoryMap.get(key) }.findAll { it != null }.flatten() as Set] }.findAll { key, val -> !val.isEmpty() }
 
         def labels = userFqInteractDQCategoryLabel.collect { it.value }.flatten() as Set
-        def dqInteractFQs = labels.collectEntries { [(it) : userFqInteractDQCategoryLabel.findAll { k, v -> v.contains(it) }.collect { it.key }.join(', ')] }
+
+        // all user specified Facets
+        def grouped = activeFacetObj?.values().flatten()
+        // map from DQ category to translated user fqs
+        def dqInteractFQs = labels.collectEntries { [(it) : userFqInteractDQCategoryLabel.findAll { ufq, labellist -> labellist.contains(it) }.collect { ufq, labellist -> grouped?.find { facet -> facet.value == ufq}.displayName }.join(', ')] }
 
         // map from user fq to category names
         def userFqInteractDQNames = userFqInteractDQCategoryLabel.collectEntries { [(it.key): it.value.collect { QualityCategory.findByLabel(it).name }.join(', ')] }
