@@ -242,7 +242,7 @@ class OccurrenceController {
         def labels = userFqInteractDQCategoryLabel.collect { it.value }.flatten() as Set
 
         // all user specified Facets
-        def grouped = activeFacetObj?.values().flatten()
+        def grouped = activeFacetObj?.values()?.flatten()
         // map from DQ category to translated user fqs
         def dqInteractFQs = labels.collectEntries { [(it) : userFqInteractDQCategoryLabel.findAll { ufq, labellist -> labellist.contains(it) }.collect { ufq, labellist -> grouped?.find { facet -> facet.value == ufq}.displayName }.join(', ')] }
 
@@ -511,7 +511,7 @@ class OccurrenceController {
 
         searchResults?.facetResults?.each { fr ->
             if (fr.fieldName == 'species_guid') {
-                fg.guids = fr.fieldResult?.label // groovy does an implicit collect
+                fg.guids = fr.fieldResult?.label
             }
         }
 
