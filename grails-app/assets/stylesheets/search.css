@@ -970,6 +970,10 @@ span.red {
     padding-right: 0;
 }
 
+.visibility-hidden {
+    visibility: hidden;
+}
+
 .closeX {
     font-size: 15px;
     font-weight: bold;
