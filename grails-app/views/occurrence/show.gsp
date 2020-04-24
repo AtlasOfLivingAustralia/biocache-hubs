@@ -682,7 +682,7 @@
                 </p>
                 <p class="deleteAnnotation" style="display:block;">
                     <a class="deleteAnnotationButton btn btn-danger" href="#">
-                        <i class="glyphicon-remove"> </i> &nbsp;
+                        <i class="glyphicon glyphicon-remove"> </i> &nbsp;
                         <g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/>
                         <span class="deleteAssertionSubmitProgress" style="display:none;">
                             <asset:image src="indicator.gif" alt="indicator icon"/>
@@ -692,7 +692,7 @@
                 <g:if test="${isCollectionAdmin}">
                     <p class="verifyAnnotation" style="display:none;">
                         <a class="verifyAnnotationButton btn btn-default"  href="#verifyRecordModal" data-toggle="modal">
-                            <i class="glyphicon-thumbs-up"> </i> &nbsp;
+                            <i class="glyphicon glyphicon-thumbs-up"> </i> &nbsp;
                             <g:message code="show.userannotationtemplate.p03.navigator" default="Verify this annotation"/></a>
                     </p>
                 </g:if>
