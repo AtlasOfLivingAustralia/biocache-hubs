@@ -306,12 +306,38 @@
                                         </g:else>
                                         <span title="${qualityCategory.description + (dqInteractFQs.containsKey(qualityCategory.label) ? (". This quality filter may conflict with these user selected filters: [" + dqInteractFQs[qualityCategory.label]) +"]": "")}">
                                             <span style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
-                                            <span class="tooltips" title="${qualityFiltersByLabel[qualityCategory.label]}"><i class="fa fa-info-circle"></i></span>
+                                            <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-dqcategoryname="${qualityCategory.name}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-toggle="modal" role="button"><i class="fa fa-info-circle" title="${qualityFiltersByLabel[qualityCategory.label]}"></i></a>
                                             <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
                                             <alatag:message code="quality.filters.excludeCount" default="records excluded" />
                                         </span>
                                     </div>
                                 </g:each>
+                                    <div id="DQFilterDetails" class="modal fade " role="dialog"><
+                                        <div class="modal-dialog" role="document" id="DQDetailsModal">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                    <h3 id="fqdetail-heading"></h3>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    <p id="filter-value"></p>
+                                                    <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable">
+                                                        <thead class="fixedHeader">
+                                                        <tr>
+                                                            <th>Filter name</th>
+                                                            <th>Filter description</th>
+                                                            <th>Filter info</th>
+                                                        </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </g:else>
                         </div>

@@ -338,6 +338,100 @@ $(document).ready(function() {
         loadMoreFacets(facetName, displayName, null);
     });
 
+    $('.DQFilterDetailsLink').click(function() {
+        var link = this;
+        var fq = $(link).data("fq")
+
+        // to escape "
+        fq =  fq.replace(/[\""]/g, '')
+
+        var dqcategoryName = $(link).data("dqcategoryname")
+
+        // show filter name
+        $("#fqdetail-heading").text(dqcategoryName + ' quality filters')
+
+        var pos = 0
+        var start = 0
+        var keys = []
+        // get all filter keys
+        while ((pos = fq.indexOf(':', pos)) != -1) {
+            // ':' at pos
+            start = fq.lastIndexOf(' ', pos)
+            var key = ""
+            if (start == -1) {
+                key = fq.substring(0, pos)
+            } else {
+                key = fq.substring(start + 1, pos)
+            }
+
+            if (key.length > 0 && key[0] == '-') key = key.substr(1)
+            if (key.length > 0 && key[0] == '(') key = key.substr(1)
+            keys.push(key)
+            pos++
+        }
+
+        // remove duplicate
+        keys.splice(0, keys.length, ...(new Set(keys)))
+
+        // one AJAX request for each key
+        var requests = []
+        keys.forEach(function (key) {
+            requests.push(getField(key))
+        })
+
+        var numberOfResponse = keys.length
+
+        var map = {}
+        var successStatus = "success"
+
+        // when all requests finish (depending on the number of requests, the result
+        // structure is different, that's why there's numberOfResponse == 1)
+        // map = {fieldKey : [fieldDescription, fieldInfo]}
+        $.when.apply($, requests).done(function () {
+            if (numberOfResponse == 1) {
+                if (arguments[1] == successStatus) {
+                    map[arguments[0][0].name] = [arguments[0][0].description, arguments[0][0].info]
+                }
+            } else {
+                for (var i = 0; i < arguments.length; i++) {
+                    map[arguments[i][0][0].name] = [arguments[i][0][0].description, arguments[i][0][0].info]
+                }
+            }
+
+            var html = ""
+            $.each(keys, function (index, key) {
+                // color the field, add tooltip
+                fq = fq.replace(key, `<span style="color: #c44d34;cursor:pointer;" title="${map[key].join('. ')}">${key}</span>`)
+
+                // add a row in table
+                html += `<tr><td>${key}</td><td>${map[key][0]}</td><td style=\"word-break: break-all\">${replaceURL(map[key][1])}</td></tr>`
+            })
+
+            $('#spinnerRow').hide();
+            $('#DQDetailsModal .modal-body #filter-value').html("Filter applied: <i>fq=" + fq + "</i>")
+            // clear content
+            $("table#DQDetailsTable tbody").html("")
+            $("table#DQDetailsTable tbody").append(html)
+        })
+    })
+
+    function replaceURL(el) {
+        if (el.indexOf('http') == -1) return el
+
+        var start = el.indexOf('http')
+        var end = el.indexOf(' ', start)
+        if (end == -1) end = el.length - 1
+
+        var url = el.substr(start, end - start + 1)
+        el = el.replace(url, `<a href="${url}" target="_blank">${url}</a>`)
+        return el
+    }
+
+    function getField(key) {
+        var jsonUri = BC_CONF.biocacheServiceUrl + "/index/fields?fl=" + key
+        return $.getJSON(jsonUri)
+    }
+
     $('#multipleFacets').on('hidden.bs.modal', function () {
         // clear the tbody content
         $("tbody.scrollContent tr").not("#spinnerRow").remove();
