@@ -388,13 +388,15 @@ $(document).ready(function() {
         // structure is different, that's why there's numberOfResponse == 1)
         // map = {fieldKey : [fieldDescription, fieldInfo]}
         $.when.apply($, requests).done(function () {
-            if (numberOfResponse == 1) {
-                if (arguments[1] == successStatus) {
+            if (numberOfResponse === 1) {
+                if (successStatus === arguments[1]) {
                     map[arguments[0][0].name] = [arguments[0][0].description, arguments[0][0].info]
                 }
             } else {
                 for (var i = 0; i < arguments.length; i++) {
-                    map[arguments[i][0][0].name] = [arguments[i][0][0].description, arguments[i][0][0].info]
+                    if (successStatus === arguments[i][1]) {
+                        map[arguments[i][0][0].name] = [arguments[i][0][0].description, arguments[i][0][0].info]
+                    }
                 }
             }
 
