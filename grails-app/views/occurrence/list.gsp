@@ -289,18 +289,16 @@
                                     <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
                                     <div class="col-sm-6 dq-active-filter-item">
                                         <g:if test="${qcDisabled}">
-                                            <alatag:linkQualityCategory expand="${false}" enable="${true}" category="${qualityCategory}">
+                                            <alatag:linkQualityCategory class="tooltips" expand="${true}" enable="${true}" category="${qualityCategory}" title="${g.message(code: 'dq.pop.in', default: 'Re-enable this data quality filter and remove its corresponding filter queries')}">
                                                 <i class="fa fa-square-o"></i>
                                             </alatag:linkQualityCategory>
-                                            <alatag:linkQualityCategory expand="${true}" enable="${true}" category="${qualityCategory}">
-                                                <i class="fa fa-sign-in"></i>
-                                            </alatag:linkQualityCategory>
+                                            <i class="fa fa-sign-in visibility-hidden"></i>
                                         </g:if>
                                         <g:else>
-                                            <alatag:linkQualityCategory expand="${false}" enable="${false}" category="${qualityCategory}">
+                                            <alatag:linkQualityCategory class="tooltips" expand="${false}" enable="${false}" category="${qualityCategory}">
                                                 <i class="fa fa-check-square-o"></i>
                                             </alatag:linkQualityCategory>
-                                            <alatag:linkQualityCategory expand="${true}" enable="${false}" category="${qualityCategory}">
+                                            <alatag:linkQualityCategory expand="${true}" enable="${false}" category="${qualityCategory}" title="${g.message(code: 'dq.pop.out', default: 'Convert this data quality filter into separate filter queries you can modify')}">
                                                 <i class="fa fa-sign-out"></i>
                                             </alatag:linkQualityCategory>
                                         </g:else>
