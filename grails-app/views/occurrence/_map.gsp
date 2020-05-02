@@ -113,15 +113,16 @@
         defaultLongitude : "${grailsApplication.config.map.defaultLongitude?:'133.6'}",
         defaultZoom : "${grailsApplication.config.map.defaultZoom?:'4'}",
         overlays : {
-
-            <g:if test="${grailsApplication.config.map.overlay.url}">
-                //example WMS layer
-                "${grailsApplication.config.map.overlay.name?:'overlay'}" : L.tileLayer.wms("${grailsApplication.config.map.overlay.url}", {
-                    layers: 'ALA:ucstodas',
+            <g:if test="${grailsApplication.config.getProperty("map.overlay.url") && overlayList?.size > 0}">
+                <g:each in="${overlayList}" var="layer">
+                    "${layer.layerDisplayName?.encodeAsJs()?:'overlay'}" : L.tileLayer.wms("${grailsApplication.config.getProperty("map.overlay.url")}", {
+                    layers: 'ALA:${layer.layerName}',
                     format: 'image/png',
                     transparent: true,
-                    attribution: "${grailsApplication.config.map.overlay.name?:'overlay'}"
-                })
+                    opacity: ${grailsApplication.config.getProperty("map.overlay.opacity","0.5")},
+                    attribution: "${layer.source}"
+                }),
+                </g:each>
             </g:if>
 
         },
