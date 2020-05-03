@@ -974,6 +974,10 @@ span.red {
     visibility: hidden;
 }
 
+.cursor-pointer {
+    cursor: default;
+}
+
 .closeX {
     font-size: 15px;
     font-weight: bold;

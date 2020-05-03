@@ -302,9 +302,9 @@
                                                 <i class="fa fa-sign-out"></i>
                                             </alatag:linkQualityCategory>
                                         </g:else>
-                                        <span title="${qualityCategory.description + (dqInteractFQs.containsKey(qualityCategory.label) ? (". This quality filter may conflict with these user selected filters: [" + dqInteractFQs[qualityCategory.label]) +"]": "")}">
-                                            <span style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
-                                            <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-dqcategoryname="${qualityCategory.name}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-toggle="modal" role="button"><i class="fa fa-info-circle" title="${qualityFiltersByLabel[qualityCategory.label]}"></i></a>
+                                        <span>
+                                            <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteractFQs.containsKey(qualityCategory.label) ? (". This quality filter may conflict with these user selected filters: [" + dqInteractFQs[qualityCategory.label]) +"]": "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
+                                            <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-dqcategoryname="${qualityCategory.name}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="${g.message(code:"dq.filter.label", default: "Filter applied fq={0}", args:[qualityFiltersByLabel[qualityCategory.label]])}"></i></span></a>
                                             <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
                                             <alatag:message code="quality.filters.excludeCount" default="records excluded" />
                                         </span>
