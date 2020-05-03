@@ -7,6 +7,12 @@
     <asset:javascript src="jquery.js" />
     <asset:javascript src="bootbox/bootbox.min.js" />
     <asset:stylesheet src="admin.css" />
+    <style>
+    .smallpadding {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    </style>
 </head>
 <body>
 <div class="row">
@@ -108,57 +114,112 @@
                 <ul class="list-group">
                     <g:each in="${category.qualityFilters}" var="filter">
                         <li class="list-group-item ${!filter.enabled ? 'list-group-item-warning' : '' }">
-                            <g:form class="form-inline" style="display: inline-block;" useToken="true" action="enableQualityFilter">
-                                <g:hiddenField name="id" value="${filter.id}"/>
-                                <label class="sr-only">Enabled</label>
-                                <g:checkBox name="enabled" value="${filter.enabled}" />
-                            </g:form>
-                            <g:form class="form-inline" action="saveQualityFilter" useToken="true" style="display: inline-block;">
+                            <div>
+                                <g:form useToken="true" action="enableQualityFilter">
+                                    <g:hiddenField name="id" value="${filter.id}"/>
+                                    <label class="sr-only">Enabled</label>
+                                    <div class="row smallpadding">
+                                        <label form-control>Enable filter&nbsp;</label><g:checkBox name="enabled" value="${filter.enabled}" />
+                                    </div>
+                                </g:form>
+                            </div>
+                            <g:form action="saveQualityFilter" useToken="true" method="POST">
                                 <g:hiddenField name="id" value="${filter.id}"/>
                                 <g:hiddenField name="version" value="${filter.version}"/>
                                 <g:hiddenField name="qualityCategory" value="${category.id}" />
-                                <div class="form-group">
-                                    <label for="filter">Description</label>
-                                    <g:textField class="form-control" name="description" value="${filter.description}" />
+
+                                <div class="row">
+                                    <div class="col-md-2 smallpadding">
+                                        <label>Filter Description</label>
+                                    </div>
+                                    <div class="col-md-3 smallpadding">
+                                        <label>Filter Key</label>
+                                    </div>
+                                    <div class="col-md-2 smallpadding">
+                                        <label>Filter Value</label>
+                                    </div>
+                                    <div class="col-md-2 smallpadding">
+                                        <label>Generated fq</label>
+                                    </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="filter">Filter</label>
-                                    <g:textField class="form-control" name="filter" value="${filter.filter}" />
+                                <div class="row current-filter filter-row" data-fq="${filter.filter}">
+                                    <div class="col-md-2 smallpadding">
+                                        <g:textField class="form-control filterDescription" name="description" value="${filter.description}" data-orig="${filter.description}" style="width: 100%"/>
+                                    </div>
+                                    <div class="col-md-3 smallpadding" style="display: flex;">
+                                        <select class="form-control exclude" style="width: 30%">
+                                            <option value="Include">Include</option>
+                                            <option value="Exclude">Exclude</option>
+                                        </select>
+                                        <g:select class="form-control filterKey" name="filterKey" from="" style="width: 70%"/>
+                                    </div>
+                                    <div class="col-md-2 smallpadding">
+                                        <g:textField class="form-control filterValue" name="filterValue" style="width: 100%"/>
+                                    </div>
+                                    <div class="col-md-2 smallpadding">
+                                        <g:textField class="form-control filter" name="filter" value="${filter.filter}" data-orig="${filter.filter}" readonly="readonly" style="width: 100%"/>
+                                    </div>
+                                    <div class="col-md-3 smallpadding">
+                                        <button type="button" class="btn btn-sm btn-default btn-encode" title="URI encode">%3A</button>
+                                        <button type="button" class="btn btn-sm btn-default btn-decode" title="URI decode">:</button>
+                                        <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-save"></i></button>
+                                        <button type="reset" class="btn btn-sm btn-default"><i class="fa fa-refresh"></i></button>
+                                        <button type="submit" form="${filter.id}" class="btn btn-sm btn-danger" ><i class="fa fa-trash"></i></button>
+                                    </div>
                                 </div>
-
-                                <button type="button" class="btn btn-sm btn-default btn-encode" title="URI encode">%3A</button>
-                                <button type="button" class="btn btn-sm btn-default btn-decode" title="URI decode">:</button>
-                                <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-save"></i></button>
-                                <button type="reset" class="btn btn-sm btn-default"><i class="fa fa-refresh"></i></button>
                             </g:form>
-                            <g:form class="form-inline" action="deleteQualityFilter" useToken="true" style="display: inline-block;">
+                            <g:form class="form-inline" name="${filter.id}" action="deleteQualityFilter" useToken="true" style="display: inline-block;" method="post">
                                 <g:hiddenField name="id" value="${filter.id}"/>
-                                <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                             </g:form>
                         </li>
                     </g:each>
                     <li class="list-group-item">
-                        <g:form class="form-inline form-new-filter" useToken="true" action="saveQualityFilter">
+                        <g:form useToken="true" action="saveQualityFilter">
                             <g:hiddenField name="qualityCategory" value="${category.id}" />
-                            <div class="form-group">
-                                <label for="filter">Description</label>
-                                <g:textField class="form-control" name="description" placeholder="Short descriptive text" />
+                            <div class="row">
+                                <div class="col-md-2 smallpadding">
+                                    <label>Filter Description</label>
+                                </div>
+                                <div class="col-md-3 smallpadding">
+                                    <label>Filter Key</label>
+                                </div>
+                                <div class="col-md-2 smallpadding">
+                                    <label>Filter Value</label>
+                                </div>
+                                <div class="col-md-2 smallpadding">
+                                    <label>Generated fq</label>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="filter">Filter</label>
-                                <g:textField class="form-control" name="filter" placeholder="some-raw-filter" />
+                            <div class="row new-filter filter-row">
+                                <div class="col-md-2 smallpadding">
+                                    <g:textField class="form-control" name="description" placeholder="Filter Description" style="width: 100%"/>
+                                </div>
+                                <div class="col-md-3 smallpadding" style="display: flex">
+                                    <select class="form-control exclude" from="" style="width: 30%">
+                                        <option value="Include" selected="selected">Include</option>
+                                        <option value="Exclude">Exclude</option>
+                                    </select>
+                                    <g:select class="form-control filterKey" name="filterKey" style="width: 70%" from=""/>
+                                </div>
+                                <div class="col-md-2 smallpadding">
+                                    <g:textField class="form-control filterValue" name="filterValue" placeholder="Filter value" style="width: 100%"/>
+                                </div>
+                                <div class="col-md-2 smallpadding">
+                                    <g:textField class="form-control filter" name="filter" placeholder="Generated fq" readonly="readonly" style="width: 100%"/>
+                                </div>
+                                <div class="col-md-3 smallpadding">
+                                    <button type="button" class="btn btn-sm btn-default btn-encode" title="URI encode">%3A</button>
+                                    <button type="button" class="btn btn-sm btn-default btn-decode" title="URI decode">:</button>
+                                    <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-plus"></i></button>
+                                    <button type="reset" class="btn btn-sm btn-warning hidden"><i class="fa fa-close"></i></button>
+                                </div>
                             </div>
-                            <button type="button" class="btn btn-sm btn-default btn-encode" title="URI encode">%3A</button>
-                            <button type="button" class="btn btn-sm btn-default btn-decode" title="URI decode">:</button>
-                            <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-plus"></i></button>
-                            <button type="reset" class="btn btn-sm btn-warning hidden"><i class="fa fa-close"></i></button>
                         </g:form>
                     </li>
                 </ul>
             </div>
         </g:each>
-
     </div>
 </div>
 <div id="add-category-modal" class="modal fade" tabindex="-1" role="dialog">
@@ -194,6 +255,56 @@
 </div>
 </body>
 <asset:script type="text/javascript">
+    $(document).ready(function() {
+        var optionsKey = 'options'
+        var options = window.sessionStorage.getItem(optionsKey)
+        if (options == null) {
+            var urlForAvailableFilters = "${alatag.getBiocacheAjaxUrl()}" + "/index/fields"
+            $.getJSON(urlForAvailableFilters, function (data) {
+                if (data.length > 0) {
+                    $(".filterKey").empty();
+                    window.sessionStorage.setItem(optionsKey, JSON.stringify(data))
+                }
+                setControlValues(data)
+            })
+        } else {
+            setControlValues(JSON.parse(options))
+        }
+    })
+
+    function setControlValues(data) {
+        // populate filter field
+        $.each(data, function(i, el) {
+            var opt = $("<option value='" + el.name + "'>" + el.name + "</option>");
+            $('.filterKey').append(opt)
+        })
+
+        // populate fqs
+        var currentFilters = $('.current-filter')
+        $.each(currentFilters, function(i, el) {
+            setFQGroup(el)
+        })
+    }
+
+    function setFQGroup(fg) {
+        var fq = decodeFQ($(fg).data('fq'))[1]
+        var exclude = fq.length > 0 && fq[0] === '-'
+        if (exclude) {
+            fq = fq.substr(1)
+        }
+
+        var filterKey, filterValue
+        if (fq.length > 0) {
+            var idx = fq.indexOf(':')
+            filterKey = fq.substr(0, idx)
+            filterValue = fq.substr(idx + 1)
+        }
+
+        $('.exclude', $(fg)).val(exclude ? 'Exclude' : 'Include')
+        $('.filterKey', $(fg)).val(filterKey)
+        $('.filterValue', $(fg)).val(filterValue)
+    }
+
     // confirm delete a category with filters
     $('form[data-confirmation=true]').on('submit', function(e) {
         var $this = $(this);
@@ -252,22 +363,70 @@
         $body.find('.category-description-rw').addClass('hidden');
     });
     // Any change disables all other controls because this isn't a proper ajax app
-    $('input[type=text], textarea').not('#add-category-modal *').on('change input paste', function(e) {
+    $('input[type=text], textarea, select').not('#add-category-modal *').on('change input paste', function(e) {
         var $this = $(this);
         var $form = $this.closest('form');
-        $('form').not($form).find('button, input[type=button], input[type=text], input[type=checkbox], textarea').prop('disabled', true);
+        $('form').not($form).find('button, input[type=button], input[type=text], input[type=checkbox], textarea, select').prop('disabled', true);
         $('input[type=button], button').not($('form input[type=button], form button')).prop('disabled', true);
     });
     // Resetting form changes then re-enables all previously disabled controls
     $('input[type=reset], button[type=reset]').on('click', function(e) {
-        $('form').find('button, input[type=button], input[type=text], input[type=checkbox], textarea').prop('disabled', false);
+        $('form').find('button, input[type=button], input[type=text], input[type=checkbox], textarea, select').prop('disabled', false);
         $('input[type=button], button').not($('form input[type=button], form button')).prop('disabled', false);
     });
     // New filter form hide the reset button by default
-    $('.form-new-filter input[type=text]').on('change', function(e) {
+    $('.new-filter input[type=text], .new-filter select').on('change', function(e) {
         $(this).closest('form').find('button[type=reset]').removeClass('hidden');
     });
-    $('.form-new-filter button[type=reset]').on('click', function(e) {
+
+    // every time user select/change 'negate', 'filter key' or 'filter value', generate a new fq
+    $('.filter-row input[type=text], .filter-row select').on('change', generateFilterValue)
+    $('.filter-row input[name=filterValue]').on('input', generateFilterValue)
+
+    function generateFilterValue(e) {
+        var group = $(e.target).closest('.filter-row')
+        var exclude = $('.exclude', group).val()
+        var filterKey = $('.filterKey', group).val()
+        var filterVal = $('.filterValue', group).val()
+
+        var encodeTimes = decodeFQ($('.filter', group).val())[0]
+        var newFqVal = (exclude == 'Include' ? '' : '-') + filterKey + ':' + filterVal
+        // we need to encode it
+        while (encodeTimes > 0) {
+            newFqVal = encodeURIComponent(newFqVal)
+            encodeTimes--
+        }
+
+        $('#filter', group).val(newFqVal)
+    }
+
+    function decodeFQ(EncodedFq) {
+        var curentFQVal = EncodedFq
+        var decoded = ''
+        var encodeTimes = 0
+        do {
+            decoded = decodeURIComponent(curentFQVal)
+            if (decoded === curentFQVal) break;
+            encodeTimes++
+            curentFQVal = decoded
+        } while (true)
+
+        return [encodeTimes, decoded]
+    }
+
+    // to reset current filter values
+    $('.current-filter button[type=reset]').on('click', function(e) {
+        e.preventDefault();
+        var filtergroup = $(this).closest('.current-filter')
+        // reset description
+        $('.filterDescription', filtergroup).val($('.filterDescription', filtergroup).data('orig'))
+        // reset negate, filter key, filter value
+        setFQGroup(filtergroup)
+        // reset calculated fq
+        $('.filter', filtergroup).val($('.filter', filtergroup).data('orig'))
+    });
+
+    $('.new-filter button[type=reset]').on('click', function(e) {
         $(this).addClass('hidden');
     });
     $('input[type=checkbox][name=enabled]').on('change', function(e) {
