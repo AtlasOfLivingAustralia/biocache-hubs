@@ -515,6 +515,11 @@
         MAP_VAR.layerControl.addOverlay(layer, 'Occurrences');
         MAP_VAR.map.addLayer(layer);
         MAP_VAR.currentLayers.push(layer);
+
+        for (let key in MAP_VAR.overlays) {
+            MAP_VAR.map.addLayer(MAP_VAR.overlays[key]);
+        }
+
         return true;
     }
 
