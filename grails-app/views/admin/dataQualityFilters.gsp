@@ -114,15 +114,13 @@
                 <ul class="list-group">
                     <g:each in="${category.qualityFilters}" var="filter">
                         <li class="list-group-item ${!filter.enabled ? 'list-group-item-warning' : '' }">
-                            <div>
-                                <g:form useToken="true" action="enableQualityFilter">
-                                    <g:hiddenField name="id" value="${filter.id}"/>
-                                    <label class="sr-only">Enabled</label>
-                                    <div class="row smallpadding">
-                                        <label form-control>Enable filter&nbsp;</label><g:checkBox name="enabled" value="${filter.enabled}" />
-                                    </div>
-                                </g:form>
-                            </div>
+                            <g:form useToken="true" action="enableQualityFilter">
+                                <g:hiddenField name="id" value="${filter.id}"/>
+                                <label class="sr-only">Enabled</label>
+                                <div class="row smallpadding">
+                                    <label form-control>Enable filter&nbsp;</label><g:checkBox name="enabled" value="${filter.enabled}" />
+                                </div>
+                            </g:form>
                             <g:form action="saveQualityFilter" useToken="true" method="POST">
                                 <g:hiddenField name="id" value="${filter.id}"/>
                                 <g:hiddenField name="version" value="${filter.version}"/>
