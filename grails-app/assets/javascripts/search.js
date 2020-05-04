@@ -403,7 +403,7 @@ $(document).ready(function() {
             var html = ""
             $.each(keys, function (index, key) {
                 // color the field, add tooltip
-                fq = fq.replace(key, `<span style="color: #c44d34;cursor:pointer;" title="${map[key].join('. ')}">${key}</span>`)
+                fq = fq.replaceAll(key, `<span style="color: #c44d34;cursor:pointer;" title="${map[key].join('. ')}">${key}</span>`)
 
                 // add a row in table
                 html += `<tr><td>${key}</td><td>${map[key][0]}</td><td style=\"word-break: break-all\">${replaceURL(map[key][1])}</td></tr>`

@@ -327,6 +327,10 @@
                                                             <th>Filter description</th>
                                                             <th>Filter info</th>
                                                         </tr>
+
+                                                        <tr id="spinnerRow">
+                                                            <td colspan="3" style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
+                                                        </tr>
                                                         </thead>
 
                                                         <tbody>
