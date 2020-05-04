@@ -139,7 +139,7 @@
                                         <label>Filter Value</label>
                                     </div>
                                     <div class="col-md-2 smallpadding">
-                                        <label>Generated fq</label>
+                                        <label>Generated Filter</label>
                                     </div>
                                 </div>
 
@@ -188,7 +188,7 @@
                                     <label>Filter Value</label>
                                 </div>
                                 <div class="col-md-2 smallpadding">
-                                    <label>Generated fq</label>
+                                    <label>Generated Filter</label>
                                 </div>
                             </div>
                             <div class="row new-filter filter-row">
@@ -206,7 +206,7 @@
                                     <g:textField class="form-control filterValue" name="filterValue" placeholder="Filter value" style="width: 100%"/>
                                 </div>
                                 <div class="col-md-2 smallpadding">
-                                    <g:textField class="form-control filter" name="filter" placeholder="Generated fq" readonly="readonly" style="width: 100%"/>
+                                    <g:textField class="form-control filter" name="filter" placeholder="Generated Filter" readonly="readonly" style="width: 100%"/>
                                 </div>
                                 <div class="col-md-3 smallpadding">
                                     <button type="button" class="btn btn-sm btn-default btn-encode" title="URI encode">%3A</button>
