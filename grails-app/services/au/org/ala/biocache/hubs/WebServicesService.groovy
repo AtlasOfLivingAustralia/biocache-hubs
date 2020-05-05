@@ -330,6 +330,7 @@ class WebServicesService {
                 subset.layerDisplayName = it.displayname
                 subset.value = null
                 subset.classification1 = it.classification1
+                subset.source = it.source
                 subset.units = it.environmentalvalueunits
 
                 if (it.type == ENVIRONMENTAL) {
