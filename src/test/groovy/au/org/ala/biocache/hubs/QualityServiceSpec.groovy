@@ -142,4 +142,73 @@ class QualityServiceSpec extends Specification {
         result == "${qf11.filter} AND ${qf32.filter}"
     }
 
+    def 'test inverse filter'() {
+        setup:
+        QualityCategory qc1 = new QualityCategory(name: 'name', label: 'label', description: 'desc', enabled: true).save(flush: true, failOnError: true)
+        QualityFilter qf11 = new QualityFilter(description: 'label11', filter: 'a:b', enabled: true, qualityCategory: qc1).save(flush: true, failOnError: true)
+        QualityFilter qf12 = new QualityFilter(description: 'label12', filter: 'b:a', enabled: true, qualityCategory: qc1).save(flush: true, failOnError: true)
+        // not enabled
+        QualityFilter qf13 = new QualityFilter(description: 'label12', filter: 'z:y', enabled: false, qualityCategory: qc1).save(flush: true, failOnError: true)
+
+        QualityCategory qc2 = new QualityCategory(name: 'name2', label: 'label2', description: 'desc2', enabled: true).save(flush: true, failOnError: true)
+        QualityFilter qf21 = new QualityFilter(description: 'label21', filter: 'c:[0 TO 1]', enabled: true, qualityCategory: qc2).save(flush: true, failOnError: true)
+        QualityFilter qf22 = new QualityFilter(description: 'label22', filter: '-d:e', enabled: true, qualityCategory: qc2).save(flush: true, failOnError: true)
+        QualityFilter qf23 = new QualityFilter(description: 'label23', filter: '-e:f', enabled: true, qualityCategory: qc2).save(flush: true, failOnError: true)
+
+        QualityCategory qc3 = new QualityCategory(name: 'name3', label: 'label3', description: 'desc3', enabled: true).save(flush: true, failOnError: true)
+        QualityFilter qf31 = new QualityFilter(description: 'label31', filter: '-f:g', enabled: true, qualityCategory: qc3).save(flush: true, failOnError: true)
+
+        QualityCategory qc4 = new QualityCategory(name: 'name4', label: 'label4', description: 'desc4', enabled: true).save(flush: true, failOnError: true)
+        QualityFilter qf41 = new QualityFilter(description: 'label41', filter: '+f:g', enabled: true, qualityCategory: qc4).save(flush: true, failOnError: true)
+
+        QualityCategory qc5 = new QualityCategory(name: 'name5', label: 'label5', description: 'desc5', enabled: true).save(flush: true, failOnError: true)
+        QualityFilter qf51 = new QualityFilter(description: 'label51', filter: 'f:g', enabled: true, qualityCategory: qc5).save(flush: true, failOnError: true)
+
+        QualityCategory qc7 = new QualityCategory(name: 'name7', label: 'label7', description: 'desc7', enabled: true).save(flush: true, failOnError: true)
+        QualityFilter qf71 = new QualityFilter(description: 'label71', filter: '-c:[0 TO 1]', enabled: true, qualityCategory: qc7).save(flush: true, failOnError: true)
+        QualityFilter qf72 = new QualityFilter(description: 'label72', filter: 'd:e', enabled: true, qualityCategory: qc7).save(flush: true, failOnError: true)
+        QualityFilter qf73 = new QualityFilter(description: 'label73', filter: 'e:f', enabled: true, qualityCategory: qc7).save(flush: true, failOnError: true)
+
+
+        when:
+        // inverse a:b AND b:a
+        def result = service.getInverseCategoryFilter(qc1)
+
+        then:
+        result == '-a:b -b:a'
+
+        when:
+        // inverse c:[0 TO 1] AND -d:e AND -e:f
+        result = service.getInverseCategoryFilter(qc2)
+
+        then:
+        result == '-(-d:e -e:f AND c:[0 TO 1])'
+//        result == '-(+c:[0 TO 1] -d:e -e:f)'
+
+        when:
+        result = service.getInverseCategoryFilter(qc3)
+
+        then:
+        result == 'f:g'
+
+        when:
+        result = service.getInverseCategoryFilter(qc4)
+
+        then:
+        result == '-f:g'
+
+        when:
+        result = service.getInverseCategoryFilter(qc5)
+
+        then:
+        result == '-f:g'
+
+        when:
+        result = service.getInverseCategoryFilter(qc7)
+
+        then:
+        result == 'c:[0 TO 1] -d:e -e:f'
+
+    }
+
 }

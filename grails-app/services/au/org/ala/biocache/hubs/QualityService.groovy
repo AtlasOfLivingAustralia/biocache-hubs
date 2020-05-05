@@ -4,6 +4,17 @@ import com.google.common.base.Stopwatch
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import grails.transaction.Transactional
+import org.apache.lucene.analysis.Analyzer
+import org.apache.lucene.analysis.DelegatingAnalyzerWrapper
+import org.apache.lucene.analysis.TokenStream
+import org.apache.lucene.analysis.standard.StandardAnalyzer
+import org.apache.lucene.queryparser.flexible.precedence.PrecedenceQueryParser
+import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser
+import org.apache.lucene.search.BooleanClause
+import org.apache.lucene.search.BooleanQuery
+import org.apache.lucene.search.Query
+import org.apache.lucene.search.TermQuery
+import org.apache.lucene.search.TermRangeQuery
 
 import java.util.concurrent.TimeUnit
 
@@ -133,5 +144,60 @@ class QualityService {
                 }
         log.error("Quality Category facet counts took {}", sw)
         return response
+    }
+
+    @Transactional(readOnly = true)
+    String getInverseCategoryFilter(QualityCategory category) {
+        PrecedenceQueryParser qp = new PrecedenceQueryParser()
+        TermQuery
+        def filters = category.qualityFilters.findAll { it.enabled }*.filter
+        def filter = filters.join(' AND ')
+        Query query = qp.parse(filter, '')
+        String inverseQuery
+        switch (query) {
+            case BooleanQuery:
+                inverseQuery = inverseBooleanQuery(query, filter)
+                break
+            default:
+                inverseQuery = inverseOtherQuery(query)
+                break
+        }
+
+        return inverseQuery
+    }
+
+    private def inverseOtherQuery(Query query) {
+        return new BooleanQuery.Builder().add(query, BooleanClause.Occur.MUST_NOT).build().toString()
+    }
+
+    private def inverseBooleanQuery(BooleanQuery booleanQuery, String originalQuery) {
+        def clauses = booleanQuery.clauses()
+        if ( clauses.size() == 1) {
+            def first = clauses.first()
+            if (first.prohibited) {
+                return first.query.toString()
+            } else {
+                return inverseOtherQuery(first.query)
+            }
+        }
+
+        // SOLR will return different results for:
+        // 1) geospatial_kosher:"false" assertions:"habitatMismatch" -coordinate_uncertainty:[0+TO+10000]
+        // 2) geospatial_kosher:"false" OR assertions:"habitatMismatch" OR -coordinate_uncertainty:[0+TO+10000]
+        // 3) -(-geospatial_kosher:"false" -assertions:"habitatMismatch" +coordinate_uncertainty:[0+TO+10000])
+        // 4) -(-geospatial_kosher:"false" AND -assertions:"habitatMismatch" AND coordinate_uncertainty:[0+TO+10000])
+        //
+        // 4) gives the correct results for inverting
+        // -geospatial_kosher:"false" AND -assertions:"habitatMismatch" AND coordinate_uncertainty:[0+TO+10000]
+        // so if the boolean contains a should or must range query then we just wrap the original query in an exclude
+        if (clauses.any { clause -> clause.query instanceof TermRangeQuery && clause.occur != BooleanClause.Occur.MUST_NOT }) {
+            return "-(${originalQuery})"
+        } else {
+            def bqb = new BooleanQuery.Builder()
+            clauses.each { clause ->
+                bqb.add(clause.query, clause.prohibited ? BooleanClause.Occur.SHOULD : BooleanClause.Occur.MUST_NOT)
+            }
+            return bqb.build().toString()
+        }
     }
 }

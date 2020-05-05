@@ -37,6 +37,7 @@ class OccurrenceTagLib {
     def webServicesService
     def messageSourceCacheService
     def userService
+    def qualityService
 
     //static defaultEncodeAs = 'html'
     //static encodeAsForTags = [tagName: 'raw']
@@ -1010,6 +1011,31 @@ class OccurrenceTagLib {
         log.warn "input = ${message}"
         log.warn "output = ${output}"
         out << output
+    }
+
+    def invertQualityCategory = { attrs, body ->
+        QualityCategory category = attrs.remove('category')
+
+        GrailsParameterMap newParams = params.clone()
+        List<String> existingFilters = newParams.list('fq')
+
+        def inverseFilter = qualityService.getInverseCategoryFilter(category)
+        if (inverseFilter) {
+            existingFilters += inverseFilter
+        }
+        newParams.disableAllQualityFilters = true
+        newParams.fq = existingFilters
+
+
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+        newParams.remove('startIndex')
+        newParams.remove('offset')
+        newParams.remove('max')
+        attrs.params = newParams
+
+        out << g.link(attrs, body)
     }
 
     /**
