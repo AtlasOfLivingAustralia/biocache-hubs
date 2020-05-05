@@ -616,4 +616,9 @@ class WebServicesService {
         def result = getText(url)
         return result
     }
+
+    def getAllOccurrenceFields() {
+        def url = "${grailsApplication.config.biocache.baseUrl}/index/fields"
+        return getJsonElements(url)?.collect {it.name}
+    }
 }

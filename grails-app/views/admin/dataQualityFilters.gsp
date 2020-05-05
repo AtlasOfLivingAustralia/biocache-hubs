@@ -149,7 +149,7 @@
                                             <option value="Include">Include</option>
                                             <option value="Exclude">Exclude</option>
                                         </select>
-                                        <g:select class="form-control filterKey" name="filterKey" id="${filter.id + '-key'}" from="" style="width: 70%"/>
+                                        <g:select class="form-control filterKey" name="filterKey" id="${filter.id + '-key'}" from="${options}" value="abcd_type_status" style="width: 70%"/>
                                     </div>
                                     <div class="col-md-2 smallpadding">
                                         <g:textField class="form-control filterValue" name="filterValue" id="${filter.id + '-value'}" style="width: 100%"/>
@@ -195,7 +195,7 @@
                                         <option value="Include" selected="selected">Include</option>
                                         <option value="Exclude">Exclude</option>
                                     </select>
-                                    <g:select class="form-control filterKey" name="filterKey" id="${category.id + '-key'}" style="width: 70%" from=""/>
+                                    <g:select class="form-control filterKey" name="filterKey" id="${category.id + '-key'}" style="width: 70%" from="${options}"/>
                                 </div>
                                 <div class="col-md-2 smallpadding">
                                     <g:textField class="form-control filterValue" name="filterValue" id="${category.id + '-value'}" placeholder="Filter value" style="width: 100%"/>
@@ -249,29 +249,10 @@
 </body>
 <asset:script type="text/javascript">
     $(document).ready(function() {
-        var optionsKey = 'options';
-        var options = window.sessionStorage.getItem(optionsKey);
-        if (options == null) {
-            var urlForAvailableFilters = "${alatag.getBiocacheAjaxUrl()}" + "/index/fields";
-            $.getJSON(urlForAvailableFilters, function (data) {
-                if (data.length > 0) {
-                    $(".filterKey").empty();
-                    window.sessionStorage.setItem(optionsKey, JSON.stringify(data));
-                }
-                setControlValues(data);
-            })
-        } else {
-            setControlValues(JSON.parse(options));
-        }
+        setControlValues();
     })
 
-    function setControlValues(data) {
-        // populate filter field
-        $.each(data, function(i, el) {
-            var opt = $("<option value='" + el.name + "'>" + el.name + "</option>");
-            $('.filterKey').append(opt);
-        })
-
+    function setControlValues() {
         // populate fqs
         var currentFilters = $('.current-filter');
         $.each(currentFilters, function(i, el) {
