@@ -387,15 +387,16 @@ $(document).ready(function() {
         // when all requests finish (depending on the number of requests, the result
         // structure is different, that's why there's numberOfResponse == 1)
         // map = {fieldKey : [fieldDescription, fieldInfo]}
+        // description and info could be null so convert it to "" when it's null
         $.when.apply($, requests).done(function () {
             if (numberOfResponse === 1) {
                 if (successStatus === arguments[1]) {
-                    map[arguments[0][0].name] = [arguments[0][0].description, arguments[0][0].info]
+                    map[arguments[0][0].name] = [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].info ? arguments[0][0].info : ""]
                 }
             } else {
                 for (var i = 0; i < arguments.length; i++) {
                     if (successStatus === arguments[i][1]) {
-                        map[arguments[i][0][0].name] = [arguments[i][0][0].description, arguments[i][0][0].info]
+                        map[arguments[i][0][0].name] = [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].info ? arguments[i][0][0].info : ""]
                     }
                 }
             }
