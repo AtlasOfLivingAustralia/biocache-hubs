@@ -20,12 +20,13 @@ import org.grails.web.json.JSONObject
 
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
+import java.util.regex.Matcher
 
 /**
  * Service to perform processing of data between the DAO and View layers
  */
 class PostProcessingService {
-    def grailsApplication
+    def grailsApplication, webServicesService
 
     /**
      * Determine if the record contains images
@@ -440,5 +441,55 @@ class PostProcessingService {
         }
 
         modifiedRecord
+    }
+
+    /**
+     * Find any cl1234 or el1234 layer IDs in the q or fq params and return a list of layer IDs
+     *
+     * @param searchRequestParams
+     * @return List
+     */
+    List getListOfLayerIds(SpatialSearchRequestParams searchRequestParams) {
+        List layersList = [] // list of IDs
+        List queries = [] // list of q and fq query strings
+        queries.add(searchRequestParams.q) // q param
+        queries.addAll(searchRequestParams.fq) // array of fq params
+        log.debug "queries = ${queries}"
+
+        queries.each { String q ->
+            // regex for find el1234 and cl5678 IDs
+            Matcher layer = q =~ /^\-*([ec]l\d+)\:.*/
+
+            if (layer.matches()) {
+                String match = layer[0][1] // grab the captured text
+
+                if (match && match.length() > 3) {
+                    layersList.add(match)
+                }
+            }
+        }
+
+        layersList
+    }
+
+    /**
+     * For a given list of layer IDs (el1234 or cl456) do a lookup against spatial service
+     * for metadata for the layer ID and return a list of layer objects.
+     *
+     * @param layerIdsList
+     * @return List
+     */
+    List getListOfLayerObjects(List layerIdsList) {
+        List layerObjects = [] // list of final layer objects used to load layers via LeafletJS
+        Map layersMetaData = webServicesService.getLayersMetaData() // cached, so not blocking (after first run)
+
+        layerIdsList.each { String id ->
+            def layerObj = layersMetaData.get(id)
+            if (layerObj) {
+                layerObjects.add(layerObj)
+            }
+        }
+
+        layerObjects
     }
 }

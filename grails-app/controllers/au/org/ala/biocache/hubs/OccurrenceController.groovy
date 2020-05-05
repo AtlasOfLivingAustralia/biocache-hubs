@@ -162,7 +162,7 @@ class OccurrenceController {
                     selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: hasImages,
                     showSpeciesImages: false,
-                    overlayList: getListOfLayerObjects(getListOfLayerIds(requestParams)),
+                    overlayList: postProcessingService.getListOfLayerObjects(postProcessingService.getListOfLayerIds(requestParams)),
                     sort: requestParams.sort,
                     dir: requestParams.dir,
                     userId: authService?.getUserId(),
@@ -427,55 +427,5 @@ class OccurrenceController {
         combined.record = webServicesService.getRecord(id)
         combined.compareRecord = webServicesService.getCompareRecord(id)
         render combined as JSON
-    }
-
-    /**
-     * Find any cl1234 or el1234 layer IDs in the q or fq params and return a list of layer IDs
-     *
-     * @param searchRequestParams
-     * @return List
-     */
-    List getListOfLayerIds(SpatialSearchRequestParams searchRequestParams) {
-        List layersList = [] // list of IDs
-        List queries = [] // list of q and fq query strings
-        queries.add(searchRequestParams.q) // q param
-        queries.addAll(searchRequestParams.fq) // array of fq params
-        log.debug "queries = ${queries}"
-
-        queries.each { String q ->
-            // regex for find el1234 and cl5678 IDs
-            Matcher layer = q =~ /^\-*([ec]l\d+)\:.*/
-
-            if (layer.matches()) {
-                String match = layer[0][1] // grab the captured text
-
-                if (match && match.length() > 3) {
-                    layersList.add(match)
-                }
-            }
-        }
-
-        layersList
-    }
-
-    /**
-     * For a given list of layer IDs (el1234 or cl456) do a lookup against spatial service
-     * for metadata for the layer ID and return a list of layer objects.
-     *
-     * @param layerIdsList
-     * @return List
-     */
-    List getListOfLayerObjects(List layerIdsList) {
-        List layerObjects = [] // list of final layer objects used to load layers via LeafletJS
-        Map layersMetaData = webServicesService.getLayersMetaData() // cached, so not blocking (after first run)
-
-        layerIdsList.each { String id ->
-            def layerObj = layersMetaData.get(id)
-            if (layerObj) {
-                layerObjects.add(layerObj)
-            }
-        }
-
-        layerObjects
     }
 }
