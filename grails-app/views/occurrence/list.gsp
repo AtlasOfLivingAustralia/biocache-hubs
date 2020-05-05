@@ -75,7 +75,7 @@
 <asset:javascript src="ala/images-client.js"/>
 <asset:javascript src="leafletPlugins.js"/>
 <asset:javascript src="listThirdParty.js"/>
-<asset:javascript src="search.es6"/>
+<asset:javascript src="search.js"/>
 <asset:javascript src="mapCommon.js"/>
 <asset:javascript src="ala/ala-charts.js"/>
 
