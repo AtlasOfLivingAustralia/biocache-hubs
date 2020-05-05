@@ -24,7 +24,6 @@ import org.grails.web.json.JSONObject
 import au.org.ala.web.CASRoles
 
 import java.text.SimpleDateFormat
-import java.util.regex.Matcher
 
 /**
  * Controller for occurrence searches and records
