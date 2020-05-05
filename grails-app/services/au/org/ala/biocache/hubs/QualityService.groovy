@@ -152,6 +152,7 @@ class QualityService {
         TermQuery
         def filters = category.qualityFilters.findAll { it.enabled }*.filter
         def filter = filters.join(' AND ')
+        if (!filter) return ''
         Query query = qp.parse(filter, '')
         String inverseQuery
         switch (query) {
