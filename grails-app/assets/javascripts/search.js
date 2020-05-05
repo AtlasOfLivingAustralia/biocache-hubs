@@ -371,7 +371,7 @@ $(document).ready(function() {
         }
 
         // remove duplicate
-        keys.splice(0, keys.length, ...(new Set(keys)))
+        keys = removeDuplicates(keys)
 
         // one AJAX request for each key
         var requests = []
@@ -405,10 +405,9 @@ $(document).ready(function() {
             $.each(keys, function (index, key) {
                 // color the field, add tooltip
                 var re = new RegExp(key, 'g');
-                fq = fq.replace(re, `<span style="color: #c44d34;cursor:pointer;" title="${map[key].join('. ')}">${key}</span>`)
-
+                fq = fq.replace(re, '<span style="color: #c44d34;cursor:pointer;" title="' + map[key].join('. ') + '">' + key + "</span>")
                 // add a row in table
-                html += `<tr><td>${key}</td><td>${map[key][0]}</td><td style=\"word-break: break-all\">${replaceURL(map[key][1])}</td></tr>`
+                html += "<tr><td>" + key + "</td><td>" + map[key][0] + '</td><td style=\"word-break: break-all\">' + replaceURL(map[key][1]) + "</td></tr>"
             })
 
             $('#spinnerRow').hide();
@@ -419,6 +418,16 @@ $(document).ready(function() {
         })
     })
 
+    function removeDuplicates(data) {
+        var unique = [];
+        data.forEach(function(el) {
+            if (!unique.includes(el)) {
+                unique.push(el);
+            }
+        })
+        return unique;
+    }
+
     function replaceURL(el) {
         if (el.indexOf('http') == -1) return el
 
@@ -427,7 +436,7 @@ $(document).ready(function() {
         if (end == -1) end = el.length - 1
 
         var url = el.substr(start, end - start + 1)
-        el = el.replace(url, `<a href="${url}" target="_blank">${url}</a>`)
+        el = el.replace(url, '<a href="' + url + '" target="_blank">' + url + '</a>')
         return el
     }
 
