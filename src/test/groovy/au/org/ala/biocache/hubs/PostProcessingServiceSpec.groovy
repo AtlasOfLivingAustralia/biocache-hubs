@@ -96,4 +96,20 @@ class PostProcessingServiceSpec extends Specification {
         rec.get("Occurrence").find{ it.name == "stateConservation" }.get("processed")
     }
 
+    void "test getListOfLayerIds via data table"() {
+        expect:
+        service.getListOfLayerIds(new SpatialSearchRequestParams(q:q, fq:fq)) == ids
+
+        where:
+        q           | fq                    | ids
+        "cl10955:*" | []                    | ["cl10955"]
+        "cl10955:*" | ["el123:foo"]         | ["cl10955","el123"]
+        "element"   | ["cl10955:*"]         | ["cl10955"]
+        "el123a:*"  | ["el1234:*"]          | ["el1234"]
+        ""          | ["dl1234:*"]          | []
+        ""          | ["-cl1234:*"]         | ["cl1234"]
+        "dl1234:*"  | []                    | []
+        "dl1234:*"  | ["cl456:[* TO *]"]    | ["cl456"]
+        "*:*"       | ["el123:*","cl456:*"] | ["el123","cl456"]
+    }
 }
