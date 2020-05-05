@@ -116,9 +116,8 @@
                         <li class="list-group-item ${!filter.enabled ? 'list-group-item-warning' : '' }">
                             <g:form useToken="true" action="enableQualityFilter">
                                 <g:hiddenField name="id" value="${filter.id}"/>
-                                <label class="sr-only">Enabled</label>
                                 <div class="row smallpadding">
-                                    <label form-control>Enable filter&nbsp;</label><g:checkBox name="enabled" value="${filter.enabled}" />
+                                    <label form-control for="${filter.id + '-enabled'}">Enable filter&nbsp;</label><g:checkBox name="enabled" id="${filter.id + '-enabled'}" value="${filter.enabled}" />
                                 </div>
                             </g:form>
                             <g:form action="saveQualityFilter" useToken="true" method="POST">
@@ -128,39 +127,37 @@
 
                                 <div class="row">
                                     <div class="col-md-2 smallpadding">
-                                        <label>Filter Description</label>
+                                        <label for="${filter.id + '-description'}">Filter Description</label>
                                     </div>
                                     <div class="col-md-3 smallpadding">
-                                        <label>Filter Key</label>
+                                        <label for="${filter.id + '-key'}">Filter Key</label>
                                     </div>
                                     <div class="col-md-2 smallpadding">
-                                        <label>Filter Value</label>
+                                        <label for="${filter.id + '-value'}">Filter Value</label>
                                     </div>
-                                    <div class="col-md-2 smallpadding">
-                                        <label>Generated Filter</label>
+                                    <div class="col-md-3 smallpadding">
+                                        <label for="${filter.id + '-generated'}">Generated Filter</label>
                                     </div>
                                 </div>
 
                                 <div class="row current-filter filter-row" data-fq="${filter.filter}">
                                     <div class="col-md-2 smallpadding">
-                                        <g:textField class="form-control filterDescription" name="description" value="${filter.description}" data-orig="${filter.description}" style="width: 100%"/>
+                                        <g:textField class="form-control filterDescription" name="description" id="${filter.id + '-description'}" value="${filter.description}" data-orig="${filter.description}" style="width: 100%"/>
                                     </div>
                                     <div class="col-md-3 smallpadding" style="display: flex;">
                                         <select class="form-control exclude" style="width: 30%">
                                             <option value="Include">Include</option>
                                             <option value="Exclude">Exclude</option>
                                         </select>
-                                        <g:select class="form-control filterKey" name="filterKey" from="" style="width: 70%"/>
+                                        <g:select class="form-control filterKey" name="filterKey" id="${filter.id + '-key'}" from="" style="width: 70%"/>
                                     </div>
                                     <div class="col-md-2 smallpadding">
-                                        <g:textField class="form-control filterValue" name="filterValue" style="width: 100%"/>
-                                    </div>
-                                    <div class="col-md-2 smallpadding">
-                                        <g:textField class="form-control filter" name="filter" value="${filter.filter}" data-orig="${filter.filter}" readonly="readonly" style="width: 100%"/>
+                                        <g:textField class="form-control filterValue" name="filterValue" id="${filter.id + '-value'}" style="width: 100%"/>
                                     </div>
                                     <div class="col-md-3 smallpadding">
-                                        <button type="button" class="btn btn-sm btn-default btn-encode" title="URI encode">%3A</button>
-                                        <button type="button" class="btn btn-sm btn-default btn-decode" title="URI decode">:</button>
+                                        <g:textField class="form-control filter" name="filter" id="${filter.id + '-generated'}" value="${filter.filter}" data-orig="${filter.filter}" readonly="readonly" style="width: 100%"/>
+                                    </div>
+                                    <div class="col-md-2 smallpadding">
                                         <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-save"></i></button>
                                         <button type="reset" class="btn btn-sm btn-default"><i class="fa fa-refresh"></i></button>
                                         <button type="submit" form="${filter.id}" class="btn btn-sm btn-danger" ><i class="fa fa-trash"></i></button>
@@ -177,38 +174,36 @@
                             <g:hiddenField name="qualityCategory" value="${category.id}" />
                             <div class="row">
                                 <div class="col-md-2 smallpadding">
-                                    <label>Filter Description</label>
+                                    <label for="${category.id + '-description'}">Filter Description</label>
                                 </div>
                                 <div class="col-md-3 smallpadding">
-                                    <label>Filter Key</label>
+                                    <label for="${category.id + '-key'}">Filter Key</label>
                                 </div>
                                 <div class="col-md-2 smallpadding">
-                                    <label>Filter Value</label>
+                                    <label for="${category.id + '-value'}">Filter Value</label>
                                 </div>
-                                <div class="col-md-2 smallpadding">
-                                    <label>Generated Filter</label>
+                                <div class="col-md-3 smallpadding">
+                                    <label for="${category.id + '-generated'}">Generated Filter</label>
                                 </div>
                             </div>
                             <div class="row new-filter filter-row">
                                 <div class="col-md-2 smallpadding">
-                                    <g:textField class="form-control" name="description" placeholder="Filter Description" style="width: 100%"/>
+                                    <g:textField class="form-control" name="description" id="${category.id + '-description'}" placeholder="Filter Description" style="width: 100%"/>
                                 </div>
                                 <div class="col-md-3 smallpadding" style="display: flex">
                                     <select class="form-control exclude" from="" style="width: 30%">
                                         <option value="Include" selected="selected">Include</option>
                                         <option value="Exclude">Exclude</option>
                                     </select>
-                                    <g:select class="form-control filterKey" name="filterKey" style="width: 70%" from=""/>
+                                    <g:select class="form-control filterKey" name="filterKey" id="${category.id + '-key'}" style="width: 70%" from=""/>
                                 </div>
                                 <div class="col-md-2 smallpadding">
-                                    <g:textField class="form-control filterValue" name="filterValue" placeholder="Filter value" style="width: 100%"/>
-                                </div>
-                                <div class="col-md-2 smallpadding">
-                                    <g:textField class="form-control filter" name="filter" placeholder="Generated Filter" readonly="readonly" style="width: 100%"/>
+                                    <g:textField class="form-control filterValue" name="filterValue" id="${category.id + '-value'}" placeholder="Filter value" style="width: 100%"/>
                                 </div>
                                 <div class="col-md-3 smallpadding">
-                                    <button type="button" class="btn btn-sm btn-default btn-encode" title="URI encode">%3A</button>
-                                    <button type="button" class="btn btn-sm btn-default btn-decode" title="URI decode">:</button>
+                                    <g:textField class="form-control filter" name="filter" id="${category.id + '-generated'}" placeholder="Generated Filter" readonly="readonly" style="width: 100%"/>
+                                </div>
+                                <div class="col-md-2 smallpadding">
                                     <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-plus"></i></button>
                                     <button type="reset" class="btn btn-sm btn-warning hidden"><i class="fa fa-close"></i></button>
                                 </div>
@@ -254,19 +249,19 @@
 </body>
 <asset:script type="text/javascript">
     $(document).ready(function() {
-        var optionsKey = 'options'
-        var options = window.sessionStorage.getItem(optionsKey)
+        var optionsKey = 'options';
+        var options = window.sessionStorage.getItem(optionsKey);
         if (options == null) {
-            var urlForAvailableFilters = "${alatag.getBiocacheAjaxUrl()}" + "/index/fields"
+            var urlForAvailableFilters = "${alatag.getBiocacheAjaxUrl()}" + "/index/fields";
             $.getJSON(urlForAvailableFilters, function (data) {
                 if (data.length > 0) {
                     $(".filterKey").empty();
-                    window.sessionStorage.setItem(optionsKey, JSON.stringify(data))
+                    window.sessionStorage.setItem(optionsKey, JSON.stringify(data));
                 }
-                setControlValues(data)
+                setControlValues(data);
             })
         } else {
-            setControlValues(JSON.parse(options))
+            setControlValues(JSON.parse(options));
         }
     })
 
@@ -274,33 +269,33 @@
         // populate filter field
         $.each(data, function(i, el) {
             var opt = $("<option value='" + el.name + "'>" + el.name + "</option>");
-            $('.filterKey').append(opt)
+            $('.filterKey').append(opt);
         })
 
         // populate fqs
-        var currentFilters = $('.current-filter')
+        var currentFilters = $('.current-filter');
         $.each(currentFilters, function(i, el) {
-            setFQGroup(el)
+            setFQGroup(el);
         })
     }
 
     function setFQGroup(fg) {
-        var fq = decodeFQ($(fg).data('fq'))[1]
-        var exclude = fq.length > 0 && fq[0] === '-'
+        var fq = $(fg).data('fq');
+        var exclude = fq.length > 0 && fq[0] === '-';
         if (exclude) {
-            fq = fq.substr(1)
+            fq = fq.substr(1);
         }
 
-        var filterKey, filterValue
+        var filterKey, filterValue;
         if (fq.length > 0) {
-            var idx = fq.indexOf(':')
-            filterKey = fq.substr(0, idx)
-            filterValue = fq.substr(idx + 1)
+            var idx = fq.indexOf(':');
+            filterKey = fq.substr(0, idx);
+            filterValue = fq.substr(idx + 1);
         }
 
-        $('.exclude', $(fg)).val(exclude ? 'Exclude' : 'Include')
-        $('.filterKey', $(fg)).val(filterKey)
-        $('.filterValue', $(fg)).val(filterValue)
+        $('.exclude', $(fg)).val(exclude ? 'Exclude' : 'Include');
+        $('.filterKey', $(fg)).val(filterKey);
+        $('.filterValue', $(fg)).val(filterValue);
     }
 
     // confirm delete a category with filters
@@ -322,15 +317,6 @@
         if (!$label.val()) {
             $label.val($(this).val().toLowerCase().replace(' ', '-'));
         }
-    });
-    // URL encoder / decoder
-    $('.btn-encode').on('click', function(e) {
-        var $input = $(this).closest(':has(input[name=filter])').find('input[name=filter]');
-        $input.val(encodeURIComponent($input.val()));
-    });
-    $('.btn-decode').on('click', function(e) {
-        var $input = $(this).closest(':has(input[name=filter])').find('input[name=filter]');
-        $input.val(decodeURIComponent($input.val()));
     });
     // Edit category title / label
     $('.panel-title-ro .btn').on('click', function(e) {
@@ -378,50 +364,28 @@
     });
 
     // every time user select/change 'negate', 'filter key' or 'filter value', generate a new fq
-    $('.filter-row input[type=text], .filter-row select').on('change', generateFilterValue)
-    $('.filter-row input[name=filterValue]').on('input', generateFilterValue)
+    $('.filter-row input[type=text], .filter-row select').on('change', generateFilterValue);
+    $('.filter-row input[name=filterValue]').on('input', generateFilterValue);
 
     function generateFilterValue(e) {
-        var group = $(e.target).closest('.filter-row')
-        var exclude = $('.exclude', group).val()
-        var filterKey = $('.filterKey', group).val()
-        var filterVal = $('.filterValue', group).val()
-
-        var encodeTimes = decodeFQ($('.filter', group).val())[0]
-        var newFqVal = (exclude == 'Include' ? '' : '-') + filterKey + ':' + filterVal
-        // we need to encode it
-        while (encodeTimes > 0) {
-            newFqVal = encodeURIComponent(newFqVal)
-            encodeTimes--
-        }
-
-        $('#filter', group).val(newFqVal)
-    }
-
-    function decodeFQ(EncodedFq) {
-        var curentFQVal = EncodedFq
-        var decoded = ''
-        var encodeTimes = 0
-        do {
-            decoded = decodeURIComponent(curentFQVal)
-            if (decoded === curentFQVal) break;
-            encodeTimes++
-            curentFQVal = decoded
-        } while (true)
-
-        return [encodeTimes, decoded]
+        var group = $(e.target).closest('.filter-row');
+        var exclude = $('.exclude', group).val();
+        var filterKey = $('.filterKey', group).val();
+        var filterVal = $('.filterValue', group).val();
+        var newFqVal = (exclude == 'Include' ? '' : '-') + filterKey + ':' + filterVal;
+        $('.filter', group).val(newFqVal);
     }
 
     // to reset current filter values
     $('.current-filter button[type=reset]').on('click', function(e) {
         e.preventDefault();
-        var filtergroup = $(this).closest('.current-filter')
+        var filtergroup = $(this).closest('.current-filter');
         // reset description
-        $('.filterDescription', filtergroup).val($('.filterDescription', filtergroup).data('orig'))
+        $('.filterDescription', filtergroup).val($('.filterDescription', filtergroup).data('orig'));
         // reset negate, filter key, filter value
-        setFQGroup(filtergroup)
+        setFQGroup(filtergroup);
         // reset calculated fq
-        $('.filter', filtergroup).val($('.filter', filtergroup).data('orig'))
+        $('.filter', filtergroup).val($('.filter', filtergroup).data('orig'));
     });
 
     $('.new-filter button[type=reset]').on('click', function(e) {

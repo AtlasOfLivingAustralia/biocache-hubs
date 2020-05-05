@@ -312,7 +312,7 @@
                                         </span>
                                     </div>
                                 </g:each>
-                                    <div id="DQFilterDetails" class="modal fade " role="dialog"><
+                                    <div id="DQFilterDetails" class="modal fade " role="dialog">
                                         <div class="modal-dialog" role="document" id="DQDetailsModal">
                                             <div class="modal-content">
                                                 <div class="modal-header">
