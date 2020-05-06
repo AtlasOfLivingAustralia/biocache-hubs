@@ -962,6 +962,9 @@ span.red {
 .activeFilters .btn {
     /*font-size: 13px;*/
     margin: 2px 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dq-active-filter-item {

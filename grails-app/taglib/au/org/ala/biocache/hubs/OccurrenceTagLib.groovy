@@ -180,6 +180,11 @@ class OccurrenceTagLib {
                 style: color,
                 title: title
             ) {
+            if (attrs.addCloseBtn) {
+                span(class:'closeX pull-right') {
+                    mkp.yieldUnescaped("&times;")
+                }
+            }
             if (attrs.addCheckBox) {
                 span(class:'fa fa-check-square-o') {
                     mkp.yieldUnescaped("&nbsp;")
@@ -193,12 +198,6 @@ class OccurrenceTagLib {
                 })
             } else {
                 mkp.yieldUnescaped(alatag.message(code: fqLabel, default: fqLabel).replaceFirst(':',': '))
-            }
-            if (attrs.addCloseBtn) {
-                mkp.yieldUnescaped("&nbsp;")
-                span(class:'closeX') {
-                    mkp.yieldUnescaped("&times;")
-                }
             }
         }
     }
