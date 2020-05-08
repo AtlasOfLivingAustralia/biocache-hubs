@@ -161,6 +161,7 @@ class OccurrenceController {
                     selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: hasImages,
                     showSpeciesImages: false,
+                    overlayList: postProcessingService.getListOfLayers(requestParams),
                     sort: requestParams.sort,
                     dir: requestParams.dir,
                     userId: authService?.getUserId(),
