@@ -622,4 +622,23 @@ class WebServicesService {
         def url = "${grailsApplication.config.biocache.baseUrl}/index/fields"
         return getJsonElements(url)?.collect {it.name}
     }
+
+    def getMessagesPropertiesFile() {
+        def url = "${grailsApplication.config.biocache.baseUrl}/facets/i18n"
+
+        def map = [:]
+        def lineContent
+        // split text to get lines
+        def lines = getText(url).split("\\r?\\n")
+        lines?.each {
+            // if not comment
+            if (!it.startsWith('#')) {
+                lineContent = it.split('=')
+                if (lineContent.length == 2) {
+                    map[lineContent[0]] = lineContent[1]
+                }
+            }
+        }
+        return map
+    }
 }

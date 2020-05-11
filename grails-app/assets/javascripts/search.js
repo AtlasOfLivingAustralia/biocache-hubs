@@ -346,6 +346,7 @@ $(document).ready(function() {
         fq =  fq.replace(/[\""]/g, '')
 
         var dqcategoryName = $(link).data("dqcategoryname")
+        var dqtranslation = $(link).data("translation")
 
         // show filter name
         $("#fqdetail-heading").text(dqcategoryName + ' quality filters')
@@ -408,6 +409,11 @@ $(document).ready(function() {
                 fq = fq.replace(re, '<span style="color: #c44d34;cursor:pointer;" title="' + map[key].join('. ') + '">' + key + "</span>")
                 // add a row in table
                 html += "<tr><td>" + key + "</td><td>" + map[key][0] + '</td><td style=\"word-break: break-all\">' + replaceURL(map[key][1]) + "</td></tr>"
+            })
+
+            $.each(dqtranslation, function(key, val) {
+                // replace :value so same value appears in field info/description won't be replaced
+                fq = fq.replace(":" + key, '<span style="color: #53377A;cursor:pointer;" title="' + val + '">' + ":" + key + "</span>")
             })
 
             $('#spinnerRow').hide();

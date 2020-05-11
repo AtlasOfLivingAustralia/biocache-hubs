@@ -182,6 +182,8 @@ class OccurrenceController {
 
             def (userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors) = processUserFQInteraction(requestParams, qualityExcludeCount, searchResults?.activeFacetObj)
 
+            def translatedFilterMap = translateValues(qualityService.getGroupedEnabledFilters(), webServicesService.getMessagesPropertiesFile())
+
             log.debug "defaultFacets = ${defaultFacets}"
 
             [
@@ -191,6 +193,7 @@ class OccurrenceController {
                     groupedFacets: groupedFacets,
                     groupedFacetsMap: groupedFacetsMap,
                     dynamicFacets: dynamicFacets,
+                    translatedFilterMap: translatedFilterMap,
                     selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: hasImages,
                     showSpeciesImages: false,
@@ -284,6 +287,56 @@ class OccurrenceController {
         }
 
         return [userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors]
+    }
+
+    def translateValues(qualityFiltersByLabel, map) {
+        def translatedFilterMap = [:]
+        qualityFiltersByLabel.each { label, filters ->
+            def translatedFilters = [:]
+            filters.each { filter ->
+                def rslt = parseSimpleFq(filter, map)
+                if (rslt != null) {
+                    translatedFilters[rslt[0]] = rslt[1]
+                }
+            }
+
+            if (!translatedFilters.isEmpty()) {
+                // need a json object here so that it can be passed to html element as data-* attribute
+                translatedFilterMap[label] = new JSONObject(translatedFilters)
+            }
+        }
+        translatedFilterMap
+    }
+
+    /**
+     * To lookup translation of a filter value
+     *
+     * @return null if no translation found. [value, translation] otherwise
+     */
+
+    def parseSimpleFq(String fq, lookupMap) {
+        def idx = fq.indexOf(':')
+        if (idx == -1) return null
+
+        // to extract field and value (with leading " and surrounding '()' '""' removed)
+        // then look up translation
+        String key = fq.substring(0, idx)
+        String value = fq.substring(idx + 1)
+        if (key.length() > 0 && key[0] == '-') key = key.substring(1)
+        if ((key.length() > 0 && key[0] == '(') && (value.length() > 0 && value[value.length() - 1] == ')')) {
+            key = key.substring(1)
+            value = value.substring(0, value.length() - 1)
+        }
+
+        if (value.length() >= 2 && value[0] == '"' && value[value.length() - 1] == '"') value = value.substring(1, value.length() - 1)
+
+        def lookup = key + '.' + value
+
+        def retVal = lookupMap.get(lookup)
+        if (retVal == null) {
+            retVal = lookupMap.get(value)
+        }
+        return retVal != null ? [value, retVal] : null
     }
 
     /**
