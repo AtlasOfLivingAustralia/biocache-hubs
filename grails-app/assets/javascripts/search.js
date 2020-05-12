@@ -382,7 +382,7 @@ $(document).ready(function() {
 
         var numberOfResponse = keys.length
 
-        var map = {}
+        var map = new Map()
         var successStatus = "success"
 
         // when all requests finish (depending on the number of requests, the result
@@ -391,24 +391,26 @@ $(document).ready(function() {
         // description and info could be null so convert it to "" when it's null
         $.when.apply($, requests).done(function () {
             if (numberOfResponse === 1) {
-                if (successStatus === arguments[1]) {
-                    map[arguments[0][0].name] = [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].info ? arguments[0][0].info : ""]
+                if (successStatus === arguments[1] && arguments[0].length > 0) {
+                    map.set(arguments[0][0].name, [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].info ? arguments[0][0].info : ""])
                 }
             } else {
                 for (var i = 0; i < arguments.length; i++) {
-                    if (successStatus === arguments[i][1]) {
-                        map[arguments[i][0][0].name] = [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].info ? arguments[i][0][0].info : ""]
+                    if (successStatus === arguments[i][1] && arguments[i][0].length > 0) {
+                        map.set(arguments[i][0][0].name, [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].info ? arguments[i][0][0].info : ""])
                     }
                 }
             }
 
             var html = ""
             $.each(keys, function (index, key) {
-                // color the field, add tooltip
-                var re = new RegExp(key, 'g');
-                fq = fq.replace(re, '<span style="color: #c44d34;cursor:pointer;" title="' + map[key].join('. ') + '">' + key + "</span>")
-                // add a row in table
-                html += "<tr><td>" + key + "</td><td>" + map[key][0] + '</td><td style=\"word-break: break-all\">' + replaceURL(map[key][1]) + "</td></tr>"
+                if (map.has(key)) {
+                    // color the field, add tooltip
+                    var re = new RegExp(key, 'g');
+                    fq = fq.replace(re, '<span style="color: #c44d34;cursor:pointer;" title="' + map.get(key).join('. ') + '">' + key + "</span>")
+                    // add a row in table
+                    html += "<tr><td>" + key + "</td><td>" + map.get(key)[0] + '</td><td style=\"word-break: break-all\">' + replaceURL(map.get(key)[1]) + "</td></tr>"
+                }
             })
 
             $.each(dqtranslation, function(key, val) {
@@ -447,6 +449,7 @@ $(document).ready(function() {
     }
 
     function getField(key) {
+        //var jsonUri = "https://biocache-ws.ala.org.au/ws/index/fields?fl=" + key
         var jsonUri = BC_CONF.biocacheServiceUrl + "/index/fields?fl=" + key
         return $.getJSON(jsonUri)
     }
