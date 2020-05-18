@@ -176,13 +176,13 @@ class OccurrenceController {
                 hasImages = true
             }
 
-            def qualityCategories = QualityCategory.findAllByEnabled(true)
-            def qualityFiltersByLabel = qualityService.enabledFiltersByLabel
+            def qualityCategories = qualityService.findAllEnabledCategories(requestParams.qualityProfile)
+            def qualityFiltersByLabel = qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile)
             def qualityExcludeCount = qualityService.getExcludeCount(qualityCategories, requestParams)
 
             def (userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors) = processUserFQInteraction(requestParams, qualityExcludeCount, searchResults?.activeFacetObj)
 
-            def translatedFilterMap = translateValues(qualityService.getGroupedEnabledFilters(), webServicesService.getMessagesPropertiesFile())
+            def translatedFilterMap = translateValues(qualityService.getGroupedEnabledFilters(requestParams.qualityProfile), webServicesService.getMessagesPropertiesFile())
 
             log.debug "defaultFacets = ${defaultFacets}"
 
@@ -210,7 +210,9 @@ class OccurrenceController {
                     userFqInteractDQNames: userFqInteractDQNames,
                     dqInteractFQs: dqInteractFQs,
                     UserFQColors: UserFQColors,
-                    DQColors: DQColors
+                    DQColors: DQColors,
+                    activeProfile: qualityService.activeProfile(requestParams.qualityProfile),
+                    qualityProfiles: QualityProfile.findAllByEnabled(true)
             ]
 
         } catch (Exception ex) {
@@ -230,7 +232,7 @@ class OccurrenceController {
         def categoryToKeyMap = [:]
 
         if (!requestParams.disableAllQualityFilters) {
-            categoryToKeyMap = qualityService.getGroupedEnabledFilters().findAll { label, list ->
+            categoryToKeyMap = qualityService.getGroupedEnabledFilters(requestParams.qualityProfile).findAll { label, list ->
                 !disabled.contains(label)
             }.collectEntries { label, list ->
                 def keys = list.collect { getKeysFromFilter(it) }.flatten()

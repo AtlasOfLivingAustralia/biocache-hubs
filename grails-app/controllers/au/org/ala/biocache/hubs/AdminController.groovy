@@ -15,8 +15,6 @@
 
 package au.org.ala.biocache.hubs
 
-import grails.validation.ValidationException
-
 /**
  * Admin functions - should be protected by login and ROLE_ADMIN or equiv.
  * See {@link au.org.ala.biocache.hubs.AdminInterceptor}
@@ -82,84 +80,4 @@ class AdminController {
         redirect(action: 'index')
     }
 
-    def dataQualityFilters() {
-        respond QualityCategory.list(sort: 'id', lazy: false), model: [ 'qualityFilterStrings' : qualityService.enabledFiltersByLabel, 'errors': flash.errors, 'options': webServicesService.getAllOccurrenceFields() ]
-    }
-
-    def saveQualityCategory(QualityCategory qualityCategory) {
-        withForm {
-            try {
-                qualityService.createOrUpdateCategory(qualityCategory)
-            } catch (ValidationException e) {
-                flash.errors = e.errors
-            }
-        }.invalidToken {
-            // bad request
-            log.debug("ignore duplicate save category request. name:{}, label:{}", qualityCategory.name, qualityCategory.label)
-        }
-        redirect(action: 'dataQualityFilters')
-    }
-
-    def enableQualityCategory() {
-        withForm {
-            def qc = QualityCategory.get(params.long('id'))
-            qc.enabled = params.boolean('enabled', false)
-            qc.save(flush: true)
-        }.invalidToken {
-            // bad request
-            log.debug("ignore duplicate enable category request")
-        }
-        redirect(action: 'dataQualityFilters')
-    }
-
-    def deleteQualityCategory(QualityCategory qualityCategory) {
-        withForm {
-            qualityService.deleteCategory(qualityCategory)
-        }.invalidToken {
-            // bad request
-            log.debug("ignore duplicate delete category request. name:{}, label:{}", qualityCategory.name, qualityCategory.label)
-        }
-        redirect(action: 'dataQualityFilters')
-    }
-
-    def saveQualityFilter(QualityFilter qualityFilter) {
-        withForm {
-            try {
-                qualityService.createOrUpdateFilter(qualityFilter)
-            } catch (ValidationException e) {
-                flash.errors = e.errors
-            } catch (IllegalStateException e) {
-                return render(status: 400, text: 'invalid params')
-            }
-        }.invalidToken {
-            // bad request
-            log.debug("ignore duplicate save filter request. description:{}, filter:{}", qualityFilter.description, qualityFilter.filter)
-        }
-        redirect(action: 'dataQualityFilters')
-    }
-
-    def deleteQualityFilter() {
-        withForm {
-            def id = params.long('id')
-            if (!id) {
-                return render(status: 404, text: 'filter not found')
-            }
-            qualityService.deleteFilter(id)
-        }.invalidToken {
-            log.debug("ignore duplicate delete filter request")
-        }
-        redirect(action: 'dataQualityFilters')
-    }
-
-    def enableQualityFilter() {
-        withForm {
-            def qf = QualityFilter.get(params.long('id'))
-            qf.enabled = params.boolean('enabled', false)
-            qf.save(flush: true)
-        }.invalidToken {
-            // bad request
-            log.debug("ignore duplicate enable filter request")
-        }
-        redirect(action: 'dataQualityFilters')
-    }
 }

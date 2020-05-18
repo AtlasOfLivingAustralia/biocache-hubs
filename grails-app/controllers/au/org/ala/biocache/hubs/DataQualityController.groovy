@@ -104,8 +104,9 @@ class DataQualityController {
     }
 
     def list() {
+        def profileId = params.long('id', 0)
         def flatten = params.boolean('flatten', false)
-        def categories = qualityService.enabledCategoriesAndFilters
+        def categories = qualityService.getEnabledCategoriesAndFilters(profileId)
 
         if (flatten) {
 //            respond categories.collectMany { it.value*.filter }

@@ -21,7 +21,8 @@
             <ol class="breadcrumb">
                 <li><a href="${g.createLink(uri:"/")}">Home</a> <span class=" icon icon-arrow-right"></span></li>
                 <li><g:link controller="admin" action="index">Admin</g:link></li>
-                <li class="active">Data Quality Filters</li>
+                <li><g:link action="profiles">Data Quality Profiles</g:link></li>
+                <li class="active">${profile.name} Data Quality Filters</li>
             </ol>
         </div>
     </div>
@@ -30,7 +31,7 @@
 <div class="container">
 <div class="row">
     <div class="col-md-12">
-        <h1>Data Quality Filters</h1>
+        <h1>${profile.name} Data Quality Filters</h1>
 
         <div class="well">
             <ul>
@@ -166,6 +167,7 @@
                             </g:form>
                             <g:form class="form-inline" name="${filter.id}" action="deleteQualityFilter" useToken="true" style="display: inline-block;" method="post">
                                 <g:hiddenField name="id" value="${filter.id}"/>
+                                <g:hiddenField name="profileId" value="${category.qualityProfile.id}" />
                             </g:form>
                         </li>
                     </g:each>
@@ -224,6 +226,7 @@
             </div>
             <div class="modal-body">
                 <g:form name="add-category-form" useToken="true" action="saveQualityCategory" method="POST">
+                    <g:hiddenField name="qualityProfile" value="${profile.id}" />
                     <div class="form-group">
                         <label for="name">Category name</label>
                         <g:textField name="name" placeholder="Outliers" class="form-control" />
@@ -240,7 +243,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="add-category-save">Save category</button>
+                <button type="submit" form="add-category-form" class="btn btn-primary" id="add-category-save">Save category</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -289,9 +292,9 @@
     });
     // submit add category form using button outside form element
     var $categoryForm = $('#add-category-form');
-    $('#add-category-save').on('click', function(e) {
-       $categoryForm.submit();
-    });
+    // $('#add-category-save').on('click', function(e) {
+    //    $categoryForm.submit();
+    // });
     // default category label
     $categoryForm.find('input[name=name]').on('change', function(e) {
         var $label = $categoryForm.find('input[name=label]');

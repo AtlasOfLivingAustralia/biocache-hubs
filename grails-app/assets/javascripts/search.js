@@ -726,6 +726,7 @@ function reloadWithParam(paramName, paramValue) {
     var lon = $.url().param('lon');
     var rad = $.url().param('radius');
     var taxa = $.url().param('taxa');
+    var qualityProfile = $.url().param('qualityProfile');
     var disableQualityFilter = $.url().param('disableQualityFilter');
     var disableAllQualityFilters = $.url().param('disableAllQualityFilters');
 
@@ -773,6 +774,10 @@ function reloadWithParam(paramName, paramValue) {
 
     if (wkt){
         paramList.push("wkt=" + wkt);
+    }
+
+    if (qualityProfile) {
+        paramList.push('qualityProfile=' + qualityProfile)
     }
 
     if (disableQualityFilter) {

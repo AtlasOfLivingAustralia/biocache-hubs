@@ -4,12 +4,7 @@ import com.google.common.base.Stopwatch
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import grails.transaction.Transactional
-import org.apache.lucene.analysis.Analyzer
-import org.apache.lucene.analysis.DelegatingAnalyzerWrapper
-import org.apache.lucene.analysis.TokenStream
-import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.queryparser.flexible.precedence.PrecedenceQueryParser
-import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser
 import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.Query
@@ -40,15 +35,19 @@ class QualityService {
     }
 
     @Transactional(readOnly = true)
-    Map<String, String> getEnabledFiltersByLabel() {
-        getGroupedEnabledFilters().collectEntries { [(it.key): it.value.join(' AND ')] }
+    Map<String, String> getEnabledFiltersByLabel(Long profileId) {
+        getGroupedEnabledFilters(profileId).collectEntries { [(it.key): it.value.join(' AND ')] }
     }
 
     @Transactional(readOnly = true)
-    List<String> getEnabledQualityFilters() {
+    List<String> getEnabledQualityFilters(Long profileId) {
+        QualityProfile qp = activeProfile(profileId)
         QualityFilter.withCriteria {
             eq('enabled', true)
             qualityCategory {
+                qualityProfile {
+                    eq('id', qp.id)
+                }
                 eq('enabled', true)
             }
             projections {
@@ -60,10 +59,12 @@ class QualityService {
     }
 
     @Transactional(readOnly = true)
-    Map<String, List<String>> getGroupedEnabledFilters() {
+    Map<String, List<String>> getGroupedEnabledFilters(Long profileId) {
+        QualityProfile qp = activeProfile(profileId)
         QualityFilter.withCriteria {
             eq('enabled', true)
             qualityCategory {
+                eq('qualityProfile', qp)
                 eq('enabled', true)
             }
             order('dateCreated')
@@ -75,10 +76,12 @@ class QualityService {
     }
 
     @Transactional(readOnly = true)
-    Map<QualityCategory, List<QualityFilter>> getEnabledCategoriesAndFilters() {
+    Map<QualityCategory, List<QualityFilter>> getEnabledCategoriesAndFilters(Long profileId) {
+        QualityProfile qp = activeProfile(profileId)
         QualityFilter.withCriteria {
             eq('enabled', true)
             qualityCategory {
+                eq('qualityProfile', qp)
                 eq('enabled', true)
             }
         }.groupBy {
@@ -87,8 +90,23 @@ class QualityService {
     }
 
     @Transactional(readOnly = true)
-    Map<QualityCategory, String> getEnabledFiltersByCategory() {
-        getEnabledCategoriesAndFilters().collectEntries { [(it.key): it.value.join(' AND ')] }
+    List<QualityCategory> findAllEnabledCategories(Long profileId) {
+        QualityProfile qp = activeProfile(profileId)
+        QualityCategory.findAllByQualityProfileAndEnabled(qp, true)
+    }
+
+    QualityProfile activeProfile(Long profileId) {
+        QualityProfile qp
+        if (profileId) {
+            qp = QualityProfile.get(profileId)
+        } else {
+            qp = getDefaultProfile()
+        }
+        return qp
+    }
+
+    QualityProfile getDefaultProfile() {
+        QualityProfile.findByIsDefault(true)
     }
 
     def clearRecordCountCache() {
@@ -128,8 +146,8 @@ class QualityService {
         recordCountCache.get(srp)
     }
 
-    String getJoinedQualityFilter() {
-        enabledQualityFilters.join(' AND ')
+    String getJoinedQualityFilter(Long profileId) {
+        getEnabledQualityFilters(profileId).join(' AND ')
     }
 
     @Transactional(readOnly = true)
@@ -201,4 +219,27 @@ class QualityService {
             return bqb.build().toString()
         }
     }
+
+    @Transactional
+    void createOrUpdateProfile(QualityProfile qualityProfile) {
+        qualityProfile.save(validate: true, failOnError: true)
+    }
+
+    @Transactional
+    void setDefaultProfile(Long id) {
+        def qp = QualityProfile.get(id)
+        if (qp) {
+            qp.isDefault = true
+            qp.save()
+            def others = QualityProfile.findAllByIdNotEqual(id)
+            others.each { it.isDefault = false }
+            QualityProfile.saveAll(others)
+        }
+    }
+
+    @Transactional
+    void deleteProfile(QualityProfile qualityProfile) {
+        qualityProfile.delete()
+    }
+
 }

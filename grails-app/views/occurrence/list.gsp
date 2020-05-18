@@ -276,7 +276,26 @@
 
                     <g:if test="${qualityCategories}">
                         <div class="activeFilters col-sm-12">
-                            <span class="pull-right"><a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse"><i class="fa fa-caret-down"></i></a></span><p><b><alatag:message code="quality.filters.heading" default="Quality filters applied"/></b>: <alatag:linkToggeleDQFilters class="btn btn-default btn-xs"/></p>
+                            <span class="pull-right"><a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse"><i class="fa fa-caret-down"></i></a></span>
+                            <div><b><alatag:message code="quality.filters.heading" default="Quality filters applied"/></b>:
+                            <g:if test="${qualityProfiles.size() > 1}">
+                                <span class="dropdown">
+                                    <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        ${searchRequestParams.disableAllQualityFilters ? 'Disabled' : activeProfile.name}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="profile-dropdown">
+                                        <g:each in="${qualityProfiles}" var="profile">
+                                            <li><g:link action="${actionName}" params="${params.clone().with { if (profile.isDefault) it.remove('qualityProfile') else it.qualityProfile = profile.id ; it.remove('disableAllQualityFilters'); it } }" title="Click to enable the ${profile.name} quality filters">${profile.name}<g:if test="${profile.isDefault}"> (Default)</g:if></g:link></li>
+                                        </g:each>
+                                        <li><g:link action="${actionName}" params="${params.clone().with { it.disableAllQualityFilters = true; it } }" title="Click to disable All Data Quality filters">Disable all Quality Filters</g:link></li>
+                                    </ul>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <alatag:linkToggeleDQFilters class="btn btn-default btn-xs"/>
+                            </g:else>
+                            </div>
 
                             <g:if test="${searchRequestParams.disableAllQualityFilters}">
                                 <div class="alert alert-warning alert-sm">

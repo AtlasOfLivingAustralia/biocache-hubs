@@ -18,11 +18,13 @@ class QualityCategory {
     Date dateCreated
     Date lastUpdated
 
+    static belongsTo = [ qualityProfile: QualityProfile ]
     static hasMany = [ qualityFilters: QualityFilter ]
 
     static constraints = {
-        name unique: true
-        label unique: true
+        qualityProfile nullable: true // TODO remove once migrated
+        name unique: ['qualityProfile']
+        label unique: ['qualityProfile']
         description blank: true, nullable: true
     }
 

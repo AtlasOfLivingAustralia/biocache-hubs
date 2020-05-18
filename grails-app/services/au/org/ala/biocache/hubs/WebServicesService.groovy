@@ -60,7 +60,7 @@ class WebServicesService {
         List<String> appliedFilters = []
         if (!skip) {
             def disabled = dqqfs as Set
-            appliedFilters = qualityService.enabledFiltersByLabel
+            appliedFilters = qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile)
                     .findAll { label, filters -> !disabled.contains(label) }
                     .collect { label, filters -> filters }
         }

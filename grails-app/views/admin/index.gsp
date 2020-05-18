@@ -49,7 +49,7 @@
             Add default filters for all queries run through this hub.
         </div>
         <div class="btn-group">
-            <g:link class="btn btn-default" action="dataQualityFilters">Filters</g:link>
+            <g:link class="btn btn-default" controller="adminDataQuality" action="profiles">Filters</g:link>
         </div>
 
         <div id="alaAdmin">
