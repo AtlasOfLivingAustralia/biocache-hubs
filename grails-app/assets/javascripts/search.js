@@ -342,9 +342,6 @@ $(document).ready(function() {
         var link = this;
         var fq = $(link).data("fq")
 
-        // to escape "
-        fq =  fq.replace(/[\""]/g, '')
-
         var dqcategoryName = $(link).data("dqcategoryname")
         var dqtranslation = $(link).data("translation")
 
@@ -414,8 +411,12 @@ $(document).ready(function() {
             })
 
             $.each(dqtranslation, function(key, val) {
-                // replace :value so same value appears in field info/description won't be replaced
-                fq = fq.replace(":" + key, '<span style="color: #53377A;cursor:pointer;" title="' + val + '">' + ":" + key + "</span>")
+                // replace :value or :"value" so same value appears in field info/description won't be replaced
+                if (fq.indexOf(":" + key) != -1) {
+                    fq = fq.replace(":" + key, '<span style="color: #53377A;cursor:pointer;" title="' + val + '">' + ":" + key + "</span>")
+                } else if (fq.indexOf(':"' + key + '"') != -1) {
+                    fq = fq.replace(':"' + key + '"', '<span style="color: #53377A;cursor:pointer;" title="' + val + '">' + ':"' + key + '"</span>')
+                }
             })
 
             $('#spinnerRow').hide();
