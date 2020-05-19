@@ -180,9 +180,9 @@ class OccurrenceController {
             def qualityFiltersByLabel = qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile)
             def qualityExcludeCount = qualityService.getExcludeCount(qualityCategories, requestParams)
 
-            def (userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors) = processUserFQInteraction(requestParams, qualityExcludeCount, searchResults?.activeFacetObj)
+            def (userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors) = postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj)
 
-            def translatedFilterMap = translateValues(qualityService.getGroupedEnabledFilters(requestParams.qualityProfile), webServicesService.getMessagesPropertiesFile())
+            def translatedFilterMap = postProcessingService.translateValues(qualityService.getGroupedEnabledFilters(requestParams.qualityProfile), webServicesService.getMessagesPropertiesFile())
 
             log.debug "defaultFacets = ${defaultFacets}"
 
@@ -220,156 +220,6 @@ class OccurrenceController {
             flash.message = "${ex.message}"
             render view:'../error'
         }
-    }
-
-    def processUserFQInteraction(requestParams, qualityExcludeCount, activeFacetObj) {
-        def disabled = requestParams.disableQualityFilter as Set
-
-        // map from category label to filter names
-        // Suppose there's a default quality filter occurrence_decade_i:[1900 TO *] and user has a filter occurrence_decade_i:[1990 TO *].
-        // In this case, the exclude count of the DQ filter is 0 since user filter returns a subset of what DQ filter returns.
-        // This means a user filter can interact with a DQ filter even when its exclude count == 0
-        def categoryToKeyMap = [:]
-
-        if (!requestParams.disableAllQualityFilters) {
-            categoryToKeyMap = qualityService.getGroupedEnabledFilters(requestParams.qualityProfile).findAll { label, list ->
-                !disabled.contains(label)
-            }.collectEntries { label, list ->
-                def keys = list.collect { getKeysFromFilter(it) }.flatten()
-                keys.isEmpty() ? [:] : [(label): keys as Set]
-            }
-        }
-
-        // all used default filter names
-        def keys = categoryToKeyMap.values().flatten() as Set
-
-        // map from DQ filter names to categories labels
-        def keyToCategoryMap = keys.collectEntries { [(it): categoryToKeyMap.findAll { k, v -> v.contains(it) }.collect { it.key }] }
-
-        // map from user fq to category labels
-        def userFqInteractDQCategoryLabel = requestParams.fq.collectEntries { [(it): getKeysFromFilter(it).collect { key -> keyToCategoryMap.get(key) }.findAll { it != null }.flatten() as Set] }.findAll { key, val -> !val.isEmpty() }
-
-        def labels = userFqInteractDQCategoryLabel.collect { it.value }.flatten() as Set
-
-        // all user specified Facets
-        def grouped = activeFacetObj?.values()?.flatten()
-        // map from DQ category to translated user fqs
-        def dqInteractFQs = labels.collectEntries { [(it) : userFqInteractDQCategoryLabel.findAll { ufq, labellist -> labellist.contains(it) }.collect { ufq, labellist -> grouped?.find { facet -> facet.value == ufq}.displayName }.join(', ')] }
-
-        // map from user fq to category names
-        def userFqInteractDQNames = userFqInteractDQCategoryLabel.collectEntries { [(it.key): it.value.collect { QualityCategory.findByLabel(it).name }.join(', ')] }
-
-        def colors = [
-                "#C10020", //# Vivid Red
-                "#007D34", //# Vivid Green
-                "#FF8E00", //# Vivid Orange Yellow
-                "#803E75", //# Strong Purple
-                "#93AA00", //# Vivid Yellowish Green
-                "#593315", //# Deep Yellowish Brown
-                "#00538A", //# Strong Blue
-                "#F6768E", //# Strong Purplish Pink
-                "#FF7A5C", //# Strong Yellowish Pink
-                "#53377A", //# Strong Violet
-                "#F13A13",// # Vivid Reddish Orange
-                "#B32851", //# Strong Purplish Red
-                "#7F180D", //# Strong Reddish Brown
-                "#232C16",// # Dark Olive Green
-                "#CEA262", //# Grayish Yellow
-                "#817066", //# Medium Gray
-                "#FF6800", //# Vivid Orange
-        ]
-
-        def DQColors = [:]
-        def UserFQColors = [:]
-
-        userFqInteractDQCategoryLabel.eachWithIndex {it, index ->
-            def color = colors[index % colors.size()]
-            UserFQColors.put(it.key, color)
-            it.value.each { DQColors.put(it, color) }
-        }
-
-        return [userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors]
-    }
-
-    def translateValues(qualityFiltersByLabel, map) {
-        def translatedFilterMap = [:]
-        qualityFiltersByLabel.each { label, filters ->
-            def translatedFilters = [:]
-            filters.each { filter ->
-                def rslt = parseSimpleFq(filter, map)
-                if (rslt != null) {
-                    translatedFilters[rslt[0]] = rslt[1]
-                }
-            }
-
-            if (!translatedFilters.isEmpty()) {
-                // need a json object here so that it can be passed to html element as data-* attribute
-                translatedFilterMap[label] = new JSONObject(translatedFilters)
-            }
-        }
-        translatedFilterMap
-    }
-
-    /**
-     * To lookup translation of a filter value
-     *
-     * @return null if no translation found. [value, translation] otherwise
-     */
-
-    def parseSimpleFq(String fq, lookupMap) {
-        def idx = fq.indexOf(':')
-        if (idx == -1) return null
-
-        // to extract field and value (with leading " and surrounding '()' '""' removed)
-        // then look up translation
-        String key = fq.substring(0, idx)
-        String value = fq.substring(idx + 1)
-        if (key.length() > 0 && key[0] == '-') key = key.substring(1)
-        if ((key.length() > 0 && key[0] == '(') && (value.length() > 0 && value[value.length() - 1] == ')')) {
-            key = key.substring(1)
-            value = value.substring(0, value.length() - 1)
-        }
-
-        if (value.length() >= 2 && value[0] == '"' && value[value.length() - 1] == '"') value = value.substring(1, value.length() - 1)
-
-        def lookup = key + '.' + value
-
-        def retVal = lookupMap.get(lookup)
-        if (retVal == null) {
-            retVal = lookupMap.get(value)
-        }
-        return retVal != null ? [value, retVal] : null
-    }
-
-    /**
-     * Parse a fq string to get a list of filter names
-     *
-     * @return filter names in the fq as Set
-     */
-    def getKeysFromFilter(String fq) {
-        int pos = 0
-        int start = 0
-        List keys = []
-        while ((pos = fq.indexOf(':', pos)) != -1) {
-            // ':' at pos
-            start = fq.lastIndexOf(' ', pos)
-            if (start == -1) {
-                keys.add(fq.substring(0, pos))
-            } else {
-                keys.add(fq.substring(start + 1, pos))
-            }
-            pos++
-        }
-
-        // the values in the keys can now be "-(xxx", "-xxx", "(xxx"
-        // need to remove '-' and '('
-        keys = keys.collect {
-            it = it.replace("(",  "")
-            if (it?.startsWith("-")) it = it.substring(1)
-            it
-        }
-
-        keys as Set
     }
 
     def taxa(String id) {
