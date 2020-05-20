@@ -506,7 +506,7 @@ class PostProcessingService {
             categoryToKeyMap = qualityService.getGroupedEnabledFilters(requestParams.qualityProfile).findAll { label, list ->
                 !disabled.contains(label)
             }.collectEntries { label, list ->
-                def keys = list.collect { getKeysFromFilter(it) }.flatten()
+                def keys = list*.filter.collect { getKeysFromFilter(it) }.flatten()
                 keys.isEmpty() ? [:] : [(label): keys as Set]
             }
         }
@@ -598,7 +598,7 @@ class PostProcessingService {
         qualityFiltersByLabel.each { label, filters ->
             def translatedFilters = [:]
             filters.each { filter ->
-                def rslt = parseSimpleFq(filter, map)
+                def rslt = parseSimpleFq(filter.filter, map)
                 if (rslt != null) {
                     translatedFilters[rslt[0]] = rslt[1]
                 }

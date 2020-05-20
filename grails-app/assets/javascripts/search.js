@@ -341,7 +341,7 @@ $(document).ready(function() {
     $('.DQFilterDetailsLink').click(function() {
         var link = this;
         var fq = $(link).data("fq")
-
+        var description = $(link).data("description")
         var dqcategoryName = $(link).data("dqcategoryname")
         var dqtranslation = $(link).data("translation")
 
@@ -420,7 +420,7 @@ $(document).ready(function() {
             })
 
             $('#spinnerRow').hide();
-            $('#DQDetailsModal .modal-body #filter-value').html("Filter applied: <i>fq=" + fq + "</i>")
+            $('#DQDetailsModal .modal-body #filter-value').html("Filter applied: <i>fq=" + fq + "</i><br>" + description)
             // clear content
             $("table#DQDetailsTable tbody").html("")
             $("table#DQDetailsTable tbody").append(html)

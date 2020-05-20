@@ -179,6 +179,7 @@ class OccurrenceController {
             def qualityCategories = qualityService.findAllEnabledCategories(requestParams.qualityProfile)
             def qualityFiltersByLabel = qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile)
             def qualityExcludeCount = qualityService.getExcludeCount(qualityCategories, requestParams)
+            def qualityFilterDescriptionsByLabel = qualityService.getGroupedEnabledFilters(requestParams.qualityProfile).collectEntries {[(it.key) : it.value*.description.join(' and ')]}
 
             def (userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors) = postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj)
 
@@ -208,6 +209,7 @@ class OccurrenceController {
                     qualityExcludeCount: qualityExcludeCount,
                     qualityFiltersByLabel: qualityFiltersByLabel,
                     userFqInteractDQNames: userFqInteractDQNames,
+                    qualityFilterDescriptionsByLabel: qualityFilterDescriptionsByLabel,
                     dqInteractFQs: dqInteractFQs,
                     UserFQColors: UserFQColors,
                     DQColors: DQColors,

@@ -134,7 +134,7 @@ class QualityServiceSpec extends Specification {
         def result = service.getGroupedEnabledFilters(qp1.id)
 
         then:
-        result == [(qc1.label): [qf11.filter]]
+        result == [(qc1.label): [qf11]]
     }
 
     @Ignore("Grails GORM unit testing exhibits a bug when the profile to category relation is added")

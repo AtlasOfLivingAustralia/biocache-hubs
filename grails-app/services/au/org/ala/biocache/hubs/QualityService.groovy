@@ -36,7 +36,7 @@ class QualityService {
 
     @Transactional(readOnly = true)
     Map<String, String> getEnabledFiltersByLabel(Long profileId) {
-        getGroupedEnabledFilters(profileId).collectEntries { [(it.key): it.value.join(' AND ')] }
+        getGroupedEnabledFilters(profileId).collectEntries { [(it.key): it.value*.filter.join(' AND ')] }
     }
 
     @Transactional(readOnly = true)
@@ -59,7 +59,7 @@ class QualityService {
     }
 
     @Transactional(readOnly = true)
-    Map<String, List<String>> getGroupedEnabledFilters(Long profileId) {
+    Map<String, List<QualityFilter>> getGroupedEnabledFilters(Long profileId) {
         QualityProfile qp = activeProfile(profileId)
         QualityFilter.withCriteria {
             eq('enabled', true)
@@ -71,7 +71,7 @@ class QualityService {
         }.groupBy { QualityFilter qualityFilter ->
             qualityFilter.qualityCategory.label
         }.collectEntries { label, filters ->
-            [ (label): filters*.filter ]
+            [ (label): filters ]
         }
     }
 
