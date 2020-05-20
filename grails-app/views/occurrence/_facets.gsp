@@ -58,7 +58,7 @@
                                         <span class="fa fa-check-square-o">&nbsp;</span>
                                         <span class="facet-item">${qualityCategory.name} <i class="fa fa-info-circle tooltips" title="${g.message(code:"dq.filter.label", default: "Filter applied fq={0}", args:[qualityFiltersByLabel[qualityCategory.label]])}"></i> <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>)</span></span>
                                     </alatag:linkQualityCategory>
-                                    <alatag:linkQualityCategory enable="${false}" expand="${true}" category="${qualityCategory}" class="tooltips" title="${g.message(code: 'dq.pop.out', default: 'Convert this data quality filter into separate filter queries you can modify')}"><i class="fa fa-sign-out"></i></alatag:linkQualityCategory>
+                                    <alatag:linkQualityCategory enable="${false}" expand="${true}" category="${qualityCategory}" class="tooltips" title="${g.message(code: 'dq.pop.out', default: 'Convert this data quality filter into separate filter queries you can include/exclude individually')}"><i class="fa fa-sign-out"></i></alatag:linkQualityCategory>
                                 </g:else>
                             </li>
                         </g:each>

@@ -130,7 +130,7 @@ class QualityService {
         recordCountCache.get(srp)
     }
 
-    private Long countTotalRecords(SpatialSearchRequestParams requestParams) {
+    public Long countTotalRecords(SpatialSearchRequestParams requestParams) {
         def srp = requestParams.clone().with {
             it.pageSize = 0
             it.start = 0

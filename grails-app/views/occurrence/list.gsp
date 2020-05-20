@@ -262,9 +262,12 @@
                 </g:if>
                 <div id="resultsReturned">
                     <g:render template="sandboxUploadSourceLinks" model="[dataResourceUid: selectedDataResource]"/>
-                    <span id="returnedText"><strong><g:formatNumber number="${sr.totalRecords}"
-                                                                    format="#,###,###"/></strong> <g:message
-                            code="list.resultsretuened.span.returnedtext" default="results for"/></span>
+                    <span id="returnedText">
+                        <strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong>
+                        <g:message code="list.resultsretuened.span.returnedtotal" default="records returned of"/></span>
+                        <strong><g:formatNumber number="${qualityTotalCount}" format="#,###,###"/></strong>
+                        <g:message code="list.resultsretuened.span.returnedtext" default="for"/>
+                    </span>
                     <span class="queryDisplay"><strong>
                         <g:set var="queryToShow"><alatag:sanitizeContent>${raw(queryDisplay)}</alatag:sanitizeContent></g:set>
                         ${raw(queryToShow) ?: params.taxa ?: params.q}
@@ -277,7 +280,7 @@
                     <g:if test="${qualityCategories}">
                         <div class="activeFilters col-sm-12">
                             <span class="pull-right"><a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse"><i class="fa fa-caret-down"></i></a></span>
-                            <div><b><alatag:message code="quality.filters.heading" default="Quality filters applied"/></b>:
+                            <div><b><alatag:message code="quality.filters.heading" default="Data Quality Filters"/></b>:
                             <g:if test="${qualityProfiles.size() > 1}">
                                 <span class="dropdown">
                                     <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -317,13 +320,13 @@
                                             <alatag:linkQualityCategory class="tooltips" expand="${false}" enable="${false}" category="${qualityCategory}">
                                                 <i class="fa fa-check-square-o"></i>
                                             </alatag:linkQualityCategory>
-                                            <alatag:linkQualityCategory expand="${true}" enable="${false}" category="${qualityCategory}" title="${g.message(code: 'dq.pop.out', default: 'Convert this data quality filter into separate filter queries you can modify')}">
+                                            <alatag:linkQualityCategory expand="${true}" enable="${false}" category="${qualityCategory}" title="${g.message(code: 'dq.pop.out', default: 'Convert this data quality filter into separate filter queries you can include/exclude individually')}">
                                                 <i class="fa fa-sign-out"></i>
                                             </alatag:linkQualityCategory>
                                         </g:else>
                                         <span>
                                             <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteractFQs.containsKey(qualityCategory.label) ? (". This quality filter may conflict with these user selected filters: [" + dqInteractFQs[qualityCategory.label]) +"]": "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
-                                            <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-dqcategoryname="${qualityCategory.name}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="${g.message(code:"dq.filter.label", default: "Filter applied fq={0}", args:[qualityFiltersByLabel[qualityCategory.label]])}"></i></span></a>
+                                            <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-dqcategoryname="${qualityCategory.name}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="${g.message(code:"dq.filter.label", default: "Filter applied fq={0}", args:[qualityFiltersByLabel[qualityCategory.label]])}"></i></a>
                                             <alatag:invertQualityCategory category="${qualityCategory}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
                                                 <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
                                                 <alatag:message code="quality.filters.excludeCount" default="records excluded" />
