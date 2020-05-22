@@ -30,7 +30,7 @@ class AdminDataQualityFiltersControllerSpec extends Specification {
 
         then:
         1 * controller.webServicesService.getAllOccurrenceFields() >> []
-        1 * controller.qualityService.getEnabledFiltersByLabel(qp1.id) >> [label: '', label2: '']
+        1 * controller.qualityService.getEnabledFiltersByLabel(qp1.shortName) >> [label: '', label2: '']
         model.qualityCategoryList == [qc1, qc2]
         model.qualityFilterStrings == [label: '', label2: '']
     }

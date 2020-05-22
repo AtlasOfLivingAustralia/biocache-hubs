@@ -28,6 +28,20 @@
 </div>
 %{-- escape from container-fluid --}%
 <div class="container">
+    <g:if test="${flash.message}">
+        <div class="alert alert-warning">
+            <p>${flash.message}</p>
+        </div>
+    </g:if>
+    <g:hasErrors>
+        <div class="alert alert-danger">
+            <ul>
+                <g:eachError var="error">
+                    <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+                </g:eachError>
+            </ul>
+        </div>
+    </g:hasErrors>
     <div class="row">
         <div class="col-md-12">
             <h1>Data Quality Profiles</h1>
@@ -57,7 +71,7 @@
                             </g:form>
                         </td>
                         <td>
-                            <button data-id="${profile.id}" class="btn btn-default"><i class="fa fa-edit"></i></button>
+                            <button data-id="${profile.id}" data-name="${profile.name}" data-short-name="${profile.shortName}" data-description="${profile.description}" data-contact-name="${profile.contactName}" data-contact-email="${profile.contactEmail}" data-is-default="${profile.isDefault}" data-enabled="${profile.enabled}" class="btn btn-default btn-edit-profile"><i class="fa fa-edit"></i></button>
                             <g:form action="setDefaultProfile" class="form-inline" style="display:inline;" useToken="true">
                                 <g:hiddenField name="id" value="${profile.id}" />
                                 <button type="submit" class="btn btn-${profile.isDefault ? 'primary' : 'default'} ${profile.isDefault ? ' active' : ''}" aria-pressed="${profile.isDefault}">Default</button>
@@ -93,6 +107,18 @@
                                 <input type="text" class="form-control" id="shortName" name="shortName" placeholder="short-name">
                                 <p class="help-block"><alatag:message code="profile.modal.shortName.help" default="Label used for selecting this profile in URLs and the like.  A single lower case word is preferred." /></p>
                             </div>
+                            <div class="form-group">
+                                <label for="description"><alatag:message code="profile.modal.description.label" default="Description" /></label>
+                                <input type="text" class="form-control" id="description" name="description" placeholder="description...">
+                            </div>
+                            <div class="form-group">
+                                <label for="contactName"><alatag:message code="profile.modal.contactName.label" default="Contact Name" /></label>
+                                <input type="text" class="form-control" id="contactName" name="contactName" placeholder="Contact Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail"><alatag:message code="profile.modal.contactName.label" default="Contact Email (Optional)" /></label>
+                                <input type="email" class="form-control" id="contactEmail" name="contactEmail" placeholder="contact.email@example.org">
+                            </div>
                         </g:form>
                     </div>
                     <div class="modal-footer">
@@ -117,6 +143,62 @@
                 e.preventDefault();
                 return false;
             }
+        });
+        $('.btn-edit-profile').on('click', function(e) {
+            var $this = $(this);
+            var id = $this.data('id');
+            var name = $this.data('name');
+            var shortName = $this.data('short-name');
+            var description = $this.data('description');
+            var contactName = $this.data('contact-name');
+            var contactEmail  = $this.data('contact-email');
+            var enabled = $this.data('enabled');
+            var isDefault = $this.data('is-default');
+
+            var $saveProfileModal = $('#save-profile-modal');
+
+            var $id = $saveProfileModal.find('input[name=id]');
+            var $name = $saveProfileModal.find('input[name=name]');
+            var $shortName = $saveProfileModal.find('input[name=shortName]');
+            var $description = $saveProfileModal.find('input[name=description]');
+            var $contactName = $saveProfileModal.find('input[name=contactName]');
+            var $contactEmail = $saveProfileModal.find('input[name=contactEmail]');
+            var $enabled = $saveProfileModal.find('input[name=enabled]');
+            var $isDefault = $saveProfileModal.find('input[name=isDefault]');
+
+            var oldId = $id.val();
+            var oldName = $name.val();
+            var oldShortName = $shortName.val();
+            var oldDescription = $description.val();
+            var oldContactName = $contactName.val();
+            var oldContactEmail = $contactEmail.val();
+            var oldEnabled = $enabled.val();
+            var oldIsDefault = $isDefault.val();
+
+            $id.val(id);
+            $name.val(name);
+            $shortName.val(shortName);
+            $description.val(description);
+            $contactName.val(contactName);
+            $contactEmail.val(contactEmail);
+            $enabled.val(enabled);
+            $isDefault.val(isDefault);
+
+            var clearFormFn = function() {
+                $id.val(oldId);
+                $name.val(oldName);
+                $shortName.val(oldShortName);
+                $description.val(oldDescription);
+                $contactName.val(oldContactName);
+                $contactEmail.val(oldContactEmail);
+                $enabled.val(oldEnabled);
+                $isDefault.val(oldIsDefault);
+                $saveProfileModal.off('hidden.bs.modal', clearFormFn);
+            };
+
+            $saveProfileModal.modal();
+
+            $saveProfileModal.on('hidden.bs.modal', clearFormFn);
         });
     });
 </asset:script>

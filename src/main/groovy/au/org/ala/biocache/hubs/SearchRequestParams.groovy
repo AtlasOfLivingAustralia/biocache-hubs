@@ -47,7 +47,7 @@ class SearchRequestParams implements Validateable{
     Boolean facet = true
 
     /** The quality profile to use, null for default */
-    Long qualityProfile
+    String qualityProfile
     /** If to disable all default filters*/
     boolean disableAllQualityFilters = false
     /** Default filters to disable (currently can only disable on category, so it's a list of disabled category name)*/

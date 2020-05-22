@@ -105,6 +105,9 @@ class WebServicesService {
             if (newParams.disableAllQualityFilters) {
                 result.urlParameters += '&disableAllQualityFilters=true'
             }
+            if (newParams.qualityProfile) {
+                result.urlParameters += "&qualityProfile=${newParams.qualityProfile}"
+            }
         }
         return result
     }

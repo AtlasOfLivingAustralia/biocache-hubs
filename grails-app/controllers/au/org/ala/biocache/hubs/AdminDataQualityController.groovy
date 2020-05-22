@@ -23,11 +23,11 @@ class AdminDataQualityController {
 
     def filters() {
         def qp = QualityProfile.get(params.long('id'))
-        respond QualityCategory.findAllByQualityProfile(qp, [sort: 'id', lazy: false]), model: [ 'qualityFilterStrings' : qualityService.getEnabledFiltersByLabel(qp.id), 'errors': flash.errors, 'options': webServicesService.getAllOccurrenceFields(), 'profile': qp ]
+        respond QualityCategory.findAllByQualityProfile(qp, [sort: 'id', lazy: false]), model: [ 'qualityFilterStrings' : qualityService.getEnabledFiltersByLabel(qp.shortName), 'errors': flash.errors, 'options': webServicesService.getAllOccurrenceFields(), 'profile': qp ]
     }
 
     def profiles() {
-        respond QualityProfile.list(sort: 'id')
+        respond QualityProfile.list(sort: 'id'), model: ['errors': flash.errors]
     }
 
     def saveProfile(QualityProfile qualityProfile) {

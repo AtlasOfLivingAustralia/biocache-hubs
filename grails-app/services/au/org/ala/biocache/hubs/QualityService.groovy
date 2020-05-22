@@ -35,13 +35,13 @@ class QualityService {
     }
 
     @Transactional(readOnly = true)
-    Map<String, String> getEnabledFiltersByLabel(Long profileId) {
-        getGroupedEnabledFilters(profileId).collectEntries { [(it.key): it.value*.filter.join(' AND ')] }
+    Map<String, String> getEnabledFiltersByLabel(String profileName) {
+        getGroupedEnabledFilters(profileName).collectEntries { [(it.key): it.value*.filter.join(' AND ')] }
     }
 
     @Transactional(readOnly = true)
-    List<String> getEnabledQualityFilters(Long profileId) {
-        QualityProfile qp = activeProfile(profileId)
+    List<String> getEnabledQualityFilters(String profileName) {
+        QualityProfile qp = activeProfile(profileName)
         QualityFilter.withCriteria {
             eq('enabled', true)
             qualityCategory {
@@ -59,8 +59,9 @@ class QualityService {
     }
 
     @Transactional(readOnly = true)
-    Map<String, List<QualityFilter>> getGroupedEnabledFilters(Long profileId) {
-        QualityProfile qp = activeProfile(profileId)
+    Map<String, List<QualityFilter>> getGroupedEnabledFilters(String profileName) {
+        QualityProfile qp = activeProfile(profileName)
+
         QualityFilter.withCriteria {
             eq('enabled', true)
             qualityCategory {
@@ -76,8 +77,8 @@ class QualityService {
     }
 
     @Transactional(readOnly = true)
-    Map<QualityCategory, List<QualityFilter>> getEnabledCategoriesAndFilters(Long profileId) {
-        QualityProfile qp = activeProfile(profileId)
+    Map<QualityCategory, List<QualityFilter>> getEnabledCategoriesAndFilters(String profileName) {
+        QualityProfile qp = activeProfile(profileName)
         QualityFilter.withCriteria {
             eq('enabled', true)
             qualityCategory {
@@ -90,15 +91,18 @@ class QualityService {
     }
 
     @Transactional(readOnly = true)
-    List<QualityCategory> findAllEnabledCategories(Long profileId) {
-        QualityProfile qp = activeProfile(profileId)
+    List<QualityCategory> findAllEnabledCategories(String profileName) {
+        QualityProfile qp = activeProfile(profileName)
         QualityCategory.findAllByQualityProfileAndEnabled(qp, true)
     }
 
-    QualityProfile activeProfile(Long profileId) {
+    QualityProfile activeProfile(String profileName) {
         QualityProfile qp
-        if (profileId) {
-            qp = QualityProfile.get(profileId)
+        if (profileName) {
+            qp = QualityProfile.findByShortName(profileName)
+            if (!qp) {
+                qp = getDefaultProfile()
+            }
         } else {
             qp = getDefaultProfile()
         }
@@ -146,8 +150,8 @@ class QualityService {
         recordCountCache.get(srp)
     }
 
-    String getJoinedQualityFilter(Long profileId) {
-        getEnabledQualityFilters(profileId).join(' AND ')
+    String getJoinedQualityFilter(String profileName) {
+        getEnabledQualityFilters(profileName).join(' AND ')
     }
 
     @Transactional(readOnly = true)

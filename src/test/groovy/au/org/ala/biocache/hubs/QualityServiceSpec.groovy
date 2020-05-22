@@ -93,7 +93,7 @@ class QualityServiceSpec extends Specification {
         QualityFilter qf22 = new QualityFilter(description: 'label22', filter: 'filter22', enabled: false, qualityCategory: qc2).save(flush: true, failOnError: true)
 
         when:
-        def result = service.getEnabledCategoriesAndFilters(qp1.id)
+        def result = service.getEnabledCategoriesAndFilters(qp1.shortName)
 
         then:
         result == [(qc1): [qf11]]
@@ -112,7 +112,7 @@ class QualityServiceSpec extends Specification {
         QualityFilter qf22 = new QualityFilter(description: 'label22', filter: 'filter22', enabled: false, qualityCategory: qc2).save(flush: true, failOnError: true)
 
         when:
-        def result = service.getEnabledQualityFilters(qp1.id)
+        def result = service.getEnabledQualityFilters(qp1.shortName)
 
         then:
         result == [qf11.filter]
@@ -131,7 +131,7 @@ class QualityServiceSpec extends Specification {
         QualityFilter qf22 = new QualityFilter(description: 'label22', filter: 'filter22', enabled: false, qualityCategory: qc2).save(flush: true, failOnError: true)
 
         when:
-        def result = service.getGroupedEnabledFilters(qp1.id)
+        def result = service.getGroupedEnabledFilters(qp1.shortName)
 
         then:
         result == [(qc1.label): [qf11]]
@@ -155,7 +155,7 @@ class QualityServiceSpec extends Specification {
         QualityFilter qf32 = new QualityFilter(description: 'label32', filter: 'filter32', enabled: true, qualityCategory: qc3).save(flush: true, failOnError: true)
 
         when:
-        def result = service.getJoinedQualityFilter(qp1.id)
+        def result = service.getJoinedQualityFilter(qp1.shortName)
 
         then:
         result == "${qf11.filter} AND ${qf32.filter}"

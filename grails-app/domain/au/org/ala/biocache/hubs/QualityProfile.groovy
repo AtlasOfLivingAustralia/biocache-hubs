@@ -11,6 +11,10 @@ class QualityProfile {
 
     String name
     String shortName
+    String description
+
+    String contactName
+    String contactEmail
 
     boolean enabled
     boolean isDefault
@@ -23,11 +27,19 @@ class QualityProfile {
     static constraints = {
         name unique: true
         shortName unique: true
+        contactEmail blank: true, nullable: true
+
+        // TODO remove after db updated
+        contactName blank: true, nullable: true
+        description blank: true, nullable: true
     }
 
     static mapping = {
         name type: 'text'
         shortName type: 'text'
+        description type: 'text'
+        contactName type: 'text'
+        contactEmail type: 'text'
         enabled defaultValue: 'true', index: 'quality_profile_enabled_idx'
     }
 }
