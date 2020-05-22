@@ -298,6 +298,9 @@
                             <g:else>
                                 <alatag:linkToggeleDQFilters class="btn btn-default btn-xs"/>
                             </g:else>
+                            <g:if test="${!searchRequestParams.disableAllQualityFilters}">
+                                <a href="#DQProfileDetails" data-toggle="modal" role="button"><button type="button" class="btn btn-default btn-xs" title="Profile description">info</button></a>
+                            </g:if>
                             </div>
 
                             <g:if test="${searchRequestParams.disableAllQualityFilters}">
@@ -360,6 +363,67 @@
                                                         <tbody>
                                                         </tbody>
                                                     </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="DQProfileDetails" class="modal fade " role="dialog">
+                                        <div class="modal-dialog" role="document" id="DQProfileDetailsModal">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h4>Profile Info</h4>
+                                                    <table class="table table-bordered table-condensed table-striped scrollTable" id="DQProfileInfoTable">
+                                                        <tr><td>Profile name</td><td>${activeProfile.name}</td></tr>
+                                                        <tr><td>Profile short name</td><td>${activeProfile.shortName}</td></tr>
+                                                        <tr><td>Contact person</td><td><alatag:activeProfileContact name="${activeProfile.contactName}" email="${activeProfile.contactEmail}"/></td></tr>
+                                                    </table>
+                                                    <div class="col-md-12" style="padding-left: 0;padding-right: 0">
+                                                        <span class="pull-right"><a role="button" data-toggle="collapse" href="#categories" aria-expanded="false" aria-controls="categories"><i class="fa fa-caret-down"></i></a></span>
+                                                        <h5>Categories in the profile</h5>
+                                                    </div>
+                                                    <div class="collapse" id="categories">
+                                                        <table class="table table-bordered table-condensed table-striped scrollTable" id="DQCategoryTable">
+                                                            <tr>
+                                                                <th>Category name</th>
+                                                                <th>Category description</th>
+                                                                <th>Enabled</th>
+                                                            </tr>
+                                                            <g:each var="category" in="${activeProfile.categories}">
+                                                                <tr>
+                                                                    <td>${category.name}</td>
+                                                                    <td>${category.description}</td>
+                                                                    <td>${category.enabled}</td>
+                                                                </tr>
+                                                            </g:each>
+                                                        </table>
+                                                    </div>
+
+                                                    <g:each var="category" in="${activeProfile.categories}">
+                                                        <div class="col-md-12" style="padding-left: 0;padding-right: 0">
+                                                            <span class="pull-right"><a role="button" data-toggle="collapse" href="${"#" + category.id + "filters"}" aria-expanded="false" aria-controls= ${category.id + "filters"}><i
+                                                                        class="fa fa-caret-down"></i></a></span>
+                                                            <h5>Filters in ${category.name} category</h5>
+                                                        </div>
+                                                        <div class="collapse" id=${category.id + "filters"}>
+                                                            <table class="table table-bordered table-condensed table-striped scrollTable">
+                                                                <tr>
+                                                                    <th>Filter description</th>
+                                                                    <th>Filter value</th>
+                                                                    <th>Enabled</th>
+                                                                </tr>
+                                                                <g:each var="filter" in="${category.qualityFilters}">
+                                                                    <tr>
+                                                                        <td>${filter.description}</td>
+                                                                        <td>${filter.filter}</td>
+                                                                        <td>${filter.enabled}</td>
+                                                                    </tr>
+                                                                </g:each>
+                                                            </table>
+                                                        </div>
+                                                    </g:each>
                                                 </div>
                                             </div>
                                         </div>
