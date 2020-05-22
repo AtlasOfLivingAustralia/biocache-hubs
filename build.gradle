@@ -84,11 +84,11 @@ dependencies {
     //plugins
     //compile 'org.grails.plugins:cache-ehcache:3.0.0.M1'
     compile 'org.grails.plugins:http-builder-helper:1.0.2.ALA'
-    compile "org.grails.plugins:ala-admin-plugin:2.0", noCache
-    compile "org.grails.plugins:ala-auth:3.1.0", noCache
+    compile "org.grails.plugins:ala-admin-plugin:2.2", noCache
+    compile "org.grails.plugins:ala-auth:3.2.2", noCache
 
     if(!inplace) {
-        compile "au.org.ala.plugins.grails:images-client-plugin:1.0", noCache
+        compile "au.org.ala.plugins.grails:images-client-plugin:1.2", noCache
         compile "au.org.ala.plugins.grails:ala-charts-plugin:2.0.1", noCache
     }
 

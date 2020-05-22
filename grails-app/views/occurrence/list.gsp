@@ -60,7 +60,7 @@
             dislikeUrl: "${createLink(controller: 'imageClient', action: 'dislikeImage')}",
             userRatingUrl: "${createLink(controller: 'imageClient', action: 'userRating')}",
             disableLikeDislikeButton: ${authService.getUserId() ? false : true},
-            addLikeDislikeButton: ${(grailsApplication.config.addLikeDislikeButton == false) ? false : true},
+            addLikeDislikeButton: ${(grailsApplication.config.getProperty("addLikeDislikeButton", Boolean, false))},
             addPreferenceButton: <imageClient:checkAllowableEditRole/> ,
             userRatingHelpText: '<div><b>Up vote (<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>) an image:</b>'+
 ' Image supports the identification of the species or is representative of the species.  Subject is clearly visible including identifying features.<br/><br/>'+

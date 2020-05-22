@@ -75,7 +75,7 @@
     <g:if test="${record.processed.attribution.collectionUid && collectionsWebappContext}">
         </a>
     </g:if>
-    <g:if test="${false && record.raw.occurrence.collectionCode}">
+    <g:if test="${record.raw.occurrence.collectionCode}">
         ${fieldsMap.put("collectionCode", true)}
         <g:if test="${collectionName || record.processed.attribution.collectionName}"><br/></g:if>
         <span class="originalValue" style="display:none"><g:message code="recordcore.span02" default="Supplied collection code"/> "${record.raw.occurrence.collectionCode}"</span>

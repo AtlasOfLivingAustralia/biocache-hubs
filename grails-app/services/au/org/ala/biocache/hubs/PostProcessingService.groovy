@@ -444,6 +444,18 @@ class PostProcessingService {
     }
 
     /**
+     * Find any cl1234 or el1234 layer IDs in the q or fq params and return a list
+     * of layer objects containing layer metadata
+     *
+     * @param searchRequestParams
+     * @return list of layer objects
+     */
+    List getListOfLayers(SpatialSearchRequestParams searchRequestParams) {
+        List layerIds = getListOfLayerIds(searchRequestParams)
+        getListOfLayerObjects(layerIds)
+    }
+
+    /**
      * Find any cl1234 or el1234 layer IDs in the q or fq params and return a list of layer IDs
      *
      * @param searchRequestParams
@@ -454,7 +466,6 @@ class PostProcessingService {
         List queries = [] // list of q and fq query strings
         queries.add(searchRequestParams.q) // q param
         queries.addAll(searchRequestParams.fq) // array of fq params
-        log.debug "queries = ${queries}"
 
         queries.each { String q ->
             // regex for find el1234 and cl5678 IDs

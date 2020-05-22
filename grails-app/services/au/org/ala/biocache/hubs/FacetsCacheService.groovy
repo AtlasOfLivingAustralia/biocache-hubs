@@ -83,7 +83,6 @@ class FacetsCacheService {
 
             if (sr.has("facetResults") && sr.facetResults.size() > 0) {
                 sr.facetResults.each { fq ->
-                    log.debug "facetResults = ${fq}"
                     def fieldName = fq.fieldName
                     def fields = [:]
                     fq.fieldResult.each {
