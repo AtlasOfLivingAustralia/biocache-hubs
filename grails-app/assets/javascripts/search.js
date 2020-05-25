@@ -644,7 +644,7 @@ $(document).ready(function() {
     });
 
     // scroll bars on facet values
-    $(".nano").nanoScroller({ preventPageScrolling: true, sliderMinHeight: 90 });
+    $(".nano").nanoScroller({ preventPageScrolling: true});
     //$(".nano").overlayScrollbars({  });
 
     // store last search in local storage for a "back button" on record pages
