@@ -420,7 +420,7 @@ $(document).ready(function() {
             })
 
             $('#spinnerRow').hide();
-            $('#DQDetailsModal .modal-body #filter-value').html("Filter applied: <i>fq=" + fq + "</i><br>" + description)
+            $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i><br><b>Description: </b>" + description)
             // clear content
             $("table#DQDetailsTable tbody").html("")
             $("table#DQDetailsTable tbody").append(html)
