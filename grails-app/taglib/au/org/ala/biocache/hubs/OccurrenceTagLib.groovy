@@ -1114,19 +1114,4 @@ class OccurrenceTagLib {
 
         out << g.link(attrs, cap)
     }
-
-    def activeProfileContact = { attrs ->
-        def name = attrs.name
-        def email = attrs.email
-
-        if (StringUtils.isBlank(name) && StringUtils.isBlank(email)) {
-            out << ""
-        } else if (!StringUtils.isBlank(name) && !StringUtils.isBlank(email)) {
-            out <<  name + ", " + email
-        } else if (!StringUtils.isBlank(name)) {
-            out << name;
-        } else {
-            out << email
-        };
-    }
 }
