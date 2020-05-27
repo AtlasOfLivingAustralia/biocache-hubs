@@ -374,15 +374,15 @@
                                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <h4>Data quality profile description</h4>
+                                                    <h4><alatag:message code="dq.profiledetail.title" default="Data quality profile description"/></h4>
                                                     <table class="table table-bordered table-condensed table-striped scrollTable">
-                                                        <tr><td>Profile name</td><td>${activeProfile.name}</td></tr>
-                                                        <tr><td>Profile short name</td><td>${activeProfile.shortName}</td></tr>
-                                                        <tr><td>Owner</td><td>${activeProfile.contactName}</td></tr>
-                                                        <tr><td>Contact</td><td>${activeProfile.contactEmail}</td></tr>
+                                                        <tr><td><alatag:message code="dq.profiledetail.profiletable.header.profilename" default="Profile name"/></td><td>${activeProfile.name}</td></tr>
+                                                        <tr><td><alatag:message code="dq.profiledetail.profiletable.header.profileshortname" default="Profile short name"/></td><td>${activeProfile.shortName}</td></tr>
+                                                        <tr><td><alatag:message code="dq.profiledetail.profiletable.header.owner" default="Owner"/></td><td>${activeProfile.contactName}</td></tr>
+                                                        <tr><td><alatag:message code="dq.profiledetail.profiletable.header.contact" default="Contact"/></td><td>${activeProfile.contactEmail}</td></tr>
                                                     </table>
 
-                                                    <h4>Categories:</h4>
+                                                    <h4><alatag:message code="dq.profiledetail.categorylabel" default="Categories"/>:</h4>
                                                     <g:each var="category" in="${activeProfile.categories}">
                                                         <div>
                                                             <g:if test = "${category.enabled}">
@@ -396,9 +396,9 @@
                                                         </div>
                                                         <table class="table table-bordered table-condensed table-striped scrollTable">
                                                             <tr>
-                                                                <th>Filter description</th>
-                                                                <th>Filter value</th>
-                                                                <th>Enabled</th>
+                                                                <th><alatag:message code="dq.profiledetail.filtertable.header.description" default="Filter description"/></th>
+                                                                <th><alatag:message code="dq.profiledetail.filtertable.header.value" default="Filter value"/></th>
+                                                                <th><alatag:message code="dq.profiledetail.filtertable.header.enabled" default="Enabled"/></th>
                                                             </tr>
                                                             <g:each var="filter" in="${category.qualityFilters}">
                                                                 <tr>
