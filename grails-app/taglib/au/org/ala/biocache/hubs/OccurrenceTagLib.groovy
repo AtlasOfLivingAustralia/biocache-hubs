@@ -202,6 +202,31 @@ class OccurrenceTagLib {
         }
     }
 
+    def download = { attrs, body ->
+        def sr = attrs.remove('searchResults')
+        def qualityCategories = attrs.remove('qualityCategories')
+
+        def searchParams = params.clone()
+        searchParams.remove('controller')
+        searchParams.remove('action')
+        searchParams.disableAllQualityFilters = true
+        def fqs = params.list('fq')
+        fqs += qualityCategories.collect { "${it.qualityFilters.findAll { it.enabled }*.filter.join(' AND ')}" }
+        searchParams.fq = fqs
+
+//        attrs.uri = '/download'
+        attrs.controller = 'download'
+        attrs.params = [
+//                searchParams: sr?.urlParameters?.encodeAsURL(),
+                searchParams: WebUtils.toQueryString(searchParams),
+                qualityFiltersInfo: [] + qualityCategories.collect { "${it.name}:${it.qualityFilters.findAll { it.enabled }*.filter.join(' AND ')}".toString() },
+                targetUri: request.forwardURI,
+                totalRecords: sr?.totalRecords ?: 0
+        ]
+
+        out << g.link(attrs, body)
+    }
+
     def createFilterItemLink = { attrs ->
         return currentFilterItemLink(attrs, attrs.facet)
     }

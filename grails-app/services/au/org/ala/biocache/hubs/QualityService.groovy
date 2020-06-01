@@ -65,7 +65,9 @@ class QualityService {
         QualityFilter.withCriteria {
             eq('enabled', true)
             qualityCategory {
-                eq('qualityProfile', qp)
+                qualityProfile {
+                    eq('id', qp.id)
+                }
                 eq('enabled', true)
             }
             order('dateCreated')
@@ -82,7 +84,9 @@ class QualityService {
         QualityFilter.withCriteria {
             eq('enabled', true)
             qualityCategory {
-                eq('qualityProfile', qp)
+                qualityProfile {
+                    eq('id', qp.id)
+                }
                 eq('enabled', true)
             }
         }.groupBy {
