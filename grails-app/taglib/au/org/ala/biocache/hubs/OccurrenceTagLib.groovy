@@ -218,7 +218,7 @@ class OccurrenceTagLib {
         attrs.controller = 'download'
         attrs.params = [
 //                searchParams: sr?.urlParameters?.encodeAsURL(),
-                searchParams: WebUtils.toQueryString(searchParams),
+                searchParams: MoreWebUtils.toQueryString(searchParams),
                 qualityFiltersInfo: [] + qualityCategories.collect { "${it.name}:${it.qualityFilters.findAll { it.enabled }*.filter.join(' AND ')}".toString() },
                 targetUri: request.forwardURI,
                 totalRecords: sr?.totalRecords ?: 0
@@ -919,7 +919,7 @@ class OccurrenceTagLib {
         paramsCopy.remove("wkt")
         paramsCopy.remove("action")
         paramsCopy.remove("controller")
-        def queryString = WebUtils.toQueryString(paramsCopy)
+        def queryString = MoreWebUtils.toQueryString(paramsCopy)
         log.debug "queryString = ${queryString}"
         out << queryString
     }
@@ -931,7 +931,7 @@ class OccurrenceTagLib {
         paramsCopy.remove("radius")
         paramsCopy.remove("action")
         paramsCopy.remove("controller")
-        def queryString = WebUtils.toQueryString(paramsCopy)
+        def queryString = MoreWebUtils.toQueryString(paramsCopy)
         log.debug "queryString = ${queryString}"
         out << queryString
     }
