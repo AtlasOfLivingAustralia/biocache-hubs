@@ -14,7 +14,11 @@
  */
 package au.org.ala.biocache.hubs
 
+import com.google.gson.Gson
+import grails.converters.JSON
+import grails.transaction.Transactional
 import grails.validation.ValidationException
+import org.apache.commons.lang3.StringUtils
 
 class AdminDataQualityController {
 
@@ -151,5 +155,64 @@ class AdminDataQualityController {
             log.debug("ignore duplicate enable filter request")
         }
         redirect(action: 'filters', id: qf.qualityCategory.qualityProfile.id)
+    }
+
+    def exportProfile() {
+        QualityProfile profile = QualityProfile.get(params.long('id'))
+
+        if (profile) {
+            String fileName = 'profile_' + params.long('id')
+            response.setHeader('Content-Disposition', 'attachment; filename=' + fileName + '.json')
+            response.setContentType("text");
+
+            def json = new JSON(profile)
+            json.setPrettyPrint(true)
+            response.getOutputStream() << json
+        }
+    }
+
+    @Transactional
+    def importProfile() {
+        while (true) {
+            def f = request.getFile('filejson')
+            // if file not selected or empty
+            if (f == null || f.empty) {
+                flash.message = 'File selected is empty'
+                break
+            }
+
+            QualityProfile profile = null
+            try {
+                // convert json to QualityProfile
+                profile = new Gson().fromJson(new InputStreamReader(f.getInputStream()), QualityProfile.class);
+            } catch (e) {
+                flash.message = e.getLocalizedMessage()
+                break
+            }
+
+            // Gson doesn't validate fields, we check name/shortname here
+            if (StringUtils.isBlank(profile.name) || StringUtils.isBlank(profile.shortName)) {
+                flash.message = "profile name/shortname can't be empty"
+                break
+            }
+
+            try {
+                for (QualityCategory category : profile.categories) {
+                    category.qualityProfile = profile
+
+                    for (QualityFilter filter : category.qualityFilters) {
+                        filter.qualityCategory = category
+                    }
+                }
+
+                // safe whole profile, if any filed fails validation an exception will be thrown
+                qualityService.createOrUpdateProfile(profile)
+            } catch (ValidationException e) {
+                flash.errors = e.errors
+            }
+            break
+        }
+
+        redirect(action: 'profiles')
     }
 }

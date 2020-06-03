@@ -43,9 +43,10 @@
         </div>
     </g:hasErrors>
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12" style="margin-bottom: 5px">
             <h1>Data Quality Profiles</h1>
             <button data-toggle="modal" data-target="#save-profile-modal" class="btn btn-primary"><alatag:message code="add.profile.button" default="Add Profile" /></button>
+            <button data-toggle="modal" data-target="#import-profile-modal" class="btn btn-primary"><alatag:message code="dq.admin.import.profile.button" default="Import a profile"/></button>
         </div>
         <div class="col-md-12">
             <table class="table table-bordered table-hover table-striped table-responsive">
@@ -80,6 +81,7 @@
                                 <g:hiddenField name="id" value="${profile.id}" />
                                 <button type="submit" class="btn btn-danger" ${profile.isDefault ? 'disabled' : ''}><i class="fa fa-trash"></i></button>
                             </g:form>
+                            <g:link action="exportProfile" id="${profile.id}"><button class="btn btn-default"><alatag:message code="dq.admin.export.profile.button" default="Export profile"/></button></g:link></td>
                         </td>
                     </tr>
                 </g:each>
@@ -128,8 +130,29 @@
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
+
+        <div id="import-profile-modal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><alatag:message code="dq.admin.uploadprofile.modal.title" default="Import a profile" /></h4>
+                    </div>
+                    <div class="modal-body">
+                        <g:form name="import-profile-form" action="importProfile" enctype="multipart/form-data" useToken="true">
+                            <input type="file" name="filejson"/>
+                        </g:form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" form="import-profile-form" class="btn btn-primary">Upload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
 <asset:script type="text/javascript">
     $(function() {
         // var saveProfileModal = $('#save-profile-modal');//.on('shown.bs.modal'
