@@ -214,10 +214,8 @@ class OccurrenceTagLib {
         fqs += qualityCategories.collect { "${it.qualityFilters.findAll { it.enabled }*.filter.join(' AND ')}" }
         searchParams.fq = fqs
 
-//        attrs.uri = '/download'
         attrs.controller = 'download'
         attrs.params = [
-//                searchParams: sr?.urlParameters?.encodeAsURL(),
                 searchParams: MoreWebUtils.toQueryString(searchParams),
                 qualityFiltersInfo: [] + qualityCategories.collect { "${it.name}:${it.qualityFilters.findAll { it.enabled }*.filter.join(' AND ')}".toString() },
                 targetUri: request.forwardURI,

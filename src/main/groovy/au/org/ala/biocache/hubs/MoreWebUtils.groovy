@@ -1,7 +1,5 @@
 package au.org.ala.biocache.hubs
 
-import grails.web.servlet.mvc.GrailsParameterMap
-
 class MoreWebUtils {
 
     /**
