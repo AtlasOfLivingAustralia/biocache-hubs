@@ -377,36 +377,34 @@
                                                     <table class="table table-bordered table-condensed table-striped scrollTable">
                                                         <tr><td><alatag:message code="dq.profiledetail.profiletable.header.profilename" default="Profile name"/></td><td>${activeProfile.name}</td></tr>
                                                         <tr><td><alatag:message code="dq.profiledetail.profiletable.header.profileshortname" default="Profile short name"/></td><td>${activeProfile.shortName}</td></tr>
+                                                        <tr><td><alatag:message code="dq.profiledetail.profiletable.header.profiledescription" default="Profile description"/></td><td>${activeProfile.description}</td></tr>
                                                         <tr><td><alatag:message code="dq.profiledetail.profiletable.header.owner" default="Owner"/></td><td>${activeProfile.contactName}</td></tr>
                                                         <tr><td><alatag:message code="dq.profiledetail.profiletable.header.contact" default="Contact"/></td><td>${activeProfile.contactEmail}</td></tr>
                                                     </table>
 
-                                                    <h4><alatag:message code="dq.profiledetail.categorylabel" default="Categories"/>:</h4>
+                                                    <h4><alatag:message code="dq.profiledetail.categorylabel" default="Filter categories"/>:</h4>
                                                     <g:each var="category" in="${activeProfile.categories}">
-                                                        <div>
-                                                            <g:if test = "${category.enabled}">
-                                                                <input type="checkbox" disabled="disabled" value="Bike" checked title="This Data Quality category is enabled">
-                                                            </g:if>
-                                                            <g:else>
-                                                                <input type="checkbox" disabled="disabled" value="Bike" title="This Data Quality category is disabled">
-                                                            </g:else>
-                                                            <label style="font-weight: normal;">&nbsp;${category.name}</label><br>
-                                                            ${category.description}
-                                                        </div>
-                                                        <table class="table table-bordered table-condensed table-striped scrollTable">
-                                                            <tr>
-                                                                <th><alatag:message code="dq.profiledetail.filtertable.header.description" default="Filter description"/></th>
-                                                                <th><alatag:message code="dq.profiledetail.filtertable.header.value" default="Filter value"/></th>
-                                                                <th><alatag:message code="dq.profiledetail.filtertable.header.enabled" default="Enabled"/></th>
-                                                            </tr>
-                                                            <g:each var="filter" in="${category.qualityFilters}">
+                                                        %{-- only when the category is enabled and have enabled filters--}%
+                                                        <g:if test = "${category.enabled && category.qualityFilters.findAll{it.enabled}.size() > 0}">
+                                                            <div>
+                                                                ${category.name}<br>
+                                                                ${category.description}
+                                                            </div>
+                                                            <table class="table table-bordered table-condensed table-striped scrollTable">
                                                                 <tr>
-                                                                    <td>${filter.description}</td>
-                                                                    <td>${filter.filter}</td>
-                                                                    <td>${filter.enabled}</td>
+                                                                    <th><alatag:message code="dq.profiledetail.filtertable.header.description" default="Filter description"/></th>
+                                                                    <th><alatag:message code="dq.profiledetail.filtertable.header.value" default="Filter value"/></th>
                                                                 </tr>
-                                                            </g:each>
-                                                        </table>
+                                                                <g:each var="filter" in="${category.qualityFilters}">
+                                                                    <g:if test="${filter.enabled}">
+                                                                        <tr>
+                                                                            <td>${filter.description}</td>
+                                                                            <td>${filter.filter}</td>
+                                                                        </tr>
+                                                                    </g:if>
+                                                                </g:each>
+                                                            </table>
+                                                        </g:if>
                                                     </g:each>
                                                 </div>
                                             </div>
