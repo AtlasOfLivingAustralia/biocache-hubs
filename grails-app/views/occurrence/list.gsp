@@ -280,7 +280,7 @@
                         <div class="activeFilters col-sm-12">
                             <span class="pull-right"><a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse"><i class="fa fa-caret-down"></i></a></span>
                             <div><b><alatag:message code="quality.filters.heading" default="Data Quality Filters"/></b>:
-                            <g:if test="${qualityProfiles.size() > 1}">
+                            <g:if test="${qualityProfiles.size() >= 1}">
                                 <span class="dropdown">
                                     <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         ${searchRequestParams.disableAllQualityFilters ? 'Disabled' : activeProfile.name}
