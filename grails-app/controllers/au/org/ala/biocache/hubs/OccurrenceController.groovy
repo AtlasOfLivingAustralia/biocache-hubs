@@ -184,7 +184,7 @@ class OccurrenceController {
 
             def (userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors) = postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj)
 
-            def translatedFilterMap = postProcessingService.translateValues(qualityService.getGroupedEnabledFilters(requestParams.qualityProfile), webServicesService.getMessagesPropertiesFile())
+            def translatedFilterMap = postProcessingService.translateValues(qualityService.getGroupedEnabledFilters(requestParams.qualityProfile), webServicesService.getMessagesPropertiesFile(), webServicesService.getAssertionCodeMap())
 
             log.debug "defaultFacets = ${defaultFacets}"
 

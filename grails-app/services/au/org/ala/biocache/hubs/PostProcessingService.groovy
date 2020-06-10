@@ -604,12 +604,12 @@ class PostProcessingService {
         keys as Set
     }
 
-    def translateValues(qualityFiltersByLabel, map) {
+    def translateValues(qualityFiltersByLabel, propertyMap, assertionMap) {
         def translatedFilterMap = [:]
         qualityFiltersByLabel.each { label, filters ->
             def translatedFilters = [:]
             filters.each { filter ->
-                def rslt = parseSimpleFq(filter.filter, map)
+                def rslt = parseSimpleFq(filter.filter, propertyMap, assertionMap)
                 if (rslt != null) {
                     translatedFilters[rslt[0]] = rslt[1]
                 }
@@ -629,7 +629,7 @@ class PostProcessingService {
      * @return null if no translation found. [value, translation] otherwise
      */
 
-    private def parseSimpleFq(String fq, lookupMap) {
+    private def parseSimpleFq(String fq, propertyMap, assertionMap) {
         def idx = fq.indexOf(':')
         if (idx == -1) return null
 
@@ -645,11 +645,20 @@ class PostProcessingService {
 
         if (value.length() >= 2 && value[0] == '"' && value[value.length() - 1] == '"') value = value.substring(1, value.length() - 1)
 
-        def lookup = key + '.' + value
+        def retVal = null
+        // if it's an assertion, find it in assertion map first
+        if (key.equals('assertions')) {
+            // need a json object here so that it can be passed to html as an object instead of a String
+            retVal = assertionMap.get(value) ? new JSONObject(assertionMap.get(value)) : null
+        }
 
-        def retVal = lookupMap.get(lookup)
         if (retVal == null) {
-            retVal = lookupMap.get(value)
+            def lookup = key + '.' + value
+
+            retVal = propertyMap.get(lookup)
+            if (retVal == null) {
+                retVal = propertyMap.get(value)
+            }
         }
         return retVal != null ? [value, retVal] : null
     }

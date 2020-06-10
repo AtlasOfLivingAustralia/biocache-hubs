@@ -412,18 +412,58 @@ $(document).ready(function() {
 
             $.each(dqtranslation, function(key, val) {
                 // replace :value or :"value" so same value appears in field info/description won't be replaced
+                // for assertion values, val will be a map, for other values val is just a string
+                // check type of val to see if we need to set popover (for assertions)
+                var showPopOver = typeof(val) === 'object';
                 if (fq.indexOf(":" + key) != -1) {
-                    fq = fq.replace(":" + key, '<span style="color: #53377A;cursor:pointer;" title="' + val + '">' + ":" + key + "</span>")
+                    if (showPopOver) {
+                        fq = fq.replace(":" + key, '<span style="color: #53377A">:' + key + '</span>' + '<a href="#" data-toggle="popover" data-name="' + val.name + '" data-desc=\'' + val.description + '\' data-wiki="' + val.wiki + '" class="fqpopover">&nbsp;<i class="glyphicon glyphicon-question-sign"></i></a>');
+                    } else {
+                        fq = fq.replace(":" + key, '<span style="color: #53377A;cursor:pointer;" title="' + val + '">' + ":" + key + "</span>");
+                    }
                 } else if (fq.indexOf(':"' + key + '"') != -1) {
-                    fq = fq.replace(':"' + key + '"', '<span style="color: #53377A;cursor:pointer;" title="' + val + '">' + ':"' + key + '"</span>')
+                    if (showPopOver) {
+                        fq = fq.replace(':"' + key + '"', '<span style="color: #53377A">:"' + key + '"</span>' + '<a href="#" data-toggle="popover" data-name="' + val.name + '" data-desc=\'' + val.description + '\' data-wiki="' + val.wiki + '" class="fqpopover">&nbsp;<i class="glyphicon glyphicon-question-sign"></i></a>');
+                    } else {
+                        fq = fq.replace(':"' + key + '"', '<span style="color: #53377A;cursor:pointer;" title="' + val + '">' + ':"' + key + '"</span>');
+                    }
                 }
             })
 
             $('#spinnerRow').hide();
-            $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i><br><b>Description: </b>" + description)
+            $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i><br><b>Description: </b>" + description);
             // clear content
-            $("table#DQDetailsTable tbody").html("")
-            $("table#DQDetailsTable tbody").append(html)
+            $("table#DQDetailsTable tbody").html("");
+            $("table#DQDetailsTable tbody").append(html);
+
+            // because it's a popover inside a modal, need to call popover() here
+            var popovers = $('.fqpopover').popover({
+                html : true,
+                trigger: "focus",
+                placement: "auto", // auto position
+                viewport: '#modal-body', // to control popovers within modal body
+                title: function() {
+                    return $(this).data("name");
+                },
+                content: function() {
+                    var name = $(this).data("name");
+                    var description = $(this).data("desc");
+                    var content = "<div>" + description + "</div>";
+
+                    if ($(this).data("wiki") != 'undefined') {
+                        content += "<div><i class='glyphicon glyphicon-share-alt'></i>&nbsp;<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" +
+                                     name + "' target='wiki' title='More details on the wiki page'>Wiki page</a></div>";
+                    }
+                    return content;
+                }
+            })
+
+            $.each(popovers, function( index, el ) {
+                $(el).on("show.bs.popover", function(e) {
+                    // remove the max-width limit of .popover
+                    $(el).data("bs.popover").tip().css({"max-width": "none"});
+                })
+            });
         })
     })
 

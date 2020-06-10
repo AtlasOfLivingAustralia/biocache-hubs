@@ -344,7 +344,7 @@
                                                     <h3 id="fqdetail-heading"></h3>
                                                 </div>
 
-                                                <div class="modal-body">
+                                                <div class="modal-body" id="modal-body">
                                                     <p id="filter-value"></p>
                                                     <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable">
                                                         <thead class="fixedHeader">

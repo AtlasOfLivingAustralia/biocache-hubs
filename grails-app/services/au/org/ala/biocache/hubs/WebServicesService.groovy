@@ -16,6 +16,10 @@ import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
 import org.springframework.web.client.RestClientException
+import org.supercsv.cellprocessor.ift.CellProcessor
+import org.supercsv.io.CsvListReader
+import org.supercsv.io.ICsvListReader
+import org.supercsv.prefs.CsvPreference
 
 import javax.annotation.PostConstruct
 
@@ -407,6 +411,12 @@ class WebServicesService {
         }
     }
 
+    @Cacheable('longTermCache')
+    def JSONArray getAssertionCodes() {
+        def url = "${grailsApplication.config.biocache.baseUrl}/assertions/codes"
+        return getJsonElements(url)
+    }
+
     /**
      * Generate a Map of image url (key) with image file size (like ls -h) (value)
      *
@@ -643,5 +653,75 @@ class WebServicesService {
             }
         }
         return map
+    }
+
+    def getAssertionCodeMap() {
+        JSONArray codes = getAssertionCodes() // code <-> name
+        Map dataQualityCodes = getAllCodes()  // code -> detail
+
+        // convert to name -> detail
+        return codes.findAll{dataQualityCodes.containsKey(String.valueOf(it.code))}.collectEntries{[(it.name) : dataQualityCodes.get(String.valueOf(it.code))]}
+    }
+
+    def getAllCodes() {
+        Map dataQualityCodes = [:]
+        String dataQualityCsv = getDataQualityCsv() // cached
+        ICsvListReader listReader = null
+
+        try {
+            listReader = new CsvListReader(new StringReader(dataQualityCsv), CsvPreference.STANDARD_PREFERENCE)
+            listReader.getHeader(true) // skip the header (can't be used with CsvListReader)
+            final CellProcessor[] processors = getProcessors()
+
+            List<Object> dataQualityList
+            while ((dataQualityList = listReader.read(processors)) != null) {
+                //log.debug("row: " + StringUtils.join(dataQualityList, "|"));
+                Map<String, String> dataQualityEls = new HashMap<String, String>();
+                if (dataQualityList.get(1) != null) {
+                    dataQualityEls.put("name", (String) dataQualityList.get(1));
+                }
+                if (dataQualityList.get(3) != null) {
+                    dataQualityEls.put("description", (String) dataQualityList.get(3));
+                }
+                if (dataQualityList.get(4) != null) {
+                    dataQualityEls.put("wiki", (String) dataQualityList.get(4));
+                }
+                if (dataQualityList.get(0) != null) {
+                    dataQualityCodes.put((String) dataQualityList.get(0), dataQualityEls);
+                }
+            }
+        } finally {
+            if (listReader != null) {
+                listReader.close();
+            }
+        }
+        dataQualityCodes
+    }
+
+    /**
+     * CellProcessor method as required by SuperCSV
+     *
+     * @return
+     */
+    private static CellProcessor[] getProcessors() {
+        final CellProcessor[] processors = [
+                null, // col 1
+                null, // col 2
+                null, // col 3
+                null, // col 4
+                null, // col 5
+                null, // col 6
+                null, // col 7
+                null, // col 8
+                null, // col 9
+                null, // col 10
+                null, // col 11
+                null, // col 12
+                null, // col 13
+                null, // col 14
+                null, // col 15
+        ]
+
+        return processors
     }
 }
