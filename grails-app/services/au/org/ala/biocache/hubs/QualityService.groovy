@@ -97,7 +97,7 @@ class QualityService {
     @Transactional(readOnly = true)
     List<QualityCategory> findAllEnabledCategories(String profileName) {
         QualityProfile qp = activeProfile(profileName)
-        QualityCategory.findAllByQualityProfileAndEnabled(qp, true)
+        QualityCategory.findAllByQualityProfileAndEnabled(qp, true).findAll { category -> category.qualityFilters?.findAll { it.enabled }?.size() > 0 }
     }
 
     QualityProfile activeProfile(String profileName) {
