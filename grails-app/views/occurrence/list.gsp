@@ -299,6 +299,50 @@
                             </g:else>
                             <g:if test="${!searchRequestParams.disableAllQualityFilters}">
                                 <a href="#DQProfileDetails" data-toggle="modal" role="button"><button type="button" class="btn btn-default btn-xs" title="Profile description">info</button></a>
+                                <div id="DQProfileDetails" class="modal fade" role="dialog">
+                                    <div class="modal-dialog" role="document" id="DQProfileDetailsModal">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h4><alatag:message code="dq.profiledetail.title" default="Data quality profile description"/></h4>
+                                                <table class="table table-bordered table-condensed table-striped scrollTable">
+                                                    <tr><td><alatag:message code="dq.profiledetail.profiletable.header.profilename" default="Profile name"/></td><td>${activeProfile.name}</td></tr>
+                                                    <tr><td><alatag:message code="dq.profiledetail.profiletable.header.profileshortname" default="Profile short name"/></td><td>${activeProfile.shortName}</td></tr>
+                                                    <tr><td><alatag:message code="dq.profiledetail.profiletable.header.profiledescription" default="Profile description"/></td><td>${activeProfile.description}</td></tr>
+                                                    <tr><td><alatag:message code="dq.profiledetail.profiletable.header.owner" default="Owner"/></td><td>${activeProfile.contactName}</td></tr>
+                                                    <tr><td><alatag:message code="dq.profiledetail.profiletable.header.contact" default="Contact"/></td><td>${activeProfile.contactEmail}</td></tr>
+                                                </table>
+
+                                                <h4><alatag:message code="dq.profiledetail.categorylabel" default="Filter categories"/>:</h4>
+                                                <g:each var="category" in="${activeProfile.categories}">
+                                                %{-- only when the category is enabled and have enabled filters--}%
+                                                    <g:if test = "${category.enabled && category.qualityFilters.findAll{it.enabled}.size() > 0}">
+                                                        <div>
+                                                            ${category.name}<br>
+                                                            ${category.description}
+                                                        </div>
+                                                        <table class="table table-bordered table-condensed table-striped scrollTable">
+                                                            <tr>
+                                                                <th><alatag:message code="dq.profiledetail.filtertable.header.description" default="Filter description"/></th>
+                                                                <th><alatag:message code="dq.profiledetail.filtertable.header.value" default="Filter value"/></th>
+                                                            </tr>
+                                                            <g:each var="filter" in="${category.qualityFilters}">
+                                                                <g:if test="${filter.enabled}">
+                                                                    <tr>
+                                                                        <td>${filter.description}</td>
+                                                                        <td>${filter.filter}</td>
+                                                                    </tr>
+                                                                </g:if>
+                                                            </g:each>
+                                                        </table>
+                                                    </g:if>
+                                                </g:each>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </g:if>
                             </div>
 
@@ -366,50 +410,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="DQProfileDetails" class="modal fade" role="dialog">
-                                        <div class="modal-dialog" role="document" id="DQProfileDetailsModal">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <h4><alatag:message code="dq.profiledetail.title" default="Data quality profile description"/></h4>
-                                                    <table class="table table-bordered table-condensed table-striped scrollTable">
-                                                        <tr><td><alatag:message code="dq.profiledetail.profiletable.header.profilename" default="Profile name"/></td><td>${activeProfile.name}</td></tr>
-                                                        <tr><td><alatag:message code="dq.profiledetail.profiletable.header.profileshortname" default="Profile short name"/></td><td>${activeProfile.shortName}</td></tr>
-                                                        <tr><td><alatag:message code="dq.profiledetail.profiletable.header.profiledescription" default="Profile description"/></td><td>${activeProfile.description}</td></tr>
-                                                        <tr><td><alatag:message code="dq.profiledetail.profiletable.header.owner" default="Owner"/></td><td>${activeProfile.contactName}</td></tr>
-                                                        <tr><td><alatag:message code="dq.profiledetail.profiletable.header.contact" default="Contact"/></td><td>${activeProfile.contactEmail}</td></tr>
-                                                    </table>
 
-                                                    <h4><alatag:message code="dq.profiledetail.categorylabel" default="Filter categories"/>:</h4>
-                                                    <g:each var="category" in="${activeProfile.categories}">
-                                                        %{-- only when the category is enabled and have enabled filters--}%
-                                                        <g:if test = "${category.enabled && category.qualityFilters.findAll{it.enabled}.size() > 0}">
-                                                            <div>
-                                                                ${category.name}<br>
-                                                                ${category.description}
-                                                            </div>
-                                                            <table class="table table-bordered table-condensed table-striped scrollTable">
-                                                                <tr>
-                                                                    <th><alatag:message code="dq.profiledetail.filtertable.header.description" default="Filter description"/></th>
-                                                                    <th><alatag:message code="dq.profiledetail.filtertable.header.value" default="Filter value"/></th>
-                                                                </tr>
-                                                                <g:each var="filter" in="${category.qualityFilters}">
-                                                                    <g:if test="${filter.enabled}">
-                                                                        <tr>
-                                                                            <td>${filter.description}</td>
-                                                                            <td>${filter.filter}</td>
-                                                                        </tr>
-                                                                    </g:if>
-                                                                </g:each>
-                                                            </table>
-                                                        </g:if>
-                                                    </g:each>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </g:else>
                         </div>
