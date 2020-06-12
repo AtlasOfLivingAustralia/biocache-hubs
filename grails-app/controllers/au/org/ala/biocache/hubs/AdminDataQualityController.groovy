@@ -165,9 +165,9 @@ class AdminDataQualityController {
             response.setHeader('Content-Disposition', 'attachment; filename=' + fileName + '.json')
             response.setContentType("text");
 
-            def json = new JSON(profile)
-            json.setPrettyPrint(true)
-            response.getOutputStream() << json
+            def json = profile as JSON
+            json.prettyPrint = true
+            json.render response
         }
     }
 
@@ -190,19 +190,20 @@ class AdminDataQualityController {
                 break
             }
 
-            // Gson doesn't validate fields, we check name/shortname here
-            if (StringUtils.isBlank(profile.name) || StringUtils.isBlank(profile.shortName)) {
-                flash.message = "profile name/shortname can't be empty"
-                break
-            }
-
             try {
+                // setup mapping
                 for (QualityCategory category : profile.categories) {
                     category.qualityProfile = profile
 
                     for (QualityFilter filter : category.qualityFilters) {
                         filter.qualityCategory = category
                     }
+                }
+
+                // validate profile
+                if (!profile.validate()) {
+                    flash.errors = profile.errors
+                    break;
                 }
 
                 // safe whole profile, if any filed fails validation an exception will be thrown

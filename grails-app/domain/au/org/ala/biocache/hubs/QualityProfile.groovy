@@ -25,8 +25,8 @@ class QualityProfile {
     static hasMany = [categories: QualityCategory]
 
     static constraints = {
-        name unique: true
-        shortName unique: true
+        name unique: true, blank: false, nullable: false
+        shortName unique: true, blank: false, nullable: false
         contactEmail blank: true, nullable: true
 
         // TODO remove after db updated
