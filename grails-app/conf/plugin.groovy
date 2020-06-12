@@ -54,6 +54,7 @@ biocache.baseUrl = "https://biocache-ws.ala.org.au/ws"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
 biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
+biocache.indexedFieldsUrl = "${biocache.baseUrl}/index/fields"
 //biocache.groupedFacetsUrl = "${biocache.baseUrl}/search/grouped/facets" // optional - define in hub only
 collections.baseUrl = "https://collections.ala.org.au"
 alerts.baseUrl = "https://alerts.ala.org.au"

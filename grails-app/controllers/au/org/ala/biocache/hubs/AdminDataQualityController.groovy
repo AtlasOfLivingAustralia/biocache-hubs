@@ -215,4 +215,15 @@ class AdminDataQualityController {
 
         redirect(action: 'profiles')
     }
+
+    def fieldDescription(String field, String include, String value) {
+        boolean isInclude = include == 'include'
+        def locale = request.locale
+        def description = qualityService.getFieldDescription(isInclude, field, value, locale)
+        if (description) {
+            render description
+        } else {
+            render status: 404
+        }
+    }
 }

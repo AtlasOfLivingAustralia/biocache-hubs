@@ -129,6 +129,7 @@
                                 <div class="row">
                                     <div class="col-md-2 smallpadding">
                                         <label for="${filter.id + '-description'}">Filter Description</label>
+                                        <button type="button" class="btn btn-xs btn-default btn-load-filter-desc" title="Load field description"><i class="fa fa-download"></i></button>
                                     </div>
                                     <div class="col-md-3 smallpadding">
                                         <label for="${filter.id + '-key'}">Filter Key</label>
@@ -143,7 +144,7 @@
 
                                 <div class="row current-filter filter-row" data-fq="${filter.filter}">
                                     <div class="col-md-2 smallpadding">
-                                        <g:textField class="form-control filterDescription" name="description" id="${filter.id + '-description'}" value="${filter.description}" data-orig="${filter.description}" style="width: 100%"/>
+                                        <g:textArea class="form-control filterDescription" name="description" id="${filter.id + '-description'}" value="${filter.description}" data-orig="${filter.description}" style="width: 100%"/>
                                     </div>
                                     <div class="col-md-3 smallpadding" style="display: flex;">
                                         <select class="form-control exclude" style="width: 30%">
@@ -177,6 +178,7 @@
                             <div class="row">
                                 <div class="col-md-2 smallpadding">
                                     <label for="${category.id + '-description'}">Filter Description</label>
+                                    <button type="button" class="btn btn-xs btn-default btn-load-filter-desc" title="Load field description"><i class="fa fa-download"></i></button>
                                 </div>
                                 <div class="col-md-3 smallpadding">
                                     <label for="${category.id + '-key'}">Filter Key</label>
@@ -190,7 +192,7 @@
                             </div>
                             <div class="row new-filter filter-row">
                                 <div class="col-md-2 smallpadding">
-                                    <g:textField class="form-control" name="description" id="${category.id + '-description'}" placeholder="Filter Description" style="width: 100%"/>
+                                    <g:textArea class="form-control" name="description" id="${category.id + '-description'}" placeholder="Filter Description" style="width: 100%"/>
                                 </div>
                                 <div class="col-md-3 smallpadding" style="display: flex">
                                     <select class="form-control exclude" from="" style="width: 30%">
@@ -253,7 +255,7 @@
 <asset:script type="text/javascript">
     $(document).ready(function() {
         setControlValues();
-    })
+    });
 
     function setControlValues() {
         // populate fqs
@@ -377,6 +379,32 @@
     });
     $('input[type=checkbox][name=enabled]').on('change', function(e) {
         $(this).closest('form').submit();
+    });
+
+    $('.btn-load-filter-desc').on('click', function(e) {
+        var $this = $(this);
+        var $form = $this.closest('form');
+        var $desc = $form.find('*[name=description]');
+        var field = $form.find('*[name=filterKey]').val();
+        var include = $form.find('select.exclude').val();
+        var value = $form.find('*[name=filterValue]').val();
+        if (!$desc.val() || confirm("Do you want to overwrite the current description?")) {
+            $.get("${g.createLink(controller: 'adminDataQuality', action: 'fieldDescription')}", {
+                    field: field,
+                    include: include,
+                    value: value
+            }).done(function(data) {
+                $desc.val(data);
+                $desc.trigger("change");
+            }).fail(function( jqXHR, textStatus, error ) {
+                if (jqXHR.status === 404) {
+                    alert( "No description found" );
+                } else {
+                    alert( "An error occured");
+                }
+            });
+        }
+
     });
 </asset:script>
 </html>
