@@ -320,7 +320,7 @@
                                                 %{-- only when the category is enabled and have enabled filters--}%
                                                     <g:if test = "${category.enabled && category.qualityFilters.findAll{it.enabled}.size() > 0}">
                                                         <div>
-                                                            ${category.name}<br>
+                                                            <b>${category.name}</b><br>
                                                             ${category.description}
                                                         </div>
                                                         <table class="table table-bordered table-condensed table-striped scrollTable">
