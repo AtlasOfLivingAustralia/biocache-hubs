@@ -13,7 +13,9 @@ import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.TermQuery
 import org.apache.lucene.search.TermRangeQuery
+import org.grails.web.json.JSONArray
 import org.springframework.context.MessageSource
+import org.springframework.web.util.UriComponentsBuilder
 
 import java.util.concurrent.TimeUnit
 
@@ -264,46 +266,25 @@ class QualityService {
         if (field == 'assertions') {
             def assertionsMap = webServicesService.getAssertionCodeMap()
             description = assertionsMap[dequote(cleanedValue)]?.description
-            if (include) {
-                description = messageSource.getMessage('field.description.vocab.include', [description].toArray(), 'Include only records with {0}', locale)
-            } else {
-                description = messageSource.getMessage('field.description.vocab.exclude', [description].toArray(), 'Exclude all records with {0}', locale)
-            }
+        }
+        if (!description) {
+            def biocacheField = getBiocacheField(field)
+            description = biocacheField?.description
         }
         if (!description) {
             def props = webServicesService.getMessagesPropertiesFile()
-            description = props["$field.$cleanedValue"] ?: props[cleanedValue]
-            if (description) {
-                if (include) {
-                    description = messageSource.getMessage('field.description.value.include', [description].toArray(), 'Include only records that are {0}', locale)
-                } else {
-                    description = messageSource.getMessage('field.description.value.exclude', [description].toArray(), 'Exclude all records that are {0}', locale)
-                }
+            description = props["$field.$cleanedValue"] ?: props[cleanedValue] ?: props[field]
+        }
+
+
+        if (description) {
+            if (include) {
+                description = messageSource.getMessage('field.description.include', [description].toArray(), 'Include only records where {0}', locale)
+            } else {
+                description = messageSource.getMessage('field.description.exclude', [description].toArray(), 'Exclude all records where {0}', locale)
             }
-//            else {
-//                description = props[field]
-//                if (description) {
-//                    if (include) {
-//                        description = messageSource.getMessage('field.description.field.include', [description].toArray(), 'Include only records that are {0}', locale)
-//                    } else {
-//                        description = messageSource.getMessage('field.description.field.exclude', [description].toArray(), 'Exclude all records that are {0}', locale)
-//                    }
-//                }
-//            }
 
         }
-//        if (!description) {
-//            def biocacheFields = getBiocacheFields()
-//            def biocacheField = biocacheFields?.find { it.name == field }
-//            description = biocacheField?.description
-//            if (description) {
-//                if (include) {
-//                    description = messageSource.getMessage('field.description.field.include', [description].toArray(), 'Include only records that are {0}', locale)
-//                } else {
-//                    description = messageSource.getMessage('field.description.field.exclude', [description].toArray(), 'Exclude all records that are {0}', locale)
-//                }
-//            }
-//        }
 
         return description
     }
@@ -345,6 +326,32 @@ class QualityService {
         def url = grailsApplication.config.getProperty('biocache.indexedFieldsUrl', String)
         def resp = webServicesService.getJsonElements(url)
 
+        resp
+    }
+
+    /**
+     * Get field info from http://biocache.ala.org.au/ws/index/fields?fl=<field>.
+     * Example record:
+     *
+     * {
+     *   dwcTerm: "basisOfRecord",
+     *   downloadDescription: "Basis Of Record - processed",
+     *   indexed: true,
+     *   stored: true,
+     *   downloadName: "basisOfRecord.p",
+     *   multivalue: false,
+     *   classs: "Record",
+     *   description: "Basis Of Record - processed",
+     *   dataType: "string",
+     *   name: "basis_of_record"
+     * }
+     *
+     */
+    def getBiocacheField(String field) {
+        def baseUrl = grailsApplication.config.getProperty('biocache.indexedFieldsUrl', String)
+        def url = UriComponentsBuilder.fromUriString(baseUrl).queryParam('fl', field).toUriString()
+        def resp = webServicesService.getJsonElements(url)
+        if (resp instanceof JSONArray && resp.length() > 0) resp = resp[0]
         resp
     }
 }

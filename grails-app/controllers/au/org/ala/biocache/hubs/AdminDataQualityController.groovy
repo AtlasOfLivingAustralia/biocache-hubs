@@ -218,7 +218,7 @@ class AdminDataQualityController {
     }
 
     def fieldDescription(String field, String include, String value) {
-        boolean isInclude = include == 'include'
+        boolean isInclude = include == 'Include'
         def locale = request.locale
         def description = qualityService.getFieldDescription(isInclude, field, value, locale)
         if (description) {
