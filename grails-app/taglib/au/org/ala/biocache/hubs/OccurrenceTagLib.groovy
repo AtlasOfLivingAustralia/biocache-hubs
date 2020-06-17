@@ -204,23 +204,35 @@ class OccurrenceTagLib {
 
     def download = { attrs, body ->
         def sr = attrs.remove('searchResults')
+        SearchRequestParams searchRequestParams = attrs.remove('searchRequestParams')
         def qualityCategories = attrs.remove('qualityCategories')
 
-        def searchParams = params.clone()
-        searchParams.remove('controller')
-        searchParams.remove('action')
-        searchParams.disableAllQualityFilters = true
-        def fqs = params.list('fq')
-        fqs += qualityCategories.collect { "${it.qualityFilters.findAll { it.enabled }*.filter.join(' AND ')}" }
-        searchParams.fq = fqs
+        def origParams = params.clone()
+        origParams.remove('controller')
+        origParams.remove('action')
+        def searchParams = origParams.clone()
+        def qualityFiltersInfo = []
 
         attrs.controller = 'download'
         attrs.params = [
-                searchParams: MoreWebUtils.toQueryString(searchParams),
-                qualityFiltersInfo: [] + qualityCategories.collect { "${it.name}:${it.qualityFilters.findAll { it.enabled }*.filter.join(' AND ')}".toString() },
                 targetUri: request.forwardURI,
                 totalRecords: sr?.totalRecords ?: 0
         ]
+
+        if (!searchRequestParams.disableAllQualityFilters) {
+            searchParams.disableAllQualityFilters = true
+            searchParams.remove('qualityProfile')
+            Set<String> disabled = searchRequestParams.disableQualityFilter as Set
+            def fqs = params.list('fq')
+            qualityFiltersInfo = qualityCategories.findAll { !disabled.contains(it.label) }.collect { "${it.qualityFilters.findAll { it.enabled }*.filter.join(' AND ')}" }
+            fqs += qualityFiltersInfo
+            searchParams.fq = fqs
+
+            attrs.params.returnParams = MoreWebUtils.toQueryString(origParams)
+        }
+
+        attrs.params.searchParams = MoreWebUtils.toQueryString(searchParams)
+        attrs.params.qualityFiltersInfo = qualityFiltersInfo
 
         out << g.link(attrs, body)
     }

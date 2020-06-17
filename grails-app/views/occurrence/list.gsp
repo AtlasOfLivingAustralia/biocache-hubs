@@ -253,7 +253,7 @@
                 </g:if>
                 <g:if test="${grailsApplication.config.useDownloadPlugin?.toBoolean()}">
                     <div id="downloads" class="btn btn-primary pull-right">
-                        <alatag:download searchResults="${sr}" qualityCategories="${qualityCategories}" class="tooltips newDownload" title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records">
+                        <alatag:download searchResults="${sr}" searchRequestParams="${searchRequestParams}" qualityCategories="${qualityCategories}" class="tooltips newDownload" title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records">
                             <i class="fa fa-download"></i>
                             &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/>
                         </alatag:download>
