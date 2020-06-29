@@ -116,6 +116,7 @@ class AdminDataQualityController {
     }
 
     def saveQualityFilter(QualityFilter qualityFilter) {
+        def profileid = qualityFilter.qualityCategory.qualityProfile.id
         withForm {
             try {
                 qualityService.createOrUpdateFilter(qualityFilter)
@@ -128,7 +129,7 @@ class AdminDataQualityController {
             // bad request
             log.debug("ignore duplicate save filter request. description:{}, filter:{}", qualityFilter.description, qualityFilter.filter)
         }
-        redirect(action: 'filters', id: qualityFilter.qualityCategory.qualityProfile.id)
+        redirect(action: 'filters', id: profileid)
     }
 
     def deleteQualityFilter() {
