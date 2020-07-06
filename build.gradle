@@ -10,7 +10,7 @@ buildscript {
     }
 }
 
-version "2.1.8-SNAPSHOT"
+version "2.1.8"
 group "au.org.ala.plugins.grails"
 
 apply plugin:"eclipse"
@@ -81,7 +81,7 @@ dependencies {
     compile "org.grails.plugins:ala-auth:3.2.2", noCache
 
     if(!inplace) {
-        compile "au.org.ala.plugins.grails:images-client-plugin:1.0", noCache
+        compile "au.org.ala.plugins.grails:images-client-plugin:1.2", noCache
         compile "au.org.ala.plugins.grails:ala-charts-plugin:2.0.1", noCache
     }
 
