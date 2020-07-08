@@ -261,9 +261,11 @@ class QualityService {
     @NotTransactional
     String getFieldDescription(boolean include, String field, String value, Locale locale) {
         def cleanedValue = dequote(value)
+        boolean isAssertion = field == 'assertions'
+        def result
 
         def description
-        if (field == 'assertions') {
+        if (isAssertion) {
             def assertionsMap = webServicesService.getAssertionCodeMap()
             description = assertionsMap[dequote(cleanedValue)]?.description
         }
@@ -276,17 +278,21 @@ class QualityService {
             description = props["$field.$cleanedValue"] ?: props[cleanedValue] ?: props[field]
         }
 
-
-        if (description) {
+        if (description && isAssertion) {
             if (include) {
-                description = messageSource.getMessage('field.description.include', [description].toArray(), 'Include only records where {0}', locale)
+                result = messageSource.getMessage('field.description.assertion.include', [description].toArray(), 'Include only records where {0}', locale)
             } else {
-                description = messageSource.getMessage('field.description.exclude', [description].toArray(), 'Exclude all records where {0}', locale)
+                result = messageSource.getMessage('field.description.assertion.exclude', [description].toArray(), 'Exclude all records where {0}', locale)
             }
-
+        } else if (description) {
+            if (include) {
+                result = messageSource.getMessage('field.description.include', [description, value].toArray(), 'Include only records where {0} is "{1}"', locale)
+            } else {
+                result = messageSource.getMessage('field.description.exclude', [description, value].toArray(), 'Exclude all records where {0} is "{1}"', locale)
+            }
         }
 
-        return description
+        return result
     }
 
     private String dequote(String string) {
