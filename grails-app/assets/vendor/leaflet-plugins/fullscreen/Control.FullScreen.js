@@ -1,9 +1,15 @@
+jQuery.i18n.properties({
+	name: 'messages',
+	path: BC_CONF.contextPath + '/messages/i18n/',
+	mode: 'map',
+	language: BC_CONF.locale // default is to use browser specified locale
+});
 (function() {
 
 L.Control.FullScreen = L.Control.extend({
 	options: {
 		position: 'topleft',
-		title: 'Full Screen',
+		title: jQuery.i18n.prop('advancedsearch.js.map.fullscreen'),
 		forceSeparateButton: false,
 		forcePseudoFullscreen: false
 	},
