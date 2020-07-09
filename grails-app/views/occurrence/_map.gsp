@@ -187,7 +187,7 @@
             center: [MAP_VAR.defaultLatitude, MAP_VAR.defaultLongitude],
             zoom: MAP_VAR.defaultZoom,
             minZoom: 1,
-            scrollWheelZoom: false,
+            scrollWheelZoom: ${(grailsApplication.config.map.scrollWheelZoom == true || grailsApplication.config.map.scrollWheelZoom == "true") ? true : false},
             fullscreenControl: true,
             fullscreenControlOptions: {
                 position: 'topleft'
