@@ -20,15 +20,14 @@
         scripts = document.getElementsByTagName('script');
     for (var i = 0, ii = scripts.length; i < ii; i++) {
       var path = scripts[i].getAttribute('src');
-      //if(re.test(path)) {
-      if(true) {  // any JS source will give us the asset path
+      if(re.test(path)) {
         var f = path.split ( '/' );
         f.pop ();
-        return f.join ( '/' ) + '/audiojs/'; // Grails work-around for asset pipeline
+        return f.join ( '/' ) + '/';
       }
     }
     // when no script found, an empty string causes the least confusion.
-    return ''; // Grails work-around for asset pipeline
+    return '/assets/audiojs/'; // Grails work-around for asset pipeline when scripts are bundled
   })();
 
   // ##The audiojs interface
@@ -241,12 +240,12 @@
     createAll: function(options, elements) {
       var audioElements = elements || document.getElementsByTagName('audio'),
           instances = []
-          options = options || {};
+      options = options || {};
       for (var i = 0, ii = audioElements.length; i < ii; i++) {
-        
+
         if ((" " + audioElements[i].parentNode.className + " ").replace(/[\n\t]/g, " ").indexOf(" audiojs ") > -1)
           continue;
-          
+
         instances.push(this.newInstance(audioElements[i], options));
       }
       return instances;
@@ -460,7 +459,7 @@
         var prepend = '',
             styles = document.getElementsByTagName('style'),
             css = string.replace(/\$1/g, audio.settings.imageLocation);
-            css = css.replace(/\$2/g, audio.settings.retinaImageLocation);
+        css = css.replace(/\$2/g, audio.settings.retinaImageLocation);
 
         for (var i = 0, ii = styles.length; i < ii; i++) {
           var title = styles[i].getAttribute('title');
@@ -582,19 +581,19 @@
       // As seen here: <https://github.com/dperini/ContentLoaded/>.
       ready: (function() { return function(fn) {
         var win = window, done = false, top = true,
-        doc = win.document, root = doc.documentElement,
-        add = doc.addEventListener ? 'addEventListener' : 'attachEvent',
-        rem = doc.addEventListener ? 'removeEventListener' : 'detachEvent',
-        pre = doc.addEventListener ? '' : 'on',
-        init = function(e) {
-          if (e.type == 'readystatechange' && doc.readyState != 'complete') return;
-          (e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
-          if (!done && (done = true)) fn.call(win, e.type || e);
-        },
-        poll = function() {
-          try { root.doScroll('left'); } catch(e) { setTimeout(poll, 50); return; }
-          init('poll');
-        };
+            doc = win.document, root = doc.documentElement,
+            add = doc.addEventListener ? 'addEventListener' : 'attachEvent',
+            rem = doc.addEventListener ? 'removeEventListener' : 'detachEvent',
+            pre = doc.addEventListener ? '' : 'on',
+            init = function(e) {
+              if (e.type == 'readystatechange' && doc.readyState != 'complete') return;
+              (e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
+              if (!done && (done = true)) fn.call(win, e.type || e);
+            },
+            poll = function() {
+              try { root.doScroll('left'); } catch(e) { setTimeout(poll, 50); return; }
+              init('poll');
+            };
         if (doc.readyState == 'complete') fn.call(win, 'lazy');
         else {
           if (doc.createEventObject && root.doScroll) {

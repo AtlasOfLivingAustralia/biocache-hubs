@@ -75,7 +75,7 @@
     <g:if test="${record.processed.attribution.collectionUid && collectionsWebappContext}">
         </a>
     </g:if>
-    <g:if test="${false && record.raw.occurrence.collectionCode}">
+    <g:if test="${record.raw.occurrence.collectionCode}">
         ${fieldsMap.put("collectionCode", true)}
         <g:if test="${collectionName || record.processed.attribution.collectionName}"><br/></g:if>
         <span class="originalValue" style="display:none"><g:message code="recordcore.span02" default="Supplied collection code"/> "${record.raw.occurrence.collectionCode}"</span>
@@ -884,9 +884,12 @@
         <table class="occurrenceTable table table-bordered table-striped table-condensed" id="miscellaneousPropertiesTable">
             <!-- Higher Geography -->
             <g:each in="${record.raw.miscProperties.sort()}" var="entry">
-                <g:set var="entryHtml"><span class='dwc'>${entry.key}</span></g:set>
-                <g:set var="label"><alatag:camelCaseToHuman text="${entryHtml}"/></g:set>
-                <alatag:occurrenceTableRow annotate="true" section="geospatial" fieldCode="${entry.key}" fieldName="${label}">${entry.value}</alatag:occurrenceTableRow>
+                <g:if test="${!StringUtils.containsIgnoreCase(dwcExcludeFields, entry.key)}">
+                    <g:set var="entryHtml"><span class='dwc'>${entry.key}</span></g:set>
+                    <g:set var="label"><alatag:camelCaseToHuman text="${entryHtml}"/></g:set>
+                    <alatag:occurrenceTableRow annotate="true" section="geospatial" fieldCode="${entry.key}"
+                                               fieldName="${label}">${entry.value}</alatag:occurrenceTableRow>
+                </g:if>
             </g:each>
         </table>
     </div>
