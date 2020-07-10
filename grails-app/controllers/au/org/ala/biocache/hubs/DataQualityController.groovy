@@ -44,23 +44,4 @@ class DataQualityController {
         render webServicesService.getAllCodes() as JSON
     }
 
-    def list() {
-        def profileName = params['profile']
-        def flatten = params.boolean('flatten', false)
-        def categories = qualityService.getEnabledCategoriesAndFilters(profileName)
-
-        if (flatten) {
-//            respond categories.collectMany { it.value*.filter }
-//            respond categories.collect { it.value*.filter.join(' AND ') }
-            respond categories.collectMany { category, filters ->
-                filters.collect { filter -> [ filter: filter.filter, category: category.label, title: filter.description ] }
-            }
-        } else {
-//            respond categories.collect { it.value*.filter }
-//            respond categories.collectEntries { category, filters -> [(category.label): filters*.filter.join (' AND ')] }
-//            respond categories.collectEntries { category, filters -> [(category.label): filters*.filter] }
-            respond categories.collectEntries { category, filters -> [(category.label): filters.collect { [filter: it.filter, title: it.description] } ] }
-        }
-    }
-
 }

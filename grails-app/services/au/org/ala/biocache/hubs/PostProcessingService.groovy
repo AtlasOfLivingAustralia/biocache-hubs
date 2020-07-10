@@ -504,7 +504,7 @@ class PostProcessingService {
         layerObjects
     }
 
-    def processUserFQInteraction(requestParams, activeFacetObj) {
+    def processUserFQInteraction(SpatialSearchRequestParams requestParams, activeFacetObj) {
         def disabled = requestParams.disableQualityFilter as Set
 
         // map from category label to filter names
@@ -539,7 +539,9 @@ class PostProcessingService {
         def dqInteractFQs = labels.collectEntries { [(it) : userFqInteractDQCategoryLabel.findAll { ufq, labellist -> labellist.contains(it) }.collect { ufq, labellist -> grouped?.find { facet -> facet.value == ufq}.displayName }.join(', ')] }
 
         // map from user fq to category names
-        def userFqInteractDQNames = userFqInteractDQCategoryLabel.collectEntries { [(it.key): it.value.collect { QualityCategory.findByLabel(it).name }.join(', ')] }
+        def profile = qualityService.activeProfile(requestParams.qualityProfile)
+        def labelToNameMap = profile.categories.collectEntries{ [(it.label): it.name] }
+        def userFqInteractDQNames = userFqInteractDQCategoryLabel.collectEntries { [(it.key): it.value.collect { labelToNameMap[it] }.join(', ')] }
 
         def colors = [
                 "#C10020", //# Vivid Red

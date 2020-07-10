@@ -15,11 +15,11 @@
 
 package au.org.ala.biocache.hubs
 
+import au.org.ala.dataquality.model.QualityCategory
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang.StringUtils
-import org.grails.web.util.WebUtils
 import org.owasp.html.HtmlPolicyBuilder
 import org.owasp.html.PolicyFactory
 import org.springframework.web.servlet.support.RequestContextUtils

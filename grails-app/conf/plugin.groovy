@@ -29,6 +29,8 @@
 auth.admin_role = "ROLE_ADMIN"
 serverName = 'http://dev.ala.org.au:8080'
 
+dataquality.baseUrl = 'https://biocache.ala.org.au/data-quality/'
+
 // skin settings
 organisation.baseUrl = "https://www.ala.org.au"
 skin.layout = "generic"

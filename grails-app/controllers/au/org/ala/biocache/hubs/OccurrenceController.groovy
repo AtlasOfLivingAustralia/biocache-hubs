@@ -216,7 +216,7 @@ class OccurrenceController {
                     UserFQColors: UserFQColors,
                     DQColors: DQColors,
                     activeProfile: qualityService.activeProfile(requestParams.qualityProfile),
-                    qualityProfiles: QualityProfile.findAllByEnabled(true)
+                    qualityProfiles: qualityService.findAllEnabledProfiles(true)
             ]
 
         } catch (Exception ex) {

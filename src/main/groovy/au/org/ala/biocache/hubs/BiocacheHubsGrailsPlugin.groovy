@@ -135,6 +135,7 @@ from the ALA biocache-service app (no local DB is required for this app).
             } catch (Exception e) {
                 println "Required resource 'bootstrap' not declared. Ensure the client app has this in their ApplicationResources.groovy file (or a plugin).", e
             }
+
         }
     }
 

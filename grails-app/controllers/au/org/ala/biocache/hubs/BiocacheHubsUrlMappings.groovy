@@ -36,7 +36,6 @@ class BiocacheHubsUrlMappings {
             action = [POST:'set', GET:'get']
         }
         "/"(redirect: [uri:"/search"])
-        "/admin/dataQuality/$action?/$id?(.$format)?"(controller:'adminDataQuality')
         "/$controller/$action?/$id?"{
             constraints {
                 // apply constraints here
