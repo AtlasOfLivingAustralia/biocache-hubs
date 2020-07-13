@@ -5,13 +5,13 @@
         <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
         <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
         <a id="spatialPortalLink" class="btn btn-default btn-sm tooltips"
-           href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="Continue analysis in ALA Spatial Portal">
+           href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="<g:message code="map.spatialportal.btn.title"/>">
             <i class="fa fa-map-marker"></i>&nbsp;&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
     </g:if>
-    <a href="#downloadMap" role="button" data-toggle="modal" class="btn btn-default btn-sm tooltips" title="Download image file (single colour mode)">
+    <a href="#downloadMap" role="button" data-toggle="modal" class="btn btn-default btn-sm tooltips" title="<g:message code="map.downloadmaps.btn.title"/>">
         <i class="fa fa-download"></i>&nbsp;&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
     <g:if test="${params.wkt}">
-        <a href="#downloadWKT" role="button" class="btn btn-default btn-sm tooltips" title="Download WKT file" onclick="downloadPolygon(); return false;">
+        <a href="#downloadWKT" role="button" class="btn btn-default btn-sm tooltips" title="<g:message code="map.downloadwkt.btn.title"/>" onclick="downloadPolygon(); return false;">
             <i class="glyphicon glyphicon-stop"></i>&nbsp;&nbsp;<g:message code="map.downloadwkt.btn.label" default="Download WKT"/></a>
     </g:if>
     <%-- <div id="spatialSearchFromMap" class="btn btn-default btn-small">
@@ -222,7 +222,7 @@
                     allowIntersection: false, // Restricts shapes to simple polygons
                     drawError: {
                         color: '#e1e100', // Color the shape will turn when intersects
-                        message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                        message: '<strong><g:message code="advancedsearch.js.map.error1"/></strong> <g:message code="advancedsearch.js.map.error2"/>' // Message that will show when intersect
                     },
                     shapeOptions: {
                         color: '#bada55'
@@ -470,14 +470,14 @@
                  addGridLegendItem();
              } else {
                 //update the legend
-                $('.legendTable').html('<tr><td>Loading legend....</td></tr>');
+                $('.legendTable').html('<tr><td><g:message code="map.loading.legend"/></td></tr>');
                 $.ajax({
                     url: "${request.contextPath}/occurrence/legend" + MAP_VAR.query + "&cm=" + colourByFacet + "&type=application/json",
                     success: function(data) {
                         $('.legendTable').html('');
 
                         $.each(data, function(index, legendDef){
-                            var legItemName = legendDef.name ? legendDef.name : 'Not specified';
+                            var legItemName = legendDef.name ? legendDef.name : '<g:message code="map.legend.not.specified"/>';
                             addLegendItem(legItemName, legendDef.red,legendDef.green,legendDef.blue, legendDef );
                         });
 
@@ -534,7 +534,7 @@
                     )
                     .append($('<span>')
                         .addClass('legendItemName')
-                        .html("All records")
+                        .html("<g:message code="map.all.records"/>")
                     )
                 )
         );
@@ -679,7 +679,7 @@
             }
 
             L.Icon.Default.imagePath = "${request.contextPath}/static/js/leaflet/images";
-            var popupText = "Centre of spatial search with radius of " + radius + " km";
+            var popupText = "<g:message code="map.center.spatial.search.radius" args="${[radius]}"/>";
             var circle = L.circle(latLng, radius * 1030, circleOpts);
             circle.addTo(MAP_VAR.map);
             MAP_VAR.map.fitBounds(circle.getBounds()); // make circle the centre of the map, not the points

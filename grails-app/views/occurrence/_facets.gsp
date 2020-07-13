@@ -23,7 +23,7 @@
                             <li><alatag:currentFilterItem item="${item}" addCheckBox="${true}"/></li>
                         </g:each>
                         <g:if test="${sr.activeFacetMap?.size() > 1}">
-                            <li><a href="#" class="activeFilter" data-facet="all" title="Click to clear all filters">
+                            <li><a href="#" class="activeFilter" data-facet="all" title="<g:message code="search.facets.clear.all.filters"/>">
                                 <span class="closeX" style="margin-left:7px;">&gt;&nbsp;</span><g:message code="facets.currentfilter.link" default="Clear all"/></a>
                             </li>
                         </g:if>
@@ -54,7 +54,7 @@
                         <g:if test="${facetResult.fieldResult.length() > 1}">
                             <div class="showHide">
                                 <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-target="#multipleFacets" data-displayname="${fieldDisplayName}"
-                                   title="See more options or refine with multiple values"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span> <g:message code="facets.facetfromgroup.link" default="choose more"/>...</a>
+                                   title="<g:message code="search.facets.see.more.options"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span> <g:message code="facets.facetfromgroup.link" default="choose more"/>...</a>
                             </div>
                         </g:if>
                     </g:if>
@@ -80,7 +80,7 @@
                                 <tr class="tableHead">
                                     <th>&nbsp;</th>
                                     <th id="indexCol" width="80%"><a href="#index" class="fsort" data-sort="index" data-foffset="0"></a></th>
-                                    <th style="border-right-style: none;text-align: right;"><a href="#count" class="fsort" data-sort="count" data-foffset="0" title="Sort by record count"><g:message code="facets.multiplefacets.tableth01" default="Count"/></a></th>
+                                    <th style="border-right-style: none;text-align: right;"><a href="#count" class="fsort" data-sort="count" data-foffset="0" title="<g:message code="facets.multiplefacets.tableth01.title"/><g:message code="facets.multiplefacets.tableth01" default="Count"/></a></th>
                                 </tr>
                             </thead>
                             <tbody class="scrollContent">
