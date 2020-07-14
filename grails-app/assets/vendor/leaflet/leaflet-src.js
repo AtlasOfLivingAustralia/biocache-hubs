@@ -3,6 +3,12 @@
  (c) 2010-2013, Vladimir Agafonkin
  (c) 2010-2011, CloudMade
 */
+jQuery.i18n.properties({
+    name: 'messages',
+    path: BC_CONF.contextPath + '/messages/i18n/',
+    mode: 'map',
+    language: BC_CONF.locale // default is to use browser specified locale
+});
 (function (window, document, undefined) {
     var oldL = window.L,
         L = {};
@@ -7996,9 +8002,9 @@
         options: {
             position: 'topleft',
             zoomInText: '+',
-            zoomInTitle: 'Zoom in',
+            zoomInTitle: jQuery.i18n.prop('advancedsearch.js.map.zoomin'),
             zoomOutText: '-',
-            zoomOutTitle: 'Zoom out'
+            zoomOutTitle: jQuery.i18n.prop('advancedsearch.js.map.zoomout')
         },
 
         onAdd: function (map) {
