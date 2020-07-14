@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.client.RestClientException
 import org.supercsv.cellprocessor.ift.CellProcessor
 import org.supercsv.io.CsvListReader
@@ -34,6 +35,9 @@ class WebServicesService {
     public static final String CONTEXTUAL = "Contextual"
     def grailsApplication, facetsCacheServiceBean
     QualityService qualityService
+
+    @Value('${dataquality.enabled}')
+    boolean dataQualityEnabled
 
     Map cachedGroupedFacets = [:] // keep a copy in case method throws an exception and then blats the saved version
 
@@ -60,7 +64,7 @@ class WebServicesService {
         def newParams = requestParams.clone()
         // Transmute the disableQualityFilter params into data quality filter querys (dqfqs)
         def dqqfs = newParams.disableQualityFilter
-        def skip = newParams.disableAllQualityFilters
+        def skip = newParams.disableAllQualityFilters || !dataQualityEnabled
         List<String> appliedFilters = []
         if (!skip) {
             def disabled = dqqfs as Set

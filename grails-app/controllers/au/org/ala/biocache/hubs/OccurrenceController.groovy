@@ -23,6 +23,7 @@ import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
 import au.org.ala.web.CASRoles
+import org.springframework.beans.factory.annotation.Value
 
 import java.text.SimpleDateFormat
 

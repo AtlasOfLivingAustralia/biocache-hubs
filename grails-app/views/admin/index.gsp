@@ -48,9 +48,11 @@
         <div class="message alert alert-info">
             Add default filters for all queries run through this hub.
         </div>
-        <div class="btn-group">
-            <g:link class="btn btn-default" controller="adminDataQuality" action="profiles">Filters</g:link>
-        </div>
+        <alatag:ifDataQualityEnabled>
+            <div class="btn-group">
+                <g:link class="btn btn-default" url="${grailsApplication.config.getProperty('dataquality.baseUrl')}">Filters</g:link>
+            </div>
+        </alatag:ifDataQualityEnabled>
 
         <div id="alaAdmin">
             <hr>

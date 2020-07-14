@@ -276,7 +276,7 @@
                         (<g:message code="list.taxa.notfound" args="${[params.taxa]}" default="(Note: no matched taxon name found for {0})"/>)
                     </g:if>
 
-                    <g:if test="${qualityCategories}">
+                    <alatag:ifDataQualityEnabled>
                         <div class="activeFilters col-sm-12">
                             <span class="pull-right"><a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse"><i class="fa fa-caret-down"></i></a></span>
                             <div><b><alatag:message code="quality.filters.heading" default="Data Quality Filters"/></b>:
@@ -414,7 +414,7 @@
                                 </div>
                             </g:else>
                         </div>
-                    </g:if>
+                    </alatag:ifDataQualityEnabled>
                     %{--<g:set var="hasFq" value="${false}"/>--}%
                     <g:if test="${sr.activeFacetObj?.values()?.any() || params.wkt || params.radius}">
                         <div class="activeFilters col-sm-12">

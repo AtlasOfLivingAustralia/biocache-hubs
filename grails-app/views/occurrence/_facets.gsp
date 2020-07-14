@@ -34,41 +34,43 @@
             </div>
         </g:if>
         ${alatag.logMsg(msg:"Before grouped facets facets.gsp")}
-        <g:if test="${!searchRequestParams.disableAllQualityFilters && qualityCategories}">
-            <div class="facetGroupName" id="heading_data_quality">
-                <a href="#" class="showHideFacetGroup" data-name="data_quality"><span class="caret right-caret"></span> <g:message code="quality.filters.group.title" default="Quality filters"/></a>
-            </div>
-            <div class="facetsGroup" id="group_data_quality" style="display:none;">
-
-                <h4><span class="FieldName">Categories</span></h4>
-                <div class="subnavlist nano" style="clear:left">
-                    <ul class="facets nano-content">
-                        <g:each var="qualityCategory" in="${qualityCategories}">
-                            <li>
-                                <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
-                                <g:if test="${qcDisabled}">
-                                    <alatag:linkQualityCategory enable="${true}" expand="${true}" category="${qualityCategory}" class="tooltips" title="${g.message(code: 'dq.pop.in', default: 'Re-enable this data quality filter and remove its corresponding filter queries')}">
-                                        <span class="fa fa-square-o">&nbsp;</span>
-                                        <span class="facet-item">${qualityCategory.name} <i class="fa fa-info-circle tooltips" title="${g.message(code:"dq.filter.label", default: "Filter applied fq={0}", args:[qualityFiltersByLabel[qualityCategory.label]])}"></i> <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>)</span></span>
-                                    </alatag:linkQualityCategory>
-                                    <i class="fa fa-sign-in visibility-hidden"></i>
-                                </g:if>
-                                <g:else>
-                                    <alatag:linkQualityCategory enable="${false}" expand="${false}" category="${qualityCategory}" class="tooltips" title="${qualityCategory.description}">
-                                        <span class="fa fa-check-square-o">&nbsp;</span>
-                                        <span class="facet-item">${qualityCategory.name} <i class="fa fa-info-circle tooltips" title="${g.message(code:"dq.filter.label", default: "Filter applied fq={0}", args:[qualityFiltersByLabel[qualityCategory.label]])}"></i> <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>)</span></span>
-                                    </alatag:linkQualityCategory>
-                                    <alatag:linkQualityCategory enable="${false}" expand="${true}" category="${qualityCategory}" class="tooltips" title="${g.message(code: 'dq.pop.out', default: 'Convert this data quality filter into separate filter queries you can include/exclude individually')}"><i class="fa fa-sign-out"></i></alatag:linkQualityCategory>
-                                </g:else>
-                            </li>
-                        </g:each>
-                    </ul>
+        <alatag:ifDataQualityEnabled>
+            <g:if test="${!searchRequestParams.disableAllQualityFilters && qualityCategories}">
+                <div class="facetGroupName" id="heading_data_quality">
+                    <a href="#" class="showHideFacetGroup" data-name="data_quality"><span class="caret right-caret"></span> <g:message code="quality.filters.group.title" default="Quality filters"/></a>
                 </div>
+                <div class="facetsGroup" id="group_data_quality" style="display:none;">
+
+                    <h4><span class="FieldName">Categories</span></h4>
+                    <div class="subnavlist nano" style="clear:left">
+                        <ul class="facets nano-content">
+                            <g:each var="qualityCategory" in="${qualityCategories}">
+                                <li>
+                                    <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
+                                    <g:if test="${qcDisabled}">
+                                        <alatag:linkQualityCategory enable="${true}" expand="${true}" category="${qualityCategory}" class="tooltips" title="${g.message(code: 'dq.pop.in', default: 'Re-enable this data quality filter and remove its corresponding filter queries')}">
+                                            <span class="fa fa-square-o">&nbsp;</span>
+                                            <span class="facet-item">${qualityCategory.name} <i class="fa fa-info-circle tooltips" title="${g.message(code:"dq.filter.label", default: "Filter applied fq={0}", args:[qualityFiltersByLabel[qualityCategory.label]])}"></i> <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>)</span></span>
+                                        </alatag:linkQualityCategory>
+                                        <i class="fa fa-sign-in visibility-hidden"></i>
+                                    </g:if>
+                                    <g:else>
+                                        <alatag:linkQualityCategory enable="${false}" expand="${false}" category="${qualityCategory}" class="tooltips" title="${qualityCategory.description}">
+                                            <span class="fa fa-check-square-o">&nbsp;</span>
+                                            <span class="facet-item">${qualityCategory.name} <i class="fa fa-info-circle tooltips" title="${g.message(code:"dq.filter.label", default: "Filter applied fq={0}", args:[qualityFiltersByLabel[qualityCategory.label]])}"></i> <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>)</span></span>
+                                        </alatag:linkQualityCategory>
+                                        <alatag:linkQualityCategory enable="${false}" expand="${true}" category="${qualityCategory}" class="tooltips" title="${g.message(code: 'dq.pop.out', default: 'Convert this data quality filter into separate filter queries you can include/exclude individually')}"><i class="fa fa-sign-out"></i></alatag:linkQualityCategory>
+                                    </g:else>
+                                </li>
+                            </g:each>
+                        </ul>
+                    </div>
 
 
 
-            </div>
-        </g:if>
+                </div>
+            </g:if>
+        </alatag:ifDataQualityEnabled>
         <g:set var="facetMax" value="${10}"/><g:set var="i" value="${1}"/>
         <g:each var="group" in="${groupedFacets}">
             <g:set var="keyCamelCase" value="${group.key.replaceAll(/\s+/,'')}"/>

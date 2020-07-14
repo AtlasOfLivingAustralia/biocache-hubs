@@ -540,7 +540,7 @@ class PostProcessingService {
 
         // map from user fq to category names
         def profile = qualityService.activeProfile(requestParams.qualityProfile)
-        def labelToNameMap = profile.categories.collectEntries{ [(it.label): it.name] }
+        def labelToNameMap = profile?.categories?.collectEntries{ [(it.label): it.name] } ?: [:]
         def userFqInteractDQNames = userFqInteractDQCategoryLabel.collectEntries { [(it.key): it.value.collect { labelToNameMap[it] }.join(', ')] }
 
         def colors = [

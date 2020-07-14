@@ -13,6 +13,8 @@
 
 package au.org.ala.biocache.hubs
 
+import au.org.ala.dataquality.model.QualityCategory
+import au.org.ala.dataquality.model.QualityFilter
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -24,6 +26,10 @@ import spock.lang.Unroll
  */
 @TestFor(OccurrenceTagLib)
 class OccurrenceTagLibSpec extends Specification {
+
+    static doWithConfig(config) {
+        config.dataquality.enabled = 'true'
+    }
 
     void "test sanitizeBodyText plain text"() {
         given:
@@ -166,7 +172,7 @@ class OccurrenceTagLibSpec extends Specification {
     @Unroll
     void 'test linkQualityCategory enable: #enable expand #expand'(boolean enable, boolean expand, Map searchParams, String result) {
         given:
-        QualityCategory category = new QualityCategory(name: 'asdf', label: 'asdf', qualityFilters: [new QualityFilter(filter: 'a:b'), new QualityFilter(filter: 'c:d'), new QualityFilter(filter: 'e:f', enabled: false)])
+        QualityCategory category = new QualityCategory(name: 'asdf', label: 'asdf', qualityFilters: [new QualityFilter(filter: 'a:b', enabled: true), new QualityFilter(filter: 'c:d', enabled: true), new QualityFilter(filter: 'e:f', enabled: false)])
         params.q = '*:*'
         params.putAll(searchParams)
 

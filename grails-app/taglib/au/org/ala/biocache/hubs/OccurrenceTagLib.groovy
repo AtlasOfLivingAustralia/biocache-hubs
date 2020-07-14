@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang.StringUtils
 import org.owasp.html.HtmlPolicyBuilder
 import org.owasp.html.PolicyFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.servlet.support.RequestContextUtils
 import grails.util.Environment
 
@@ -1045,6 +1046,15 @@ class OccurrenceTagLib {
         log.warn "input = ${message}"
         log.warn "output = ${output}"
         out << output
+    }
+
+    @Value('${dataquality.enabled}')
+    boolean dataQualityEnabled
+
+    def ifDataQualityEnabled = { attrs, body ->
+        if (dataQualityEnabled) {
+            out << body()
+        }
     }
 
     def invertQualityCategory = { attrs, body ->
