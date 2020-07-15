@@ -44,11 +44,11 @@
             <a href="${g.createLink(action:'clearRecordCountCache')}" class="btn btn-default">Clear record count cache</a>
         </div>
 
-        <h2>Data Quality Filters</h2>
-        <div class="message alert alert-info">
-            Add default filters for all queries run through this hub.
-        </div>
         <alatag:ifDataQualityEnabled>
+            <h2>Data Quality Filters</h2>
+            <div class="message alert alert-info">
+                Add default filters for all queries run through this hub.
+            </div>
             <div class="btn-group">
                 <g:link class="btn btn-default" url="${grailsApplication.config.getProperty('dataquality.baseUrl')}">Filters</g:link>
             </div>
