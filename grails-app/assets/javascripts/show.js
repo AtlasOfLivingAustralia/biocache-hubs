@@ -242,7 +242,11 @@ $(document).ready(function() {
     var lastSearch = amplify.store('lastSearch');
     //console.log('lastSearch', lastSearch);
     if (lastSearch) {
-        $('#backBtn > a').attr('href', lastSearch);
+        var getUrl = window.location;
+        var baseUrl = getUrl .protocol + "//" + getUrl.host;
+        var lastSearchURL = new URL(lastSearch, baseUrl);
+        lastSearchURL.searchParams.set('offset', OCC_REC.searchOffset);
+        $('#backBtn > a').attr('href', lastSearchURL.toString());
         $('#backBtn').show();
     }
 

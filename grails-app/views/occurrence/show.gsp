@@ -48,6 +48,7 @@
             userId: "${userId}",
             userDisplayName: "${userDisplayName}",
             contextPath: "${request.contextPath}",
+            searchOffset: "${searchOffset}",
             recordUuid: "${record.raw.rowKey}",
             taxonRank: "${record.processed.classification.taxonRank}",
             taxonConceptID: "${record.processed.classification.taxonConceptID}",
@@ -118,8 +119,21 @@
                             <div id="clubView"><span class="label label-danger"><i class="glyphicon glyphicon-lock"></i><g:message code="show.clubview.message" default="Club View"/></span></div>
                         </g:if>
                     </div>
-                    <div id="backBtn" class=" pull-rightZ">
-                        <a href="#" title="Return to search results" class="btn btn-default"><g:message code="show.backbtn.navigator" default="Back to search results"/></a>
+                <div class="pull-rightZ">
+                    <g:if test="${displayNavigationButtons}">
+                    <span id="previousBtn">
+                        <a href="${request.contextPath}/occurrences/previous" title="<g:message code="show.previousbtn.navigator.title"/>" class="btn btn-default">
+                            <span><i class="glyphicon glyphicon-arrow-left" style="margin-bottom: 5px;"></i><g:message code="show.previousbtn.navigator" default="Previous"/></span></a>
+                    </span>
+                    <span id="nextBtn">
+                        <a href="${request.contextPath}/occurrences/next" title="<g:message code="show.nextbtn.navigator.title"/>" class="btn btn-default">
+                            <span><i class="glyphicon glyphicon-arrow-right" style="margin-bottom: 5px;"></i><g:message code="show.nextbtn.navigator" default="Next"/></span></a>
+                        </a>
+                    </span>
+                    <span id="backBtn">
+                        <a href="#" title="<g:message code="show.backbtn.navigator.title"/>" class="btn btn-default"><g:message code="show.backbtn.navigator" default="Back to search results"/></a>
+                    </span>
+                    </g:if>
                     </div>
                 </div>
                 <div class="centre">
