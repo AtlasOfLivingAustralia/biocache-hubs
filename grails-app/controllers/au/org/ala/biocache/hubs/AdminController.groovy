@@ -15,8 +15,6 @@
 
 package au.org.ala.biocache.hubs
 
-import org.springframework.beans.factory.annotation.Value
-
 /**
  * Admin functions - should be protected by login and ROLE_ADMIN or equiv.
  * See {@link au.org.ala.biocache.hubs.AdminInterceptor}
