@@ -186,7 +186,7 @@
             <div class="col-md-3 col-sm-3">
                 <!-- Trigger the modal with a button -->
                 <a class="btn tooltips btn-default btn-sm" data-toggle="modal" data-target="#facetConfigDialog" href="#"
-                   title="Customise the contents of this column">
+                   title="<g:message code="search.filter.customise.title"/>">
                     <i class="fa fa-cog"></i>&nbsp;&nbsp;<g:message code="search.filter.customise"/>
                 </a>
 
@@ -252,7 +252,7 @@
                     <div id="downloads" class="btn btn-primary pull-right">
                         <a href="${g.createLink(uri: '/download')}?searchParams=${sr?.urlParameters?.encodeAsURL()}&targetUri=${(request.forwardURI)}&totalRecords=${sr.totalRecords}"
                            class="tooltips newDownload"
-                           title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records"><i
+                           title="<g:message code="list.downloads.navigator.title" args="${[g.formatNumber(number: sr.totalRecords, format: "#,###,###")]}"/>"><i
                                 class="fa fa-download"></i>
                             &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/></a>
                     </div>
@@ -283,19 +283,19 @@
                             <g:if test="${params.wkt}"><%-- WKT spatial filter   --%>
                                 <g:set var="spatialType" value="${params.wkt =~ /^\w+/}"/>
                                 <a href="${alatag.getQueryStringForWktRemove()}" class="btn tooltips btn-default btn-xs"
-                                   title="Click to remove this filter">Spatial filter: ${spatialType[0]}
+                                   title="<g:message code="list.resultsretuened.click.to.remove.filters"/>"><g:message code="list.resultsretuened.spatial.filter"/>: ${spatialType[0]}
                                     <span class="closeX">&times;</span>
                                 </a>
                             </g:if>
                             <g:elseif test="${params.radius && params.lat && params.lon}">
                                 <a href="${alatag.getQueryStringForRadiusRemove()}" class="btn tooltips btn-default btn-xs"
-                                   title="Click to remove this filter">Spatial filter: CIRCLE
+                                   title="<g:message code="list.resultsretuened.click.to.remove.filters"/>"><g:message code="list.resultsretuened.spatial.filter"/>: <g:message code="list.resultsretuened.circle"/>
                                     <span class="closeX">&times;</span>
                                 </a>
                             </g:elseif>
                             <g:if test="${sr.activeFacetMap?.size() > 1}">
                                 <button class="btn btn-primary activeFilter btn-xs" data-facet="all"
-                                        title="Click to clear all filters"><span
+                                        title="<g:message code="list.resultsretuened.button01.title"/>"><span
                                         class="closeX">&gt;&nbsp;</span><g:message code="list.resultsretuened.button01"
                                                                                    default="Clear all"/></button>
                             </g:if>
@@ -303,10 +303,10 @@
                     </g:if>
                 <%-- jQuery template used for taxon drop-downs --%>
                     <div class="btn-group hide" id="template">
-                        <a class="btn btn-default btn-sm" href="" id="taxa_" title="view species page" target="BIE"><g:message
+                        <a class="btn btn-default btn-sm" href="" id="taxa_" title="<g:message code="list.resultsretuened.navigator01.title"/>" target="BIE"><g:message
                                 code="list.resultsretuened.navigator01" default="placeholder"/></a>
                         <button class="btn dropdown-toggle btn-default btn-sm" data-toggle="dropdown"
-                                title="click for more info on this query">
+                                title="<g:message code="list.resultsretuened.click.more.info"/>">
                             <span class="caret"></span>
                         </button>
 
@@ -327,7 +327,7 @@
                                         <input type="submit" class="btn  btn-default btn-sm rawTaxonSumbit"
                                                value="<g:message code="list.resultsretuened.form.button01"
                                                                  default="Refine search"/>"
-                                               title="Restrict results to the selected names">
+                                               title="<g:message code="list.resultsretuened.restrict.results"/>">
 
                                         <div class="rawTaxaList"><g:message code="list.resultsretuened.form.div01"
                                                                             default="placeholder taxa list"/></div>
@@ -361,7 +361,7 @@
                                     <div class="">
                                         <a href="#alertNewRecords" id="alertNewRecords" class="btn tooltips btn-default"
                                            data-method="createBiocacheNewRecordsAlert"
-                                           title="Notify me when new records come online for this search"><g:message
+                                           title="<g:message code="list.alert.navigator01.title"/>"><g:message
                                                 code="list.alert.navigator01" default="Get email alerts for new records"/></a>
                                     </div>
                                     <br/>
@@ -370,7 +370,7 @@
                                         <a href="#alertNewAnnotations" id="alertNewAnnotations"
                                            data-method="createBiocacheNewAnnotationsAlert"
                                            class="btn tooltips btn-default"
-                                           title="Notify me when new annotations (corrections, comments, etc) come online for this search"><g:message
+                                           title="<g:message code="list.alert.navigator02.title"/>"><g:message
                                                 code="list.alert.navigator02" default="Get email alerts for new annotations"/></a>
                                     </div>
                                     <p>&nbsp;</p>
@@ -430,7 +430,7 @@
                                            role="button"
                                            data-toggle="modal"
                                            class="tooltips"
-                                           title="Download all ${g.formatNumber(number: sr.totalRecords, format: "#,###,###")} records OR species checklist">
+                                           title="<g:message code="list.downloads.navigator.title2" args="${[g.formatNumber(number: sr.totalRecords, format: "#,###,###")]}"/>">
                                             <i class="fa fa-download"></i>&nbsp;&nbsp;<g:message
                                                 code="list.downloads.navigator" default="Downloads"/></a>
                                     </div>
@@ -438,7 +438,7 @@
                                 <g:if test="${grailsApplication.config.alerts.baseUrl}">
                                     <div id="alerts" class="btn btn-default btn-sm ">
                                         <a href="#alert" role="button" data-toggle="modal" class="tooltips"
-                                           title="Get email alerts for this search"><i
+                                           title="<g:message code="list.alerts.navigator.title"/>"><i
                                                 class="fa fa-bell"></i>&nbsp;&nbsp;<g:message code="list.alerts.navigator" default="Alerts"/></a>
                                     </div>
                                 </g:if>
@@ -446,7 +446,7 @@
 
                             <div id="sortWidgets" class="col-sm-8 col-md-8">
                                 <span class="hidden-sm"><g:message code="list.sortwidgets.span01"
-                                                                      default="per"/></span><g:message
+                                                                      default="per"/></span>&nbsp;<g:message
                                     code="list.sortwidgets.span02" default="page"/>:
                                 <select id="per-page" name="per-page" class="input-small">
                                     <g:set var="pageSizeVar" value="${params.pageSize ?: params.max ?: "20"}"/>
