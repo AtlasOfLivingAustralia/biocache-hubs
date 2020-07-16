@@ -122,11 +122,11 @@
                 <div class="pull-rightZ">
                     <g:if test="${displayNavigationButtons}">
                     <span id="previousBtn">
-                        <a href="${request.contextPath}/occurrences/previous" title="<g:message code="show.previousbtn.navigator.title"/>" class="btn btn-default">
+                        <a href="${request.contextPath}/occurrences/previous" title="<g:message code="show.previousbtn.navigator.title"/>" class="btn btn-default <g:if test="${isFirstOccurrence}">disabled</g:if>">
                             <span><i class="glyphicon glyphicon-arrow-left" style="margin-bottom: 5px;"></i><g:message code="show.previousbtn.navigator" default="Previous"/></span></a>
                     </span>
                     <span id="nextBtn">
-                        <a href="${request.contextPath}/occurrences/next" title="<g:message code="show.nextbtn.navigator.title"/>" class="btn btn-default">
+                        <a href="${request.contextPath}/occurrences/next" title="<g:message code="show.nextbtn.navigator.title"/>" class="btn btn-default <g:if test="${isLastOccurrence}">disabled</g:if>">
                             <span><i class="glyphicon glyphicon-arrow-right" style="margin-bottom: 5px;"></i><g:message code="show.nextbtn.navigator" default="Next"/></span></a>
                         </a>
                     </span>

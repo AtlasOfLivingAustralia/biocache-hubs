@@ -6,6 +6,7 @@ public class OccurrenceNavigationDTO {
     private SpatialSearchRequestParams searchRequestParams;
     private List<String> currentPageUUIDs;
     private String currentUUID;
+    private int searchRequestResultSize = 0;
 
     public SpatialSearchRequestParams getSearchRequestParams() {
         return searchRequestParams;
@@ -29,5 +30,13 @@ public class OccurrenceNavigationDTO {
 
     public void setCurrentUUID(String currentUUID) {
         this.currentUUID = currentUUID;
+    }
+
+    public int getSearchRequestResultSize() {
+        return searchRequestResultSize;
+    }
+
+    public void setSearchRequestResultSize(int searchRequestResultSize) {
+        this.searchRequestResultSize = searchRequestResultSize;
     }
 }

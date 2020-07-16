@@ -160,6 +160,7 @@ class OccurrenceController {
             }
             navigationDTO.setCurrentPageUUIDs(uuids);
             navigationDTO.setSearchRequestParams(requestParams);
+            navigationDTO.setSearchRequestResultSize(searchResults.totalRecords);
             request.getSession().setAttribute(SESSION_NAVIGATION_DTO, navigationDTO);
 
             [
@@ -272,6 +273,8 @@ class OccurrenceController {
                 // to add the Previous/Next/Back to results buttons
                 int searchOffset = 0;
                 boolean displayNavigationButtons = false;
+                boolean isFirstOccurrence = false;
+                boolean isLastOccurrence = false;
                 OccurrenceNavigationDTO navigationDTO = (OccurrenceNavigationDTO) request.getSession().getAttribute(SESSION_NAVIGATION_DTO);
                 // Check if the Navigation DTO in session is consistent (ex: if we navigate in several tabs)
                 if (navigationDTO && navigationDTO.getCurrentPageUUIDs() && navigationDTO.getCurrentPageUUIDs().contains(id)) {
@@ -279,6 +282,14 @@ class OccurrenceController {
                     navigationDTO.setCurrentUUID(id);
                     searchOffset = (navigationDTO.getSearchRequestParams() && navigationDTO.getSearchRequestParams().offset) ? navigationDTO.getSearchRequestParams().offset : 0;
                     request.getSession().setAttribute(SESSION_NAVIGATION_DTO, navigationDTO);
+
+                    // is first occurrence?
+                    int indexInPage = navigationDTO.getCurrentPageUUIDs().indexOf(id);
+                    isFirstOccurrence = (searchOffset == 0) && (indexInPage == 0);
+
+                    // is last occurrence?
+                    int indexInResults = searchOffset + indexInPage;
+                    isLastOccurrence = (indexInResults == (navigationDTO.getSearchRequestResultSize()-1));
                 }
 
                 render(view: 'show', model:
@@ -287,6 +298,8 @@ class OccurrenceController {
                         uuid: id,
                         searchOffset: searchOffset,
                         displayNavigationButtons: displayNavigationButtons,
+                        isFirstOccurrence: isFirstOccurrence,
+                        isLastOccurrence: isLastOccurrence,
                         compareRecord: compareRecord,
                         groupedAssertions: groupedAssertions,
                         collectionName: collectionInfo?.name,
@@ -345,8 +358,8 @@ class OccurrenceController {
                 else {
                     // New occurrence is in another page
                     SpatialSearchRequestParams requestParams = navigationDTO.getSearchRequestParams();
-                    if (requestParams && requestParams.offset && requestParams.max) {
-                        Integer newOffset = requestParams.offset + direction * requestParams.max;
+                    if (requestParams && requestParams.offset && requestParams.pageSize) {
+                        Integer newOffset = requestParams.offset + direction * requestParams.pageSize;
                         requestParams.offset = newOffset;
                         // Execute new SolR query to get the other page (next or previous)
                         JSONObject searchResults = webServicesService.fullTextSearch(requestParams);
@@ -367,10 +380,6 @@ class OccurrenceController {
                     }
                 }
             }
-            // Redirect to the current occurrence in case of error
-            // ex: if we call /previous for the first occurrence, or /next for the last occurrence
-            redirect (controller:'occurrence', action:'show', id:navigationDTO.getCurrentUUID());
-            return;
         }
         // Redirect to the default list of occurrences in case of error
         // ex: if we call /next or /previous directly, without Navigation DTO in session
