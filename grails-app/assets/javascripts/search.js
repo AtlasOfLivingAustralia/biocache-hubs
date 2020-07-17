@@ -389,12 +389,12 @@ $(document).ready(function() {
         $.when.apply($, requests).done(function () {
             if (numberOfResponse === 1) {
                 if (successStatus === arguments[1] && arguments[0].length > 0) {
-                    map.set(arguments[0][0].name, [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].info ? arguments[0][0].info : ""])
+                    map.set(arguments[0][0].name, [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].info ? arguments[0][0].info : "", arguments[0][0].furtherInfo ? arguments[0][0].furtherInfo : ""])
                 }
             } else {
                 for (var i = 0; i < arguments.length; i++) {
                     if (successStatus === arguments[i][1] && arguments[i][0].length > 0) {
-                        map.set(arguments[i][0][0].name, [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].info ? arguments[i][0][0].info : ""])
+                        map.set(arguments[i][0][0].name, [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].info ? arguments[i][0][0].info : "", arguments[i][0][0].furtherInfo ? arguments[i][0][0].furtherInfo : ""])
                     }
                 }
             }
@@ -406,7 +406,7 @@ $(document).ready(function() {
                     var re = new RegExp(key, 'g');
                     fq = fq.replace(re, '<span style="color: #c44d34;cursor:pointer;" title="' + map.get(key).join('. ') + '">' + key + "</span>")
                     // add a row in table
-                    html += "<tr><td>" + key + "</td><td>" + map.get(key)[0] + '</td><td style=\"word-break: break-all\">' + replaceURL(map.get(key)[1]) + "</td></tr>"
+                    html += "<tr><td>" + key + "</td><td>" + map.get(key)[0] + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[1]) + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[2], 'Wiki') + "</td></tr>"
                 }
             })
 
@@ -477,7 +477,7 @@ $(document).ready(function() {
         return unique;
     }
 
-    function replaceURL(el) {
+    function replaceURL(el, text) {
         if (el.indexOf('http') == -1) return el
 
         var start = el.indexOf('http')
@@ -485,7 +485,12 @@ $(document).ready(function() {
         if (end == -1) end = el.length - 1
 
         var url = el.substr(start, end - start + 1)
-        el = el.replace(url, '<a href="' + url + '" target="_blank">' + url + '</a>')
+
+        if (typeof text === 'undefined') {
+            el = el.replace(url, '<a href="' + url + '" target="_blank">' + url + '</a>')
+        } else {
+            el = el.replace(url, '<a href="' + url + '" target="_blank">' + text + '</a>')
+        }
         return el
     }
 

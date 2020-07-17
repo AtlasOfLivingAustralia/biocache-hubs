@@ -396,6 +396,7 @@
                                                             <th>Filter name</th>
                                                             <th>Filter description</th>
                                                             <th>Filter info</th>
+                                                            <th>Further info</th>
                                                         </tr>
 
                                                         <tr id="spinnerRow">
