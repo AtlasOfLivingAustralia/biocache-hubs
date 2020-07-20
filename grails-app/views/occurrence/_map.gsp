@@ -4,9 +4,15 @@
     <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
         <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
         <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
-        <a id="spatialPortalLink" class="btn btn-default btn-sm tooltips"
-           href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="<g:message code="map.spatialportal.btn.title"/>">
-            <i class="fa fa-map-marker"></i>&nbsp;&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
+        <g:if test="${searchRequestParams.disableAllQualityFilters || qualityFiltersByLabel.isEmpty()}">
+            <a id="spatialPortalLink" class="btn btn-default btn-sm tooltips"
+               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="<g:message code="map.spatialportal.btn.title"/>">
+                <i class="fa fa-map-marker"></i>&nbsp;&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
+        </g:if>
+        <g:else>
+            <a href="#gotoSpatial" role="button" data-toggle="modal" class="btn btn-default btn-sm tooltips" title="<g:message code="map.spatialportal.btn.title"/>">
+                <i class="fa fa-map-marker"></i>&nbsp;&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
+        </g:else>
     </g:if>
     <a href="#downloadMap" role="button" data-toggle="modal" class="btn btn-default btn-sm tooltips" title="<g:message code="map.downloadmaps.btn.title"/>">
         <i class="fa fa-download"></i>&nbsp;&nbsp;<g:message code="map.downloadmaps.btn.label" default="Download map"/></a>
@@ -726,6 +732,24 @@
 </asset:script>
 <g:render template="mapPopup"></g:render>
 
+<div id="gotoSpatial" class="modal fade" tabindex="-1" role="dialog" >
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 class="text-danger">Warning</h3>
+            </div>
+            <div class="modal-body">
+            Please be aware that Data Quality filters will not be applied when records are viewed in Spatial Portal.
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                <button id="gospatial" class="btn btn-primary">Go to Spatial Portal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="downloadMap" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="downloadsMapLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -920,4 +944,10 @@
         $('#downloadMap').modal('hide');
         document.location.href = downloadUrl;
     }
+
+    $('#gospatial').click(function(e) {
+        e.preventDefault();
+        $('gotoSpatial').modal('hide');
+        document.location.href = "${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}"
+    })
 </script>
