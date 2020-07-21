@@ -63,11 +63,10 @@ class WebServicesService {
     private def convertSearchRequestParamsForDataQualitySettings(SearchRequestParams requestParams) {
         def newParams = requestParams.clone()
         // Transmute the disableQualityFilter params into data quality filter querys (dqfqs)
-        def dqqfs = newParams.disableQualityFilter
         def skip = newParams.disableAllQualityFilters || !dataQualityEnabled
         List<String> appliedFilters = []
         if (!skip) {
-            def disabled = dqqfs as Set
+            def disabled = newParams.disableQualityFilter as Set
             appliedFilters = qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile)
                     .findAll { label, filters -> !disabled.contains(label) }
                     .collect { label, filters -> filters }
