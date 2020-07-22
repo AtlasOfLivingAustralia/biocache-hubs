@@ -737,14 +737,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 class="text-danger">Warning</h3>
+                <h3 class="text-danger"><g:message code="map.spatialportal.redirect.title" default="Warning"/></h3>
             </div>
             <div class="modal-body">
-            Please be aware that Data Quality filters will not be applied when records are viewed in Spatial Portal.
+                <g:message code="map.spatialportal.redirect.content" default="Please be aware that Data Quality filters will not be applied when records are viewed in Spatial Portal."/>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                <button id="gospatial" class="btn btn-primary">Go to Spatial Portal</button>
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message code="map.spatialportal.redirect.btn.cancel.label" default="Cancel"/></button>
+                <button id="gospatial" class="btn btn-primary"><g:message code="map.spatialportal.redirect.btn.ok.label" default="Go to Spatial Portal"/></button>
             </div>
         </div>
     </div>
