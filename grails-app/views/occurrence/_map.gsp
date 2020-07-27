@@ -948,6 +948,6 @@
     $('#gospatial').click(function(e) {
         e.preventDefault();
         $('gotoSpatial').modal('hide');
-        document.location.href = "${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}"
+        document.location.href = "${grailsApplication.config.spatial.baseUrl}${raw(spatialPortalLink)}${raw(spatialPortalUrlParams)}"
     })
 </script>
