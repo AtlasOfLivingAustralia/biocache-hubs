@@ -343,6 +343,47 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div id="DQManageFilters" class="modal fade" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                <h4><alatag:message code="dq.selectmultiple.header.description" default="refine filter selection"/></h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div id="dynamic" class="tableContainer">
+                                                    <form name="filterRefineForm" id="filterRefineForm">
+                                                        <table class="table table-bordered table-condensed table-striped scrollTable">
+                                                            <thead class="fixedHeader">
+                                                            <tr class="tableHead">
+                                                                <th width="80%"><alatag:message code="dq.selectmultiple.categorytable.header.categories" default="Categories"/></th>
+                                                                <th></th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody class="scrollContent">
+                                                                <g:each var="qualityCategory" in="${qualityCategories}">
+                                                                    <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
+                                                                    <tr>
+                                                                        <td class="filternames" data-filters="${qualityCategory.qualityFilters.findAll { it.enabled }*.filter}">${qualityCategory.label}</td>
+                                                                        <td><input type="checkbox" name="filters" class="filters" data-enabled="${!qcDisabled}" value=""></td>
+                                                                    </tr>
+                                                                </g:each>
+                                                            </tbody>
+                                                        </table>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <div id="submitFilters" class="modal-footer" style="text-align: left;">
+                                                <button class="btn btn-default filter-selector" id="enableAllBtn"><alatag:message code="dq.selectmultiple.form.enableAll" default="Enable All Filters"/></button>
+                                                <button class="btn btn-default filter-selector" id="disableAllBtn"><alatag:message code="dq.selectmultiple.form.disableAll" default="Disable All Filters"/></button>
+                                                <button type='submit' class="submit btn btn-primary" data-dismiss="modal" style="float:right;"><alatag:message code="dq.selectmultiple.form.submit" default="Submit Selection"/></button>
+                                                <button class="btn btn-default" data-dismiss="modal" style="float:right;"><alatag:message code="dq.selectmultiple.form.cancel" default="Cancel"/></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </g:if>
                             </div>
 
@@ -353,33 +394,34 @@
                             </g:if>
                             <g:else>
                                 <div class="collapse in" id="dq-filters-collapse">
-                                <g:each var="qualityCategory" in="${qualityCategories}">
-                                    <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
-                                    <div class="col-sm-6 dq-active-filter-item">
-                                        <g:if test="${qcDisabled}">
-                                            <alatag:linkQualityCategory class="tooltips" expand="${true}" enable="${true}" category="${qualityCategory}" title="${g.message(code: 'dq.pop.in', default: 'Re-enable this data quality filter and remove its corresponding filter queries')}">
-                                                <i class="fa fa-square-o"></i>
-                                            </alatag:linkQualityCategory>
-                                            <i class="fa fa-sign-in visibility-hidden"></i>
-                                        </g:if>
-                                        <g:else>
-                                            <alatag:linkQualityCategory class="tooltips" expand="${false}" enable="${false}" category="${qualityCategory}">
-                                                <i class="fa fa-check-square-o"></i>
-                                            </alatag:linkQualityCategory>
-                                            <alatag:linkQualityCategory expand="${true}" enable="${false}" category="${qualityCategory}" title="${g.message(code: 'dq.pop.out', default: 'Convert this data quality filter into separate filter queries you can include/exclude individually')}">
-                                                <i class="fa fa-sign-out"></i>
-                                            </alatag:linkQualityCategory>
-                                        </g:else>
-                                        <span>
-                                            <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteractFQs.containsKey(qualityCategory.label) ? (". This quality filter may conflict with these user selected filters: [" + dqInteractFQs[qualityCategory.label]) +"]": "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
-                                            <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-dqcategoryname="${qualityCategory.name}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="${g.message(code:"dq.filter.label", default: "Filter applied fq={0}", args:[qualityFiltersByLabel[qualityCategory.label]])}"></i></a>
-                                            <alatag:invertQualityCategory category="${qualityCategory}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
-                                                <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
-                                                <alatag:message code="quality.filters.excludeCount" default="records excluded" />
-                                            </alatag:invertQualityCategory>
-                                        </span>
-                                    </div>
-                                </g:each>
+                                    <div><a href="#DQManageFilters" class="multipleFiltersLink" data-toggle="modal" role="button" title="<g:message code="dq.button.refinefilter.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.refinefilter.text" default="refine filter selection"/></a></div>
+                                    <g:each var="qualityCategory" in="${qualityCategories}">
+                                        <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
+                                        <div class="col-sm-6 dq-active-filter-item">
+                                            <g:if test="${qcDisabled}">
+                                                <alatag:linkQualityCategory class="tooltips" expand="${true}" enable="${true}" category="${qualityCategory}" title="${g.message(code: 'dq.pop.in', default: 'Re-enable this data quality filter and remove its corresponding filter queries')}">
+                                                    <i class="fa fa-square-o"></i>
+                                                </alatag:linkQualityCategory>
+                                                <i class="fa fa-sign-in visibility-hidden"></i>
+                                            </g:if>
+                                            <g:else>
+                                                <alatag:linkQualityCategory class="tooltips" expand="${false}" enable="${false}" category="${qualityCategory}">
+                                                    <i class="fa fa-check-square-o"></i>
+                                                </alatag:linkQualityCategory>
+                                                <alatag:linkQualityCategory expand="${true}" enable="${false}" category="${qualityCategory}" title="${g.message(code: 'dq.pop.out', default: 'Convert this data quality filter into separate filter queries you can include/exclude individually')}">
+                                                    <i class="fa fa-sign-out"></i>
+                                                </alatag:linkQualityCategory>
+                                            </g:else>
+                                            <span>
+                                                <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteractFQs.containsKey(qualityCategory.label) ? (". This quality filter may conflict with these user selected filters: [" + dqInteractFQs[qualityCategory.label]) +"]": "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
+                                                <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-dqcategoryname="${qualityCategory.name}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="${g.message(code:"dq.filter.label", default: "Filter applied fq={0}", args:[qualityFiltersByLabel[qualityCategory.label]])}"></i></a>
+                                                <alatag:invertQualityCategory category="${qualityCategory}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
+                                                    <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
+                                                    <alatag:message code="quality.filters.excludeCount" default="records excluded" />
+                                                </alatag:invertQualityCategory>
+                                            </span>
+                                        </div>
+                                    </g:each>
                                     <div id="DQFilterDetails" class="modal fade " role="dialog">
                                         <div class="modal-dialog" role="document" id="DQDetailsModal">
                                             <div class="modal-content">

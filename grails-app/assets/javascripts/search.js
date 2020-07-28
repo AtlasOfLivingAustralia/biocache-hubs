@@ -561,6 +561,102 @@ $(document).ready(function() {
         }
     });
 
+    // when dlg pops, load and init status
+    $('.multipleFiltersLink').click(function() {
+        var filterStatus = $("form#filterRefineForm").find(":input.filters");
+        $.each(filterStatus, function( i, status ) {
+            $(this).prop('checked', $(this).data('enabled'))
+        })
+    });
+
+    // handle enable/disable all
+    $("#submitFilters .filter-selector").on("click", function(e) {
+        $("form#filterRefineForm").find(":input.filters").prop('checked', (e.target.id === 'enableAllBtn'));
+    });
+
+    $("#submitFilters :input.submit").on("click", function(e) {
+        e.preventDefault();
+
+        // get all disabled categories from the url
+        // we don't care disableall param
+        var disableQualityFilterSet = new Set()
+        var disabledFilter = $.url().param('disableQualityFilter')
+        if (typeof disabledFilter === "object") {
+            disableQualityFilterSet = new Set(disabledFilter)
+        } else if (typeof disabledFilter === "string") {
+            disableQualityFilterSet.add(disabledFilter)
+        }
+
+        // get current url
+        var url = $(location).attr('href');
+
+        var fitlers = $("form#filterRefineForm").find("td.filternames");
+        var filterStatus = $("form#filterRefineForm").find(":input.filters");
+
+        // replace url encoded %20 with '+' because groovy encodes space to '+'
+        $.each(filterStatus, function( i, status ) {
+            var filterlabel = fitlers[i].textContent;
+            // get checked status
+            var toDisable = !this.checked;
+
+            if (toDisable) { // if to disable, add it to disable list
+                if (!disableQualityFilterSet.has(filterlabel)) {
+                    url = appendURL(url, "&disableQualityFilter=" + encodeURIComponent(filterlabel).replace(/%20/g, "+"));
+                }
+            } else { // if to enable, remove it from disable list + remove expanded fqs
+                if (disableQualityFilterSet.has(filterlabel)) {
+                    url = removeFromURL(url, "disableQualityFilter=" + encodeURIComponent(filterlabel).replace(/%20/g, "+"))
+                }
+
+                var filters = $(fitlers[i]).data("filters")
+                var len = filters.length
+                if (len > 0) {
+                    filters = filters.substring(1, len - 1)
+                }
+
+                // get all enabled filters in this category
+                var filters = filters.split(', ');
+                filters.forEach(function(filter) {
+                    url = removeFromURL(url, 'fq=' + encodeURIComponent(filter).replace(/%20/g, "+"))
+                })
+            }
+        })
+
+        window.location.href = url
+    })
+
+    // insert query string into url, before the # tag
+    function appendURL(url, sToAppend) {
+        var idx = url.indexOf("#");
+        if (idx == -1) {
+            return url.concat(sToAppend)
+        } else {
+            return url.slice(0, idx) + sToAppend + url.slice(idx);
+        }
+    }
+
+    function removeFromURL(url, sToRemove) {
+        var startsWithQ = url.startsWith('?');
+        if (startsWithQ) {
+            url = url.substring(1);
+        }
+
+        var anchorpos = url.indexOf('#');
+        var anchorpart = "";
+        if (anchorpos != -1) {
+            anchorpart = url.substring(anchorpos);
+            url = url.substring(0, anchorpos);
+        }
+
+        var tokens = url.split('&');
+        var idx = tokens.indexOf(sToRemove);
+        if (idx != -1) {
+            tokens.splice(idx, 1);
+        }
+
+        return (startsWithQ ? '?' : '') + tokens.join('&') + anchorpart;
+    }
+
     // Drop-down option on facet popup div - for wildcard fq searches
     $('#submitFacets a.wildcard').on('click', function(e) {
         e.preventDefault();
