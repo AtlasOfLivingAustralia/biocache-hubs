@@ -358,7 +358,7 @@
                                                             <thead class="fixedHeader">
                                                             <tr class="tableHead">
                                                                 <th width="80%"><alatag:message code="dq.selectmultiple.categorytable.header.categories" default="Categories"/></th>
-                                                                <th></th>
+                                                                <th><input type="checkbox" name="filters" class="checkall" value=""></th>
                                                             </tr>
                                                             </thead>
                                                             <tbody class="scrollContent">
@@ -375,11 +375,11 @@
                                                 </div>
                                             </div>
 
-                                            <div id="submitFilters" class="modal-footer" style="text-align: left;">
-                                                <button class="btn btn-default filter-selector" id="enableAllBtn"><alatag:message code="dq.selectmultiple.form.enableAll" default="Enable All Filters"/></button>
-                                                <button class="btn btn-default filter-selector" id="disableAllBtn"><alatag:message code="dq.selectmultiple.form.disableAll" default="Disable All Filters"/></button>
-                                                <button type='submit' class="submit btn btn-primary" data-dismiss="modal" style="float:right;"><alatag:message code="dq.selectmultiple.form.submit" default="Submit Selection"/></button>
-                                                <button class="btn btn-default" data-dismiss="modal" style="float:right;"><alatag:message code="dq.selectmultiple.form.cancel" default="Cancel"/></button>
+                                            <div id="submitFilters" class="modal-footer">
+                                                <div class="pull-right">
+                                                    <button class="btn btn-default" data-dismiss="modal" ><alatag:message code="dq.selectmultiple.form.cancel" default="Cancel"/></button>
+                                                    <button type='submit' class="submit btn btn-primary" data-dismiss="modal" ><alatag:message code="dq.selectmultiple.form.submit" default="Apply"/></button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -561,18 +561,44 @@ $(document).ready(function() {
         }
     });
 
-    // when dlg pops, load and init status
+    // when dlg pops, load and init status, set checkall status
     $('.multipleFiltersLink').click(function() {
         var filterStatus = $("form#filterRefineForm").find(":input.filters");
         $.each(filterStatus, function( i, status ) {
-            $(this).prop('checked', $(this).data('enabled'))
+            $(this).prop('checked', $(this).data('enabled'));
         })
+
+        setCheckAllStatus();
     });
 
+    // check checkbox for each single filter, then set checkall
+    function setCheckAllStatus() {
+        var filterStatus = $("form#filterRefineForm").find(":input.filters");
+        var allchecked = true;
+        var allunchecked = true;
+        $.each(filterStatus, function( i, el ) {
+            allchecked = allchecked && $(el).prop('checked');
+            allunchecked = allunchecked && !($(el).prop('checked'));
+        })
+
+        if (allchecked) {
+            $("#filterRefineForm .checkall").prop('checked', true);
+        } else if (allunchecked) {
+            $("#filterRefineForm .checkall").prop('checked', false);
+        } else {
+            $("#filterRefineForm .checkall").prop('checked', false);
+        }
+    }
+
     // handle enable/disable all
-    $("#submitFilters .filter-selector").on("click", function(e) {
-        $("form#filterRefineForm").find(":input.filters").prop('checked', (e.target.id === 'enableAllBtn'));
+    $("#filterRefineForm .checkall").on("click", function(e) {
+        $("form#filterRefineForm").find(":input.filters").prop('checked', $(this).prop('checked'));
     });
+
+    // handle checkbox for each filter
+    $("#filterRefineForm :input.filters").on("click", function() {
+        setCheckAllStatus();
+    })
 
     $("#submitFilters :input.submit").on("click", function(e) {
         e.preventDefault();
