@@ -389,12 +389,12 @@ $(document).ready(function() {
         $.when.apply($, requests).done(function () {
             if (numberOfResponse === 1) {
                 if (successStatus === arguments[1] && arguments[0].length > 0) {
-                    map.set(arguments[0][0].name, [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].info ? arguments[0][0].info : "", arguments[0][0].furtherInfo ? arguments[0][0].furtherInfo : ""])
+                    map.set(arguments[0][0].name, [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].info ? arguments[0][0].info : "", arguments[0][0].infoUrl ? arguments[0][0].infoUrl : ""])
                 }
             } else {
                 for (var i = 0; i < arguments.length; i++) {
                     if (successStatus === arguments[i][1] && arguments[i][0].length > 0) {
-                        map.set(arguments[i][0][0].name, [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].info ? arguments[i][0][0].info : "", arguments[i][0][0].furtherInfo ? arguments[i][0][0].furtherInfo : ""])
+                        map.set(arguments[i][0][0].name, [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].info ? arguments[i][0][0].info : "", arguments[i][0][0].infoUrl ? arguments[i][0][0].infoUrl : ""])
                     }
                 }
             }
