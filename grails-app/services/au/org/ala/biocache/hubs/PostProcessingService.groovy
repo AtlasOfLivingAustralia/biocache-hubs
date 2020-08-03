@@ -522,26 +522,41 @@ class PostProcessingService {
             }
         }
 
-        // all used default filter names
+        def profile = qualityService.activeProfile(requestParams.qualityProfile)
+        // label to name map
+        def labelToNameMap = profile?.categories?.collectEntries{ [(it.label): it.name] } ?: [:]
+
+        // all used keys by quality filters
         def keys = categoryToKeyMap.values().flatten() as Set
 
-        // map from DQ filter names to categories labels
+        // map from keys to categories labels { field key -> label set }
         def keyToCategoryMap = keys.collectEntries { [(it): categoryToKeyMap.findAll { k, v -> v.contains(it) }.collect { it.key }] }
 
-        // map from user fq to category labels
+
+        // find all fqs interact with dq filters
+        def interactingFq = requestParams.fq.findAll {getKeysFromFilter(it).find {keyToCategoryMap.containsKey(it)}}
+        // userfq -> { key : [label, label]}
+        def fqkeyToCategory = interactingFq.collectEntries {fq -> [(fq): getKeysFromFilter(fq).findAll { keyToCategoryMap.containsKey(it) }.collectEntries { [(it): keyToCategoryMap.get(it)]}]}
+        def fqInteract = fqkeyToCategory.collectEntries {fq, dic ->
+            [(fq), dic.collect { key, val ->
+                'This filter may conflict with <b>[' + val.collect{labelToNameMap[it]}.join(', ') + ']</b> because they ' + (val.size() == 1? 'both' : 'all') + ' use field: <b>[' + key + ']</b>'
+            }.join('<br><br>')]
+        }
+
+        // all keys in user fq
+        def alluserkeys = requestParams.fq.collect{ getKeysFromFilter(it) }.flatten()
+        // key -> [userfq, userfq]
+        def keyToUserfq = alluserkeys.collectEntries {key -> [(key): requestParams.fq.findAll {getKeysFromFilter(it).contains(key)}]}
+        // filter it so it only contains dq categories interact with user fqs
+        categoryToKeyMap = categoryToKeyMap.collectEntries {label, keySet -> [(label) : keySet.findAll { alluserkeys.contains(it) }]}.findAll {label, keySet -> keySet.size() > 0}
+        def dqInteract = categoryToKeyMap.collectEntries {label, keySet ->
+            [(label), keySet.collect { key ->
+                'This category may conflict with <b>[' + keyToUserfq[key].join(', ') + ']</b> because they ' + (keyToUserfq[key].size() == 1 ? 'both' : 'all') + ' use field:<b>[' + key + ']</b>'
+            }.join('<br><br>')]
+        }
+
+        // map from user fq to category labels (user fq -> label, only those do interact appear in map)
         def userFqInteractDQCategoryLabel = requestParams.fq.collectEntries { [(it): getKeysFromFilter(it).collect { key -> keyToCategoryMap.get(key) }.findAll { it != null }.flatten() as Set] }.findAll { key, val -> !val.isEmpty() }
-
-        def labels = userFqInteractDQCategoryLabel.collect { it.value }.flatten() as Set
-
-        // all user specified Facets
-        def grouped = activeFacetObj?.values()?.flatten()
-        // map from DQ category to translated user fqs
-        def dqInteractFQs = labels.collectEntries { [(it) : userFqInteractDQCategoryLabel.findAll { ufq, labellist -> labellist.contains(it) }.collect { ufq, labellist -> grouped?.find { facet -> facet.value == ufq}.displayName }.join(', ')] }
-
-        // map from user fq to category names
-        def profile = qualityService.activeProfile(requestParams.qualityProfile)
-        def labelToNameMap = profile?.categories?.collectEntries{ [(it.label): it.name] } ?: [:]
-        def userFqInteractDQNames = userFqInteractDQCategoryLabel.collectEntries { [(it.key): it.value.collect { labelToNameMap[it] }.join(', ')] }
 
         def colors = [
                 "#C10020", //# Vivid Red
@@ -572,7 +587,7 @@ class PostProcessingService {
             it.value.each { DQColors.put(it, color) }
         }
 
-        return [userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors]
+        return [fqInteract, dqInteract, UserFQColors, DQColors]
     }
 
     /**

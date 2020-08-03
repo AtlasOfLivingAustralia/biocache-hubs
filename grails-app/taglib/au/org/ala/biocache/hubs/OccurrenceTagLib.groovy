@@ -172,7 +172,7 @@ class OccurrenceTagLib {
 
         String hrefValue = currentFilterItemLink(attrs, facetValue)
         String color = attrs.cssColor != null ? "color:${attrs.cssColor}" : ""
-        String title = (attrs.title != null ? "This filter may conflict with these default quality filters: [${attrs.title}]." : "") + alatag.message(code:"title.filter.remove", default:"Click to remove this filter")
+        String title = (attrs.title != null ? "${attrs.title}<br><br>" : "") + alatag.message(code:"title.filter.remove", default:"Click to remove this filter")
 
         def mb = new MarkupBuilder(out)
         mb.a(   href: hrefValue,

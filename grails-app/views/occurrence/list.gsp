@@ -413,7 +413,7 @@
                                                 </alatag:linkQualityCategory>
                                             </g:else>
                                             <span>
-                                                <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteractFQs.containsKey(qualityCategory.label) ? (". This quality filter may conflict with these user selected filters: [" + dqInteractFQs[qualityCategory.label]) +"]": "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
+                                                <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteract.containsKey(qualityCategory.label) ? "<br><br>" + dqInteract[qualityCategory.label] : "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
                                                 <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-dqcategoryname="${qualityCategory.name}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="${g.message(code:"dq.filter.label", default: "Filter applied fq={0}", args:[qualityFiltersByLabel[qualityCategory.label]])}"></i></a>
                                                 <alatag:invertQualityCategory category="${qualityCategory}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
                                                     <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
@@ -466,7 +466,7 @@
                                 <g:if test="${items.key}">
                                     <g:each var="item" in="${items.value}">
                                         <g:set var="hasFq" value="${true}"/>
-                                        <alatag:currentFilterItem key="${items.key}" value="${item}" facetValue="${item.value}" cssClass="btn btn-default btn-xs" cssColor="${UserFQColors[item.value]}" title="${userFqInteractDQNames[item.value]}" addCloseBtn="${true}"/>
+                                        <alatag:currentFilterItem key="${items.key}" value="${item}" facetValue="${item.value}" cssClass="btn btn-default btn-xs" cssColor="${UserFQColors[item.value]}" title="${fqInteract[item.value]}" addCloseBtn="${true}"/>
                                     </g:each>
                                 </g:if>
                             </g:each>

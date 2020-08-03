@@ -183,7 +183,7 @@ class OccurrenceController {
             def qualityTotalCount = qualityService.countTotalRecords(requestParams)
             def qualityFilterDescriptionsByLabel = qualityService.getGroupedEnabledFilters(requestParams.qualityProfile).collectEntries {[(it.key) : it.value*.description.join(' and ')]}
 
-            def (userFqInteractDQNames, dqInteractFQs, UserFQColors, DQColors) = postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj)
+            def (fqInteract, dqInteract, UserFQColors, DQColors) = postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj)
 
             def translatedFilterMap = postProcessingService.translateValues(qualityService.getGroupedEnabledFilters(requestParams.qualityProfile), webServicesService.getMessagesPropertiesFile(), webServicesService.getAssertionCodeMap())
 
@@ -211,9 +211,9 @@ class OccurrenceController {
                     qualityExcludeCount: qualityExcludeCount,
                     qualityFiltersByLabel: qualityFiltersByLabel,
                     qualityTotalCount: qualityTotalCount,
-                    userFqInteractDQNames: userFqInteractDQNames,
+                    fqInteract: fqInteract,
                     qualityFilterDescriptionsByLabel: qualityFilterDescriptionsByLabel,
-                    dqInteractFQs: dqInteractFQs,
+                    dqInteract: dqInteract,
                     UserFQColors: UserFQColors,
                     DQColors: DQColors,
                     activeProfile: qualityService.activeProfile(requestParams.qualityProfile),
