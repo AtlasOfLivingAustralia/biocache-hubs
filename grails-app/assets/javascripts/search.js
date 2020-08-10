@@ -561,6 +561,18 @@ $(document).ready(function() {
         }
     });
 
+    // switch caret style
+    $('.dq-filters-collapse').click(function (e) {
+        var el = $(this).find('i');
+        if ($(el).hasClass('fa-caret-right')) {
+            $(el).removeClass('fa-caret-right');
+            $(el).addClass('fa-caret-down');
+        } else if ($(el).hasClass('fa-caret-down')) {
+            $(el).removeClass('fa-caret-down');
+            $(el).addClass('fa-caret-right');
+        }
+    });
+
     // when dlg pops, load and init status, set checkall status
     $('.multipleFiltersLink').click(function() {
         var filterStatus = $("form#filterRefineForm").find(":input.filters");
