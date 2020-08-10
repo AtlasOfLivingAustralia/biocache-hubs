@@ -394,9 +394,6 @@
                             </g:if>
                             <g:else>
                                 <div class="collapse in" id="dq-filters-collapse">
-                                    <g:if test="${!qualityCategories.isEmpty()}">
-                                        <div><a href="#DQManageFilters" class="multipleFiltersLink" data-toggle="modal" role="button" title="<g:message code="dq.button.refinefilter.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.refinefilter.text" default="refine filter selection"/></a></div>
-                                    </g:if>
                                     <g:each var="qualityCategory" in="${qualityCategories}">
                                         <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
                                         <div class="col-sm-6 dq-active-filter-item">
@@ -424,6 +421,9 @@
                                             </span>
                                         </div>
                                     </g:each>
+                                    <g:if test="${qualityCategories.size() > 1}">
+                                        <div class="col-sm-12 dq-active-filter-item"><a href="#DQManageFilters" class="multipleFiltersLink" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="filter selection"/></a></div>
+                                    </g:if>
                                     <div id="DQFilterDetails" class="modal fade " role="dialog">
                                         <div class="modal-dialog" role="document" id="DQDetailsModal">
                                             <div class="modal-content">
