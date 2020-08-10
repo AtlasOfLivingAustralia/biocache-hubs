@@ -34,6 +34,8 @@ import java.text.SimpleDateFormat
 class OccurrenceController {
     def webServicesService, facetsCacheService, postProcessingService, authService
 
+    def SESSION_NAVIGATION_DTO = "SESSION_NAVIGATION_DTO"
+
     GeoIpService geoIpService
     QualityService qualityService
 
@@ -189,6 +191,16 @@ class OccurrenceController {
 
             log.debug "defaultFacets = ${defaultFacets}"
 
+            OccurrenceNavigationDTO navigationDTO = new OccurrenceNavigationDTO();
+            List<String> uuids = new ArrayList<String>();
+            searchResults.occurrences.each { occ ->
+                uuids.add(occ.uuid);
+            }
+            navigationDTO.setCurrentPageUUIDs(uuids);
+            navigationDTO.setSearchRequestParams(requestParams);
+            navigationDTO.setSearchRequestResultSize(searchResults.totalRecords);
+            request.getSession().setAttribute(SESSION_NAVIGATION_DTO, navigationDTO);
+
             [
                     sr: searchResults,
                     searchRequestParams: requestParams,
@@ -307,9 +319,37 @@ class OccurrenceController {
                 Map layersMetaData = webServicesService.getLayersMetaData()
                 compareRecord = postProcessingService.augmentRecord(compareRecord) // adds some links to certain fields, etc
 
+                // Retrieve Navigation DTO from session (if available)
+                // to add the Previous/Next/Back to results buttons
+                int searchOffset = 0;
+                boolean displayNavigationButtons = false;
+                boolean isFirstOccurrence = false;
+                boolean isLastOccurrence = false;
+                OccurrenceNavigationDTO navigationDTO = (OccurrenceNavigationDTO) request.getSession().getAttribute(SESSION_NAVIGATION_DTO);
+                // Check if the Navigation DTO in session is consistent (ex: if we navigate in several tabs)
+                if (navigationDTO && navigationDTO.getCurrentPageUUIDs() && navigationDTO.getCurrentPageUUIDs().contains(id)) {
+                    displayNavigationButtons = true;
+                    navigationDTO.setCurrentUUID(id);
+                    searchOffset = (navigationDTO.getSearchRequestParams() && navigationDTO.getSearchRequestParams().offset) ? navigationDTO.getSearchRequestParams().offset : 0;
+                    request.getSession().setAttribute(SESSION_NAVIGATION_DTO, navigationDTO);
+
+                    // is first occurrence?
+                    int indexInPage = navigationDTO.getCurrentPageUUIDs().indexOf(id);
+                    isFirstOccurrence = (searchOffset == 0) && (indexInPage == 0);
+
+                    // is last occurrence?
+                    int indexInResults = searchOffset + indexInPage;
+                    isLastOccurrence = (indexInResults == (navigationDTO.getSearchRequestResultSize()-1));
+                }
+
+                render(view: 'show', model:
                 [
                         record: record,
                         uuid: id,
+                        searchOffset: searchOffset,
+                        displayNavigationButtons: displayNavigationButtons,
+                        isFirstOccurrence: isFirstOccurrence,
+                        isLastOccurrence: isLastOccurrence,
                         compareRecord: compareRecord,
                         groupedAssertions: groupedAssertions,
                         collectionName: collectionInfo?.name,
@@ -326,7 +366,7 @@ class OccurrenceController {
                         environmentalSampleInfo: postProcessingService.getLayerSampleInfo(ENVIRO_LAYER, record, layersMetaData),
                         contextualSampleInfo: postProcessingService.getLayerSampleInfo(CONTEXT_LAYER, record, layersMetaData),
                         skin: grailsApplication.config.skin.layout
-                ]
+                ])
             } else {
                 flash.message = "No record found with id: ${id}"
                 render view:'../error'
@@ -336,6 +376,65 @@ class OccurrenceController {
             flash.message = "${ex.message}"
             render view:'../error'
         }
+    }
+
+    /**
+     * Go to the next occurrences of the search results
+     * Use the Navigation DTO from session (if available)
+     */
+    def next() {
+        moveCursorAndShow(1);
+    }
+
+    /**
+     * Go to the previous occurrences of the search results
+     * Use the Navigation DTO from session (if available)
+     */
+    def previous() {
+        moveCursorAndShow(-1);
+    }
+
+    def moveCursorAndShow(int direction) {
+        OccurrenceNavigationDTO navigationDTO = (OccurrenceNavigationDTO) request.getSession().getAttribute(SESSION_NAVIGATION_DTO);
+        if (navigationDTO && navigationDTO.getCurrentPageUUIDs() && navigationDTO.getCurrentUUID()) {
+            int currentIndex = navigationDTO.getCurrentPageUUIDs().indexOf(navigationDTO.getCurrentUUID())
+            if (currentIndex != -1) {
+                int newIndex = currentIndex + direction;
+                if (newIndex >= 0 && newIndex < navigationDTO.getCurrentPageUUIDs().size()) {
+                    // New occurrence is in current page
+                    redirect (controller:'occurrence', action:'show', id:navigationDTO.getCurrentPageUUIDs().get(newIndex));
+                    return;
+                }
+                else {
+                    // New occurrence is in another page
+                    SpatialSearchRequestParams requestParams = navigationDTO.getSearchRequestParams();
+                    if (requestParams && requestParams.offset && requestParams.pageSize) {
+                        Integer newOffset = requestParams.offset + direction * requestParams.pageSize;
+                        requestParams.offset = newOffset;
+                        // Execute new SolR query to get the other page (next or previous)
+                        JSONObject searchResults = webServicesService.fullTextSearch(requestParams);
+                        if (searchResults && searchResults.occurrences && searchResults.occurrences.size() > 0) {
+                            List<String> uuids = new ArrayList<String>();
+                            searchResults.occurrences.each { occ ->
+                                uuids.add(occ.uuid);
+                            }
+                            String newUUID = (direction > 0) ? uuids.first() : uuids.last();
+                            navigationDTO.setCurrentPageUUIDs(uuids);
+                            navigationDTO.setSearchRequestParams(requestParams);
+                            navigationDTO.setCurrentUUID(newUUID);
+                            request.getSession().setAttribute(SESSION_NAVIGATION_DTO, navigationDTO);
+                            // Redirect to the new occurrence
+                            redirect (controller:'occurrence', action:'show', id:newUUID);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        // Redirect to the default list of occurrences in case of error
+        // ex: if we call /next or /previous directly, without Navigation DTO in session
+        redirect (controller:'occurrence', action:'list');
+        return;
     }
 
     /**
