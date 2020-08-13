@@ -719,8 +719,8 @@ $(document).ready(function() {
         var categoriesStr = $(this).data('categories');
         var categories = categoriesStr.substring(1, categoriesStr.length - 1).split(', ');
         // 1. remove disableQualityFilter
-        for (var label of categories) {
-            url = removeFromURL(url, "disableQualityFilter=" + encodeURIComponent(label).replace(/%20/g, "+").replace(/[()]/g, escape), true);
+        for (var i = 0; i < categories.length; i++) {
+            url = removeFromURL(url, "disableQualityFilter=" + encodeURIComponent(categories[i]).replace(/%20/g, "+").replace(/[()]/g, escape), true);
         }
         // 2. remove disableAllQualityFilters
         url = removeFromURL(url, "disableAllQualityFilters=true", true);
