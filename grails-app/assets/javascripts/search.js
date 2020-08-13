@@ -660,8 +660,7 @@ $(document).ready(function() {
         }
 
         // get all enabled filters in this category
-        var filters = filters.split(', ');
-        filters.forEach(function(filter) {
+        filters.split(', ').forEach(function(filter) {
             url = removeFromURL(url, 'fq=' + encodeURIComponent(filter).replace(/%20/g, "+").replace(/[()]/g, escape), true);
         })
 
