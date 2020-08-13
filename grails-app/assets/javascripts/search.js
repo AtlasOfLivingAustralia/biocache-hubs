@@ -698,7 +698,12 @@ $(document).ready(function() {
         if (exactMatch) {
             idx = tokens.indexOf(sToRemove);
         } else {
-            idx = tokens.findIndex(token => token.startsWith(sToRemove));
+            for (var i = 0; i < tokens.length; i++) {
+                if (tokens[i].startsWith(sToRemove)) {
+                    idx = i;
+                    break;
+                }
+            }
         }
 
         if (idx != -1) {
