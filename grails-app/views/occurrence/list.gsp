@@ -279,10 +279,10 @@
                     <alatag:ifDataQualityEnabled>
                         <div class="activeFilters col-sm-12">
                             <div>
-                            <a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse" class="dq-filters-collapse"><i class="fa fa-caret-down" style="width: 8px;color: black"></i>&nbsp;<b><alatag:message code="quality.filters.heading" default="Data Quality Filters"/></b>:</a>
+                            <a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse" class="dq-filters-collapse"><i class="fa fa-caret-down" style="width: 8px;color: black"></i>&nbsp;<b><alatag:message code="quality.filters.group.title" default="Data Quality Filters"/></b>:</a>
                             <g:if test="${qualityProfiles.size() >= 1}">
                                 <span class="dropdown">
-                                    <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to switch profiles">
                                         ${searchRequestParams.disableAllQualityFilters ? 'Disabled' : activeProfile.name}
                                         <span class="caret"></span>
                                     </button>
@@ -298,7 +298,7 @@
                                 <alatag:linkToggeleDQFilters class="btn btn-default btn-xs"/>
                             </g:else>
                             <g:if test="${!searchRequestParams.disableAllQualityFilters}">
-                                <a href="#DQProfileDetails" data-toggle="modal" role="button"><button type="button" class="btn btn-default btn-xs" title="Profile description">info</button></a>
+                                <a href="#DQProfileDetails" data-toggle="modal" role="button"><button type="button" class="btn btn-default btn-xs" title="Click to view the profile description"><alatag:message code="quality.filters.categoryinfo.button.text" default="info"/></button></a>
                                 <div id="DQProfileDetails" class="modal fade" role="dialog">
                                     <div class="modal-dialog" role="document" id="DQProfileDetailsModal">
                                         <div class="modal-content">
@@ -385,6 +385,7 @@
                                     </div>
                                 </div>
                             </g:if>
+                                <button class="btn btn-default btn-xs" id="resetsearch" title="Click to reset to original search result" data-categories="${qualityCategories.collect{it.label}}" data-filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}"><alatag:message code="quality.filters.resetsearch.button.text" default="reset search"/></button>
                             </div>
 
                             <g:if test="${searchRequestParams.disableAllQualityFilters}">

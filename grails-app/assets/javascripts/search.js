@@ -617,12 +617,12 @@ $(document).ready(function() {
 
         // get all disabled categories from the url
         // we don't care disableall param
-        var disableQualityFilterSet = new Set()
-        var disabledFilter = $.url().param('disableQualityFilter')
+        var disableQualityFilterSet = new Set();
+        var disabledFilter = $.url().param('disableQualityFilter');
         if (typeof disabledFilter === "object") {
-            disableQualityFilterSet = new Set(disabledFilter)
+            disableQualityFilterSet = new Set(disabledFilter);
         } else if (typeof disabledFilter === "string") {
-            disableQualityFilterSet.add(disabledFilter)
+            disableQualityFilterSet.add(disabledFilter);
         }
 
         // get current url
@@ -639,44 +639,51 @@ $(document).ready(function() {
 
             if (toDisable) { // if to disable, add it to disable list
                 if (!disableQualityFilterSet.has(filterlabel)) {
-                    url = appendURL(url, "&disableQualityFilter=" + encodeURIComponent(filterlabel).replace(/%20/g, "+"));
+                    url = appendURL(url, "&disableQualityFilter=" + encodeURIComponent(filterlabel).replace(/%20/g, "+").replace(/[()]/g, escape));
                 }
             } else { // if to enable, remove it from disable list + remove expanded fqs
                 if (disableQualityFilterSet.has(filterlabel)) {
-                    url = removeFromURL(url, "disableQualityFilter=" + encodeURIComponent(filterlabel).replace(/%20/g, "+"))
+                    url = removeFromURL(url, "disableQualityFilter=" + encodeURIComponent(filterlabel).replace(/%20/g, "+").replace(/[()]/g, escape), true);
                 }
 
-                var filters = $(fitlers[i]).data("filters")
-                var len = filters.length
-                if (len > 0) {
-                    filters = filters.substring(1, len - 1)
-                }
-
-                // get all enabled filters in this category
-                var filters = filters.split(', ');
-                filters.forEach(function(filter) {
-                    url = removeFromURL(url, 'fq=' + encodeURIComponent(filter).replace(/%20/g, "+"))
-                })
+                url = removeFiltersFromFq($(fitlers[i]).data("filters"), url);
             }
         })
 
-        window.location.href = url
+        window.location.href = url;
     })
+
+    function removeFiltersFromFq(filters, url) {
+        var len = filters.length;
+        if ((len > 0) && filters.startsWith('[') && filters.endsWith(']')) {
+            filters = filters.substring(1, len - 1);
+        }
+
+        // get all enabled filters in this category
+        var filters = filters.split(', ');
+        filters.forEach(function(filter) {
+            url = removeFromURL(url, 'fq=' + encodeURIComponent(filter).replace(/%20/g, "+").replace(/[()]/g, escape), true);
+        })
+
+        return url;
+    }
 
     // insert query string into url, before the # tag
     function appendURL(url, sToAppend) {
         var idx = url.indexOf("#");
         if (idx == -1) {
-            return url.concat(sToAppend)
+            return url.concat(sToAppend);
         } else {
             return url.slice(0, idx) + sToAppend + url.slice(idx);
         }
     }
 
-    function removeFromURL(url, sToRemove) {
-        var startsWithQ = url.startsWith('?');
-        if (startsWithQ) {
-            url = url.substring(1);
+    function removeFromURL(url, sToRemove, exactMatch) {
+        var qIndex = url.indexOf('?');
+        var serverPath = "";
+        if (qIndex != -1) {
+            serverPath = url.substring(0, qIndex + 1);
+            url = url.substring(qIndex + 1);
         }
 
         var anchorpos = url.indexOf('#');
@@ -687,13 +694,38 @@ $(document).ready(function() {
         }
 
         var tokens = url.split('&');
-        var idx = tokens.indexOf(sToRemove);
+        var idx = -1;
+        // Match the exact value
+        if (exactMatch) {
+            idx = tokens.indexOf(sToRemove);
+        } else {
+            idx = tokens.findIndex(token => token.startsWith(sToRemove));
+        }
+
         if (idx != -1) {
             tokens.splice(idx, 1);
         }
 
-        return (startsWithQ ? '?' : '') + tokens.join('&') + anchorpart;
+        return serverPath + tokens.join('&') + anchorpart;
     }
+
+    $('#resetsearch').on('click', function(e) {
+        // get current url
+        var url = $(location).attr('href');
+        var categoriesStr = $(this).data('categories');
+        var categories = categoriesStr.substring(1, categoriesStr.length - 1).split(', ');
+        // 1. remove disableQualityFilter
+        for (var label of categories) {
+            url = removeFromURL(url, "disableQualityFilter=" + encodeURIComponent(label).replace(/%20/g, "+").replace(/[()]/g, escape), true);
+        }
+        // 2. remove disableAllQualityFilters
+        url = removeFromURL(url, "disableAllQualityFilters=true", true);
+        // 3. remove qualityProfile
+        url = removeFromURL(url, "qualityProfile=", false);
+        // 4. remove expanded fqs
+        url = removeFiltersFromFq($(this).data("filters"), url);
+        window.location.href = url;
+    })
 
     // Drop-down option on facet popup div - for wildcard fq searches
     $('#submitFacets a.wildcard').on('click', function(e) {
