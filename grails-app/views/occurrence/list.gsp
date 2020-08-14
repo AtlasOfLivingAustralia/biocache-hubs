@@ -385,7 +385,7 @@
                                     </div>
                                 </div>
                             </g:if>
-                                <button class="btn btn-default btn-xs" id="resetsearch" title="Click to reset to original search result" data-categories="${qualityCategories.collect{it.label}}" data-filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}"><alatag:message code="quality.filters.resetsearch.button.text" default="reset search"/></button>
+                                <button class="btn btn-default btn-xs" id="resetsearch" title="Click to reset to original search result" data-categories="${qualityCategories.collect{it.label}}" data-filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}"><alatag:message code="quality.filters.resetsearch.button.text" default="reset filters"/></button>
                             </div>
 
                             <g:if test="${searchRequestParams.disableAllQualityFilters}">
