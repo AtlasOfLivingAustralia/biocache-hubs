@@ -47,99 +47,16 @@ class WebServicesService {
     }
 
     JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
-        def result = applyQualityFiltersToJsonRequest(requestParams) { newParams ->
-            def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${newParams.getEncodedParams()}"
-            getJsonElements(url)
+
+        // force set the profile if none provided
+        if (dataQualityEnabled && !requestParams.qualityProfile && !requestParams.disableAllQualityFilters) {
+            def activeProfile = qualityService.activeProfile(requestParams.qualityProfile)
+            requestParams.qualityProfile = activeProfile?.shortName
         }
+
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
+        def result = getJsonElements(url)
         return result
-    }
-
-    private JSONObject applyQualityFiltersToJsonRequest(SearchRequestParams requestParams, @ClosureParams(FirstParam) Closure<JSONObject> f) {
-        SearchRequestParams newParams = convertSearchRequestParamsForDataQualitySettings(requestParams)
-        JSONObject result = f(newParams)
-        return convertSearchResultsForDataQualitySettings(newParams, result)
-    }
-
-    private def convertSearchRequestParamsForDataQualitySettings(SearchRequestParams requestParams) {
-        def newParams = requestParams.clone()
-        // Transmute the disableQualityFilter params into data quality filter querys (dqfqs)
-        def skip = newParams.disableAllQualityFilters || !dataQualityEnabled
-        List<String> appliedFilters = []
-        if (!skip) {
-            def disabled = newParams.disableQualityFilter as Set
-            appliedFilters = qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile)
-                    .findAll { label, filters -> !disabled.contains(label) }
-                    .collect { label, filters -> filters }
-        }
-        newParams.dqfq = appliedFilters
-        return newParams
-    }
-
-    private JSONObject convertSearchResultsForDataQualitySettings(SearchRequestParams newParams, JSONObject result) {
-        // Fix the results to remove the dqfqs from queryString and urlParams and active facets
-        def activeFacetMapFilterLookup = result?.activeFacetMap?.collectEntries { k, v -> [(String.valueOf(k) + ':' + String.valueOf(v?.value)): k]} ?: [:]
-        def activeFacetObjFilterLookup = result?.activeFacetObj?.collectEntries { String k, List v ->
-            v.withIndex().collectEntries { element, index -> [(element.value ?: '') : [ key: k, idx: index]] }
-        } ?: [:]
-        log.debug('{}', activeFacetMapFilterLookup)
-        newParams.dqfq?.each { filter ->
-            def encoded = URIUtil.encodeWithinQuery(filter) //simpleEncode(filter)
-
-            if (result.query) {
-                result.query = fixFq(result.query, encoded)
-            }
-            if (result.urlParameters) {
-                result.urlParameters = fixFq(result.urlParameters, encoded)
-            }
-
-            def activeFacetMapKey = activeFacetMapFilterLookup[filter]
-            def activeFacetObjKey = activeFacetObjFilterLookup[filter]
-
-            if (activeFacetMapKey) {
-                result?.activeFacetMap?.remove(activeFacetMapKey)
-            }
-            if (activeFacetObjKey) {
-                def key = activeFacetObjKey.key
-                def idx = activeFacetObjKey.idx
-                def activeFacetList = result.activeFacetObj[key]
-                activeFacetList[idx] = null
-            }
-        }
-        result.activeFacetObj?.each { entry -> entry.value = entry.value.findAll { it != null } }
-        String extraParams = newParams.disableQualityFilter.collect { "disableQualityFilter=$it" }.join('&')
-        if (result.urlParameters) {
-            result.urlParameters += extraParams ? '&' + extraParams : ''
-            if (newParams.disableAllQualityFilters) {
-                result.urlParameters += '&disableAllQualityFilters=true'
-            }
-            if (newParams.qualityProfile) {
-                result.urlParameters += "&qualityProfile=${newParams.qualityProfile}"
-            }
-        }
-        return result
-    }
-
-    def fixFq(String queryParams, String fixFq, String replace = null) {
-        def startsWithQ = queryParams.startsWith('?')
-        if (startsWithQ) {
-            queryParams = queryParams.substring(1)
-        }
-        def tokens = queryParams.tokenize('&')
-        if (replace != null) {
-            tokens = tokens.collect { it == 'fq=' + fixFq ? replace : it }
-        } else {
-            tokens.remove('fq='+ fixFq)
-        }
-        return (startsWithQ ? '?' : '') + tokens.join('&')
-    }
-
-    /**
-     * Try to replicate the URL encoding scheme the service sends back.
-     * @param str The string to encode
-     * @return The encoded string
-     */
-    def simpleEncode(String str) {
-        replace(replace(replace(replace(replace(str, ':', '%3A'), ' ', '%20'), '"', '%22'), '[', '%5B'), ']', '%5D')
     }
 
     JSONObject cachedFullTextSearch(SpatialSearchRequestParams requestParams) {
@@ -618,18 +535,16 @@ class WebServicesService {
     }
 
     JSONElement facetSearch(SearchRequestParams requestParams) {
-        def result = applyQualityFiltersToJsonRequest(requestParams) { newParams ->
-            newParams.pageSize = 0
-            def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${newParams.getEncodedParams()}"
-            getJsonElements(url)
-        }
+        requestParams.pageSize = 0
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
+        def result = getJsonElements(url)
+
 
         return result
     }
 
     String facetCSVDownload(SearchRequestParams requestParams) {
-        def newParams = convertSearchRequestParamsForDataQualitySettings(requestParams)
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/facets/download?${newParams.getEncodedParams()}&count=true&lookup=true"
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/facets/download?${requestParams.getEncodedParams()}&count=true&lookup=true"
         def result = getText(url)
         return result
     }

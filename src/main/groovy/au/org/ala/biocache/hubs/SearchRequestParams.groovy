@@ -52,8 +52,6 @@ class SearchRequestParams implements Validateable{
     boolean disableAllQualityFilters = false
     /** Default filters to disable (currently can only disable on category, so it's a list of disabled category name)*/
     List<String> disableQualityFilter = []
-    /** Default filters to be applied in a query*/
-    List<String> dqfq = []
 
     /**
      * Custom toString method to produce a String to be used as the request parameters
@@ -88,8 +86,16 @@ class SearchRequestParams implements Validateable{
             req.append("&fq=").append(conditionalEncode(filter, encodeParams))
         }
 
-        dqfq.each { filter ->
-            req.append("&fq=").append(conditionalEncode(filter, encodeParams))
+        if (disableAllQualityFilters) {
+            req.append("&disableAllQualityFilters=true")
+        }
+
+        if (qualityProfile) {
+            req.append("&qualityProfile=").append(conditionalEncode(qualityProfile, encodeParams))
+        }
+
+        disableQualityFilter.each { dqf ->
+            req.append("&disableQualityFilter=").append(conditionalEncode(dqf, encodeParams))
         }
 
         req.append("&start=").append(offset?:start);
@@ -171,6 +177,18 @@ class SearchRequestParams implements Validateable{
 
         if(qc){
             req.append("&qc=").append(URLEncoder.encode(qc, "UTF-8"));
+        }
+
+        if (disableAllQualityFilters) {
+            req.append("&disableAllQualityFilters=true")
+        }
+
+        if (qualityProfile) {
+            req.append("&qualityProfile=").append(URLEncoder.encode(qualityProfile, "UTF-8"))
+        }
+
+        disableQualityFilter.each { dqf ->
+            req.append("&disableQualityFilter=").append(URLEncoder.encode(dqf, "UTF-8"))
         }
         return req.toString();
     }

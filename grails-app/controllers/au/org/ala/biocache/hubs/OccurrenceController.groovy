@@ -63,6 +63,8 @@ class OccurrenceController {
 
         requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
 
+        def activeProfile = qualityService.activeProfile(requestParams.qualityProfile)
+
         if (!params.pageSize) {
             requestParams.pageSize = 20
         }
@@ -228,7 +230,7 @@ class OccurrenceController {
                     dqInteract: dqInteract,
                     UserFQColors: UserFQColors,
                     DQColors: DQColors,
-                    activeProfile: qualityService.activeProfile(requestParams.qualityProfile),
+                    activeProfile: activeProfile,
                     qualityProfiles: qualityService.findAllEnabledProfiles(true)
             ]
 

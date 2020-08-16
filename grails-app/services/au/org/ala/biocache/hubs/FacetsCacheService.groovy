@@ -26,7 +26,7 @@ import javax.annotation.PostConstruct
  * Used to populate the values in select drop-down lists in advanced search page.
  */
 class FacetsCacheService {
-    def webServicesService, grailsApplication
+    def webServicesService, grailsApplication, qualityService
     Map facetsMap = [:]  // generated via SOLR lookup
     List facetsList = [] // set via config (facets.cached) in init()
 

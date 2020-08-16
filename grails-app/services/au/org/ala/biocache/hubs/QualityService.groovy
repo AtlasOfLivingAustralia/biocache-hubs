@@ -11,6 +11,7 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import org.springframework.beans.factory.annotation.Value
 import retrofit2.Call
+import retrofit2.HttpException
 
 import javax.annotation.PostConstruct
 import java.util.concurrent.TimeUnit
@@ -179,7 +180,8 @@ class QualityService {
             return response.body()
         } else {
             log.error("Non-successful call {} returned response {}", call.request(), response)
-            throw new RuntimeException("Exception executing ${call.request()}, response code: ${response.code()}")
+            throw new HttpException(response)
+//            throw new RuntimeException("Exception executing ${call.request()}, response code: ${response.code()}")
         }
     }
 }
