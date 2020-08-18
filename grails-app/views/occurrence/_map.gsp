@@ -745,7 +745,6 @@
             <div class="modal-footer">
                 <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message code="map.spatialportal.redirect.btn.cancel.label" default="Cancel"/></button>
                 <a class="btn btn-primary" href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="<g:message code="map.spatialportal.btn.title"/>"><g:message code="map.spatialportal.redirect.btn.ok.label" default="Go to Spatial Portal"/></a>
-%{--                <button id="gospatial" class="btn btn-primary"><g:message code="map.spatialportal.redirect.btn.ok.label" default="Go to Spatial Portal"/></button>--}%
             </div>
         </div>
     </div>

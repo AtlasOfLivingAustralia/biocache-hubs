@@ -181,7 +181,6 @@ class QualityService {
         } else {
             log.error("Non-successful call {} returned response {}", call.request(), response)
             throw new HttpException(response)
-//            throw new RuntimeException("Exception executing ${call.request()}, response code: ${response.code()}")
         }
     }
 }
