@@ -75,7 +75,7 @@ public class SearchRequestParams implements Validateable{
             req.append("&fq=").append(conditionalEncode(filter, encodeParams))
         }
         req.append("&start=").append(offset?:start);
-        req.append("&pageSize=").append(max?:pageSize);
+        req.append("&pageSize=").append(max?:(pageSize>0)?pageSize:20) // fix for #337 (revert if fieldguides is fixed)
         req.append("&sort=").append(sort);
         req.append("&dir=").append(dir);
         req.append("&qc=").append(conditionalEncode(qc, encodeParams));
