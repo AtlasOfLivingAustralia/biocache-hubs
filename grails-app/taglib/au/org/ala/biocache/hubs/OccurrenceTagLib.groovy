@@ -70,9 +70,9 @@ class OccurrenceTagLib {
             output = fieldName[0..-4].replaceAll("_", " ") + " (range)"
         } else {
 
-            def label = message(code:fieldCode, default:"")
-            if(!label){
-                label = message(code:"facet." + fieldCode, default:fieldName)
+            def label = message(code:"facet." + fieldCode, default:fieldName)
+            if (!label){
+                label = message(code:fieldCode, default:"")
             }
 
             label = label ?: camelCaseToHuman(text: fieldName)
