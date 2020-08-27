@@ -713,24 +713,6 @@ $(document).ready(function() {
         return serverPath + tokens.join('&') + anchorpart;
     }
 
-    $('#resetsearch').on('click', function(e) {
-        // get current url
-        var url = $(location).attr('href');
-        var categoriesStr = $(this).data('categories');
-        var categories = categoriesStr.substring(1, categoriesStr.length - 1).split(', ');
-        // 1. remove disableQualityFilter
-        for (var i = 0; i < categories.length; i++) {
-            url = removeFromURL(url, "disableQualityFilter=" + encodeURIComponent(categories[i]).replace(/%20/g, "+").replace(/[()]/g, escape), true);
-        }
-        // 2. remove disableAllQualityFilters
-        url = removeFromURL(url, "disableAllQualityFilters=true", true);
-        // 3. remove qualityProfile
-        url = removeFromURL(url, "qualityProfile=", false);
-        // 4. remove expanded fqs
-        url = removeFiltersFromFq($(this).data("filters"), url);
-        window.location.href = url;
-    })
-
     // Drop-down option on facet popup div - for wildcard fq searches
     $('#submitFacets a.wildcard').on('click', function(e) {
         e.preventDefault();
