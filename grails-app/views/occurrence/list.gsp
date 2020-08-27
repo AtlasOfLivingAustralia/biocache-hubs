@@ -396,7 +396,7 @@ a[target="_blank"]:after  {
                             </g:if>
                             <span style="vertical-align: middle;">
                                 <alatag:linkResetSearch filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}">
-                                <i class="fas fa-redo tooltips" title="<g:message code="quality.filters.resetsearch.tooltip" default="Reset filters"></g:message>"></i>
+                                <i class="fas fa-undo tooltips" title="<g:message code="quality.filters.resetsearch.tooltip" default="Reset filters"></g:message>"></i>
                                 </alatag:linkResetSearch>
                             </span>
 
