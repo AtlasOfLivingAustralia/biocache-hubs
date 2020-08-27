@@ -661,7 +661,7 @@ function reloadWithParam(paramName, paramValue) {
         paramList.push("wkt=" + wkt);
     }
 
-    alert("params = "+paramList.join("&"));
+    //alert("params = "+paramList.join("&"));
     //alert("url = "+window.location.pathname);
     window.location.href = window.location.pathname + '?' + paramList.join('&');
 }
