@@ -1146,7 +1146,7 @@ class OccurrenceTagLib {
         newParams.remove('disableAllQualityFilters')
         newParams.remove('qualityProfile')
 
-        def newfq = params.fqs.findAll {!filters.contains(it)}
+        def newfq = params.list('fq').findAll {!filters.contains(it)}
         if (newfq.size() > 0) {
             newParams.fq = newfq
         } else {
