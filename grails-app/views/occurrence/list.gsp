@@ -455,8 +455,7 @@
                                     <option value="50" <g:if test="${pageSizeVar == "50"}">selected</g:if>>50</option>
                                     <option value="100" <g:if test="${pageSizeVar == "100"}">selected</g:if>>100</option>
                                 </select>&nbsp;
-                            <g:set var="useDefault" value="${(!params.sort && !params.dir) ? true : false}"/>
-                            <g:message code="list.sortwidgets.sort.label" default="sort"/>:
+                                <g:message code="list.sortwidgets.sort.label" default="sort"/>:
                                 <select id="sort" name="sort" class="input-small">
                                     <option value="score" <g:if test="${params.sort == 'score'}">selected</g:if>><g:message
                                             code="list.sortwidgets.sort.option01" default="Best match"/></option>
@@ -474,7 +473,7 @@
                                                 code="list.sortwidgets.sort.option05" default="Record type"/></option>
                                     </g:if>
                                     <option value="first_loaded_date"
-                                            <g:if test="${useDefault || params.sort == 'first_loaded_date'}">selected</g:if>><g:message
+                                            <g:if test="${(!params.sort) || params.sort == 'first_loaded_date'}">selected</g:if>><g:message
                                             code="list.sortwidgets.sort.option06" default="Date added"/></option>
                                     <option value="last_assertion_date"
                                             <g:if test="${params.sort == 'last_assertion_date'}">selected</g:if>><g:message
@@ -482,10 +481,11 @@
                                 </select>&nbsp;
                             <g:message code="list.sortwidgets.dir.label" default="order"/>:
                                 <select id="dir" name="dir" class="input-small">
-                                    <option value="asc" <g:if test="${params.dir == 'asc'}">selected</g:if>><g:message
+                                    <g:set var="sortOrder" value="${params.dir ?: params.order}"/>
+                                    <option value="asc" <g:if test="${sortOrder == 'asc'}">selected</g:if>><g:message
                                             code="list.sortwidgets.dir.option01" default="Ascending"/></option>
                                     <option value="desc"
-                                            <g:if test="${useDefault || params.dir == 'desc'}">selected</g:if>><g:message
+                                            <g:if test="${!sortOrder || sortOrder == 'desc'}">selected</g:if>><g:message
                                             code="list.sortwidgets.dir.option02" default="Descending"/></option>
                                 </select>
                             </div><!-- sortWidget -->
@@ -506,7 +506,7 @@
                         <div id="searchNavBar" class="pagination">
                             <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}"
                                         omitLast="true"
-                                        params="${[taxa: params.taxa, q: params.q, fq: params.fq, wkt: params.wkt, lat: params.lat, lon: params.lon, radius: params.radius]}"/>
+                                        params="${[taxa: params.taxa, q: params.q, fq: params.fq, wkt: params.wkt, lat: params.lat, lon: params.lon, radius: params.radius, order: params.dir]}"/>
                         </div>
                     </div><!--end solrResults-->
                     <div id="mapView" class="tab-pane">
