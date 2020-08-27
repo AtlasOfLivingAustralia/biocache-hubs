@@ -1137,4 +1137,30 @@ class OccurrenceTagLib {
 
         out << g.link(attrs, cap)
     }
+
+    def linkResetSearch = { attrs, body ->
+        def filters =  attrs.remove('filters')
+
+        GrailsParameterMap newParams = params.clone()
+        newParams.remove('disableQualityFilter')
+        newParams.remove('disableAllQualityFilters')
+        newParams.remove('qualityProfile')
+
+        def newfq = params.fqs.findAll {!filters.contains(it)}
+        if (newfq.size() > 0) {
+            newParams.fq = newfq
+        } else {
+            newParams.remove('fq')
+        }
+        newParams.remove('startIndex')
+        newParams.remove('offset')
+        newParams.remove('max')
+
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+        attrs.params = newParams
+
+        out << g.link(attrs, body)
+    }
 }

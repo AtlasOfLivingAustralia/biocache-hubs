@@ -97,6 +97,13 @@
         google.load('maps','3.5',{ other_params: "sensor=false" });
     </g:if>
 </asset:script>
+
+<style>
+a[target="_blank"]:after  {
+    content: none;
+}
+</style>
+
 </head>
 
 <body class="occurrence-search-">
@@ -279,7 +286,7 @@
                     <alatag:ifDataQualityEnabled>
                         <div class="activeFilters col-sm-12">
                             <div>
-                            <a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse" class="dq-filters-collapse"><i class="fa fa-caret-down" style="width: 8px;color: black"></i>&nbsp;<b><alatag:message code="quality.filters.group.title" default="Data Quality Filters"/></b>:</a>
+                            <a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse" class="dq-filters-collapse" style="vertical-align: middle;"><i class="fa fa-caret-down" style="width: 8px;color: black"></i>&nbsp;<b><alatag:message code="quality.filters.group.title" default="Data Profile"/></b>:</a>
                             <g:if test="${qualityProfiles.size() >= 1}">
                                 <span class="dropdown">
                                     <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to switch profiles">
@@ -298,7 +305,9 @@
                                 <alatag:linkToggeleDQFilters class="btn btn-default btn-xs"/>
                             </g:else>
                             <g:if test="${!searchRequestParams.disableAllQualityFilters}">
-                                <a href="#DQProfileDetails" data-toggle="modal" role="button"><button type="button" class="btn btn-default btn-xs" title="Click to view the profile description"><alatag:message code="quality.filters.categoryinfo.button.text" default="info"/></button></a>
+                                <span style="vertical-align: middle;">
+                                    <a href="#DQProfileDetails" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.profileinfo.button.tooltip" default="Click to view the profile description"></g:message>"></i></a>
+                                </span>
                                 <div id="DQProfileDetails" class="modal fade" role="dialog">
                                     <div class="modal-dialog" role="document" id="DQProfileDetailsModal">
                                         <div class="modal-content">
@@ -349,7 +358,7 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                <h4><alatag:message code="dq.selectmultiple.header.description" default="refine filter selection"/></h4>
+                                                <h4><alatag:message code="dq.selectmultiple.header.description" default="Filter selection"/></h4>
                                             </div>
                                             <div class="modal-body">
                                                 <div id="dynamic" class="tableContainer">
@@ -385,7 +394,11 @@
                                     </div>
                                 </div>
                             </g:if>
-                                <button class="btn btn-default btn-xs" id="resetsearch" title="Click to reset to original search result" data-categories="${qualityCategories.collect{it.label}}" data-filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}"><alatag:message code="quality.filters.resetsearch.button.text" default="reset filters"/></button>
+                            <span style="vertical-align: middle;">
+                                <alatag:linkResetSearch filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}">
+                                <i class="fas fa-redo tooltips" title="<g:message code="quality.filters.resetsearch.button.text" default="reset filters"></g:message>"></i>
+                                </alatag:linkResetSearch>
+                            </span>
                             </div>
 
                             <g:if test="${searchRequestParams.disableAllQualityFilters}">
@@ -395,6 +408,9 @@
                             </g:if>
                             <g:else>
                                 <div class="collapse in" id="dq-filters-collapse">
+                                    <g:if test="${qualityCategories.size() > 1}">
+                                        <div class="col-sm-12 dq-active-filter-item"><a href="#DQManageFilters" class="multipleFiltersLink tooltips" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="filter selection"/></a></div>
+                                    </g:if>
                                     <g:each var="qualityCategory" in="${qualityCategories}">
                                         <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
                                         <div class="col-sm-6 dq-active-filter-item">
@@ -422,9 +438,6 @@
                                             </span>
                                         </div>
                                     </g:each>
-                                    <g:if test="${qualityCategories.size() > 1}">
-                                        <div class="col-sm-12 dq-active-filter-item"><a href="#DQManageFilters" class="multipleFiltersLink" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="filter selection"/></a></div>
-                                    </g:if>
                                     <div id="DQFilterDetails" class="modal fade " role="dialog">
                                         <div class="modal-dialog" role="document" id="DQDetailsModal">
                                             <div class="modal-content">
