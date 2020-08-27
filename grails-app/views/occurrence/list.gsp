@@ -399,6 +399,14 @@ a[target="_blank"]:after  {
                                 <i class="fas fa-redo tooltips" title="<g:message code="quality.filters.resetsearch.button.text" default="reset filters"></g:message>"></i>
                                 </alatag:linkResetSearch>
                             </span>
+
+                            <g:if test="${!searchRequestParams.disableAllQualityFilters && qualityCategories.size() > 1}">
+                                <span style="vertical-align: middle;"><a href="#DQManageFilters" class="multipleFiltersLink tooltips" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="filter selection"/></a></span>
+                            </g:if>
+
+                            <span style="vertical-align: middle;">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=""><g:message code="dq.link.whatsdataprofile.title" default="What are Data Profiles"></g:message>?</a>
+                            </span>
                             </div>
 
                             <g:if test="${searchRequestParams.disableAllQualityFilters}">
@@ -408,9 +416,6 @@ a[target="_blank"]:after  {
                             </g:if>
                             <g:else>
                                 <div class="collapse in" id="dq-filters-collapse">
-                                    <g:if test="${qualityCategories.size() > 1}">
-                                        <div class="col-sm-12 dq-active-filter-item"><a href="#DQManageFilters" class="multipleFiltersLink tooltips" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="filter selection"/></a></div>
-                                    </g:if>
                                     <g:each var="qualityCategory" in="${qualityCategories}">
                                         <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
                                         <div class="col-sm-6 dq-active-filter-item">
