@@ -32,10 +32,10 @@ public class SearchRequestParams implements Validateable{
     /**  pagination params */
     Integer start = 0
     Integer offset // grails version of start
-    Integer pageSize = 10
+    Integer pageSize = 20
     Integer max // grails version of pageSize
-    String sort = "score"
-    String dir = "asc"
+    String sort = "first_loaded_date"
+    String dir = "desc"
     String order // grails version of dir
     String displayString
     /**  The query context to be used for the search.  This will be used to generate extra query filters based on the search technology */
