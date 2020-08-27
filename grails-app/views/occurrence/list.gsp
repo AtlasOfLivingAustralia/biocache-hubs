@@ -455,9 +455,7 @@
                                     <option value="50" <g:if test="${pageSizeVar == "50"}">selected</g:if>>50</option>
                                     <option value="100" <g:if test="${pageSizeVar == "100"}">selected</g:if>>100</option>
                                 </select>&nbsp;
-                            <g:set var="useDefault" value="${(!params.sort) ? true : false}"/>
-                            <g:message code="list.sortwidgets.sort.label" default="sort"/>:
-                                <code>${params as grails.converters.JSON} || ${useDefault}</code>
+                                <g:message code="list.sortwidgets.sort.label" default="sort"/>:
                                 <select id="sort" name="sort" class="input-small">
                                     <option value="score" <g:if test="${params.sort == 'score'}">selected</g:if>><g:message
                                             code="list.sortwidgets.sort.option01" default="Best match"/></option>
@@ -475,7 +473,7 @@
                                                 code="list.sortwidgets.sort.option05" default="Record type"/></option>
                                     </g:if>
                                     <option value="first_loaded_date"
-                                            <g:if test="${useDefault || params.sort == 'first_loaded_date'}">selected</g:if>><g:message
+                                            <g:if test="${(!params.sort) || params.sort == 'first_loaded_date'}">selected</g:if>><g:message
                                             code="list.sortwidgets.sort.option06" default="Date added"/></option>
                                     <option value="last_assertion_date"
                                             <g:if test="${params.sort == 'last_assertion_date'}">selected</g:if>><g:message
@@ -487,7 +485,7 @@
                                     <option value="asc" <g:if test="${sortOrder == 'asc'}">selected</g:if>><g:message
                                             code="list.sortwidgets.dir.option01" default="Ascending"/></option>
                                     <option value="desc"
-                                            <g:if test="${useDefault || sortOrder == 'desc'}">selected</g:if>><g:message
+                                            <g:if test="${!sortOrder || sortOrder == 'desc'}">selected</g:if>><g:message
                                             code="list.sortwidgets.dir.option02" default="Descending"/></option>
                                 </select>
                             </div><!-- sortWidget -->

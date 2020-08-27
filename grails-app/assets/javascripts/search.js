@@ -607,7 +607,7 @@ function reloadWithParam(paramName, paramValue) {
     var q = $.url().param('q'); //$.query.get('q')[0];
     var fqList = $.url().param('fq'); //$.query.get('fq');
     var sort = $.url().param('sort');
-    var dir = $.url().param('dir');
+    var dir = $.url().param('dir') || $.url().param('order'); // solr || grails (via pagination taglib)
     var wkt = $.url().param('wkt');
     var pageSize = $.url().param('pageSize');
     var lat = $.url().param('lat');
@@ -630,19 +630,20 @@ function reloadWithParam(paramName, paramValue) {
     }
 
     // add sort/dir/pageSize params if already set (different to default)
-    if (paramName != 'sort' && sort != null) {
+    if (paramName != 'sort' && sort) {
         paramList.push('sort' + "=" + sort);
     }
 
-    if (paramName != 'dir' && dir != null) {
+    if (paramName != 'dir' && dir) {
+        console.log('dir',dir);
         paramList.push('dir' + "=" + dir);
     }
 
-    if (paramName != 'pageSize' && pageSize != null) {
+    if (paramName != 'pageSize' && pageSize) {
         paramList.push("pageSize=" + pageSize);
     }
 
-    if (paramName != null && paramValue != null) {
+    if (paramName != null && paramValue) {
         paramList.push(paramName + "=" + paramValue);
     }
     
@@ -660,7 +661,7 @@ function reloadWithParam(paramName, paramValue) {
         paramList.push("wkt=" + wkt);
     }
 
-    //alert("params = "+paramList.join("&"));
+    alert("params = "+paramList.join("&"));
     //alert("url = "+window.location.pathname);
     window.location.href = window.location.pathname + '?' + paramList.join('&');
 }
