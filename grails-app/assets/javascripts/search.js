@@ -464,7 +464,37 @@ $(document).ready(function() {
                     $(el).data("bs.popover").tip().css({"max-width": "none"});
                 })
             });
+
+            // if we should disable/hide the expand button
+            var category_disabled = $(link).data('disabled')
+            var expandButton = $('#expandfilters');
+            $(expandButton).prop('disabled', category_disabled);
+            if (category_disabled) {
+                $(expandButton).hide();
+            } else {
+                $(expandButton).data('category', $(link).data('categorylabel'));
+                $(expandButton).data('filters', $(link).data("fq").split(' AND '));
+                $(expandButton).show();
+            }
         })
+    })
+
+    // to expand a category
+    $('#expandfilters').on("click", function(e) {
+        var category = $(this).data('category');
+        var filters = $(this).data('filters');
+
+        var url = $(location).attr('href');
+        // step 1, disable this category
+        url = appendURL(url, "&disableQualityFilter=" + encodeURIComponent(category).replace(/%20/g, "+").replace(/[()]/g, escape));
+
+        // step 2, append all enabled fqs as user fq
+        for (var i = 0; i < filters.length; i++) {
+            // console.log('filter = ' + filters[i]);
+            url = appendURL(url, '&fq=' + encodeURIComponent(filters[i]).replace(/%20/g, "+").replace(/[()]/g, escape));
+        }
+
+        window.location.href = url;
     })
 
     function removeDuplicates(data) {

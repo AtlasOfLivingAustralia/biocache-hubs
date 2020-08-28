@@ -429,13 +429,10 @@ a[target="_blank"]:after  {
                                                 <alatag:linkQualityCategory class="tooltips" expand="${false}" enable="${false}" category="${qualityCategory}">
                                                     <i class="fa fa-check-square-o"></i>
                                                 </alatag:linkQualityCategory>
-                                                <alatag:linkQualityCategory expand="${true}" enable="${false}" category="${qualityCategory}" title="${g.message(code: 'dq.pop.out', default: 'Convert this data quality filter into separate filter queries you can include/exclude individually')}">
-                                                    <i class="fa fa-sign-out"></i>
-                                                </alatag:linkQualityCategory>
                                             </g:else>
                                             <span>
                                                 <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteract.containsKey(qualityCategory.label) ? "<br><br>" + dqInteract[qualityCategory.label] : "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
-                                                <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-dqcategoryname="${qualityCategory.name}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="Click for more information"></i></a>
+                                                <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-dqcategoryname="${qualityCategory.name}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
                                                 <alatag:invertQualityCategory category="${qualityCategory}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
                                                     <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
                                                     <alatag:message code="quality.filters.excludeCount" default="records excluded" />
@@ -470,6 +467,10 @@ a[target="_blank"]:after  {
                                                         <tbody>
                                                         </tbody>
                                                     </table>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button id='expandfilters' class="btn btn-default pull-left tooltips" data-dismiss="modal" title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>">Expand filters&nbsp;<i class="fa fa-sign-in"></i></button>
+                                                    <button class="btn btn-default" data-dismiss="modal" ><alatag:message code="dq.categoryinfo.dlg.closebutton.text" default="Close"/></button>
                                                 </div>
                                             </div>
                                         </div>
