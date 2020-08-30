@@ -469,7 +469,7 @@ a[target="_blank"]:after  {
                                                     </table>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button id='expandfilters' class="btn btn-default pull-left tooltips" data-dismiss="modal" title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>">Expand filters&nbsp;<i class="fa fa-sign-in"></i></button>
+                                                    <button id='expandfilters' class="btn btn-default pull-left tooltips" data-dismiss="modal" title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Split filters"/>&nbsp;<i class="fa fa-sign-in"></i></button>
                                                     <button class="btn btn-default" data-dismiss="modal" ><alatag:message code="dq.categoryinfo.dlg.closebutton.text" default="Close"/></button>
                                                 </div>
                                             </div>
