@@ -174,8 +174,23 @@
             </g:elseif>
             %{-- fall-back for remaining searches --}%
             <g:else>
-                <p><g:message code="list.03.p03" default="No records found for"/> <span
-                        class="queryDisplay">${queryDisplay ?: params.q ?: params.taxa}</span></p>
+                <p><g:message code="list.03.p03" default="No records found for"/>
+                    <span class="queryDisplay"> ${queryDisplay ?: params.q ?: params.taxa}</span>
+                    <g:if test="${params.fq}">
+                        <g:message code="list.03.p04" default="with filters: "/>
+                        <g:each var="fq" in="${params.list('fq')}" status="i">
+                            <g:set var="fqPairList" value="${fq.split(':')}"/>
+                            <g:set var="fieldName" value="${fqPairList[0]}"/>
+                            <g:if test="${fqPairList[0].startsWith('-')}">
+                                <g:set var="fieldName"><g:message code="list.03.p05" default="(exclude)"/> ${fqPairList[0].substring(1)}</g:set>
+                            </g:if>
+                            <span class="queryDisplay">
+                                ${fieldName}:${fqPairList[1]}
+                            </span>
+                            <g:if test="${(i + 1) < params.list('fq').size()}"> AND </g:if>
+                        </g:each>
+                    </g:if>
+                </p>
             </g:else>
         </div>
     </g:elseif>
