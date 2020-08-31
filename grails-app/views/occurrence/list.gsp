@@ -138,10 +138,13 @@
                     style="text-decoration: underline;">support</a> if this error continues</p>
         </div>
     </g:if>
-    <g:if test="${errors}">
+    <g:if test="${errors || sr?.status == "ERROR"}">
+        <g:set var="errorMessage" value="${errors ?: sr?.errorMessage}"/>
         <div class="searchInfo searchError">
             <h2 style="padding-left: 10px;"><g:message code="list.01.error" default="Error"/></h2>
-            <h4>${errors}</h4>
+            <div class="alert alert-info" role="alert">
+                <b>${alatag.stripApiKey(message: errorMessage)}</b>
+            </div>
             Please contact <a
                 href="mailto:${grailsApplication.config.supportEmail ?: 'support@ala.org.au'}?subject=biocache error">support</a> if this error continues
         </div>
