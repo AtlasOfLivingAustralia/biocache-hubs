@@ -935,7 +935,7 @@ class OccurrenceTagLib {
                 .allowElements("b")
                 .allowElements("span")
                 .allowStandardUrlProtocols()
-                .allowAttributes("href").matching(Pattern.compile("^(http|https|mailto).+", Pattern.CASE_INSENSITIVE))
+                .allowAttributes("href").matching(Pattern.compile("^(/|http|https|mailto).+", Pattern.CASE_INSENSITIVE))
                 .onElements("a")
                 .requireRelNofollowOnLinks()
                 .allowAttributes("class").onElements("span")
