@@ -138,10 +138,13 @@
                     style="text-decoration: underline;">support</a> if this error continues</p>
         </div>
     </g:if>
-    <g:if test="${errors}">
+    <g:if test="${errors || sr?.status == "ERROR"}">
+        <g:set var="errorMessage" value="${errors ?: sr?.errorMessage}"/>
         <div class="searchInfo searchError">
             <h2 style="padding-left: 10px;"><g:message code="list.01.error" default="Error"/></h2>
-            <h4>${errors}</h4>
+            <div class="alert alert-info" role="alert">
+                <b>${alatag.stripApiKey(message: errorMessage)}</b>
+            </div>
             Please contact <a
                 href="mailto:${grailsApplication.config.supportEmail ?: 'support@ala.org.au'}?subject=biocache error">support</a> if this error continues
         </div>
@@ -174,8 +177,23 @@
             </g:elseif>
             %{-- fall-back for remaining searches --}%
             <g:else>
-                <p><g:message code="list.03.p03" default="No records found for"/> <span
-                        class="queryDisplay">${queryDisplay ?: params.q ?: params.taxa}</span></p>
+                <p><g:message code="list.03.p03" default="No records found for"/>
+                    <span class="queryDisplay"> ${queryDisplay ?: params.q ?: params.taxa}</span>
+                    <g:if test="${params.fq}">
+                        <g:message code="list.03.p04" default="with filters: "/>
+                        <g:each var="fq" in="${params.list('fq')}" status="i">
+                            <g:set var="fqPairList" value="${fq.split(':')}"/>
+                            <g:set var="fieldName" value="${fqPairList[0]}"/>
+                            <g:if test="${fqPairList[0].startsWith('-')}">
+                                <g:set var="fieldName"><g:message code="list.03.p05" default="(exclude)"/> ${fqPairList[0].substring(1)}</g:set>
+                            </g:if>
+                            <span class="queryDisplay">
+                                ${fieldName}:${fqPairList[1]}
+                            </span>
+                            <g:if test="${(i + 1) < params.list('fq').size()}"> AND </g:if>
+                        </g:each>
+                    </g:if>
+                </p>
             </g:else>
         </div>
     </g:elseif>
