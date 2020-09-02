@@ -105,6 +105,7 @@ map.cloudmade.key = "BC9A493B41014CAABB98F0471D759707"
 map.defaultFacetMapColourBy = "basis_of_record"
 map.pointColour = "df4a21"
 map.zoomOutsideScopedRegion = true
+map.scrollWheelZoom = false
 map.defaultLatitude
 map.defaultLongitude
 map.defaultZoom

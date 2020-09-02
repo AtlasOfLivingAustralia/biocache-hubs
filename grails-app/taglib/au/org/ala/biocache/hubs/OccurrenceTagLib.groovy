@@ -70,9 +70,9 @@ class OccurrenceTagLib {
             output = fieldName[0..-4].replaceAll("_", " ") + " (range)"
         } else {
 
-            def label = message(code:fieldCode, default:"")
-            if(!label){
-                label = message(code:"facet." + fieldCode, default:fieldName)
+            def label = message(code:"facet." + fieldCode, default:fieldName)
+            if (!label){
+                label = message(code:fieldCode, default:"")
             }
 
             label = label ?: camelCaseToHuman(text: fieldName)
@@ -100,9 +100,8 @@ class OccurrenceTagLib {
         }
 
         if (acceptedName) {
-            acceptedNameOutput = " (accepted name: ${ital[0]}${acceptedName}${ital[1]})"
+            acceptedNameOutput = " (${alatag.message(code:"alatag.accepted.name")}: ${ital[0]}${acceptedName}${ital[1]})"
         }
-
         def nameOutput = "${ital[0]}${name}${ital[1]}${acceptedNameOutput}"
 
         out << nameOutput.trim()
@@ -201,7 +200,7 @@ class OccurrenceTagLib {
         def facetResult = attrs.facetResult
         def queryParam = attrs.queryParam
         def mb = new MarkupBuilder(out)
-        def linkTitle = "Filter results by ${attrs.fieldDisplayName ?: facetResult.fieldName}"
+        def linkTitle = "${alatag.message(code:"alatag.filter.results.by")} ${attrs.fieldDisplayName ?: facetResult.fieldName}"
 
         def addCounts = { count ->
             mb.span(class:"facetCount") {
@@ -310,7 +309,7 @@ class OccurrenceTagLib {
 
         if (fqLabel.toLowerCase() == "before") {
             output.startDate = "*"
-            output.startYear = "Before "
+            output.startYear = "${alatag.message(code:"alatag.before")} "
             output.endDate = firstLabel
             output.endYear = output.endDate?.substring(0, 4)
         } else if(fqLabel && fqLabel.length() >= 4) {
@@ -551,13 +550,13 @@ class OccurrenceTagLib {
         def url
 
         if (userName) {
-            if (dataResourceUid == "dr364") {
+            if (dataResourceUid == grailsApplication.config.getProperty('dataResourceUuid.alaSightings', String,'')) {
                 // ALA sightings
                 url = "<a href=\"${grailsApplication.config.getProperty("sightings.baseUrl")}/spotter/${userId.encodeAsURL()}\">${userName}</a>"
-            } else if (dataResourceUid == "dr1411") {
+            } else if (dataResourceUid == grailsApplication.config.getProperty('dataResourceUuid.iNaturalist', String,'')) {
                 // iNaturalist
                 url = "<a href=\"${grailsApplication.config.getProperty( "iNaturalist.baseUrl", "https://inaturalist.org")}/people/${userName.encodeAsURL()}\">${userName}</a>"
-            } else if (dataResourceUid == "dr360" && occurrenceId) {
+            } else if (dataResourceUid == grailsApplication.config.getProperty('dataResourceUuid.flickr', String,'') && occurrenceId) {
                 // Flickr
                 // Munge occurrenceId to get the URL, as we don't have the user-name stored in biocache in order to generate it
                 // e.g. https://www.flickr.com/photos/dhobern/5466675452/ to https://www.flickr.com/photos/dhobern/
@@ -604,7 +603,7 @@ class OccurrenceTagLib {
                 } else if (cr.raw && !cr.processed) {
                     tagBody = cr.raw
                 } else {
-                    tagBody = "${cr.processed} <br/><span class='originalValue'>Supplied as ${cr.raw}</span>"
+                    tagBody = "${cr.processed} <br/><span class='originalValue'>${alatag.message(code:"alatag.supplied.as")} ${cr.raw}</span>"
                 }
                 output += occurrenceTableRow(annotate:"true", section:"dataset", fieldCode:"${key}", fieldName:"${label}") {
                     tagBody
@@ -658,7 +657,7 @@ class OccurrenceTagLib {
         mb.div(class:'recordRow', id:occurrence.uuid ) {
             p(class:'rowA') {
                 if (occurrence.taxonRank && occurrence.scientificName) {
-                    span(style:'text-transform: capitalize', occurrence.taxonRank)
+                    span(style:'text-transform: capitalize', alatag.message(code:"rank."+occurrence.taxonRank, default: occurrence.taxonRank))
                     mkp.yieldUnescaped(":&nbsp;")
                     span(class:'occurrenceNames') {
                         mkp.yieldUnescaped(alatag.formatSciName(rankId:occurrence.taxonRankID?:'6000', name:"${occurrence.scientificName}"))
@@ -936,7 +935,7 @@ class OccurrenceTagLib {
                 .allowElements("b")
                 .allowElements("span")
                 .allowStandardUrlProtocols()
-                .allowAttributes("href").matching(Pattern.compile("^(http|https|mailto).+", Pattern.CASE_INSENSITIVE))
+                .allowAttributes("href").matching(Pattern.compile("^(/|http|https|mailto).+", Pattern.CASE_INSENSITIVE))
                 .onElements("a")
                 .requireRelNofollowOnLinks()
                 .allowAttributes("class").onElements("span")
