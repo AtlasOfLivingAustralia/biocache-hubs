@@ -308,7 +308,7 @@ a[target="_blank"]:after  {
                                 <span style="vertical-align: middle;">
                                     <a href="#DQProfileDetails" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.profileinfo.button.tooltip" default="Click to view the profile description"></g:message>"></i></a>
                                 </span>
-                                <div id="DQProfileDetails" class="modal fade" role="dialog">
+                                <div id="DQProfileDetails" class="modal fade" role="dialog" tabindex="-1">
                                     <div class="modal-dialog" role="document" id="DQProfileDetailsModal">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -353,7 +353,7 @@ a[target="_blank"]:after  {
                                     </div>
                                 </div>
 
-                                <div id="DQManageFilters" class="modal fade" role="dialog">
+                                <div id="DQManageFilters" class="modal fade" role="dialog" tabindex="-1">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -440,7 +440,7 @@ a[target="_blank"]:after  {
                                             </span>
                                         </div>
                                     </g:each>
-                                    <div id="DQFilterDetails" class="modal fade " role="dialog">
+                                    <div id="DQFilterDetails" class="modal fade " role="dialog" tabindex="-1">
                                         <div class="modal-dialog" role="document" id="DQDetailsModal">
                                             <div class="modal-content">
                                                 <div class="modal-header">
