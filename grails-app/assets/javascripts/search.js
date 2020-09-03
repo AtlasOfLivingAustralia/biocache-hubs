@@ -347,7 +347,8 @@ $(document).ready(function() {
 
         // show filter name
         $("#fqdetail-heading").text(dqcategoryName + ' quality filters')
-
+        $("#loadingExcluded").show()
+        $('#excludedContent').remove()
         var pos = 0
         var start = 0
         var keys = []
@@ -434,7 +435,8 @@ $(document).ready(function() {
 
             var jsonUri = BC_CONF.serverName + "/occurrences/getExcluded?" + decodeURIComponent(BC_CONF.searchRequestParams) + "&categoryLabel=" + $(link).data('categorylabel');
             $.getJSON(jsonUri, function (data) {
-                $("#excluded").html('<span style="color: #c44d34; font-style: italic">' + data.count + '</span> records are excluded by this category');
+                $('#loadingExcluded').hide();
+                $("#excluded").append('<span id="excludedContent"><span style="color: #c44d34; font-style: italic">' + data.count + '</span> records are excluded by this category</span>');
             });
 
             $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i>");

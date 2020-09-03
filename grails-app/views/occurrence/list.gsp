@@ -451,7 +451,7 @@ a[target="_blank"]:after  {
 
                                                 <div class="modal-body" id="modal-body">
                                                     <p id="filter-value"></p>
-                                                    <p id="excluded"></p>
+                                                    <p id="excluded"><span id="loadingExcluded"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner1" alt="spinner icon"/></span></p>
                                                     <p id="filter-description"></p>
                                                     <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable">
                                                         <thead class="fixedHeader">
