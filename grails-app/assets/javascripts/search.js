@@ -405,7 +405,7 @@ $(document).ready(function() {
                 if (map.has(key)) {
                     // color the field, add tooltip
                     var re = new RegExp(key, 'g');
-                    fq = fq.replace(re, '<span style="color: #c44d34;cursor:pointer;" title="' + map.get(key).join('. ') + '">' + key + "</span>")
+                    fq = fq.replace(re, '<span class="toqtip" style="color: #c44d34;cursor:pointer;" title="' + map.get(key).join('. ') + '">' + key + "</span>")
                     // add a row in table
                     html += "<tr><td>" + key + "</td><td>" + map.get(key)[0] + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[1]) + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[2], 'Wiki') + "</td></tr>"
                 }
@@ -420,13 +420,13 @@ $(document).ready(function() {
                     if (showPopOver) {
                         fq = fq.replace(":" + key, '<span style="color: #53377A">:' + key + '</span>' + '<a href="#" data-toggle="popover" data-name="' + val.name + '" data-desc=\'' + val.description + '\' data-wiki="' + val.wiki + '" class="fqpopover">&nbsp;<i class="glyphicon glyphicon-question-sign"></i></a>');
                     } else {
-                        fq = fq.replace(":" + key, '<span style="color: #53377A;cursor:pointer;" title="' + val + '">' + ":" + key + "</span>");
+                        fq = fq.replace(":" + key, '<span class="toqtip" style="color: #53377A;cursor:pointer;" title="' + val + '">' + ":" + key + "</span>");
                     }
                 } else if (fq.indexOf(':"' + key + '"') != -1) {
                     if (showPopOver) {
                         fq = fq.replace(':"' + key + '"', '<span style="color: #53377A">:"' + key + '"</span>' + '<a href="#" data-toggle="popover" data-name="' + val.name + '" data-desc=\'' + val.description + '\' data-wiki="' + val.wiki + '" class="fqpopover">&nbsp;<i class="glyphicon glyphicon-question-sign"></i></a>');
                     } else {
-                        fq = fq.replace(':"' + key + '"', '<span style="color: #53377A;cursor:pointer;" title="' + val + '">' + ':"' + key + '"</span>');
+                        fq = fq.replace(':"' + key + '"', '<span class="toqtip" style="color: #53377A;cursor:pointer;" title="' + val + '">' + ':"' + key + '"</span>');
                     }
                 }
             })
@@ -436,11 +436,19 @@ $(document).ready(function() {
             var jsonUri = BC_CONF.serverName + "/occurrences/getExcluded?" + decodeURIComponent(BC_CONF.searchRequestParams) + "&categoryLabel=" + $(link).data('categorylabel');
             $.getJSON(jsonUri, function (data) {
                 $('#loadingExcluded').hide();
-                $("#excluded").append('<span id="excludedContent"><span style="color: #c44d34; font-style: italic">' + data.count + '</span> records are excluded by this category</span>');
+                $("#excluded").append('<span id="excludedContent"><span style="color: #c44d34; font-style: italic">' + (new Intl.NumberFormat()).format(parseInt(data.count)) + '</span> records are excluded by this category</span>');
             });
 
             $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i>");
             $('#DQDetailsModal .modal-body #filter-description').html("<b>Description: </b>" + description);
+
+
+            $(".toqtip").qtip({
+                style: {
+                    classes: 'ui-tooltip-rounded ui-tooltip-shadow'
+                }
+            });
+
             // clear content
             $("table#DQDetailsTable tbody").html("");
             $("table#DQDetailsTable tbody").append(html);
