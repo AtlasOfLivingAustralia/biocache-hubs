@@ -36,6 +36,7 @@
         contextPath: "${request.contextPath}",
             serverName: "<g:createLink absolute="true" uri="" />",
             searchString: "${searchString}", //  JSTL var can contain double quotes // .encodeAsJavaScript()
+            searchRequestParams: "${searchRequestParams.encodeAsURL()}",
             facetQueries: "${fqParams.encodeAsURL()}",
             facetDownloadQuery: "${searchString}",
             maxFacets: "${grailsApplication.config.facets?.max ?: '4'}",
@@ -432,7 +433,7 @@ a[target="_blank"]:after  {
                                             </g:else>
                                             <span>
                                                 <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteract.containsKey(qualityCategory.label) ? "<br><br>" + dqInteract[qualityCategory.label] : "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
-                                                <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-dqcategoryname="${qualityCategory.name}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
+                                                <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
                                                 <alatag:invertQualityCategory category="${qualityCategory}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
                                                     <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
                                                     <alatag:message code="quality.filters.excludeCount" default="records excluded" />
@@ -450,6 +451,8 @@ a[target="_blank"]:after  {
 
                                                 <div class="modal-body" id="modal-body">
                                                     <p id="filter-value"></p>
+                                                    <p id="excluded"></p>
+                                                    <p id="filter-description"></p>
                                                     <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable">
                                                         <thead class="fixedHeader">
                                                         <tr>

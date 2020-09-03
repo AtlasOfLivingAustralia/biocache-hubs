@@ -19,6 +19,7 @@ class BiocacheHubsUrlMappings {
         "/occurrence/legend"(controller: 'occurrence', action: 'legend')
         "/occurrences/fieldguide/download"(controller: 'occurrence', action: 'fieldGuideDownload')
         "/occurrences/facets"(controller: 'occurrence', action: 'facets')
+        "/occurrences/getExcluded"(controller: 'occurrence', action: 'getExcluded')
         "/occurrences/facets/download"(controller: 'occurrence', action: 'facetsDownload')
         "/occurrences/next"(controller: 'occurrence', action: 'next')
         "/occurrences/previous"(controller: 'occurrence', action: 'previous')

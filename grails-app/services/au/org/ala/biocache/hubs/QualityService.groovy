@@ -168,6 +168,12 @@ class QualityService {
         }
     }
 
+    Long getExcludeCount(String categoryLabel, List<QualityCategory> qualityCategories, SpatialSearchRequestParams requestParams) {
+        def totalRecords = countTotalRecords(requestParams)
+        def labels = qualityCategories*.label as Set
+        return totalRecords - countRecordsExcludedByLabel((labels - categoryLabel) as List, requestParams)
+    }
+
     private <T> T responseOrThrow(Call<T> call) {
         def response
         try {

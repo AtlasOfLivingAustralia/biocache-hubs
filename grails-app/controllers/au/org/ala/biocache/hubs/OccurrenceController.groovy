@@ -15,15 +15,14 @@
 
 package au.org.ala.biocache.hubs
 
-
+import au.org.ala.dataquality.model.QualityProfile
+import au.org.ala.web.CASRoles
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
-import au.org.ala.web.CASRoles
-import org.springframework.beans.factory.annotation.Value
 
 import java.text.SimpleDateFormat
 
@@ -588,5 +587,12 @@ class OccurrenceController {
         combined.record = webServicesService.getRecord(id)
         combined.compareRecord = webServicesService.getCompareRecord(id)
         render combined as JSON
+    }
+
+    def getExcluded(SpatialSearchRequestParams requestParams) {
+        def data = [:]
+        QualityProfile profile = qualityService.activeProfile(requestParams.qualityProfile)
+        data.count = qualityService.getExcludeCount(params.categoryLabel, profile.getCategories(), requestParams)
+        render data as JSON
     }
 }

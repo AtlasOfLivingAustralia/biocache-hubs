@@ -431,7 +431,14 @@ $(document).ready(function() {
             })
 
             $('#spinnerRow').hide();
-            $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i><br><b>Description: </b>" + description);
+
+            var jsonUri = BC_CONF.serverName + "/occurrences/getExcluded?" + decodeURIComponent(BC_CONF.searchRequestParams) + "&categoryLabel=" + $(link).data('categorylabel');
+            $.getJSON(jsonUri, function (data) {
+                $("#excluded").html('<span style="color: #c44d34; font-style: italic">' + data.count + '</span> records are excluded by this category');
+            });
+
+            $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i>");
+            $('#DQDetailsModal .modal-body #filter-description').html("<b>Description: </b>" + description);
             // clear content
             $("table#DQDetailsTable tbody").html("");
             $("table#DQDetailsTable tbody").append(html);
@@ -466,7 +473,7 @@ $(document).ready(function() {
             });
 
             // if we should disable/hide the expand button
-            var category_disabled = $(link).data('disabled')
+            var category_disabled = $(link).data('disabled');
             var expandButton = $('#expandfilters');
             $(expandButton).prop('disabled', category_disabled);
             if (category_disabled) {
