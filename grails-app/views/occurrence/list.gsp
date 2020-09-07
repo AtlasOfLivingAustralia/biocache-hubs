@@ -99,12 +99,6 @@
     </g:if>
 </asset:script>
 
-<style>
-a[target="_blank"]:after  {
-    content: none;
-}
-</style>
-
 </head>
 
 <body class="occurrence-search-">
