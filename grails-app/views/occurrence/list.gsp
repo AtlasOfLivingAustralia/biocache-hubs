@@ -418,7 +418,6 @@
                                                 <alatag:linkQualityCategory class="tooltips" expand="${true}" enable="${true}" category="${qualityCategory}" title="${g.message(code: 'dq.pop.in', default: 'Re-enable this data quality filter and remove its corresponding filter queries')}">
                                                     <i class="fa fa-square-o"></i>
                                                 </alatag:linkQualityCategory>
-                                                <i class="fa fa-sign-in visibility-hidden"></i>
                                             </g:if>
                                             <g:else>
                                                 <alatag:linkQualityCategory class="tooltips" expand="${false}" enable="${false}" category="${qualityCategory}">
