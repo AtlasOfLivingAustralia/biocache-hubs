@@ -680,7 +680,7 @@ $(document).ready(function() {
 
         // replace url encoded %20 with '+' because groovy encodes space to '+'
         $.each(filterStatus, function( i, status ) {
-            var filterlabel = fitlers[i].textContent;
+            var filterlabel = $(fitlers[i]).data('label');
             // get checked status
             var toDisable = !this.checked;
 

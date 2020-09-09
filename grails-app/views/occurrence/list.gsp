@@ -369,7 +369,7 @@
                                                                 <g:each var="qualityCategory" in="${qualityCategories}">
                                                                     <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
                                                                     <tr>
-                                                                        <td class="filternames" data-filters="${qualityCategory.qualityFilters.findAll { it.enabled }*.filter}">${qualityCategory.name}</td>
+                                                                        <td class="filternames" data-filters="${qualityCategory.qualityFilters.findAll { it.enabled }*.filter}" data-label="${qualityCategory.label}">${qualityCategory.name}</td>
                                                                         <td><input type="checkbox" name="filters" class="filters" data-enabled="${!qcDisabled}" value=""></td>
                                                                     </tr>
                                                                 </g:each>
