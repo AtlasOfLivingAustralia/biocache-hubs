@@ -68,7 +68,8 @@
 '<b>Down vote (<i class="fa fa-thumbs-o-down" aria-hidden="true"></i>) an image:</b>'+
 ' Image does not support the identification of the species, subject is unclear and identifying features are difficult to see or not visible.<br/></div>',
             savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
-            getPreferredSpeciesListUrl:  "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}"
+            getPreferredSpeciesListUrl:  "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}",
+            excludeCountUrl: "${createLink(controller: 'occurrence', action: 'dataQualityExcludeCounts', params: params.clone())}"
         };
 </script>
 
@@ -129,7 +130,8 @@
         <input type="hidden" id="userEmail" value="${userEmail}" class="form-control">
         <input type="hidden" id="lsid" value="${params.lsid}" class="form-control">
     </div>
-    <g:set var="recordsExcluded" value="${(qualityExcludeCount != null) && (qualityExcludeCount.values().sum() != 0)}"/>
+    <g:set var="dqEnabled" value="${grailsApplication.config.getProperty('dataquality.enabled', Boolean)}" />
+    <g:set var="recordsExcluded" value="${dqEnabled && (qualityTotalCount != sr.totalRecords)}"/>
 
 
     <g:if test="${flash.message}">
@@ -428,7 +430,8 @@
                                                 <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteract.containsKey(qualityCategory.label) ? "<br><br>" + dqInteract[qualityCategory.label] : "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
                                                 <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
                                                 <alatag:invertQualityCategory category="${qualityCategory}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
-                                                    <g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>
+                                                    <i class="fa fa-circle-o-notch fa-spin exclude-loader"></i>
+                                                    <span style="display: none;" class="exclude-count-label" data-category="${qualityCategory.label}"></span>
                                                     <alatag:message code="quality.filters.excludeCount" default="records excluded" />
                                                 </alatag:invertQualityCategory>
                                             </span>

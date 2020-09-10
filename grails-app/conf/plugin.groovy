@@ -31,6 +31,7 @@ serverName = 'http://dev.ala.org.au:8080'
 
 dataquality.enabled = false
 dataquality.baseUrl = 'https://biocache.ala.org.au/data-quality/'
+dataquality.recordCountCacheSpec = 'expireAfterWrite=1d'
 
 // skin settings
 organisation.baseUrl = "https://www.ala.org.au"
@@ -164,25 +165,4 @@ mapdownloads {
 //            displayName = 'Google Road Map'
 //        }
     }
-}
-
-hibernate {
-    dialect =  'org.hibernate.dialect.H2Dialect'
-    cache {
-        queries= false
-        use_second_level_cache= false
-        use_query_cache= false
-    }
-}
-
-database {
-    directory = '/data/ala-hub/database'
-}
-
-dataSource {
-    driverClassName= 'org.h2.Driver'
-    url= "jdbc:h2:file:${database.directory};MVCC=TRUE"
-    dbCreate= 'update'
-    pooled= true
-    jmxExport= true
 }

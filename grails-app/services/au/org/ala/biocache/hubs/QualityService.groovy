@@ -14,7 +14,6 @@ import retrofit2.Call
 import retrofit2.HttpException
 
 import javax.annotation.PostConstruct
-import java.util.concurrent.TimeUnit
 
 class QualityService {
 
@@ -26,10 +25,15 @@ class QualityService {
     @Value('${dataquality.baseUrl}')
     def dataQualityBaseUrl
 
+    @Value('${dataquality.recordCountCacheSpec}')
+    String recordCountCacheSpec
+
     def grailsApplication
 
     QualityServiceRpcApi api
     ProfilesApi profilesApi
+
+    Cache<SpatialSearchRequestParams, Long> recordCountCache
 
     @PostConstruct
     def init() {
@@ -43,6 +47,7 @@ class QualityService {
             api = apiClient.createService(QualityServiceRpcApi)
             profilesApi = apiClient.createService(ProfilesApi)
         }
+        recordCountCache = CacheBuilder.from(recordCountCacheSpec).build { webServicesService.fullTextSearch(it)?.totalRecords }
     }
 
     Map<String, String> getEnabledFiltersByLabel(String profileName) {
@@ -113,8 +118,6 @@ class QualityService {
     def clearRecordCountCache() {
         recordCountCache.invalidateAll()
     }
-
-    Cache<SpatialSearchRequestParams, Long> recordCountCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build { webServicesService.fullTextSearch(it)?.totalRecords }
 
     private Long countRecordsExcludedByLabel(List<String> otherLabels, SpatialSearchRequestParams requestParams) {
         def srp = requestParams.clone().with {
