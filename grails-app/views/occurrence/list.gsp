@@ -292,7 +292,7 @@
                                         <g:each in="${qualityProfiles}" var="profile">
                                             <li><g:link action="${actionName}" params="${params.clone().with { if (profile.isDefault) it.remove('qualityProfile') else it.qualityProfile = profile.shortName ; it.remove('disableAllQualityFilters'); it } }" title="Click to enable the ${profile.name} quality filters">${profile.name}<g:if test="${profile.isDefault}"> (Default)</g:if></g:link></li>
                                         </g:each>
-                                        <li><g:link action="${actionName}" params="${params.clone().with { it.disableAllQualityFilters = true; it } }" title="Click to disable All Data Quality filters">Disable all Quality Filters</g:link></li>
+                                        <li><g:link action="${actionName}" params="${params.clone().with { it.disableAllQualityFilters = true; it } }" title="Click to disable all data profiles"><alatag:message code="dq.buttontext.disableall" default="Disable data profiles"/></g:link></li>
                                     </ul>
                                 </span>
                             </g:if>
@@ -388,12 +388,12 @@
                                         </div>
                                     </div>
                                 </div>
+                                <span style="vertical-align: middle;">
+                                    <alatag:linkResetSearch filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}">
+                                        <i class="fas fa-undo fa-xs tooltips" title="<g:message code="quality.filters.resetsearch.tooltip" default="Reset filters"></g:message>"></i>
+                                    </alatag:linkResetSearch>
+                                </span>
                             </g:if>
-                            <span style="vertical-align: middle;">
-                                <alatag:linkResetSearch filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}">
-                                <i class="fas fa-undo fa-xs tooltips" title="<g:message code="quality.filters.resetsearch.tooltip" default="Reset filters"></g:message>"></i>
-                                </alatag:linkResetSearch>
-                            </span>
 
                             <g:if test="${!searchRequestParams.disableAllQualityFilters && qualityCategories.size() > 1}">
                                 <span style="vertical-align: middle;"><a href="#DQManageFilters" class="multipleFiltersLink tooltips" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="filter selection"/></a></span>
