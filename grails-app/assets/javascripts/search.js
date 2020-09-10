@@ -24,6 +24,13 @@ $(document).ready(function() {
 
     //alert("doc is loaded");
     // listeners for sort & paging widgets
+    $.get(BC_CONF.excludeCountUrl).done(function(data) {
+        $('.exclude-loader').hide();
+        for (var key in data) {
+            $('.exclude-count-label[data-category='+key+']').html(data[key]).show();
+            $('.exclude-count-facet[data-category='+key+']').html("-("+data[key]+")").show();
+        }
+    });
     $("select#sort").change(function() {
         var val = $("option:selected", this).val();
         reloadWithParam('sort',val);

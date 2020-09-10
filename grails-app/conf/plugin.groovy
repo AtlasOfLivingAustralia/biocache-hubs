@@ -31,6 +31,7 @@ serverName = 'http://dev.ala.org.au:8080'
 
 dataquality.enabled = false
 dataquality.baseUrl = 'https://biocache.ala.org.au/data-quality/'
+dataquality.recordCountCacheSpec = 'expireAfterWrite=1d'
 
 // skin settings
 organisation.baseUrl = "https://www.ala.org.au"
