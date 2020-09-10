@@ -165,24 +165,3 @@ mapdownloads {
 //        }
     }
 }
-
-hibernate {
-    dialect =  'org.hibernate.dialect.H2Dialect'
-    cache {
-        queries= false
-        use_second_level_cache= false
-        use_query_cache= false
-    }
-}
-
-database {
-    directory = '/data/ala-hub/database'
-}
-
-dataSource {
-    driverClassName= 'org.h2.Driver'
-    url= "jdbc:h2:file:${database.directory};MVCC=TRUE"
-    dbCreate= 'update'
-    pooled= true
-    jmxExport= true
-}
