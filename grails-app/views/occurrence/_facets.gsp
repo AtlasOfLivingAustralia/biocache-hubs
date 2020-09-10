@@ -60,7 +60,9 @@
                                     <span style="color: #C44D34">
                                         <span class="tooltips" title="${qualityCategory.description}">${qualityCategory.name}</span>&nbsp;
                                         <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>&nbsp;
-                                        <span class="facet-count"> (-<g:formatNumber number="${qualityExcludeCount[qualityCategory.label]}" format="#,###,###"/>)</span>
+                                        <span class="facet-count">
+                                            <i class="fa fa-circle-o-notch fa-spin exclude-loader"></i>
+                                            <span style="display: none;" class="exclude-count-facet" data-category="${qualityCategory.label}"></span></span>
                                     </span>
                                 </li>
                             </g:each>
