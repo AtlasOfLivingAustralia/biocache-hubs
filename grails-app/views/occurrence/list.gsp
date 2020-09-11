@@ -363,7 +363,7 @@
                                                         <table class="table table-bordered table-condensed table-striped scrollTable">
                                                             <thead class="fixedHeader">
                                                             <tr class="tableHead">
-                                                                <th width="80%"><alatag:message code="dq.selectmultiple.categorytable.header.categories" default="Categories"/></th>
+                                                                <th width="70%"><alatag:message code="dq.selectmultiple.categorytable.header.categories" default="Categories"/></th>
                                                                 <th><input type="checkbox" name="filters" class="checkall" value=""></th>
                                                             </tr>
                                                             </thead>
@@ -371,8 +371,12 @@
                                                                 <g:each var="qualityCategory" in="${qualityCategories}">
                                                                     <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
                                                                     <tr>
-                                                                        <td class="filternames" data-filters="${qualityCategory.qualityFilters.findAll { it.enabled }*.filter}" data-label="${qualityCategory.label}">${qualityCategory.name}</td>
-                                                                        <td><input type="checkbox" name="filters" class="filters" data-enabled="${!qcDisabled}" value=""></td>
+                                                                        <td class="filternames" data-filters="${qualityCategory.qualityFilters.findAll { it.enabled }*.filter}" data-category="${qualityCategory.label}">${qualityCategory.name}</td>
+                                                                        <td>
+                                                                            <input type="checkbox" name="filters" class="filters" data-category="${qualityCategory.label}" data-enabled="${!qcDisabled}" value="" style="vertical-align: middle; margin: 0">&nbsp;
+                                                                            <button class='btn btn-link btn-xs expand' data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0"><i class="fa fa-sign-out"></i></button>
+                                                                            <span class="expanded" data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0; font-style: italic; color:#c44d34">Expanded</span>
+                                                                        </td>
                                                                     </tr>
                                                                 </g:each>
                                                             </tbody>

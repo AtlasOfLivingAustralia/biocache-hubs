@@ -635,6 +635,7 @@ $(document).ready(function() {
         })
 
         setCheckAllStatus();
+        setFiltersInitialStatus();
     });
 
     // check checkbox for each single filter, then set checkall
@@ -656,14 +657,112 @@ $(document).ready(function() {
         }
     }
 
+    function setFiltersInitialStatus() {
+        var filterStatus = $("form#filterRefineForm").find(":input.filters");
+        var filters = $("form#filterRefineForm").find("td.filternames");
+
+        $.each(filterStatus, function( i, el ) {
+            var checked = $(el).prop('checked');
+            var category = $(el).data('category');
+            // 3 states, 'enabled', 'expanded', 'disabled'
+            if (checked === true) {
+                $("#filterRefineForm").find('.expand[data-category="' + category + '"]').show();
+                $("#filterRefineForm").find('.expanded[data-category="' + category + '"]').hide();
+                $(filters[i]).attr('data-expanded', false);
+            } else {
+                // if not checked, check if it's expanded
+                $("#filterRefineForm").find('.expand[data-category="' + category + '"]').hide();
+
+                if (ifExpanded($(el).data('category'), $(filters[i]).data("filters"))) {
+                    $("#filterRefineForm").find('.expanded[data-category="' + category + '"]').show();
+                    $(filters[i]).attr('data-expanded', true);
+                } else {
+                    $("#filterRefineForm").find('.expanded[data-category="' + category + '"]').hide();
+                    $(filters[i]).attr('data-expanded', false);
+                }
+            }
+        })
+    }
+
+    function ifExpanded(categoryName, filters) {
+        // get all disabled categories from the url
+        var disableQualityFilterSet = new Set();
+        var disabledFilter = $.url().param('disableQualityFilter');
+        if (typeof disabledFilter === "object") {
+            disableQualityFilterSet = new Set(disabledFilter);
+        } else if (typeof disabledFilter === "string") {
+            disableQualityFilterSet.add(disabledFilter);
+        }
+
+        // if not disabled it can't be expanded
+        if (!disableQualityFilterSet.has(categoryName)) return false;
+
+        var fqSet = new Set();
+
+        var fqs = $.url().param('fq');
+        if (typeof fqs === "object") {
+            fqSet = new Set(fqs);
+        } else if (typeof fqs === "string") {
+            fqSet.add(fqs);
+        }
+
+        var len = filters.length;
+        if ((len > 0) && filters.startsWith('[') && filters.endsWith(']')) {
+            filters = filters.substring(1, len - 1);
+        }
+
+        filters = filters.split(', ')
+
+        for (var i = 0; i < filters.length; i++) {
+            if (!fqSet.has(filters[i])) return false;
+        }
+
+        return true;
+    }
+
     // handle enable/disable all
     $("#filterRefineForm .checkall").on("click", function(e) {
         $("form#filterRefineForm").find(":input.filters").prop('checked', $(this).prop('checked'));
+        setCheckAllStatus();
+        updateFiltersStatus();
     });
 
+    function updateFiltersStatus() {
+        var checks = $("form#filterRefineForm").find(":input.filters")
+
+        $.each(checks, function( i, el ) {
+            updateIndividualStatus($(el));
+        })
+    }
     // handle checkbox for each filter
     $("#filterRefineForm :input.filters").on("click", function() {
         setCheckAllStatus();
+        updateIndividualStatus($(this));
+    })
+
+    function updateIndividualStatus(el) {
+        var checked = $(el).prop('checked');
+        var category = $(el).data('category');
+        if (checked) {
+            $("#filterRefineForm").find('.expand[data-category="' + category + '"]').show();
+        } else {
+            $("#filterRefineForm").find('.expand[data-category="' + category + '"]').hide();
+        }
+        $("#filterRefineForm").find('.expanded[data-category="' + category + '"]').hide();
+    }
+
+    // expand button clicked
+    $("#filterRefineForm :button.expand").on("click", function(e) {
+        e.preventDefault();
+        var category = $(this).data('category');
+        // if expand clicked, uncheck enabled
+        $("#filterRefineForm").find('.filters[data-category="' + category + '"]').prop('checked', false);
+        // hide expand button
+        $(this).hide();
+        // show 'Expanded' status
+        $("#filterRefineForm").find('.expanded[data-category="' + category + '"]').show();
+        // unselect all checked
+        $("#filterRefineForm .checkall").prop('checked', false);
     })
 
     $("#submitFilters :input.submit").on("click", function(e) {
@@ -684,16 +783,26 @@ $(document).ready(function() {
 
         var fitlers = $("form#filterRefineForm").find("td.filternames");
         var filterStatus = $("form#filterRefineForm").find(":input.filters");
+        var expanded = $("form#filterRefineForm").find(".expanded");
 
         // replace url encoded %20 with '+' because groovy encodes space to '+'
         $.each(filterStatus, function( i, status ) {
-            var filterlabel = $(fitlers[i]).data('label');
+            var filterlabel = $(fitlers[i]).data('category');
             // get checked status
             var toDisable = !this.checked;
 
             if (toDisable) { // if to disable, add it to disable list
                 if (!disableQualityFilterSet.has(filterlabel)) {
                     url = appendURL(url, "&disableQualityFilter=" + encodeURIComponent(filterlabel).replace(/%20/g, "+").replace(/[()]/g, escape));
+                }
+
+                var alreadyExpanded = $(fitlers[i]).data('expanded');
+                var nowToExpand = !$(expanded[i]).is(":hidden");
+
+                if (nowToExpand && !alreadyExpanded) {
+                    url = appendFiltersToUrl(url, $(fitlers[i]).data("filters"));
+                } else if (!nowToExpand && alreadyExpanded) {
+                    url = removeFiltersFromFq($(fitlers[i]).data("filters"), url);
                 }
             } else { // if to enable, remove it from disable list + remove expanded fqs
                 if (disableQualityFilterSet.has(filterlabel)) {
@@ -706,6 +815,23 @@ $(document).ready(function() {
 
         window.location.href = url;
     })
+
+    function appendFiltersToUrl(url, filters) {
+        var len = filters.length;
+        if ((len > 0) && filters.startsWith('[') && filters.endsWith(']')) {
+            filters = filters.substring(1, len - 1);
+        }
+
+        // split all fqs
+        filters.split(', ').forEach(function(filter) {
+            var queryToAppend = "&fq=" + encodeURIComponent(filter).replace(/%20/g, "+").replace(/[()]/g, escape);
+            if (url.indexOf(queryToAppend) === -1) {
+                url = appendURL(url, queryToAppend);
+            }
+        })
+
+        return url;
+    }
 
     function removeFiltersFromFq(filters, url) {
         var len = filters.length;
