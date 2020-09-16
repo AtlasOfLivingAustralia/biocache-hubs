@@ -304,7 +304,7 @@
                             <g:if test="${!searchRequestParams.disableAllQualityFilters}">
                                 <span style="vertical-align: middle;">
                                     <a href="#DQProfileDetails" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.profileinfo.button.tooltip" default="Click to view the profile description"></g:message>"></i></a>
-                                </span>
+                                </span>&nbsp;
                                 <div id="DQProfileDetails" class="modal fade" role="dialog" tabindex="-1">
                                     <div class="modal-dialog" role="document" id="DQProfileDetailsModal">
                                         <div class="modal-content">
@@ -398,7 +398,7 @@
                                     <alatag:linkResetSearch filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}">
                                         <i class="fas fa-undo fa-xs tooltips" title="<g:message code="quality.filters.resetsearch.tooltip" default="Reset filters"></g:message>"></i>
                                     </alatag:linkResetSearch>
-                                </span>
+                                </span>&nbsp;
                             </g:if>
 
                             <g:if test="${!searchRequestParams.disableAllQualityFilters && qualityCategories.size() > 1}">
