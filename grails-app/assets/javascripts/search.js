@@ -27,8 +27,9 @@ $(document).ready(function() {
     $.get(BC_CONF.excludeCountUrl).done(function(data) {
         $('.exclude-loader').hide();
         for (var key in data) {
-            $('.exclude-count-label[data-category='+key+']').html(data[key]).show();
-            $('.exclude-count-facet[data-category='+key+']').html("-("+data[key]+")").show();
+            var countString = (new Intl.NumberFormat()).format(parseInt(data[key]))
+            $('.exclude-count-label[data-category='+key+']').html(countString).show();
+            $('.exclude-count-facet[data-category='+key+']').html("-("+countString+")").show();
         }
     });
     $("select#sort").change(function() {
