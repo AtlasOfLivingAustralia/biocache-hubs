@@ -270,6 +270,10 @@ class OccurrenceController {
 
     def dataQualityExcludeCounts(SpatialSearchRequestParams requestParams) {
         normaliseRequestParams(requestParams)
+        // assign profile here. Since WebServiceService.fullTextSearch always attach a profile before searching (so if profile in req is null it changes to 'Default' after search)
+        // if incoming request has a null profile and we don't assign Default to it. it will never hit the cache
+        webServicesService.populateProfile(requestParams)
+
         def qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
         def qualityExcludeCount = time("quality exclude count") { qualityService.getExcludeCount(qualityCategories, requestParams) }
         def result = qualityExcludeCount

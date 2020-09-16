@@ -47,13 +47,7 @@ class WebServicesService {
     }
 
     JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
-
-        // force set the profile if none provided
-        if (dataQualityEnabled && !requestParams.qualityProfile && !requestParams.disableAllQualityFilters) {
-            def activeProfile = qualityService.activeProfile(requestParams.qualityProfile)
-            requestParams.qualityProfile = activeProfile?.shortName
-        }
-
+        populateProfile(requestParams)
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
         def result = getJsonElements(url)
         return result
@@ -641,5 +635,13 @@ class WebServicesService {
         ]
 
         return processors
+    }
+
+    def populateProfile(requestParams) {
+        // force set the profile if none provided
+        if (dataQualityEnabled && !requestParams.qualityProfile && !requestParams.disableAllQualityFilters) {
+            def activeProfile = qualityService.activeProfile(requestParams.qualityProfile)
+            requestParams.qualityProfile = activeProfile?.shortName
+        }
     }
 }
