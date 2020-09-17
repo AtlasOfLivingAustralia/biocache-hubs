@@ -1,16 +1,14 @@
 package au.org.ala.biocache.hubs
 
+
 import grails.converters.JSON
 import grails.plugin.cache.CacheEvict
 import grails.plugin.cache.Cacheable
-import groovy.transform.stc.ClosureParams
-import groovy.transform.stc.FirstParam
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
-import org.apache.commons.httpclient.util.URIUtil
 import org.apache.commons.io.FileUtils
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
@@ -23,8 +21,6 @@ import org.supercsv.io.ICsvListReader
 import org.supercsv.prefs.CsvPreference
 
 import javax.annotation.PostConstruct
-
-import static org.apache.commons.lang3.StringUtils.replace
 
 /**
  * Service to perform web service DAO operations
@@ -568,8 +564,8 @@ class WebServicesService {
     }
 
     def getAssertionCodeMap() {
-        JSONArray codes = getAssertionCodes() // code <-> name
-        Map dataQualityCodes = getAllCodes()  // code -> detail
+        JSONArray codes = grailsApplication.mainContext.getBean('webServicesService').getAssertionCodes() // code <-> name
+        Map dataQualityCodes = getAllCodes() // code -> detail
 
         // convert to name -> detail
         return codes.findAll{dataQualityCodes.containsKey(String.valueOf(it.code))}.collectEntries{[(it.name) : dataQualityCodes.get(String.valueOf(it.code))]}
@@ -577,7 +573,9 @@ class WebServicesService {
 
     def getAllCodes() {
         Map dataQualityCodes = [:]
-        String dataQualityCsv = getDataQualityCsv() // cached
+
+        String dataQualityCsv = grailsApplication.mainContext.getBean('webServicesService').getDataQualityCsv() // cached
+
         ICsvListReader listReader = null
 
         try {

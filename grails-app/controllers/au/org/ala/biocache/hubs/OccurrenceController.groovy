@@ -170,11 +170,11 @@ class OccurrenceController {
             def qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
             def qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
             def qualityTotalCount = time("quality total count") { qualityService.countTotalRecords(requestParams) }
-            def qualityFilterDescriptionsByLabel = time("quality filter descriptions by label") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile).collectEntries {[(it.key) : it.value*.description.join(' and ')]} }
+            def groupedEnabledFilters = time("quality filter descriptions by label") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
+            def qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')]}
 
             def (fqInteract, dqInteract, UserFQColors, DQColors) = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj) }
-
-            def translatedFilterMap = time("translate values") { postProcessingService.translateValues(qualityService.getGroupedEnabledFilters(requestParams.qualityProfile), webServicesService.getMessagesPropertiesFile(), webServicesService.getAssertionCodeMap()) }
+            def translatedFilterMap = time("translate values") { postProcessingService.translateValues(groupedEnabledFilters, webServicesService.getMessagesPropertiesFile(), webServicesService.getAssertionCodeMap()) }
 
             log.debug "defaultFacets = ${defaultFacets}"
 
