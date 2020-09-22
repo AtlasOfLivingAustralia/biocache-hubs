@@ -432,10 +432,12 @@
                                             </g:else>
                                             <span>
                                                 <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteract.containsKey(qualityCategory.label) ? "<br><br>" + dqInteract[qualityCategory.label] : "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
-                                                <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
-                                                <alatag:invertQualityCategory category="${qualityCategory}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
-                                                    (<i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span style="display: none;" class="exclude-count-label" data-category="${qualityCategory.label}"></span>
-                                                    <alatag:message code="quality.filters.excludeCount" default="records excluded" />)
+
+                                                <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-inverse-filter="${alatag.createInverseQualityCategoryLink(category: qualityCategory, inverseFilters: inverseFilters)}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
+                                                <alatag:invertQualityCategory category="${qualityCategory}" inverseFilters="${inverseFilters}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
+                                                    (<i class="fa fa-circle-o-notch fa-spin exclude-loader"></i>
+                                                        <span style="display: none;" class="exclude-count-label" data-category="${qualityCategory.label}"></span>
+                                                    <alatag:message code="quality.filters.excludeCount" default="records excluded" />&nbsp;)
                                                 </alatag:invertQualityCategory>
                                             </span>
                                         </div>
@@ -449,8 +451,11 @@
                                                 </div>
 
                                                 <div class="modal-body" id="modal-body">
-                                                    <p id="filter-value"></p>
+                                                    <button id='expandfilters' class="btn btn-default tooltips" data-dismiss="modal" title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Expand filters"/>&nbsp;<i class="fa fa-sign-in"></i></button>
+                                                    <a id="view-excluded" class="btn btn-default" href="#view-excluded"><g:message code="dq.view.excluded" default="View excluded"/></a>
+
                                                     <p id="excluded"><span id="loadingExcluded"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner1" alt="spinner icon"/></span></p>
+                                                    <p id="filter-value"></p>
                                                     <p id="filter-description"></p>
                                                     <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable">
                                                         <thead class="fixedHeader">

@@ -107,6 +107,14 @@ class QualityService {
         }
     }
 
+    Map<String, String> getAllInverseCategoryFiltersForProfile(QualityProfile profile) {
+        if (dataQualityEnabled) {
+            return responseOrThrow(api.getAllInverseCategoryFiltersForProfile(profile.id?.toInteger()))
+        } else {
+            return ''
+        }
+    }
+
     List<QualityProfile> findAllEnabledProfiles(boolean enabled) {
         if (dataQualityEnabled) {
             return responseOrThrow(profilesApi.profiles(null, null, null, null, enabled, null, null))

@@ -348,48 +348,50 @@ $(document).ready(function() {
 
     $('.DQFilterDetailsLink').click(function() {
         var link = this;
-        var fq = $(link).data("fq")
-        var description = $(link).data("description")
-        var dqcategoryName = $(link).data("dqcategoryname")
-        var dqtranslation = $(link).data("translation")
+        var fq = $(link).data("fq");
+        var description = $(link).data("description");
+        var dqcategoryName = $(link).data("dqcategoryname");
+        var dqtranslation = $(link).data("translation");
+        var dqInverse = $(link).data('inverse-filter');
 
         // show filter name
-        $("#fqdetail-heading").text(dqcategoryName + ' quality filters')
-        $("#loadingExcluded").show()
-        $('#excludedContent').remove()
-        var pos = 0
-        var start = 0
-        var keys = []
+        $("#fqdetail-heading").text(dqcategoryName + ' quality filters');
+        $("#view-excluded").attr('href', dqInverse);
+        $("#loadingExcluded").show();
+        $('#excludedContent').remove();
+        var pos = 0;
+        var start = 0;
+        var keys = [];
         // get all filter keys
         while ((pos = fq.indexOf(':', pos)) != -1) {
             // ':' at pos
-            start = fq.lastIndexOf(' ', pos)
-            var key = ""
+            start = fq.lastIndexOf(' ', pos);
+            var key = "";
             if (start == -1) {
-                key = fq.substring(0, pos)
+                key = fq.substring(0, pos);
             } else {
-                key = fq.substring(start + 1, pos)
+                key = fq.substring(start + 1, pos);
             }
 
-            if (key.length > 0 && key[0] == '-') key = key.substr(1)
-            if (key.length > 0 && key[0] == '(') key = key.substr(1)
-            keys.push(key)
-            pos++
+            if (key.length > 0 && key[0] == '-') key = key.substr(1);
+            if (key.length > 0 && key[0] == '(') key = key.substr(1);
+            keys.push(key);
+            pos++;
         }
 
         // remove duplicate
-        keys = removeDuplicates(keys)
+        keys = removeDuplicates(keys);
 
         // one AJAX request for each key
-        var requests = []
+        var requests = [];
         keys.forEach(function (key) {
-            requests.push(getField(key))
+            requests.push(getField(key));
         })
 
-        var numberOfResponse = keys.length
+        var numberOfResponse = keys.length;
 
-        var map = new Map()
-        var successStatus = "success"
+        var map = new Map();
+        var successStatus = "success";
 
         // when all requests finish (depending on the number of requests, the result
         // structure is different, that's why there's numberOfResponse == 1)
@@ -398,24 +400,24 @@ $(document).ready(function() {
         $.when.apply($, requests).done(function () {
             if (numberOfResponse === 1) {
                 if (successStatus === arguments[1] && arguments[0].length > 0) {
-                    map.set(arguments[0][0].name, [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].info ? arguments[0][0].info : "", arguments[0][0].infoUrl ? arguments[0][0].infoUrl : ""])
+                    map.set(arguments[0][0].name, [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].info ? arguments[0][0].info : "", arguments[0][0].infoUrl ? arguments[0][0].infoUrl : ""]);
                 }
             } else {
                 for (var i = 0; i < arguments.length; i++) {
                     if (successStatus === arguments[i][1] && arguments[i][0].length > 0) {
-                        map.set(arguments[i][0][0].name, [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].info ? arguments[i][0][0].info : "", arguments[i][0][0].infoUrl ? arguments[i][0][0].infoUrl : ""])
+                        map.set(arguments[i][0][0].name, [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].info ? arguments[i][0][0].info : "", arguments[i][0][0].infoUrl ? arguments[i][0][0].infoUrl : ""]);
                     }
                 }
             }
 
-            var html = ""
+            var html = "";
             $.each(keys, function (index, key) {
                 if (map.has(key)) {
                     // color the field, add tooltip
                     var re = new RegExp(key, 'g');
-                    fq = fq.replace(re, '<span class="toqtip" style="color: #c44d34;cursor:pointer;" title="' + map.get(key).join('. ') + '">' + key + "</span>")
+                    fq = fq.replace(re, '<span class="toqtip" style="color: #c44d34;cursor:pointer;" title="' + map.get(key).join('. ') + '">' + key + "</span>");
                     // add a row in table
-                    html += "<tr><td>" + key + "</td><td>" + map.get(key)[0] + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[1]) + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[2], 'Wiki') + "</td></tr>"
+                    html += "<tr><td>" + key + "</td><td>" + map.get(key)[0] + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[1]) + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[2], 'Wiki') + "</td></tr>";
                 }
             })
 

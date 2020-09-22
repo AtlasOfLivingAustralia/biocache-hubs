@@ -217,7 +217,8 @@ class OccurrenceController {
                     UserFQColors: UserFQColors,
                     DQColors: DQColors,
                     activeProfile: activeProfile,
-                    qualityProfiles: time("findAllEnabledProfiles") { qualityService.findAllEnabledProfiles(true) }
+                    qualityProfiles: time("findAllEnabledProfiles") { qualityService.findAllEnabledProfiles(true) },
+                    inverseFilters: inverseFilters
             ]
 
         } catch (Exception ex) {

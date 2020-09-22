@@ -42,7 +42,7 @@ class OccurrenceTagLib {
 
     //static defaultEncodeAs = 'html'
     //static encodeAsForTags = [tagName: 'raw']
-    static returnObjectForTags = ['getLoggerReasons','message','createFilterItemLink']
+    static returnObjectForTags = ['getLoggerReasons','message','createFilterItemLink','createInverseQualityCategoryLink']
     static namespace = 'alatag'     // namespace for headers and footers
     static rangePattern = ~/\[\d+(\.\d+)? TO \d+(\.\d+)?\]/
 
@@ -1037,17 +1037,24 @@ class OccurrenceTagLib {
 
     def invertQualityCategory = { attrs, body ->
         QualityCategory category = attrs.remove('category')
+        Map<String,String> inverseFilters = attrs.remove('inverseFilters')
 
         GrailsParameterMap newParams = params.clone()
         List<String> existingFilters = newParams.list('fq')
 
-        def inverseFilter = qualityService.getInverseCategoryFilter(category)
+        def inverseFilter
+        if (inverseFilters) {
+            inverseFilter = inverseFilters[category.label]
+        } else {
+            inverseFilter = time("getInverseCategoryFilter") { qualityService.getInverseCategoryFilter(category) }
+        }
         if (inverseFilter) {
             existingFilters += inverseFilter
         }
         newParams.disableAllQualityFilters = true
         newParams.fq = existingFilters
 
+        attrs['class'] = (attrs['class'] as Set) + 'inverse-filter-link'
 
         if (!attrs.action) {
             attrs.action = actionName
@@ -1058,6 +1065,36 @@ class OccurrenceTagLib {
         attrs.params = newParams
 
         out << g.link(attrs, body)
+    }
+
+    def createInverseQualityCategoryLink = { attrs, body ->
+        QualityCategory category = attrs.remove('category')
+        Map<String,String> inverseFilters = attrs.remove('inverseFilters')
+
+        GrailsParameterMap newParams = params.clone()
+        List<String> existingFilters = newParams.list('fq')
+
+        def inverseFilter
+        if (inverseFilters) {
+            inverseFilter = inverseFilters[category.label]
+        } else {
+            inverseFilter = time("getInverseCategoryFilter") { qualityService.getInverseCategoryFilter(category) }
+        }
+        if (inverseFilter) {
+            existingFilters += inverseFilter
+        }
+        newParams.disableAllQualityFilters = true
+        newParams.fq = existingFilters
+
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+        newParams.remove('startIndex')
+        newParams.remove('offset')
+        newParams.remove('max')
+        attrs.params = newParams
+
+        out << g.createLink(attrs, body)
     }
 
     /**
