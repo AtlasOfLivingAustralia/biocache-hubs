@@ -24,13 +24,15 @@ $(document).ready(function() {
 
     //alert("doc is loaded");
     // listeners for sort & paging widgets
+    var excludeCounts = {};
     $.get(BC_CONF.excludeCountUrl).done(function(data) {
         $('.exclude-loader').hide();
         for (var key in data) {
-            var countString = (new Intl.NumberFormat()).format(parseInt(data[key]))
-            $('.exclude-count-label[data-category='+key+']').html(countString).show();
-            $('.exclude-count-facet[data-category='+key+']').html("-("+countString+")").show();
+            data[key] = (new Intl.NumberFormat()).format(parseInt(data[key]));
+            $('.exclude-count-label[data-category='+key+']').text(data[key]).show();
+            $('.exclude-count-facet[data-category='+key+']').text("-("+data[key]+")").show();
         }
+        excludeCounts = data;
     });
     $("select#sort").change(function() {
         var val = $("option:selected", this).val();
@@ -351,14 +353,20 @@ $(document).ready(function() {
         var fq = $(link).data("fq");
         var description = $(link).data("description");
         var dqcategoryName = $(link).data("dqcategoryname");
+        var dqCategoryLabel = $(link).data('categorylabel')
         var dqtranslation = $(link).data("translation");
         var dqInverse = $(link).data('inverse-filter');
 
         // show filter name
         $("#fqdetail-heading").text(dqcategoryName + ' quality filters');
         $("#view-excluded").attr('href', dqInverse);
-        $("#loadingExcluded").show();
-        $('#excludedContent').remove();
+
+        if (excludeCounts[dqCategoryLabel]) {
+            $("#excluded .exclude-count-label").text(excludeCounts[dqCategoryLabel]).removeData('category').removeAttr('category');
+        } else {
+            $("#excluded .exclude-count-label").text('').data('category', dqCategoryLabel).attr('data-category', dqCategoryLabel);
+        }
+
         var pos = 0;
         var start = 0;
         var keys = [];
@@ -442,12 +450,6 @@ $(document).ready(function() {
             })
 
             $('#spinnerRow').hide();
-
-            var jsonUri = BC_CONF.serverName + "/occurrences/getExcluded?" + decodeURIComponent(BC_CONF.searchRequestParams) + "&categoryLabel=" + $(link).data('categorylabel');
-            $.getJSON(jsonUri, function (data) {
-                $('#loadingExcluded').hide();
-                $("#excluded").append('<span id="excludedContent"><span style="color: #c44d34; font-style: italic">' + (new Intl.NumberFormat()).format(parseInt(data.count)) + '</span> records are excluded by this category</span>');
-            });
 
             $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i>");
             $('#DQDetailsModal .modal-body #filter-description').html("<b>Description: </b>" + description);

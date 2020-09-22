@@ -1082,3 +1082,8 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
     padding: 5px 8px;
     margin-top: 2px;
 }
+
+#excluded .exclude-count-label {
+    color: #c44d34;
+    font-style: italic
+}
