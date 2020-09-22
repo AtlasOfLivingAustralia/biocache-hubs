@@ -451,7 +451,7 @@
 
                                                 <div class="modal-body" id="modal-body">
                                                     <button id='expandfilters' class="btn btn-default tooltips" data-dismiss="modal" title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Expand filters"/>&nbsp;<i class="fa fa-sign-in"></i></button>
-                                                    <a id="view-excluded" class="btn btn-default" href="#view-excluded"><g:message code="dq.view.excluded" default="View excluded"/></a>
+                                                    <a id="view-excluded" class="btn btn-default" href="#view-excluded" target="_blank"><g:message code="dq.view.excluded" default="View excluded records"/></a>
 
                                                     <p id="excluded"><span id="loadingExcluded"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner1" alt="spinner icon"/></span></p>
                                                     <p id="filter-value"></p>
