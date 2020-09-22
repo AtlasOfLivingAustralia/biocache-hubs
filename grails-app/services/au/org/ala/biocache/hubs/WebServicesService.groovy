@@ -544,6 +544,7 @@ class WebServicesService {
         return getJsonElements(url)?.collect {it.name}
     }
 
+    @Cacheable('longTermCache')
     def getMessagesPropertiesFile() {
         def url = "${grailsApplication.config.biocache.baseUrl}/facets/i18n"
 
