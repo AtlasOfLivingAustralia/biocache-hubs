@@ -28,6 +28,8 @@ import grails.util.Environment
 
 import java.util.regex.Pattern
 
+import static au.org.ala.biocache.hubs.TimingUtils.time
+
 /**
  * Custom taglib for biocache-hubs
  *

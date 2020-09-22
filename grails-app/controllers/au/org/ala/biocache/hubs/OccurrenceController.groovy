@@ -27,6 +27,8 @@ import org.grails.web.json.JSONObject
 
 import java.text.SimpleDateFormat
 
+import static au.org.ala.biocache.hubs.TimingUtils.time
+
 /**
  * Controller for occurrence searches and records
  */
@@ -50,13 +52,6 @@ class OccurrenceController {
         requestParams.q = "data_resource_uid:" + params.uid
         def model = list(requestParams)
         render (view: 'list', model: model)
-    }
-
-    private def <V> V time(String message, Closure<V> body) {
-        def sw = Stopwatch.createStarted()
-        def r = body()
-        log.debug("Timing - {}: {}", message, sw)
-        return r
     }
 
     /**
@@ -125,44 +120,42 @@ class OccurrenceController {
             }
 
             //create a facet lookup map
-            Map groupedFacetsMap = time("get map of facet results") { postProcessingService.getMapOfFacetResults(searchResults.facetResults) }
+            Map groupedFacetsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
 
             //grouped facets
-            Map groupedFacets = time("get all grouped facets") { postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets) }
+            Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)
 
             //remove qc from active facet map
-            time("remove qc from active facet map") {
-                if (params?.qc) {
-                    def qc = params.qc
-                    if (searchResults?.activeFacetMap) {
-                        def remove = null
-                        searchResults?.activeFacetMap.each { k, v ->
-                            if (k + ':' + v?.value == qc) {
-                                remove = k
-                            }
-                        }
-                        if (remove) searchResults?.activeFacetMap?.remove(remove)
-                    }
-
-                    if (searchResults?.activeFacetObj) {
-                        def removeKey = null
-                        def removeIdx = null
-                        searchResults?.activeFacetObj.each { k, v ->
-                            def idx = v.findIndexOf { it.value == qc }
-                            if (idx > -1) {
-                                removeKey = k
-                                removeIdx = idx
-                            }
-                        }
-                        if (removeKey && removeIdx != null) {
-                            searchResults.activeFacetObj[removeKey].remove(removeIdx)
+            if (params?.qc) {
+                def qc = params.qc
+                if (searchResults?.activeFacetMap) {
+                    def remove = null
+                    searchResults?.activeFacetMap.each { k, v ->
+                        if (k + ':' + v?.value == qc) {
+                            remove = k
                         }
                     }
-
+                    if (remove) searchResults?.activeFacetMap?.remove(remove)
                 }
+
+                if (searchResults?.activeFacetObj) {
+                    def removeKey = null
+                    def removeIdx = null
+                    searchResults?.activeFacetObj.each { k, v ->
+                        def idx = v.findIndexOf { it.value == qc }
+                        if (idx > -1) {
+                            removeKey = k
+                            removeIdx = idx
+                        }
+                    }
+                    if (removeKey && removeIdx != null) {
+                        searchResults.activeFacetObj[removeKey].remove(removeIdx)
+                    }
+                }
+
             }
 
-            def hasImages = time("results have images") { postProcessingService.resultsHaveImages(searchResults) }
+            def hasImages = postProcessingService.resultsHaveImages(searchResults)
             if(grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()){
                 hasImages = true
             }
@@ -170,11 +163,14 @@ class OccurrenceController {
             def qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
             def qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
             def qualityTotalCount = time("quality total count") { qualityService.countTotalRecords(requestParams) }
-            def groupedEnabledFilters = time("quality filter descriptions by label") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
-            def qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')]}
+            def groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
+            def qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')] }
 
             def (fqInteract, dqInteract, UserFQColors, DQColors) = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj) }
-            def translatedFilterMap = time("translate values") { postProcessingService.translateValues(groupedEnabledFilters, webServicesService.getMessagesPropertiesFile(), webServicesService.getAssertionCodeMap()) }
+
+            def messagePropertiesFile = time("message properties file") { webServicesService.getMessagesPropertiesFile() }
+            def assertionCodeMap = time("assertionCodeMap") { webServicesService.getAssertionCodeMap() }
+            def translatedFilterMap = postProcessingService.translateValues(groupedEnabledFilters, messagePropertiesFile, assertionCodeMap)
 
             log.debug "defaultFacets = ${defaultFacets}"
 
@@ -198,10 +194,10 @@ class OccurrenceController {
                     groupedFacetsMap: groupedFacetsMap,
                     dynamicFacets: dynamicFacets,
                     translatedFilterMap: translatedFilterMap,
-                    selectedDataResource: time("getSelectedResource") { getSelectedResource(requestParams.q) },
+                    selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: hasImages,
                     showSpeciesImages: false,
-                    overlayList: time("getListOfLayers") { postProcessingService.getListOfLayers(requestParams) },
+                    overlayList: postProcessingService.getListOfLayers(requestParams),
                     sort: requestParams.sort,
                     dir: requestParams.dir,
                     userId: authService?.getUserId(),
@@ -257,11 +253,11 @@ class OccurrenceController {
             // taxa query - attempt GUID lookup
             List guidsForTaxa = webServicesService.getGuidsForTaxa(taxaQueries)
             def additionalQ = (params.q) ? " AND " + params.q : "" // advanced search form can provide both taxa and q params
-            requestParams.q = time("createQueryWithTaxaParam") { postProcessingService.createQueryWithTaxaParam(taxaQueries, guidsForTaxa) + additionalQ }
+            requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, guidsForTaxa) + additionalQ
         } else if (!params.q && taxaQueries && taxaQueries[0]) {
             // Bypass BIE lookup and pass taxa query in as text
             List emptyGuidList = taxaQueries.clone().collect { it = ""} // list of empty strings, of equal size to taxaQueries
-            requestParams.q = time("createQueryWithTaxaParam") { postProcessingService.createQueryWithTaxaParam(taxaQueries, emptyGuidList) }
+            requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, emptyGuidList)
         }
 
         if (!requestParams.q) {

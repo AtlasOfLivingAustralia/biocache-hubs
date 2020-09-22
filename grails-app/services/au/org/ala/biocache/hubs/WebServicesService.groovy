@@ -563,6 +563,7 @@ class WebServicesService {
         return map
     }
 
+    @Cacheable('longTermCache')
     def getAssertionCodeMap() {
         JSONArray codes = grailsApplication.mainContext.getBean('webServicesService').getAssertionCodes() // code <-> name
         Map dataQualityCodes = getAllCodes() // code -> detail
