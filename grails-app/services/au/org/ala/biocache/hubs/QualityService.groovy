@@ -111,7 +111,7 @@ class QualityService {
         if (dataQualityEnabled) {
             return responseOrThrow(api.getAllInverseCategoryFiltersForProfile(profile.id?.toInteger()))
         } else {
-            return ''
+            return [:]
         }
     }
 
