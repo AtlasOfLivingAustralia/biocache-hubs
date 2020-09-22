@@ -435,9 +435,8 @@
 
                                                 <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-inverse-filter="${alatag.createInverseQualityCategoryLink(category: qualityCategory, inverseFilters: inverseFilters)}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
                                                 <alatag:invertQualityCategory category="${qualityCategory}" inverseFilters="${inverseFilters}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
-                                                    (<i class="fa fa-circle-o-notch fa-spin exclude-loader"></i>
-                                                        <span style="display: none;" class="exclude-count-label" data-category="${qualityCategory.label}"></span>
-                                                    <alatag:message code="quality.filters.excludeCount" default="records excluded" />&nbsp;)
+                                                    (<i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span style="display: none;" class="exclude-count-label" data-category="${qualityCategory.label}"></span>
+                                                    <alatag:message code="quality.filters.excludeCount" default="records excluded" />)
                                                 </alatag:invertQualityCategory>
                                             </span>
                                         </div>
