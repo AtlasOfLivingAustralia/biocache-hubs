@@ -184,6 +184,8 @@ class OccurrenceController {
             navigationDTO.setSearchRequestResultSize(searchResults.totalRecords);
             request.getSession().setAttribute(SESSION_NAVIGATION_DTO, navigationDTO);
 
+            def inverseFilters = time("inverseFilters") { qualityService.getAllInverseCategoryFiltersForProfile(activeProfile) }
+
             def processingTime = (System.currentTimeMillis() - start)
             log.info ("Timing - list processing time: {} ms", processingTime)
             [
