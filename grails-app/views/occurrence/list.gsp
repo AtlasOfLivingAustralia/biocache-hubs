@@ -435,7 +435,7 @@
                                             <span>
                                                 <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteract.containsKey(qualityCategory.label) ? "<br><br>" + dqInteract[qualityCategory.label] : "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
 
-                                                <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-inverse-filter="${alatag.createInverseQualityCategoryLink(category: qualityCategory, inverseFilters: inverseFilters)}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
+                                                <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-dqcategorydescription="${qualityCategory.description}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-inverse-filter="${alatag.createInverseQualityCategoryLink(category: qualityCategory, inverseFilters: inverseFilters)}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
                                                 <alatag:invertQualityCategory category="${qualityCategory}" inverseFilters="${inverseFilters}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
                                                     (<i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span style="display: none;" class="exclude-count-label" data-category="${qualityCategory.label}"></span>
                                                     <alatag:message code="quality.filters.excludeCount" default="records excluded" />)
@@ -448,26 +448,42 @@
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                    <h3 id="fqdetail-heading"></h3>
+                                                    <h3 id="fqdetail-heading-name"></h3>
+                                                    <p id="fqdetail-heading-description" style="font-style: italic"></p>
                                                 </div>
 
                                                 <div class="modal-body" id="modal-body">
-                                                    <button id='expandfilters' class="btn btn-default tooltips" data-dismiss="modal" title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Expand filters"/>&nbsp;<i class="fa fa-sign-in"></i></button>
-                                                    <a id="view-excluded" class="btn btn-default" href="#view-excluded" target="_blank"><g:message code="dq.view.excluded" default="View excluded records"/></a>
+                                                    <p id="excluded" style="margin-bottom: 0"><i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span class="exclude-count-label"></span> <g:message code="dq.excluded.count" default="records are excluded by this category"/></p>
+                                                    <a id="view-excluded" class="btn btn-link" href="#view-excluded" target="_blank" style="text-decoration: none; padding: 0"><g:message code="dq.view.excluded" default="View excluded records"/></a>
+                                                    <p id="filter-value" style="margin-bottom: 0"></p>
+                                                    <button id='expandfilters' class="btn btn-link tooltips" data-dismiss="modal" title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>" style="text-decoration: none; padding: 0"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Expand filters"/>&nbsp;<i class="fa fa-sign-in"></i></button>
 
-                                                    <p id="excluded"><i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span class="exclude-count-label"></span> <g:message code="dq.excluded.count" default="records are excluded by this category"/></p>
-                                                    <p id="filter-value"></p>
-                                                    <p id="filter-description"></p>
-                                                    <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable">
+                                                    <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable" style="margin-top: 20px">
                                                         <thead class="fixedHeader">
                                                         <tr>
-                                                            <th>Filter name</th>
-                                                            <th>Filter description</th>
-                                                            <th>Filter info</th>
-                                                            <th>Further info</th>
+                                                            <th><alatag:message code="dq.categoryinfo.dlg.fieldtable.heading.name" default="Field name"/></th>
+                                                            <th><alatag:message code="dq.categoryinfo.dlg.fieldtable.heading.description" default="Description"/></th>
+                                                            <th><alatag:message code="dq.categoryinfo.dlg.fieldtable.heading.wiki" default="Wiki"/></th>
                                                         </tr>
 
-                                                        <tr id="spinnerRow">
+                                                        <tr class="spinnerRow">
+                                                            <td colspan="3" style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
+                                                        </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+
+                                                    <table class="table table-bordered table-condensed table-striped scrollTable" id="DQFiltersTable">
+                                                        <thead class="fixedHeader">
+                                                        <tr>
+                                                            <th><alatag:message code="dq.categoryinfo.dlg.valuetable.heading.description" default="Filter description"/></th>
+                                                            <th><alatag:message code="dq.categoryinfo.dlg.valuetable.heading.value" default="Filter value"/></th>
+                                                            <th><alatag:message code="dq.categoryinfo.dlg.valuetable.heading.wiki" default="Wiki"/></th>
+                                                        </tr>
+
+                                                        <tr class="spinnerRow">
                                                             <td colspan="3" style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
                                                         </tr>
                                                         </thead>

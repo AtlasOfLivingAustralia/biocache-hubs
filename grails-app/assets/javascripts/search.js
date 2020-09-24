@@ -351,14 +351,17 @@ $(document).ready(function() {
     $('.DQFilterDetailsLink').click(function() {
         var link = this;
         var fq = $(link).data("fq");
+        var fqs = fq.split(' AND ')
+
         var description = $(link).data("description");
-        var dqcategoryName = $(link).data("dqcategoryname");
         var dqCategoryLabel = $(link).data('categorylabel')
         var dqtranslation = $(link).data("translation");
         var dqInverse = $(link).data('inverse-filter');
 
         // show filter name
-        $("#fqdetail-heading").text(dqcategoryName + ' quality filters');
+        $("#fqdetail-heading-name").text($(link).data("dqcategoryname"));
+        $("#fqdetail-heading-description").text($(link).data("dqcategorydescription"));
+        $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i>");
         $("#view-excluded").attr('href', dqInverse);
 
         if (excludeCounts[dqCategoryLabel]) {
@@ -408,12 +411,12 @@ $(document).ready(function() {
         $.when.apply($, requests).done(function () {
             if (numberOfResponse === 1) {
                 if (successStatus === arguments[1] && arguments[0].length > 0) {
-                    map.set(arguments[0][0].name, [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].info ? arguments[0][0].info : "", arguments[0][0].infoUrl ? arguments[0][0].infoUrl : ""]);
+                    map.set(arguments[0][0].name, [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].infoUrl ? arguments[0][0].infoUrl : ""]);
                 }
             } else {
                 for (var i = 0; i < arguments.length; i++) {
                     if (successStatus === arguments[i][1] && arguments[i][0].length > 0) {
-                        map.set(arguments[i][0][0].name, [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].info ? arguments[i][0][0].info : "", arguments[i][0][0].infoUrl ? arguments[i][0][0].infoUrl : ""]);
+                        map.set(arguments[i][0][0].name, [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].infoUrl ? arguments[i][0][0].infoUrl : ""]);
                     }
                 }
             }
@@ -421,78 +424,40 @@ $(document).ready(function() {
             var html = "";
             $.each(keys, function (index, key) {
                 if (map.has(key)) {
-                    // color the field, add tooltip
-                    var re = new RegExp(key, 'g');
-                    fq = fq.replace(re, '<span class="toqtip" style="color: #c44d34;cursor:pointer;" title="' + map.get(key).join('. ') + '">' + key + "</span>");
-                    // add a row in table
-                    html += "<tr><td>" + key + "</td><td>" + map.get(key)[0] + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[1]) + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[2], 'Wiki') + "</td></tr>";
+                    html += "<tr><td>" + key + "</td><td>" + map.get(key)[0] + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[1], 'Wiki') + "</td></tr>";
                 }
             })
 
-            $.each(dqtranslation, function(key, val) {
-                // replace :value or :"value" so same value appears in field info/description won't be replaced
-                // for assertion values, val will be a map, for other values val is just a string
-                // check type of val to see if we need to set popover (for assertions)
-                var showPopOver = typeof(val) === 'object';
-                if (fq.indexOf(":" + key) != -1) {
-                    if (showPopOver) {
-                        fq = fq.replace(":" + key, '<span style="color: #53377A">:' + key + '</span>' + '<a href="#" data-toggle="popover" data-name="' + val.name + '" data-desc=\'' + val.description + '\' data-wiki="' + val.wiki + '" class="fqpopover">&nbsp;<i class="glyphicon glyphicon-question-sign"></i></a>');
-                    } else {
-                        fq = fq.replace(":" + key, '<span class="toqtip" style="color: #53377A;cursor:pointer;" title="' + val + '">' + ":" + key + "</span>");
-                    }
-                } else if (fq.indexOf(':"' + key + '"') != -1) {
-                    if (showPopOver) {
-                        fq = fq.replace(':"' + key + '"', '<span style="color: #53377A">:"' + key + '"</span>' + '<a href="#" data-toggle="popover" data-name="' + val.name + '" data-desc=\'' + val.description + '\' data-wiki="' + val.wiki + '" class="fqpopover">&nbsp;<i class="glyphicon glyphicon-question-sign"></i></a>');
-                    } else {
-                        fq = fq.replace(':"' + key + '"', '<span class="toqtip" style="color: #53377A;cursor:pointer;" title="' + val + '">' + ':"' + key + '"</span>');
-                    }
+            var descs = description.split(' and ')
+            var valuesHtml = ""
+
+            $.each(fqs, function(idx, el) {
+                console.log(idx)
+                console.log(el)
+                console.log(descs[idx])
+
+                var val = el.substring(el.indexOf(":") + 1)
+                if (val.startsWith('"') && val.endsWith('"')) val = val.substring(1, val.length - 1)
+
+                var wiki = ''
+                if (dqtranslation && val in dqtranslation && typeof(dqtranslation[val]) === 'object') {
+                    wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + dqtranslation[val].name + "' target='wiki'>Wiki</a>"
                 }
+
+                // make sure no beak between '-' and key
+                var els = el.split(':')
+                el = '<span style="white-space: nowrap;">' + els[0] + '</span>:' + els[1]
+                valuesHtml += '<tr><td style=\"word-break: break-word\">' + replaceURL(descs[idx]) + '</td><td style=\"word-break: normal\">' + el + '</td><td>' + wiki + '</td></tr>'
             })
 
-            $('#spinnerRow').hide();
-
-            $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i>");
-            $('#DQDetailsModal .modal-body #filter-description').html("<b>Description: </b>" + description);
-
-
-            $(".toqtip").qtip({
-                style: {
-                    classes: 'ui-tooltip-rounded ui-tooltip-shadow'
-                }
-            });
+            $('.spinnerRow').hide();
 
             // clear content
             $("table#DQDetailsTable tbody").html("");
             $("table#DQDetailsTable tbody").append(html);
 
-            // because it's a popover inside a modal, need to call popover() here
-            var popovers = $('.fqpopover').popover({
-                html : true,
-                trigger: "focus",
-                placement: "auto", // auto position
-                viewport: '#modal-body', // to control popovers within modal body
-                title: function() {
-                    return $(this).data("name");
-                },
-                content: function() {
-                    var name = $(this).data("name");
-                    var description = $(this).data("desc");
-                    var content = "<div>" + description + "</div>";
-
-                    if ($(this).data("wiki") != 'undefined') {
-                        content += "<div><i class='glyphicon glyphicon-share-alt'></i>&nbsp;<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" +
-                                     name + "' target='wiki' title='More details on the wiki page'>Wiki page</a></div>";
-                    }
-                    return content;
-                }
-            })
-
-            $.each(popovers, function( index, el ) {
-                $(el).on("show.bs.popover", function(e) {
-                    // remove the max-width limit of .popover
-                    $(el).data("bs.popover").tip().css({"max-width": "none"});
-                })
-            });
+            $("table#DQFiltersTable tbody").html("");
+            $("table#DQFiltersTable tbody").append(valuesHtml);
 
             // if we should disable/hide the expand button
             var category_disabled = $(link).data('disabled');
