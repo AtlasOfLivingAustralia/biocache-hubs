@@ -411,12 +411,12 @@ $(document).ready(function() {
         $.when.apply($, requests).done(function () {
             if (numberOfResponse === 1) {
                 if (successStatus === arguments[1] && arguments[0].length > 0) {
-                    map.set(arguments[0][0].name, [arguments[0][0].description ? arguments[0][0].description : "", arguments[0][0].infoUrl ? arguments[0][0].infoUrl : ""]);
+                    map.set(arguments[0][0].name, [arguments[0][0].info ? arguments[0][0].info : (arguments[0][0].description ? arguments[0][0].description : ""), arguments[0][0].infoUrl ? arguments[0][0].infoUrl : ""]);
                 }
             } else {
                 for (var i = 0; i < arguments.length; i++) {
                     if (successStatus === arguments[i][1] && arguments[i][0].length > 0) {
-                        map.set(arguments[i][0][0].name, [arguments[i][0][0].description ? arguments[i][0][0].description : "", arguments[i][0][0].infoUrl ? arguments[i][0][0].infoUrl : ""]);
+                        map.set(arguments[i][0][0].name, [arguments[i][0][0].info ? arguments[i][0][0].info : (arguments[i][0][0].description ? arguments[i][0][0].description : ""), arguments[i][0][0].infoUrl ? arguments[i][0][0].infoUrl : ""]);
                     }
                 }
             }
@@ -424,7 +424,7 @@ $(document).ready(function() {
             var html = "";
             $.each(keys, function (index, key) {
                 if (map.has(key)) {
-                    html += "<tr><td>" + key + "</td><td>" + map.get(key)[0] + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[1], 'Wiki') + "</td></tr>";
+                    html += "<tr><td>" + key + "</td><td>" + replaceURL(map.get(key)[0]) + '</td><td style=\"word-break: break-word\">' + replaceURL(map.get(key)[1], 'Wiki') + "</td></tr>";
                 }
             })
 
