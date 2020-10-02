@@ -28,7 +28,8 @@ $(document).ready(function() {
     $.get(BC_CONF.excludeCountUrl).done(function(data) {
         $('.exclude-loader').hide();
         for (var key in data) {
-            data[key] = (new Intl.NumberFormat()).format(parseInt(data[key]));
+            var categoryEnabled = $('.exclude-count-label[data-category='+key+']').data('enabled')
+            data[key] = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : 0
             $('.exclude-count-label[data-category='+key+']').text(data[key]).show();
             $('.exclude-count-facet[data-category='+key+']').text("-("+data[key]+")").show();
         }

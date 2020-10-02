@@ -376,7 +376,7 @@
                                                                             <input type="checkbox" name="filters" class="filters" data-category="${qualityCategory.label}" data-enabled="${!qcDisabled}" value="" style="vertical-align: middle; margin: 0">&nbsp;
                                                                             <button class='btn btn-link btn-sm expand' data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0; padding: 0; text-decoration: none; font-size: 14px"
                                                                                     title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>">
-                                                                            <g:message code="dq.selectmultiple.buttontext.expandfilters" default="Expand filters"/></button>
+                                                                            <g:message code="dq.selectmultiple.buttontext.expandfilters" default="Expand and edit filters"/></button>
                                                                             <span class="expanded" data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0; font-style: italic; color:#c44d34"><g:message code="dq.selectmultiple.text.expanded" default="Expanded"/></span>
                                                                         </td>
                                                                     </tr>
@@ -437,7 +437,7 @@
 
                                                 <a href="#DQFilterDetails" class="DQFilterDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-dqcategorydescription="${qualityCategory.description}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-inverse-filter="${alatag.createInverseQualityCategoryLink(category: qualityCategory, inverseFilters: inverseFilters)}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
                                                 <alatag:invertQualityCategory category="${qualityCategory}" inverseFilters="${inverseFilters}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
-                                                    (<i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span style="display: none;" class="exclude-count-label" data-category="${qualityCategory.label}"></span>
+                                                    (<i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span style="display: none;" class="exclude-count-label" data-category="${qualityCategory.label}" data-enabled="${!searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}"></span>
                                                     <alatag:message code="quality.filters.excludeCount" default="records excluded" />)
                                                 </alatag:invertQualityCategory>
                                             </span>
@@ -456,7 +456,7 @@
                                                     <p id="excluded" style="margin-bottom: 0"><i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span class="exclude-count-label"></span> <g:message code="dq.excluded.count" default="records are excluded by this category"/></p>
                                                     <a id="view-excluded" class="btn btn-link" href="#view-excluded" target="_blank" style="text-decoration: none; padding: 0"><g:message code="dq.view.excluded" default="View excluded records"/></a>
                                                     <p id="filter-value" style="margin-bottom: 0"></p>
-                                                    <button id='expandfilters' class="btn btn-link tooltips" data-dismiss="modal" title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>" style="text-decoration: none; padding: 0"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Expand filters"/>&nbsp;<i class="fa fa-sign-in"></i></button>
+                                                    <button id='expandfilters' class="btn btn-link tooltips" data-dismiss="modal" title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>" style="text-decoration: none; padding: 0"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Expand and edit filters"/></button>
 
                                                     <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable" style="margin-top: 20px">
                                                         <thead class="fixedHeader">
