@@ -337,8 +337,8 @@
                                                             <g:each var="filter" in="${category.qualityFilters}">
                                                                 <g:if test="${filter.enabled}">
                                                                     <tr>
-                                                                        <td>${filter.description}</td>
-                                                                        <td>${filter.filter}</td>
+                                                                        <td style="word-break: break-word;">${filter.description}</td>
+                                                                        <td style="word-break: keep-all"><span style="white-space: nowrap;">${filter.filter}</span></td>
                                                                     </tr>
                                                                 </g:if>
                                                             </g:each>
