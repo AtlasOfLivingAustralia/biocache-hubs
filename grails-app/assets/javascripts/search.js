@@ -433,10 +433,6 @@ $(document).ready(function() {
             var valuesHtml = ""
 
             $.each(fqs, function(idx, el) {
-                console.log(idx)
-                console.log(el)
-                console.log(descs[idx])
-
                 var val = el.substring(el.indexOf(":") + 1)
                 if (val.startsWith('"') && val.endsWith('"')) val = val.substring(1, val.length - 1)
 
