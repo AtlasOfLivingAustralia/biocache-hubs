@@ -76,7 +76,7 @@ class OccurrenceTagLib {
                 label = message(code:fieldCode, default:"")
             }
 
-            label = label ?: camelCaseToHuman(text: fieldName)
+            label = label ?: fieldName
             output = label
         }
         output
