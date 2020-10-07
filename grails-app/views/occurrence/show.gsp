@@ -143,7 +143,7 @@
                     </h1>
                     <g:if test="${record.raw.classification}">
                         <div id="recordHeadingLine2">
-                            <g:message code="basicOfRecord.${record.processed.occurrence?.basisOfRecord}" default="${record.processed.occurrence?.basisOfRecord}"/>
+                            <g:message code="basisOfRecord.${record.processed.occurrence?.basisOfRecord}" default="${record.processed.occurrence?.basisOfRecord}"/>
                             <g:message code="show.heading.of" default="of"/>
                             <g:if test="${record.processed.classification.scientificName}">
                                 <alatag:formatSciName rankId="${record.processed.classification.taxonRankID}" name="${record.processed.classification.scientificName}"/>
