@@ -349,6 +349,28 @@ $(document).ready(function() {
         loadMoreFacets(facetName, displayName, null);
     });
 
+    $('.DQProfileDetailsLink').click(function() {
+        $.each($(".cat-table"), function(idx, el) {
+            var translation = $(el).data('translation')
+
+            var fqs = $(el).find('td.filter-value')
+            var wikis = $(el).find('td.filter-wiki')
+
+            $.each(fqs, function(idx, el) {
+                var fq = $(el).text()
+                var val = fq.substring(fq.indexOf(":") + 1)
+                if (val.startsWith('"') && val.endsWith('"')) val = val.substring(1, val.length - 1)
+
+                var wiki = ''
+                if (translation && val in translation && typeof(translation[val]) === 'object') {
+                    wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + translation[val].name + "' target='wiki'>Wiki</a>"
+                }
+
+                $(wikis[idx]).html(wiki)
+            })
+        })
+    })
+
     $('.DQFilterDetailsLink').click(function() {
         var link = this;
         var fq = $(link).data("fq");

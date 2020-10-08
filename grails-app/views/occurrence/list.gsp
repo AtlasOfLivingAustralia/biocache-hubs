@@ -303,7 +303,7 @@
                             </g:else>
                             <g:if test="${!searchRequestParams.disableAllQualityFilters}">
                                 <span style="vertical-align: middle;">
-                                    <a href="#DQProfileDetails" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.profileinfo.button.tooltip" default="Click to view the profile description"></g:message>"></i></a>
+                                    <a href="#DQProfileDetails" class="DQProfileDetailsLink" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.profileinfo.button.tooltip" default="Click to view the profile description"></g:message>"></i></a>
                                 </span>&nbsp;
                                 <div id="DQProfileDetails" class="modal fade" role="dialog" tabindex="-1">
                                     <div class="modal-dialog" role="document" id="DQProfileDetailsModal">
@@ -329,16 +329,18 @@
                                                             <b>${category.name}</b><br>
                                                             ${category.description}
                                                         </div>
-                                                        <table class="table table-bordered table-condensed table-striped scrollTable">
+                                                        <table class="table table-bordered table-condensed table-striped scrollTable cat-table" data-translation="${translatedFilterMap[category.label]}">
                                                             <tr>
                                                                 <th><alatag:message code="dq.profiledetail.filtertable.header.description" default="Filter description"/></th>
                                                                 <th><alatag:message code="dq.profiledetail.filtertable.header.value" default="Filter value"/></th>
+                                                                <th><alatag:message code="dq.profiledetail.filtertable.header.wiki" default="Wiki"/></th>
                                                             </tr>
                                                             <g:each var="filter" in="${category.qualityFilters}">
                                                                 <g:if test="${filter.enabled}">
                                                                     <tr>
-                                                                        <td style="word-break: break-word;">${filter.description}</td>
-                                                                        <td style="word-break: keep-all"><span style="white-space: nowrap;">${filter.filter}</span></td>
+                                                                        <td class='filter-description' style="word-break: break-word;">${filter.description}</td>
+                                                                        <td class='filter-value' style="word-break: keep-all"><span style="white-space: nowrap;">${filter.filter}</span></td>
+                                                                        <td class="filter-wiki"></td>
                                                                     </tr>
                                                                 </g:if>
                                                             </g:each>
