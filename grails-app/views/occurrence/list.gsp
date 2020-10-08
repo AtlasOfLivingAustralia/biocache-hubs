@@ -363,7 +363,7 @@
                                                         <table class="table table-bordered table-condensed table-striped scrollTable">
                                                             <thead class="fixedHeader">
                                                             <tr class="tableHead">
-                                                                <th width="70%"><alatag:message code="dq.selectmultiple.categorytable.header.categories" default="Categories"/></th>
+                                                                <th width="65%"><alatag:message code="dq.selectmultiple.categorytable.header.categories" default="Categories"/></th>
                                                                 <th><input type="checkbox" name="filters" class="checkall" value=""></th>
                                                             </tr>
                                                             </thead>
