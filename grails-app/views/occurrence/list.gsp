@@ -323,22 +323,22 @@
 
                                                 <h4><alatag:message code="dq.profiledetail.categorylabel" default="Filter categories"/>:</h4>
                                                 <g:each var="category" in="${activeProfile.categories}">
-                                                %{-- only when the category is enabled and have enabled filters--}%
+                                                    %{-- only when the category is enabled and have enabled filters--}%
                                                     <g:if test = "${category.enabled && category.qualityFilters.findAll{it.enabled}.size() > 0}">
                                                         <div>
                                                             <b>${category.name}</b><br>
                                                             ${category.description}
                                                         </div>
-                                                        <table class="table table-bordered table-condensed table-striped scrollTable cat-table" data-translation="${translatedFilterMap[category.label]}">
+                                                        <table class="table cat-table table-bordered table-condensed table-striped scrollTable" data-translation="${translatedFilterMap[category.label]}">
                                                             <tr>
                                                                 <th><alatag:message code="dq.profiledetail.filtertable.header.description" default="Filter description"/></th>
                                                                 <th><alatag:message code="dq.profiledetail.filtertable.header.value" default="Filter value"/></th>
-                                                                <th><alatag:message code="dq.profiledetail.filtertable.header.wiki" default="Wiki"/></th>
+                                                                <th><alatag:message code="dq.profiledetail.filtertable.header.furtherInfo" default="Further information"/></th>
                                                             </tr>
                                                             <g:each var="filter" in="${category.qualityFilters}">
                                                                 <g:if test="${filter.enabled}">
                                                                     <tr>
-                                                                        <td class='filter-description' style="word-break: break-word;">${filter.description}</td>
+                                                                        <td class='filter-description' style="word-break: break-word;" data-val="${filter.description}"></td>
                                                                         <td class='filter-value' style="word-break: keep-all"><span style="white-space: nowrap;">${filter.filter}</span></td>
                                                                         <td class="filter-wiki"></td>
                                                                     </tr>
@@ -465,7 +465,7 @@
                                                         <tr>
                                                             <th><alatag:message code="dq.categoryinfo.dlg.fieldtable.heading.name" default="Field name"/></th>
                                                             <th><alatag:message code="dq.categoryinfo.dlg.fieldtable.heading.description" default="Description"/></th>
-                                                            <th><alatag:message code="dq.categoryinfo.dlg.fieldtable.heading.wiki" default="Wiki"/></th>
+                                                            <th><alatag:message code="dq.categoryinfo.dlg.fieldtable.heading.furtherInfo" default="Further information"/></th>
                                                         </tr>
 
                                                         <tr class="spinnerRow">
@@ -482,7 +482,7 @@
                                                         <tr>
                                                             <th><alatag:message code="dq.categoryinfo.dlg.valuetable.heading.description" default="Filter description"/></th>
                                                             <th><alatag:message code="dq.categoryinfo.dlg.valuetable.heading.value" default="Filter value"/></th>
-                                                            <th><alatag:message code="dq.categoryinfo.dlg.valuetable.heading.wiki" default="Wiki"/></th>
+                                                            <th><alatag:message code="dq.categoryinfo.dlg.valuetable.heading.furtherInfo" default="Further information"/></th>
                                                         </tr>
 
                                                         <tr class="spinnerRow">

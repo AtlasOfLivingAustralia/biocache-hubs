@@ -353,6 +353,7 @@ $(document).ready(function() {
         $.each($(".cat-table"), function(idx, el) {
             var translation = $(el).data('translation')
 
+            var descs = $(el).find('td.filter-description')
             var fqs = $(el).find('td.filter-value')
             var wikis = $(el).find('td.filter-wiki')
 
@@ -363,10 +364,13 @@ $(document).ready(function() {
 
                 var wiki = ''
                 if (translation && val in translation && typeof(translation[val]) === 'object') {
-                    wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + translation[val].name + "' target='wiki'>Wiki</a>"
+                    wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + translation[val].name + "' target='wiki'>Link</a>"
                 }
 
                 $(wikis[idx]).html(wiki)
+
+                var desc = $(descs[idx]).data('val')
+                $(descs[idx]).html(replaceURL(desc))
             })
         })
     })
@@ -447,7 +451,7 @@ $(document).ready(function() {
             var html = "";
             $.each(keys, function (index, key) {
                 if (map.has(key)) {
-                    html += "<tr><td style='word-break: normal'>" + key + "</td><td style='word-break: normal'>" + replaceURL(map.get(key)[0]) + "</td><td style='word-break: normal'>" + replaceURL(map.get(key)[1], 'Wiki') + "</td></tr>";
+                    html += "<tr><td style='word-break: normal'>" + key + "</td><td style='word-break: normal'>" + replaceURL(map.get(key)[0]) + "</td><td style='word-break: normal'>" + replaceURL(map.get(key)[1], 'Link') + "</td></tr>";
                 }
             })
 
