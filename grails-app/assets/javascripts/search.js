@@ -464,7 +464,7 @@ $(document).ready(function() {
 
                 var wiki = ''
                 if (dqtranslation && val in dqtranslation && typeof(dqtranslation[val]) === 'object') {
-                    wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + dqtranslation[val].name + "' target='wiki'>Wiki</a>"
+                    wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + dqtranslation[val].name + "' target='_blank'>Link</a>"
                 }
 
                 // make sure no beak between '-' and key
