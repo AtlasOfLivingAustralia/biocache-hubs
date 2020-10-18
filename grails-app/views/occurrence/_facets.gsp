@@ -69,7 +69,7 @@
                         </ul>
                     </div>
                     <g:if test="${qualityCategories.size() > 1}">
-                        <a href="#DQManageFilters" class="multipleFiltersLink" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="filter selection"/></a>
+                        <a href="#DQManageFilters" class="multipleFiltersLink" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="Select filters"/></a>
                     </g:if>
                 </div>
             </g:if>
