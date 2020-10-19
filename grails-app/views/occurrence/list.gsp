@@ -279,7 +279,32 @@
                         %{--Fallback taxa search to "text:", so provide feedback to user about this--}%
                         (<g:message code="list.taxa.notfound" args="${[params.taxa]}" default="(Note: no matched taxon name found for {0})"/>)
                     </g:if>
-
+                    <alatag:ifDataQualityEnabled>
+                        <g:if test="${!cookie(name:'dq_warn_off')}">
+                            <div class="modal fade" id="modal-dismiss-dq" tabindex="-1" role="dialog" aria-labelledby="dq-applied-warning">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title"><alatag:message code="dq.warning.dataprofile.title" default="New: Data Profiles"></alatag:message></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>
+                                                <alatag:message code="dq.warning.dataprofile.content.line1" default="Search results are now filtered by default to exclude records that not fit a particular profile."></alatag:message>
+                                            </p>
+                                            <p>
+                                                Information on the profiles and the filters used in each profile is available via the <i class='fa fa-info-circle' style="color:#c44d34"></i> icons.
+                                            </p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="" target="_blank" type="button" class="btn btn-default pull-left"><alatag:message code="dq.warning.dataprofile.button.learnmore.text" default="Learn More"></alatag:message></a>
+                                            <button id="hide-dq-warning" type="button" class="btn btn-primary pull-right" data-dismiss="modal"><alatag:message code="dq.warning.dataprofile.buttonright.text" default="Got it"></alatag:message></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </g:if>
+                    </alatag:ifDataQualityEnabled>
                     <alatag:ifDataQualityEnabled>
                         <div class="activeFilters col-sm-12">
                             <div>

@@ -375,6 +375,10 @@ $(document).ready(function() {
         })
     })
 
+    $('#hide-dq-warning').click(function() {
+        document.cookie = 'dq_warn_off=true; path=/';
+    })
+
     $('.DQFilterDetailsLink').click(function() {
         var link = this;
         var fq = $(link).data("fq");
@@ -1080,6 +1084,8 @@ $(document).ready(function() {
         height *= 0.8
         $("#viewerContainerId").height(height);
     }
+
+    $('#modal-dismiss-dq').modal()
 }); // end JQuery document ready
 
 /**
