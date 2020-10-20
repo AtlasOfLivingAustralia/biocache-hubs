@@ -266,7 +266,6 @@
                 <div class="col-md-8 col-md-offset-4">
                     <div id="userAnnotationsDiv" class="additionalData">
                         <h3><g:message code="show.userannotationsdiv.title" default="User flagged issues"/><a id="userAnnotations">&nbsp;</a></h3>
-                        <h4><g:message code="user.assertion.status" default="User Assertion Status"/>: <i><span id="userAssertionStatus"></span></i></h4>
                         <ul id="userAnnotationsList"></ul>
                     </div>
 
