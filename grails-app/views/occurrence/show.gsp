@@ -62,6 +62,8 @@
             hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
         }
 
+        var BC_CONF = OCC_REC; // For compatibility with common JS components which require BC_CONF
+
         // Google charts
         if(!OCC_REC.hasGoogleKey) {
             google.load('maps', '3.3', {other_params: "sensor=false"});

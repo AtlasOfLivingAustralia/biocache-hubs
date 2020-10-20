@@ -11,6 +11,7 @@
 //= require linkifyjs/linkify-jquery.js
 //= require leaflet/leaflet.js
 //= require leaflet-plugins/layer/tile/Google.js
+//= require biocache-hubs.js
 //= require_self
  */
 /**
@@ -24,16 +25,6 @@ $(document).ready(function() {
 
     $('#showMissingPropResult').on('click', function(e){
         $('.missingPropResult').toggle();
-    });
-
-    jQuery.i18n.properties({
-        name: 'messages',
-        path: OCC_REC.contextPath + '/messages/i18n/',
-        mode: 'map',
-        async: true,
-        cache: true,
-        language: OCC_REC.locale // default is to use browser specified locale
-        //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
     });
 
     refreshUserAnnotations();
