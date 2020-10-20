@@ -4,7 +4,8 @@
     <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
         <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
         <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.spatial.params}"/>
-        <g:if test="${searchRequestParams.disableAllQualityFilters || qualityFiltersByLabel.isEmpty()}">
+        <g:set var='spatialEnableQualityWarning' value="${grailsApplication.config.getProperty('spatial.enableQualityWarning', Boolean, false)}" />
+        <g:if test="${!spatialEnableQualityWarning || searchRequestParams.disableAllQualityFilters || qualityFiltersByLabel.isEmpty()}">
             <a id="spatialPortalLink" class="btn btn-default btn-sm tooltips"
                href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="<g:message code="map.spatialportal.btn.title"/>">
                 <i class="fa fa-map-marker"></i>&nbsp;&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
@@ -731,7 +732,7 @@
     }
 </asset:script>
 <g:render template="mapPopup"></g:render>
-
+<g:if test="${spatialEnableQualityWarning}">
 <div id="gotoSpatial" class="modal fade" tabindex="-1" role="dialog" >
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -749,6 +750,7 @@
         </div>
     </div>
 </div>
+</g:if>
 
 <div id="downloadMap" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="downloadsMapLabel">
     <div class="modal-dialog" role="document">
