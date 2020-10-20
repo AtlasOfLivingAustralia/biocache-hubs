@@ -290,7 +290,7 @@
                                         </div>
                                         <div class="modal-body">
                                             <p>
-                                                <alatag:message code="dq.warning.dataprofile.content.line1" default="Search results are now filtered by default to exclude records that not fit a particular profile."></alatag:message>
+                                                <alatag:message code="dq.warning.dataprofile.content.line1" default="Search results are now filtered by default to exclude records that do not fit a particular profile."></alatag:message>
                                             </p>
                                             <p>
                                                 Information on the profiles and the filters used in each profile is available via the <i class='fa fa-info-circle' style="color:#c44d34"></i> icons.
