@@ -351,27 +351,59 @@ $(document).ready(function() {
 
     $('.DQProfileDetailsLink').click(function() {
         $.each($(".cat-table"), function(idx, el) {
-            var translation = $(el).data('translation')
+            var filters = $(el).data('filters');
 
-            var descs = $(el).find('td.filter-description')
-            var fqs = $(el).find('td.filter-value')
-            var wikis = $(el).find('td.filter-wiki')
+            var filterlist = filters.split(' AND ');
+            var keys = [];
+            for (var i = 0; i < filterlist.length; i++) {
+                var val = parseFilter(filterlist[i]);
+                if (val.length > 0) {
+                    keys.push(val[0]);
+                }
+            }
 
-            $.each(fqs, function(idx, el) {
-                var fq = $(el).text()
-                var val = fq.substring(fq.indexOf(":") + 1)
-                if (val.startsWith('"') && val.endsWith('"')) val = val.substring(1, val.length - 1)
-
-                var wiki = ''
-                if (translation && val in translation && typeof(translation[val]) === 'object') {
-                    wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + translation[val].name + "' target='wiki'>Link</a>"
+            // remove duplicate
+            keys = removeDuplicates(keys);
+            var jsonUri = BC_CONF.biocacheServiceUrl + "/index/fields?fl=" + keys.join(',');
+            var map = new Map();
+            $.when($.getJSON(jsonUri)).done(function(jarray) {
+                for (var i = 0; i < jarray.length; i++) {
+                    var obj = jarray[i];
+                    if (obj.infoUrl) {
+                        map.set(obj.name, obj.infoUrl);
+                    }
                 }
 
-                $(wikis[idx]).html(wiki)
+                var translation = $(el).data('translation');
+                var descs = $(el).find('td.filter-description');
+                var fqs = $(el).find('td.filter-value');
+                var wikis = $(el).find('td.filter-wiki');
 
-                var desc = $(descs[idx]).data('val')
-                $(descs[idx]).html(replaceURL(desc))
-            })
+                $.each(fqs, function(idx, el) {
+                    var fq = $(el).text();
+                    var vals = parseFilter(fq);
+                    if (vals.length > 0) {
+                        var key = vals[0];
+                        var val = vals[1];
+
+                        // if there's wiki for the value
+                        var wiki = '';
+                        if (translation && val in translation && typeof (translation[val]) === 'object') {
+                            wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + translation[val].name + "' target='wiki'>Link</a>";
+                        }
+
+                        // otherwise if there's wiki for the key
+                        if (wiki === '' && map.has(key)) {
+                            wiki = replaceURL(map.get(key), 'Link');
+                        }
+
+                        $(wikis[idx]).html(wiki);
+
+                        var desc = $(descs[idx]).data('val');
+                        $(descs[idx]).html(replaceURL(desc));
+                    }
+                })
+            });
         })
     })
 
@@ -379,7 +411,8 @@ $(document).ready(function() {
         document.cookie = 'dq_warn_off=true; path=/';
     })
 
-    $('.DQFilterDetailsLink').click(function() {
+    // each category
+    $('.DQCategoryDetailsLink').click(function() {
         var link = this;
         var fq = $(link).data("fq");
         var fqs = fq.split(' AND ')
@@ -452,6 +485,7 @@ $(document).ready(function() {
                 }
             }
 
+            // field table
             var html = "";
             $.each(keys, function (index, key) {
                 if (map.has(key)) {
@@ -463,18 +497,27 @@ $(document).ready(function() {
             var valuesHtml = ""
 
             $.each(fqs, function(idx, el) {
-                var val = el.substring(el.indexOf(":") + 1)
-                if (val.startsWith('"') && val.endsWith('"')) val = val.substring(1, val.length - 1)
+                var vals = parseFilter(el);
+                if (vals.length > 0) {
+                    var key = vals[0];
+                    var val = vals[1];
 
-                var wiki = ''
-                if (dqtranslation && val in dqtranslation && typeof(dqtranslation[val]) === 'object') {
-                    wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + dqtranslation[val].name + "' target='_blank'>Link</a>"
+                    var wiki = '';
+                    // if value has a wiki link
+                    if (dqtranslation && val in dqtranslation && typeof (dqtranslation[val]) === 'object') {
+                        wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + dqtranslation[val].name + "' target='_blank'>Link</a>";
+                    }
+
+                    // if values has no wiki, show wiki link of key
+                    if (wiki === '' && map.has(key)) {
+                        wiki = replaceURL(map.get(key)[1], 'Link');
+                    }
+
+                    // make sure no beak between '-' and key
+                    var els = el.split(':');
+                    el = '<span style="white-space: nowrap;">' + els[0] + '</span>:' + els[1];
+                    valuesHtml += '<tr><td style=\"word-break: break-word\">' + replaceURL(descs[idx]) + '</td><td style=\"word-break: normal\">' + el + '</td><td>' + wiki + '</td></tr>';
                 }
-
-                // make sure no beak between '-' and key
-                var els = el.split(':')
-                el = '<span style="white-space: nowrap;">' + els[0] + '</span>:' + els[1]
-                valuesHtml += '<tr><td style=\"word-break: break-word\">' + replaceURL(descs[idx]) + '</td><td style=\"word-break: normal\">' + el + '</td><td>' + wiki + '</td></tr>'
             })
 
             $('.spinnerRow').hide();
@@ -499,6 +542,21 @@ $(document).ready(function() {
             }
         })
     })
+
+    function parseFilter(filter) {
+        var idx = filter.indexOf(":");
+        if (idx === -1) return [];
+
+        var val = filter.substring(idx + 1);
+        if (val.startsWith('"') && val.endsWith('"')) val = val.substring(1, val.length - 1)
+
+        var key = filter.substring(0, idx);
+
+        if (key.startsWith('-')) key = key.substring(1);
+        if (key.startsWith('(')) key = key.substring(1);
+
+        return [key, val];
+    }
 
     // to expand a category
     $('#expandfilters').on("click", function(e) {
