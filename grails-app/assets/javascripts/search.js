@@ -489,7 +489,7 @@ $(document).ready(function() {
             var html = "";
             $.each(keys, function (index, key) {
                 if (map.has(key)) {
-                    html += "<tr><td style='word-break: normal'>" + key + "</td><td style='word-break: normal'>" + replaceURL(map.get(key)[0]) + "</td><td style='word-break: normal'>" + replaceURL(map.get(key)[1], 'Link') + "</td></tr>";
+                    html += "<tr><td style='word-break: normal'>" + key + "</td><td style='word-break: break-word'>" + replaceURL(map.get(key)[0]) + "</td><td style='word-break: normal'>" + replaceURL(map.get(key)[1], 'Link') + "</td></tr>";
                 }
             })
 
