@@ -297,7 +297,7 @@
                                             </p>
                                         </div>
                                         <div class="modal-footer">
-                                            <a href="" target="_blank" type="button" class="btn btn-default pull-left"><alatag:message code="dq.warning.dataprofile.button.learnmore.text" default="Learn More"></alatag:message></a>
+                                            <a href="${grailsApplication.config.dq.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
                                             <button id="hide-dq-warning" type="button" class="btn btn-primary pull-right" data-dismiss="modal"><alatag:message code="dq.warning.dataprofile.buttonright.text" default="Got it"></alatag:message></button>
                                         </div>
                                     </div>
@@ -373,6 +373,10 @@
                                                     </g:if>
                                                 </g:each>
                                             </div>
+                                            <div class="modal-footer">
+                                                <a href="${grailsApplication.config.dq.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
+                                                <button class="btn btn-default" data-dismiss="modal" ><alatag:message code="dq.categoryinfo.dlg.closebutton.text" default="Close"/></button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -433,10 +437,6 @@
                             <g:if test="${!searchRequestParams.disableAllQualityFilters && qualityCategories.size() > 1}">
                                 <span style="vertical-align: middle;"><a href="#DQManageFilters" class="multipleFiltersLink tooltips" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="Select filters"/></a></span>
                             </g:if>
-
-                            <span style="vertical-align: middle;">
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=""><g:message code="dq.link.whatsdataprofile.title" default="What are Data Profiles"></g:message>?</a>
-                            </span>
                             </div>
 
                             <g:if test="${searchRequestParams.disableAllQualityFilters}">
@@ -520,6 +520,7 @@
                                                     </table>
                                                 </div>
                                                 <div class="modal-footer">
+                                                    <a href="${grailsApplication.config.dq.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
                                                     <button class="btn btn-default" data-dismiss="modal" ><alatag:message code="dq.categoryinfo.dlg.closebutton.text" default="Close"/></button>
                                                 </div>
                                             </div>
