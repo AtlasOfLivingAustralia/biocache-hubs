@@ -297,7 +297,7 @@
                                             </p>
                                         </div>
                                         <div class="modal-footer">
-                                            <a href="${grailsApplication.config.dq.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
+                                            <a href="${grailsApplication.config.dataquality.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
                                             <button id="hide-dq-warning" type="button" class="btn btn-primary pull-right" data-dismiss="modal"><alatag:message code="dq.warning.dataprofile.buttonright.text" default="Got it"></alatag:message></button>
                                         </div>
                                     </div>
@@ -374,7 +374,7 @@
                                                 </g:each>
                                             </div>
                                             <div class="modal-footer">
-                                                <a href="${grailsApplication.config.dq.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
+                                                <a href="${grailsApplication.config.dataquality.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
                                                 <button class="btn btn-default" data-dismiss="modal" ><alatag:message code="dq.categoryinfo.dlg.closebutton.text" default="Close"/></button>
                                             </div>
                                         </div>
@@ -520,7 +520,7 @@
                                                     </table>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <a href="${grailsApplication.config.dq.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
+                                                    <a href="${grailsApplication.config.dataquality.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
                                                     <button class="btn btn-default" data-dismiss="modal" ><alatag:message code="dq.categoryinfo.dlg.closebutton.text" default="Close"/></button>
                                                 </div>
                                             </div>
