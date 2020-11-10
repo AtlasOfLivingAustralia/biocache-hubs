@@ -1,6 +1,6 @@
 package au.org.ala.biocache.hubs
 
-import au.org.ala.dataquality.api.ProfilesApi
+import au.org.ala.dataquality.api.DataProfilesApi
 import au.org.ala.dataquality.api.QualityServiceRpcApi
 import au.org.ala.dataquality.client.ApiClient
 import au.org.ala.dataquality.model.QualityCategory
@@ -31,7 +31,7 @@ class QualityService {
     def grailsApplication
 
     QualityServiceRpcApi api
-    ProfilesApi profilesApi
+    DataProfilesApi dataProfilesApi
 
     Cache<SpatialSearchRequestParams, Long> recordCountCache
 
@@ -45,7 +45,7 @@ class QualityService {
                 chain.proceed(request)
             }
             api = apiClient.createService(QualityServiceRpcApi)
-            profilesApi = apiClient.createService(ProfilesApi)
+            dataProfilesApi = apiClient.createService(DataProfilesApi)
         }
         recordCountCache = CacheBuilder.from(recordCountCacheSpec).build { webServicesService.fullTextSearch(it)?.totalRecords }
     }
@@ -117,7 +117,7 @@ class QualityService {
 
     List<QualityProfile> findAllEnabledProfiles(boolean enabled) {
         if (dataQualityEnabled) {
-            return responseOrThrow(profilesApi.profiles(null, null, null, null, enabled, null, null))
+            return responseOrThrow(dataProfilesApi.profiles(null, null, null, null, enabled, null, null))
         } else {
             return []
         }
