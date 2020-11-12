@@ -117,7 +117,7 @@ class QualityService {
 
     List<QualityProfile> findAllEnabledProfiles(boolean enabled) {
         if (dataQualityEnabled) {
-            return responseOrThrow(dataProfilesApi.profiles(null, null, null, null, enabled, null, null))
+            return responseOrThrow(dataProfilesApi.dataProfiles(null, null, null, null, enabled, null, null))
         } else {
             return []
         }
