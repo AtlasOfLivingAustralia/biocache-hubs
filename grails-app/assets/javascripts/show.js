@@ -48,6 +48,25 @@ $(document).ready(function() {
         if(code!=""){
             $('#assertionSubmitProgress').css({'display':'block'});
 
+            // only update when user changed preference
+            if (allMyAnnotations) {
+                var orig_state = $('#notifyChangeCheckbox').prop('data-orig_state')
+                var new_state = $('#notifyChangeCheckbox').prop('checked')
+
+                // to add alerts
+                if (new_state) {
+                    var addAlerts = OCC_REC.alertsURL + "notification/addMyAlert/"
+                    for (var i = 0; i < allMyAnnotations.length; i++) {
+                        $.post(addAlerts + allMyAnnotations[i].id)
+                    }
+                } else { // to remove alerts
+                    var deleteAlerts = OCC_REC.alertsURL + "notification/deleteMyAlert/"
+                    for (var i = 0; i < allMyAnnotations.length; i++) {
+                        $.post(deleteAlerts + allMyAnnotations[i].id)
+                    }
+                }
+            }
+
             $.get( OCC_REC.contextPath + "/assertions/" + OCC_REC.recordUuid, function(data) {
                 var bPreventAddingIssue = false;
                 for (var i = 0; i < data.userAssertions.length; i++) {
@@ -107,6 +126,30 @@ $(document).ready(function() {
         $(el).html(replaceURLWithHTMLLinks(html)); // convert it
     });
 
+    var allMyAnnotations = null;
+
+    $('#assertionButton').click(function (e) {
+        var getAlerts = OCC_REC.alertsURL + "ws/alerts/user/" + OCC_REC.userId;
+        $.getJSON(getAlerts, function (alerts) {
+            //console.log(alerts);
+            //console.log(alerts.enabledMyAnnotations);
+            var myAnnotationAlertOn = false;
+            if (alerts !== null && alerts.enabledMyAnnotations.length > 0) {
+                myAnnotationAlertOn = true;
+            }
+
+            if (alerts !== null && alerts.allMyAnnotations.length > 0) {
+                allMyAnnotations = alerts.allMyAnnotations;
+            }
+
+            if (allMyAnnotations === null) {
+                $("#notifyChange").hide();
+            } else {
+                $("#notifyChangeCheckbox").prop('checked', myAnnotationAlertOn);
+                $("#notifyChangeCheckbox").prop('data-origstate', myAnnotationAlertOn);
+            }
+        })
+    })
 
     // bind to form "close" button TODO
     $("input#close").on("click", function(e) {
