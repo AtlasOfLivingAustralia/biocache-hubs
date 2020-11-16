@@ -233,15 +233,6 @@ class OccurrenceController {
     private void normaliseRequestParams(SpatialSearchRequestParams requestParams) {
         requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
 
-        if (!params.pageSize) {
-            requestParams.pageSize = 20
-        }
-
-        if (!params.sort && !params.dir) {
-            requestParams.sort = "first_loaded_date"
-            requestParams.dir = "desc"
-        }
-
         log.debug "requestParams = ${requestParams}"
 
 

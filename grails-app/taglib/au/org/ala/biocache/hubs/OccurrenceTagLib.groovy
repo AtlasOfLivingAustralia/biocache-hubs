@@ -75,9 +75,9 @@ class OccurrenceTagLib {
             output = fieldName[0..-4].replaceAll("_", " ") + " (range)"
         } else {
 
-            def label = message(code:fieldCode, default:"")
-            if(!label){
-                label = message(code:"facet." + fieldCode, default:fieldName)
+            def label = message(code:"facet." + fieldCode, default:fieldName)
+            if (!label){
+                label = message(code:fieldCode, default:"")
             }
 
             label = label ?: camelCaseToHuman(text: fieldName)
@@ -614,13 +614,13 @@ class OccurrenceTagLib {
         def url
 
         if (userName) {
-            if (dataResourceUid == "dr364") {
+            if (dataResourceUid == grailsApplication.config.getProperty('dataResourceUuid.alaSightings', String,'')) {
                 // ALA sightings
                 url = "<a href=\"${grailsApplication.config.getProperty("sightings.baseUrl")}/spotter/${userId.encodeAsURL()}\">${userName}</a>"
-            } else if (dataResourceUid == "dr1411") {
+            } else if (dataResourceUid == grailsApplication.config.getProperty('dataResourceUuid.iNaturalist', String,'')) {
                 // iNaturalist
                 url = "<a href=\"${grailsApplication.config.getProperty( "iNaturalist.baseUrl", "https://inaturalist.org")}/people/${userName.encodeAsURL()}\">${userName}</a>"
-            } else if (dataResourceUid == "dr360" && occurrenceId) {
+            } else if (dataResourceUid == grailsApplication.config.getProperty('dataResourceUuid.flickr', String,'') && occurrenceId) {
                 // Flickr
                 // Munge occurrenceId to get the URL, as we don't have the user-name stored in biocache in order to generate it
                 // e.g. https://www.flickr.com/photos/dhobern/5466675452/ to https://www.flickr.com/photos/dhobern/
@@ -999,7 +999,7 @@ class OccurrenceTagLib {
                 .allowElements("b")
                 .allowElements("span")
                 .allowStandardUrlProtocols()
-                .allowAttributes("href").matching(Pattern.compile("^(http|https|mailto).+", Pattern.CASE_INSENSITIVE))
+                .allowAttributes("href").matching(Pattern.compile("^(/|http|https|mailto).+", Pattern.CASE_INSENSITIVE))
                 .onElements("a")
                 .requireRelNofollowOnLinks()
                 .allowAttributes("class").onElements("span")
