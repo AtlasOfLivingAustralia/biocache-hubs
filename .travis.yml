@@ -26,7 +26,7 @@ jobs:
       script: |
         echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
         if [[ ($TRAVIS_PULL_REQUEST == false) ]] ; then
-          sh .travis/trigger-travis.sh --branch $TRAVIS_BRANCH AtlasOfLivingAustralia ala-hub $TRAVIS_ACCESS_TOKEN
+          sh .travis/trigger-travis.sh --pro --branch $TRAVIS_BRANCH AtlasOfLivingAustralia ala-hub $TRAVIS_ACCESS_TOKEN
         else
           echo "trigger-travis.sh did not run"
         fi
