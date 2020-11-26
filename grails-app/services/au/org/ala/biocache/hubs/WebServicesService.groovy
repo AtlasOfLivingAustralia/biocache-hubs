@@ -182,13 +182,14 @@ class WebServicesService {
      * @return Map postResponse
      */
     Map addAssertion(String recordUuid, String code, String comment, String userId, String userDisplayName,
-                         String userAssertionStatus, String assertionUuid) {
+                         String userAssertionStatus, String assertionUuid, String relatedRecordId) {
         Map postBody =  [
                 recordUuid: recordUuid,
                 code: code,
                 comment: comment,
                 userAssertionStatus: userAssertionStatus,
                 assertionUuid: assertionUuid,
+                relatedRecordId: relatedRecordId,
                 userId: userId,
                 userDisplayName: userDisplayName,
                 apiKey: grailsApplication.config.biocache.apiKey

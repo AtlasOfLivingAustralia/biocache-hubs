@@ -176,6 +176,10 @@
                 </div><!-- end div#SidebarBox -->
                 <div id="" class="col-md-8">
                     <div class="text-right">
+                        <input id="hidden-uuid" type="hidden" value="${uuid}">
+                        <span id="copyRecordIdToClipboard-parent" data-toggle="tooltip" data-trigger="manual" data-title="${uuid} copied!">
+                            <button class="btn btn-default" id="copyRecordIdToClipboard" role="button" title="Copy this record's id to the clipboard"><g:message code="show.sidebar02.copyrecordid" default="Copy record id" /></button>
+                        </span>
                         <button href="#processedVsRawView" class="btn btn-default" id="showRawProcessed" role="button" data-toggle="modal"
                                 title="Table showing both original and processed record values">
                             <span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="glyphicon glyphicon-transfer"></i>

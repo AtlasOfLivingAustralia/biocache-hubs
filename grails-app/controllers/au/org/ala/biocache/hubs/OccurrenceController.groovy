@@ -25,9 +25,12 @@ import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
 
+import javax.servlet.http.HttpServletResponse
 import java.text.SimpleDateFormat
 
 import static au.org.ala.biocache.hubs.TimingUtils.time
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
+import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
 
 /**
  * Controller for occurrence searches and records
@@ -600,6 +603,16 @@ class OccurrenceController {
         requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
         response.setHeader('Content-Disposition', 'attachment; filename="data.csv"')
         render webServicesService.facetCSVDownload(requestParams), contentType: 'text/csv', fileName: 'data.csv'
+    }
+
+    def exists(String id) {
+        def record = webServicesService.getRecord(id, false)
+        if (record.keySet()) {
+            log.error("{}", record)
+            render text: record?.processed?.classification?.vernacularName ?: record?.raw?.classification?.vernacularName ?: record?.processed?.classification?.scientificName ?: record?.raw?.classification?.scientificName
+        } else {
+            render status: SC_NOT_FOUND, text: ''
+        }
     }
 
     /**
