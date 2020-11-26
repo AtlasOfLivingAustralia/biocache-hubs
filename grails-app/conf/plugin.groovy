@@ -63,8 +63,6 @@ biocache.indexedFieldsUrl = "${biocache.baseUrl}/index/fields"
 collections.baseUrl = "https://collections.ala.org.au"
 alerts.baseUrl = "https://alerts.ala.org.au"
 speciesList.baseURL = "https://lists.ala.org.au"
-alerts.baseURL = 'https://alerts-test.ala.org.au'
-alerts.apiKey = "64ad0d69-4f6b-4f39-8e10-22a1b7062ff7"
 useDownloadPlugin = ""
 
 // for images-client-plugin
