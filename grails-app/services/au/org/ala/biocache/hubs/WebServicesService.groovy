@@ -100,6 +100,21 @@ class WebServicesService {
         getJsonElements(url)
     }
 
+    def userAlerts(String userId) {
+        def url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId
+        return getJsonElements(url, "${grailsApplication.config.alerts.apiKey}")
+    }
+
+    def addAlert(String userId, String queryId) {
+        def url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/subscribe/" + queryId
+        getJsonElements(url, "${grailsApplication.config.alerts.apiKey}")
+    }
+
+    def deleteAlert(String userId, String queryId) {
+        def url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/unsubscribe/" + queryId
+        getJsonElements(url, "${grailsApplication.config.alerts.apiKey}")
+    }
+
     def JSONObject getDuplicateRecordDetails(JSONObject record) {
         log.debug "getDuplicateRecordDetails -> ${record?.processed?.occurrence?.associatedOccurrences}"
         if (record?.processed?.occurrence?.associatedOccurrences) {
@@ -398,12 +413,15 @@ class WebServicesService {
      * @param url
      * @return
      */
-    JSONElement getJsonElements(String url) {
+    JSONElement getJsonElements(String url, String apiKey = null) {
         log.debug "(internal) getJson URL = " + url
         def conn = new URL(url).openConnection()
         try {
             conn.setConnectTimeout(10000)
             conn.setReadTimeout(50000)
+            if (apiKey != null) {
+                conn.setRequestProperty('apiKey', apiKey)
+            }
             return JSON.parse(conn.getInputStream(), "UTF-8")
         } catch (Exception e) {
             def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"

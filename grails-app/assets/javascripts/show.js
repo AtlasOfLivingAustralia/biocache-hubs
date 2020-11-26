@@ -43,26 +43,30 @@ $(document).ready(function() {
         e.preventDefault();
         var comment = $("#issueComment").val();
         var code = $("#issue").val();
-        var userDisplayName = OCC_REC.userDisplayName //'${userDisplayName}';
-        var recordUuid = OCC_REC.recordUuid //'${ala:escapeJS(record.raw.rowKey)}';
+        var userDisplayName = OCC_REC.userDisplayName; //'${userDisplayName}';
+        var recordUuid = OCC_REC.recordUuid; //'${ala:escapeJS(record.raw.rowKey)}';
         if(code!=""){
             $('#assertionSubmitProgress').css({'display':'block'});
 
-            // only update when user changed preference
             if (allMyAnnotations) {
-                var orig_state = $('#notifyChangeCheckbox').prop('data-orig_state')
-                var new_state = $('#notifyChangeCheckbox').prop('checked')
+                var orig_state = $('#notifyChangeCheckbox').prop('data-origstate');
+                var new_state = $('#notifyChangeCheckbox').prop('checked');
 
-                // to add alerts
-                if (new_state) {
-                    var addAlerts = OCC_REC.alertsURL + "notification/addMyAlert/"
-                    for (var i = 0; i < allMyAnnotations.length; i++) {
-                        $.post(addAlerts + allMyAnnotations[i].id)
-                    }
-                } else { // to remove alerts
-                    var deleteAlerts = OCC_REC.alertsURL + "notification/deleteMyAlert/"
-                    for (var i = 0; i < allMyAnnotations.length; i++) {
-                        $.post(deleteAlerts + allMyAnnotations[i].id)
+                // only update when user changed preference
+                if (orig_state !== new_state) {
+                    // to add alerts
+                    if (new_state) {
+                        var addAlerts = OCC_REC.alertsURL + "/occurrences/addAlert?userId=" + OCC_REC.userId + "&queryId=";
+                        for (var i = 0; i < allMyAnnotations.length; i++) {
+                            // console.log('post to: ' + addAlerts + allMyAnnotations[i].id)
+                            $.post(addAlerts + allMyAnnotations[i].id);
+                        }
+                    } else { // to remove alerts
+                        var deleteAlerts = OCC_REC.alertsURL + "/occurrences/deleteAlert?userId=" + OCC_REC.userId + "&queryId=";
+                        for (var i = 0; i < allMyAnnotations.length; i++) {
+                            // console.log('post to ' + deleteAlerts + allMyAnnotations[i].id)
+                            $.post(deleteAlerts + allMyAnnotations[i].id);
+                        }
                     }
                 }
             }
@@ -83,7 +87,6 @@ $(document).ready(function() {
                     alert("You cannot flag an issue with the same type that has already been verified.");
                     return;
                 } else {
-
                     $.post(OCC_REC.contextPath + "/occurrences/assertions/add",
                         {
                             recordUuid: recordUuid,
@@ -129,10 +132,8 @@ $(document).ready(function() {
     var allMyAnnotations = null;
 
     $('#assertionButton').click(function (e) {
-        var getAlerts = OCC_REC.alertsURL + "ws/alerts/user/" + OCC_REC.userId;
+        var getAlerts = OCC_REC.alertsURL + "/occurrences/userAlerts?userId=" + OCC_REC.userId;
         $.getJSON(getAlerts, function (alerts) {
-            //console.log(alerts);
-            //console.log(alerts.enabledMyAnnotations);
             var myAnnotationAlertOn = false;
             if (alerts !== null && alerts.enabledMyAnnotations.length > 0) {
                 myAnnotationAlertOn = true;
@@ -537,7 +538,6 @@ function updateConfirmVerificationEvents(occUuid, assertionUuid, userDisplayName
         }
 
         console.log("Submitting an assertion with userAssertionStatus: " + userAssertionStatus)
-
         $.post(OCC_REC.contextPath + "/occurrences/assertions/add",
             { recordUuid: occUuid,
                 code: code,

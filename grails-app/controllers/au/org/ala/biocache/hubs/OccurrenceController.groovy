@@ -17,7 +17,6 @@ package au.org.ala.biocache.hubs
 
 import au.org.ala.dataquality.model.QualityProfile
 import au.org.ala.web.CASRoles
-import com.google.common.base.Stopwatch
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
@@ -633,5 +632,17 @@ class OccurrenceController {
         QualityProfile profile = qualityService.activeProfile(requestParams.qualityProfile)
         data.count = qualityService.getExcludeCount(params.categoryLabel, profile.getCategories(), requestParams)
         render data as JSON
+    }
+
+    def getUserAlerts() {
+        render webServicesService.userAlerts(params.userId) as JSON
+    }
+
+    def addAlert() {
+        render webServicesService.addAlert(params.userId, params.queryId)
+    }
+
+    def deleteAlert() {
+        render webServicesService.deleteAlert(params.userId, params.queryId)
     }
 }
