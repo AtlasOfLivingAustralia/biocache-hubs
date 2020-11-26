@@ -14,6 +14,7 @@
 package au.org.ala.biocache.hubs
 
 import grails.test.mixin.TestFor
+import grails.util.Holders
 import spock.lang.Specification
 
 /**
@@ -23,6 +24,12 @@ import spock.lang.Specification
  */
 @TestFor(OccurrenceTagLib)
 class OccurrenceTagLibSpec extends Specification {
+
+    def setup() {
+        Holders.grailsApplication.config.dataResourceUuid.alaSightings = "dr364"
+        Holders.grailsApplication.config.dataResourceUuid.iNaturalist = "dr1411"
+        Holders.grailsApplication.config.dataResourceUuid.flickr = "dr360"
+    }
 
     void "test sanitizeBodyText plain text"() {
         given:
