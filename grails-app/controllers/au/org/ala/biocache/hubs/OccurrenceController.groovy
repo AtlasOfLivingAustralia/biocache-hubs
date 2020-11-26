@@ -635,14 +635,17 @@ class OccurrenceController {
     }
 
     def getUserAlerts() {
-        render webServicesService.userAlerts(params.userId) as JSON
+        String userId = authService?.getUserId()
+        render ((userId == null) ? [error: 'userId must be supplied to get alerts'] : webServicesService.userAlerts(userId))  as JSON
     }
 
     def addAlert() {
-        render webServicesService.addAlert(params.userId, params.queryId) as JSON
+        String userId = authService?.getUserId()
+        render ((userId == null) ? [error: 'userId must be supplied to add alert'] : webServicesService.addAlert(userId, params.queryId))  as JSON
     }
 
     def deleteAlert() {
-        render webServicesService.deleteAlert(params.userId, params.queryId) as JSON
+        String userId = authService?.getUserId()
+        render ((userId == null) ? [error: 'userId must be supplied to delete alert'] : webServicesService.deleteAlert(userId, params.queryId))  as JSON
     }
 }

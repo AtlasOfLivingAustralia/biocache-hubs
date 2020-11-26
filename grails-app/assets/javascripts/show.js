@@ -56,13 +56,13 @@ $(document).ready(function() {
                 if (orig_state !== new_state) {
                     // to add alerts
                     if (new_state) {
-                        var addAlerts = OCC_REC.alertsURL + "/occurrences/addAlert?userId=" + OCC_REC.userId + "&queryId=";
+                        var addAlerts = OCC_REC.alertsURL + "/occurrences/addAlert?queryId=";
                         for (var i = 0; i < allMyAnnotations.length; i++) {
                             // console.log('post to: ' + addAlerts + allMyAnnotations[i].id)
                             $.post(addAlerts + allMyAnnotations[i].id);
                         }
                     } else { // to remove alerts
-                        var deleteAlerts = OCC_REC.alertsURL + "/occurrences/deleteAlert?userId=" + OCC_REC.userId + "&queryId=";
+                        var deleteAlerts = OCC_REC.alertsURL + "/occurrences/deleteAlert?queryId=";
                         for (var i = 0; i < allMyAnnotations.length; i++) {
                             // console.log('post to ' + deleteAlerts + allMyAnnotations[i].id)
                             $.post(deleteAlerts + allMyAnnotations[i].id);
@@ -132,7 +132,7 @@ $(document).ready(function() {
     var allMyAnnotations = null;
 
     $('#assertionButton').click(function (e) {
-        var getAlerts = OCC_REC.alertsURL + "/occurrences/userAlerts?userId=" + OCC_REC.userId;
+        var getAlerts = OCC_REC.alertsURL + "/occurrences/userAlerts";
         $.getJSON(getAlerts, function (alerts) {
             var myAnnotationAlertOn = false;
             if (alerts !== null && alerts.enabledMyAnnotations.length > 0) {
