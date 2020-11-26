@@ -22,7 +22,6 @@
 //= require leaflet-plugins/spin/spin.min.js
 //= require leaflet-plugins/spin/leaflet.spin.js
 //= require leaflet-plugins/EasyButton/easy-button.js
-//= require leaflet-google.js
 //= require magellan.js
 //= require jquery.qtip.min.js
 //= require biocache-hubs.js
