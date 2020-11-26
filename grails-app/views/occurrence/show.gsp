@@ -60,7 +60,7 @@
                 </g:each>
             },
             hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean},
-            alertsURL: "${grailsApplication.config.alerts.baseURL}"
+            alertsURL: "${grailsApplication.config.grails.serverURL}"
         }
 
         // Google charts
