@@ -700,6 +700,16 @@
         <ul style="display:none;">
             <li id="userAnnotationTemplate" class="userAnnotationTemplate well well-sm">
                 <h4><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h4>
+                <p class="related-record" style="display:none;">
+                    <g:link class="related-record-link" controller="occurrence" action="show" id="replace-me">
+                        <span class="related-record-span-user-duplicate" style="display:none;">
+                            <g:message code="show.userannotationtemplate.relatedrecord.userduplicate.a" default="View duplicated record"/>
+                        </span>
+                        <span class="related-record-span-default" style="display:none;">
+                            <g:message code="show.userannotationtemplate.relatedrecord.default.a" default="View related record"/>
+                        </span>
+                    </g:link>
+                </p>
                 <p class="comment"></p>
                 <p class="hide userDisplayName"></p>
                 <p class="created small"></p>

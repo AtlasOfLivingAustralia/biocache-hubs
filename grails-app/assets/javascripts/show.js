@@ -415,6 +415,16 @@ function refreshUserAnnotations(){
                 $clone.find('.userRole').text(userAssertion.userRole != null ? userAssertion.userRole : '');
                 $clone.find('.userEntity').text(userAssertion.userEntityName != null ? userAssertion.userEntityName : '');
                 $clone.find('.created').text('Date created: ' + (moment(userAssertion.created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));
+                if (userAssertion.relatedRecordId) {
+                    $clone.find('.related-record').show();
+                    var href = $clone.find('.related-record-link').attr('href');
+                    $clone.find('.related-record-link').attr('href', href.replace('replace-me', userAssertion.relatedRecordId));
+                    if (userAssertion.code == 20020) {
+                        $clone.find('.related-record-span-user-duplicate').show();
+                    } else {
+                        $clone.find('.related-record-span-default').show();
+                    }
+                }
                 if (userAssertion.userRole != null) {
                     $clone.find('.userRole').text(', ' + userAssertion.userRole);
                 }
