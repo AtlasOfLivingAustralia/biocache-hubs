@@ -319,11 +319,20 @@
                         <form id="issueForm">
                             <p style="margin-top:20px;">
                                 <label for="issue"><g:message code="show.issueform.label01" default="Issue type:"/></label>
-                                <select name="issue" id="issue">
+                                <select name="issue" id="issue" autocomplete="off">
                                     <g:each in="${errorCodes}" var="code">
                                         <option value="${code.code}"><g:message code="${code.name}" default="${code.name}"/></option>
                                     </g:each>
                                 </select>
+                            </p>
+                            <p id="related-record-p" style="display: none; margin-top:30px;">
+                                <label for="relatedRecordId" style="vertical-align:top;"><g:message code="show.issueform.label03" default="Duplicate Record ID:"/><span style="color: red;">*</span></label>
+                                <input type="text" name="relatedRecordId" id="relatedRecordId" placeholder="Paste the duplicate record id here" style="width:380px;"/>
+                                <p class="help-block">
+                                    <span style="display: none; color:red;" id="related-record-id-not-found">The record id can't be found.</span>
+                                    <span style="display: none;" id="related-record-id-loading"><i class="fa fa-gear fa-spin"></i></span>
+                                    <span style="display: none; color:green;" id="related-record-id-found">The record id can be found.</span>
+                                </p>
                             </p>
                             <p style="margin-top:30px;">
                                 <label for="issueComment" style="vertical-align:top;"><g:message code="show.issueform.label02" default="Comment:"/></label>

@@ -73,7 +73,10 @@ images.baseUrl = "https://images.ala.org.au"
 images.viewerUrl = "https://images.ala.org.au/image/viewer?imageId="
 images.metadataUrl = "https://images.ala.org.au/image/details?imageId="
 
-sightings.baseUrl = "https://sightings.ala.org.au"
+dataResourceUuid.alaSightings = "dr364"
+dataResourceUuid.iNaturalist = "dr1411"
+dataResourceUuid.flickr = "dr360"
+sightings.baseUrl = "https://biocollect.ala.org.au"
 iNaturalist.baseUrl = "https://inaturalist.ala.org.au"
 
 // For sandbox environment

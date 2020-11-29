@@ -36,10 +36,11 @@ class SearchRequestParams implements Validateable{
     /**  pagination params */
     Integer start = 0
     Integer offset // grails version of start
-    Integer pageSize = 10
+    Integer pageSize = 20
     Integer max // grails version of pageSize
-    String sort = "score"
-    String dir = "asc"
+    String sort = "first_loaded_date"
+    String dir = "desc"
+    String order // grails version of dir
     String displayString
     /**  The query context to be used for the search.  This will be used to generate extra query filters based on the search technology */
     String qc = Holders.config.biocache.queryContext?:""
@@ -99,9 +100,9 @@ class SearchRequestParams implements Validateable{
         }
 
         req.append("&start=").append(offset?:start);
-        req.append("&pageSize=").append(max?:pageSize);
+        req.append("&pageSize=").append(max?:(pageSize>0)?pageSize:20) // fix for #337 (revert if fieldguides is fixed)
         req.append("&sort=").append(sort);
-        req.append("&dir=").append(dir);
+        req.append("&dir=").append(order?:dir);
         req.append("&qc=").append(conditionalEncode(qc, encodeParams));
 
         if (facet && facets?.length > 0) {

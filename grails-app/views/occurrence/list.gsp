@@ -145,10 +145,13 @@
                     style="text-decoration: underline;">support</a> if this error continues</p>
         </div>
     </g:if>
-    <g:if test="${errors}">
+    <g:if test="${errors || sr?.status == "ERROR"}">
+        <g:set var="errorMessage" value="${errors ?: sr?.errorMessage}"/>
         <div class="searchInfo searchError">
             <h2 style="padding-left: 10px;"><g:message code="list.01.error" default="Error"/></h2>
-            <h4>${errors}</h4>
+            <div class="alert alert-info" role="alert">
+                <b>${alatag.stripApiKey(message: errorMessage)}</b>
+            </div>
             Please contact <a
                 href="mailto:${grailsApplication.config.supportEmail ?: 'support@ala.org.au'}?subject=biocache error">support</a> if this error continues
         </div>
@@ -181,8 +184,23 @@
             </g:elseif>
             %{-- fall-back for remaining searches --}%
             <g:else>
-                <p><g:message code="list.03.p03" default="No records found for"/> <span
-                        class="queryDisplay">${raw(queryDisplay) ?: params.q ?: params.taxa}</span></p>
+                <p><g:message code="list.03.p03" default="No records found for"/>
+                    <span class="queryDisplay"> ${queryDisplay ?: params.q ?: params.taxa}</span>
+                    <g:if test="${params.fq}">
+                        <g:message code="list.03.p04" default="with filters: "/>
+                        <g:each var="fq" in="${params.list('fq')}" status="i">
+                            <g:set var="fqPairList" value="${fq.split(':')}"/>
+                            <g:set var="fieldName" value="${fqPairList[0]}"/>
+                            <g:if test="${fqPairList[0].startsWith('-')}">
+                                <g:set var="fieldName"><g:message code="list.03.p05" default="(exclude)"/> ${fqPairList[0].substring(1)}</g:set>
+                            </g:if>
+                            <span class="queryDisplay">
+                                ${fieldName}:${fqPairList[1]}
+                            </span>
+                            <g:if test="${(i + 1) < params.list('fq').size()}"> AND </g:if>
+                        </g:each>
+                    </g:if>
+                </p>
             </g:else>
         </div>
     </g:elseif>
@@ -718,8 +736,7 @@
                                     <option value="50" <g:if test="${pageSizeVar == "50"}">selected</g:if>>50</option>
                                     <option value="100" <g:if test="${pageSizeVar == "100"}">selected</g:if>>100</option>
                                 </select>&nbsp;
-                            <g:set var="useDefault" value="${(!params.sort && !params.dir) ? true : false}"/>
-                            <g:message code="list.sortwidgets.sort.label" default="sort"/>:
+                                <g:message code="list.sortwidgets.sort.label" default="sort"/>:
                                 <select id="sort" name="sort" class="input-small">
                                     <option value="score" <g:if test="${params.sort == 'score'}">selected</g:if>><g:message
                                             code="list.sortwidgets.sort.option01" default="Best match"/></option>
@@ -737,7 +754,7 @@
                                                 code="list.sortwidgets.sort.option05" default="Record type"/></option>
                                     </g:if>
                                     <option value="first_loaded_date"
-                                            <g:if test="${useDefault || params.sort == 'first_loaded_date'}">selected</g:if>><g:message
+                                            <g:if test="${(!params.sort) || params.sort == 'first_loaded_date'}">selected</g:if>><g:message
                                             code="list.sortwidgets.sort.option06" default="Date added"/></option>
                                     <option value="last_assertion_date"
                                             <g:if test="${params.sort == 'last_assertion_date'}">selected</g:if>><g:message
@@ -745,10 +762,11 @@
                                 </select>&nbsp;
                             <g:message code="list.sortwidgets.dir.label" default="order"/>:
                                 <select id="dir" name="dir" class="input-small">
-                                    <option value="asc" <g:if test="${params.dir == 'asc'}">selected</g:if>><g:message
+                                    <g:set var="sortOrder" value="${params.dir ?: params.order}"/>
+                                    <option value="asc" <g:if test="${sortOrder == 'asc'}">selected</g:if>><g:message
                                             code="list.sortwidgets.dir.option01" default="Ascending"/></option>
                                     <option value="desc"
-                                            <g:if test="${useDefault || params.dir == 'desc'}">selected</g:if>><g:message
+                                            <g:if test="${!sortOrder || sortOrder == 'desc'}">selected</g:if>><g:message
                                             code="list.sortwidgets.dir.option02" default="Descending"/></option>
                                 </select>
                             </div><!-- sortWidget -->
