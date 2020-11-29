@@ -24,7 +24,7 @@ class BiocacheHubsUrlMappings {
         "/occurrences/next"(controller: 'occurrence', action: 'next')
         "/occurrences/previous"(controller: 'occurrence', action: 'previous')
         "/occurrences/dataQualityExcludeCounts"(controller: 'occurrence', action: 'dataQualityExcludeCounts')
-        "/occurrences/userAlerts"(controller: 'occurrence', action: 'getUserAlerts')
+        "/occurrences/alerts"(controller: 'occurrence', action: 'getAlerts')
         "/occurrences/addAlert"(controller: 'occurrence', action: 'addAlert')
         "/occurrences/deleteAlert"(controller: 'occurrence', action: 'deleteAlert')
         "/occurrences/$id"(controller: 'occurrence', action: 'show')

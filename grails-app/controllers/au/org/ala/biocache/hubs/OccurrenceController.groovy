@@ -634,9 +634,9 @@ class OccurrenceController {
         render data as JSON
     }
 
-    def getUserAlerts() {
+    def getAlerts() {
         String userId = authService?.getUserId()
-        render ((userId == null) ? [error: 'userId must be supplied to get alerts'] : webServicesService.userAlerts(userId))  as JSON
+        render ((userId == null) ? [error: 'userId must be supplied to get alerts'] : webServicesService.getAlerts(userId))  as JSON
     }
 
     def addAlert() {

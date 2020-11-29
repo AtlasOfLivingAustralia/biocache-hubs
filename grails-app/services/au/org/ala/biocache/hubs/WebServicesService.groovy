@@ -100,7 +100,7 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    def userAlerts(String userId) {
+    def getAlerts(String userId) {
         def url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId
         return getJsonElements(url, "${grailsApplication.config.alerts.apiKey}")
     }

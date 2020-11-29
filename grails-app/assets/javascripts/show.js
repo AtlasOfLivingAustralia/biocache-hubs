@@ -45,10 +45,10 @@ $(document).ready(function() {
         var code = $("#issue").val();
         var userDisplayName = OCC_REC.userDisplayName; //'${userDisplayName}';
         var recordUuid = OCC_REC.recordUuid; //'${ala:escapeJS(record.raw.rowKey)}';
-        if(code!=""){
+        if (code != "") {
             $('#assertionSubmitProgress').css({'display':'block'});
 
-            if (allMyAnnotations) {
+            if (myAnnotationQueryId) {
                 var orig_state = $('#notifyChangeCheckbox').prop('data-origstate');
                 var new_state = $('#notifyChangeCheckbox').prop('checked');
 
@@ -56,17 +56,9 @@ $(document).ready(function() {
                 if (orig_state !== new_state) {
                     // to add alerts
                     if (new_state) {
-                        var addAlerts = OCC_REC.alertsURL + "/occurrences/addAlert?queryId=";
-                        for (var i = 0; i < allMyAnnotations.length; i++) {
-                            // console.log('post to: ' + addAlerts + allMyAnnotations[i].id)
-                            $.post(addAlerts + allMyAnnotations[i].id);
-                        }
+                        $.post(OCC_REC.alertsURL + "/occurrences/addAlert?queryId=" + myAnnotationQueryId);
                     } else { // to remove alerts
-                        var deleteAlerts = OCC_REC.alertsURL + "/occurrences/deleteAlert?queryId=";
-                        for (var i = 0; i < allMyAnnotations.length; i++) {
-                            // console.log('post to ' + deleteAlerts + allMyAnnotations[i].id)
-                            $.post(deleteAlerts + allMyAnnotations[i].id);
-                        }
+                        $.post(OCC_REC.alertsURL + "/occurrences/deleteAlert?queryId=" + myAnnotationQueryId);
                     }
                 }
             }
@@ -129,25 +121,37 @@ $(document).ready(function() {
         $(el).html(replaceURLWithHTMLLinks(html)); // convert it
     });
 
-    var allMyAnnotations = null;
+    var myAnnotationQueryId = null
 
     $('#assertionButton').click(function (e) {
-        var getAlerts = OCC_REC.alertsURL + "/occurrences/userAlerts";
-        $.getJSON(getAlerts, function (alerts) {
-            var myAnnotationAlertOn = false;
-            if (alerts !== null && alerts.enabledMyAnnotations.length > 0) {
-                myAnnotationAlertOn = true;
+        var getAlerts = OCC_REC.alertsURL + "/occurrences/alerts";
+        var myAnnotationEnabled = false
+
+        $.getJSON(getAlerts, function (data) {
+            if (data.enabledQueries) {
+                for (var i = 0; i < data.enabledQueries.length; i++) {
+                    if (data.enabledQueries[i].name.indexOf(OCC_REC.alertName) !== -1) {
+                        myAnnotationEnabled = true;
+                        myAnnotationQueryId = data.enabledQueries[i].id
+                    }
+                }
             }
 
-            if (alerts !== null && alerts.allMyAnnotations.length > 0) {
-                allMyAnnotations = alerts.allMyAnnotations;
+            if (data.disabledQueries) {
+                for (var i = 0; i < data.disabledQueries.length; i++) {
+                    if (data.disabledQueries[i].name.indexOf(OCC_REC.alertName) !== -1) {
+                        myAnnotationEnabled = false;
+                        myAnnotationQueryId = data.disabledQueries[i].id
+                    }
+                }
             }
 
-            if (allMyAnnotations === null) {
+            // if can't find 'my annotation' hide the check box
+            if (myAnnotationQueryId === null) {
                 $("#notifyChange").hide();
             } else {
-                $("#notifyChangeCheckbox").prop('checked', myAnnotationAlertOn);
-                $("#notifyChangeCheckbox").prop('data-origstate', myAnnotationAlertOn);
+                $("#notifyChangeCheckbox").prop('checked', myAnnotationEnabled);
+                $("#notifyChangeCheckbox").prop('data-origstate', myAnnotationEnabled);
             }
         })
     })
