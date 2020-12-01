@@ -39,50 +39,67 @@ $(document).ready(function() {
         }, 1000);
         // alert("Copied");
     });
+    var recordIdValid = false;
+    function validateIssueForm() {
+        var issueCode = $('#issue').val();
+        var relatedRecordReason = $('#relatedRecordReason').val();
+        if (issueCode == '20020') {
+            return recordIdValid && relatedRecordReason;
+        }
+        return true;
+    }
+    function setIssueFormButtonState() {
+        $('#issueForm input[type=submit]').prop('disabled', !validateIssueForm());
+    }
     $('#issue').on('change', function(e) {
         var $this = $(this);
         var val = $this.val();
         var $submit = $('#issueForm input[type=submit]');
-        var $p = $('#related-record-p');
+        var $p = $('#related-record-p, #related-record-reason-p');
         if (val == '20020') {
             $('#relatedRecordId').val('');
-            $submit.prop('disabled', true);
+            recordIdValid = false;
             $p.show();
         } else {
-            $submit.prop('disabled', false);
             $p.hide();
             $('#related-record-id-not-found').hide();
             $('#related-record-id-found').hide();
             $('#related-record-id-loading').hide();
         }
+        setIssueFormButtonState();
     });
+    $('#relatedRecordReason').on('change', function(e) {
+        setIssueFormButtonState();
+    })
     $('#relatedRecordId').on('change', function(e) {
         var $this = $(this);
         var $submit = $('#issueForm input[type=submit]');
         var val = $this.val().trim();
         if (val == OCC_REC.recordUuid) {
             alert("You can't mark this record as a duplicate of itself!");
+            recordIdValid = false;
         } else if (val == '') {
             $('#related-record-id-not-found').hide();
             $('#related-record-id-found').hide();
             $('#related-record-id-loading').hide();
-            $submit.prop('disabled', true);
+            recordIdValid = false;
         } else {
-
             $('#related-record-id-loading').show();
-            $.get( OCC_REC.contextPath + "/occurrence/exists/" + val, function(data) {
+            $.get( OCC_REC.contextPath + "/occurrence/exists/" + val).success(function(data) {
                 $('#related-record-id-not-found').hide();
                 $('#related-record-id-found').text(data).show();
                 $('#related-record-id-loading').hide();
-                $submit.prop('disabled', false);
+                recordIdValid = true;
             }).error(function () {
                 $('#related-record-id-not-found').show();
                 $('#related-record-id-found').hide();
                 $('#related-record-id-loading').hide();
-                $submit.prop('disabled', true);
+                recordIdValid = false;
+            }).always(function() {
+                setIssueFormButtonState();
             });
         }
-
+        setIssueFormButtonState();
     });
 
     jQuery.i18n.properties({
@@ -103,6 +120,7 @@ $(document).ready(function() {
         var comment = $("#issueComment").val();
         var code = $("#issue").val();
         var relatedRecordId = $('#relatedRecordId').val();
+        var relatedRecordReason = $('#relatedRecordReason').val();
         var userDisplayName = OCC_REC.userDisplayName //'${userDisplayName}';
         var recordUuid = OCC_REC.recordUuid //'${ala:escapeJS(record.raw.rowKey)}';
         if(code!=""){
@@ -126,6 +144,9 @@ $(document).ready(function() {
                 } else if (code == '20020' && !relatedRecordId) {
                     alert("You must provide a duplicate record id to mark this as a duplicate");
                     return;
+                } else if (code == '20020' && !relatedRecordReason) {
+                    alert("You must select a reason to mark this record as a duplicate");
+                    return;
                 } else if (code == '20020' && relatedRecordId == recordUuid) {
                     alert("You can't mark a record as a duplicate of itself");
                     return;
@@ -139,7 +160,8 @@ $(document).ready(function() {
                             userAssertionStatus: 'Open issue',
                             userId: OCC_REC.userId,
                             userDisplayName: userDisplayName,
-                            relatedRecordId: relatedRecordId
+                            relatedRecordId: relatedRecordId,
+                            relatedRecordReason: relatedRecordReason,
                         },
                         function (data) {
                             $('#assertionSubmitProgress').css({'display': 'none'});

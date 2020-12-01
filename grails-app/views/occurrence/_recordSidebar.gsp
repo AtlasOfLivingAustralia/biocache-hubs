@@ -334,6 +334,15 @@
                                     <span style="display: none; color:green;" id="related-record-id-found">The record id can be found.</span>
                                 </p>
                             </p>
+                            <p id="related-record-reason-p" style="display: none; margin-top:30px;">
+                                <label for="relatedRecordId" style="vertical-align:top;"><g:message code="show.issueform.label03" default="Duplicate Record ID:"/><span style="color: red;">*</span></label>
+                                <select name="relatedRecordReason" id="relatedRecordReason" autocomplete="off">
+                                    <option value=""><g:message code="related.record.reason.select" default="-- Select a reason --" /></option>
+                                    <option value="sameoccurence"><g:message code="related.record.reason.sameoccurence" default="Same occurence"/></option>
+                                    <option value="tissuesample"><g:message code="related.record.reason.tissuesample" default="Tissue sample"/></option>
+                                    <option value="splitspecimen"><g:message code="related.record.reason.splitspecimen" default="Split specimen"/></option>
+                                </select>
+                            </p>
                             <p style="margin-top:30px;">
                                 <label for="issueComment" style="vertical-align:top;"><g:message code="show.issueform.label02" default="Comment:"/></label>
                                 <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
