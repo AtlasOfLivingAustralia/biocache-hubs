@@ -608,7 +608,7 @@ class OccurrenceController {
     def exists(String id) {
         def record = webServicesService.getRecord(id, false)
         if (record.keySet()) {
-            log.error("{}", record)
+            log.trace("{}", record)
             render text: record?.processed?.classification?.vernacularName ?: record?.raw?.classification?.vernacularName ?: record?.processed?.classification?.scientificName ?: record?.raw?.classification?.scientificName
         } else {
             render status: SC_NOT_FOUND, text: ''
