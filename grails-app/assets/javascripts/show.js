@@ -447,6 +447,10 @@ function refreshUserAnnotations(){
                         $clone.find('.related-record-span-default').show();
                     }
                 }
+                if (userAssertion.relatedRecordReason) {
+                    $clone.find('.related-record-reason').show();
+                    $clone.find('.related-record-reason-span').text(jQuery.i18n.prop('related.record.reason.'+userAssertion.relatedRecordReason));
+                }
                 if (userAssertion.userRole != null) {
                     $clone.find('.userRole').text(', ' + userAssertion.userRole);
                 }
