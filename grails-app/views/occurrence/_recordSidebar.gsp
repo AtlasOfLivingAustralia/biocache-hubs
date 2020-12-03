@@ -331,7 +331,11 @@
                                 <p class="help-block">
                                     <span style="display: none; color:red;" id="related-record-id-not-found">The record id can't be found.</span>
                                     <span style="display: none;" id="related-record-id-loading"><i class="fa fa-gear fa-spin"></i></span>
-                                    <span style="display: none; color:green;" id="related-record-id-found">The record id can be found.</span>
+                                    <span style="display: none;" id="related-record-id-found">
+                                        <g:message code="show.issueform.relatedrecord.found.this" default="You are indicating this record (the one you are viewing):"/> <span id="related-record-id-found-this">${record?.processed?.classification?.scientificName ?: record?.raw?.classification?.scientificName ?: ''}, ${record?.processed?.location?.stateProvince ?: record?.raw?.location?.stateProvince ?: ''}, ${record?.processed?.location?.decimalLongitude ?: record?.raw?.location?.decimalLongitude ?: ''}, ${record?.processed?.location?.decimalLatitude ?: record?.raw?.location?.decimalLatitude ?: ''}, ${record?.processed?.event?.eventDate ?: record?.raw?.event?.eventDate ?: ''}</span>
+                                        <br/>
+                                        <g:message code="show.issueform.relatedrecord.found.other" default="is a duplicate of this record (the id you provided):"/> <span id="related-record-id-found-other"></span>
+                                    </span>
                                 </p>
                             </p>
                             <p id="related-record-reason-p" style="display: none; margin-top:30px;">

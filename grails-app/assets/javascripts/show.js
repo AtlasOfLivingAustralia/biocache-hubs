@@ -87,7 +87,8 @@ $(document).ready(function() {
             $('#related-record-id-loading').show();
             $.get( OCC_REC.contextPath + "/occurrence/exists/" + val).success(function(data) {
                 $('#related-record-id-not-found').hide();
-                $('#related-record-id-found').text(data).show();
+                $('#related-record-id-found').show();
+                $('#related-record-id-found-other').text(data);
                 $('#related-record-id-loading').hide();
                 recordIdValid = true;
             }).error(function () {
