@@ -197,11 +197,11 @@
             </g:else>
         </div>
         <g:if test="${grailsApplication.config.alerts.baseUrl}">
-            <div id="alerts" class="btn btn-default btn-sm ">
+            <div id="alertsNorecords" class="btn btn-default btn-sm">
                 <a href="#alert" role="button" data-toggle="modal" class="tooltips"
                    title="<g:message code="list.alerts.navigator.title.norecords"/>"><i
                         class="fa fa-bell"></i>&nbsp;&nbsp;<g:message code="list.alerts.navigator" default="Alerts"/></a>
-            </div>
+            </div> <g:message code="list.alerts.navigator.title.norecords.text" default='Receive "Alert" emails when new records appear for this search'/>
         </g:if>
     </g:elseif>
     <g:else>
