@@ -39,50 +39,68 @@ $(document).ready(function() {
         }, 1000);
         // alert("Copied");
     });
+    var recordIdValid = false;
+    function validateIssueForm() {
+        var issueCode = $('#issue').val();
+        var relatedRecordReason = $('#relatedRecordReason').val();
+        if (issueCode == '20020') {
+            return recordIdValid && relatedRecordReason;
+        }
+        return true;
+    }
+    function setIssueFormButtonState() {
+        $('#issueForm input[type=submit]').prop('disabled', !validateIssueForm());
+    }
     $('#issue').on('change', function(e) {
         var $this = $(this);
         var val = $this.val();
         var $submit = $('#issueForm input[type=submit]');
-        var $p = $('#related-record-p');
+        var $p = $('#related-record-p, #related-record-reason-p');
         if (val == '20020') {
             $('#relatedRecordId').val('');
-            $submit.prop('disabled', true);
+            recordIdValid = false;
             $p.show();
         } else {
-            $submit.prop('disabled', false);
             $p.hide();
             $('#related-record-id-not-found').hide();
             $('#related-record-id-found').hide();
             $('#related-record-id-loading').hide();
         }
+        setIssueFormButtonState();
     });
+    $('#relatedRecordReason').on('change', function(e) {
+        setIssueFormButtonState();
+    })
     $('#relatedRecordId').on('change', function(e) {
         var $this = $(this);
         var $submit = $('#issueForm input[type=submit]');
         var val = $this.val().trim();
         if (val == OCC_REC.recordUuid) {
             alert("You can't mark this record as a duplicate of itself!");
+            recordIdValid = false;
         } else if (val == '') {
             $('#related-record-id-not-found').hide();
             $('#related-record-id-found').hide();
             $('#related-record-id-loading').hide();
-            $submit.prop('disabled', true);
+            recordIdValid = false;
         } else {
-
             $('#related-record-id-loading').show();
-            $.get( OCC_REC.contextPath + "/occurrence/exists/" + val, function(data) {
+            $.get( OCC_REC.contextPath + "/occurrence/exists/" + val).success(function(data) {
                 $('#related-record-id-not-found').hide();
-                $('#related-record-id-found').text(data).show();
+                $('#related-record-id-found').show();
+                $('#related-record-id-found-other').text(data);
                 $('#related-record-id-loading').hide();
-                $submit.prop('disabled', false);
+                recordIdValid = true;
             }).error(function () {
                 $('#related-record-id-not-found').show();
                 $('#related-record-id-found').hide();
                 $('#related-record-id-loading').hide();
-                $submit.prop('disabled', true);
+                recordIdValid = false;
+            }).always(function() {
+                setIssueFormButtonState();
             });
         }
-
+        setIssueFormButtonState();
     });
 
     jQuery.i18n.properties({
@@ -103,6 +121,7 @@ $(document).ready(function() {
         var comment = $("#issueComment").val();
         var code = $("#issue").val();
         var relatedRecordId = $('#relatedRecordId').val();
+        var relatedRecordReason = $('#relatedRecordReason').val();
         var userDisplayName = OCC_REC.userDisplayName //'${userDisplayName}';
         var recordUuid = OCC_REC.recordUuid //'${ala:escapeJS(record.raw.rowKey)}';
         if(code!=""){
@@ -141,6 +160,9 @@ $(document).ready(function() {
                 } else if (code == '20020' && !relatedRecordId) {
                     alert("You must provide a duplicate record id to mark this as a duplicate");
                     return;
+                } else if (code == '20020' && !relatedRecordReason) {
+                    alert("You must select a reason to mark this record as a duplicate");
+                    return;
                 } else if (code == '20020' && relatedRecordId == recordUuid) {
                     alert("You can't mark a record as a duplicate of itself");
                     return;
@@ -153,7 +175,8 @@ $(document).ready(function() {
                             userAssertionStatus: 'Open issue',
                             userId: OCC_REC.userId,
                             userDisplayName: userDisplayName,
-                            relatedRecordId: relatedRecordId
+                            relatedRecordId: relatedRecordId,
+                            relatedRecordReason: relatedRecordReason,
                         },
                         function (data) {
                             $('#assertionSubmitProgress').css({'display': 'none'});
@@ -463,6 +486,20 @@ function refreshUserAnnotations(){
                 $clone.find('.userRole').text(userAssertion.userRole != null ? userAssertion.userRole : '');
                 $clone.find('.userEntity').text(userAssertion.userEntityName != null ? userAssertion.userEntityName : '');
                 $clone.find('.created').text('Date created: ' + (moment(userAssertion.created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));
+                if (userAssertion.relatedRecordId) {
+                    $clone.find('.related-record').show();
+                    var href = $clone.find('.related-record-link').attr('href');
+                    $clone.find('.related-record-link').attr('href', href.replace('replace-me', userAssertion.relatedRecordId));
+                    if (userAssertion.code == 20020) {
+                        $clone.find('.related-record-span-user-duplicate').show();
+                    } else {
+                        $clone.find('.related-record-span-default').show();
+                    }
+                }
+                if (userAssertion.relatedRecordReason) {
+                    $clone.find('.related-record-reason').show();
+                    $clone.find('.related-record-reason-span').text(jQuery.i18n.prop('related.record.reason.'+userAssertion.relatedRecordReason));
+                }
                 if (userAssertion.userRole != null) {
                     $clone.find('.userRole').text(', ' + userAssertion.userRole);
                 }

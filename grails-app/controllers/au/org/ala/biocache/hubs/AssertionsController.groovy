@@ -41,6 +41,7 @@ class AssertionsController {
         String userAssertionStatus = params.userAssertionStatus?: ""
         String assertionUuid = params.assertionUuid?: ""
         String relatedRecordId = params.relatedRecordId ?: ''
+        String relatedRecordReason = params.relatedRecordReason ?: ''
         UserDetails userDetails = authService?.userDetails() // will return null if not available/not logged in
 
         if (recordUuid && code && userDetails) {
@@ -49,8 +50,12 @@ class AssertionsController {
                 render(status: 400, text: 'Duplicate record id not provided')
             }
 
+            if (code == '20020' && !relatedRecordReason) {
+                render(status: 400, text: 'Duplicate record reason not provided')
+            }
+
             log.info("Adding assertion to UUID: ${recordUuid}, code: ${code}, comment: ${comment}, userAssertionStatus: ${userAssertionStatus}, userId: ${userDetails.userId}, userEmail: ${userDetails.email}")
-            Map postResponse = webServicesService.addAssertion(recordUuid, code, comment, userDetails.userId, userDetails.displayName, userAssertionStatus, assertionUuid, relatedRecordId)
+            Map postResponse = webServicesService.addAssertion(recordUuid, code, comment, userDetails.userId, userDetails.displayName, userAssertionStatus, assertionUuid, relatedRecordId, relatedRecordReason)
 
             if (postResponse.statusCode == 201) {
                 log.info("Called REST service. Assertion should be added" )
