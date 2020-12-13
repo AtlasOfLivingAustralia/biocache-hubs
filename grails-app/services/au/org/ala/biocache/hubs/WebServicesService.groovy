@@ -106,13 +106,13 @@ class WebServicesService {
     }
 
     def addAlert(String userId, String queryId) {
-        def url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/subscribe/" + queryId
-        getJsonElements(url, "${grailsApplication.config.alerts.apiKey}")
+        String url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/subscribe/" + queryId
+        postFormData(url, [:], grailsApplication.config.alerts.apiKey as String)
     }
 
     def deleteAlert(String userId, String queryId) {
-        def url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/unsubscribe/" + queryId
-        getJsonElements(url, "${grailsApplication.config.alerts.apiKey}")
+        String url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/unsubscribe/" + queryId
+        postFormData(url, [:], grailsApplication.config.alerts.apiKey as String)
     }
 
     def JSONObject getDuplicateRecordDetails(JSONObject record) {
@@ -463,12 +463,16 @@ class WebServicesService {
      * @param postParams
      * @return postResponse (Map with keys: statusCode (int) and statusMsg (String)
      */
-    def Map postFormData(String uri, Map postParams) {
+    def Map postFormData(String uri, Map postParams, String apiKey = null) {
         HTTPBuilder http = new HTTPBuilder(uri)
         log.debug "POST (form encoded) to ${http.uri}"
         Map postResponse = [:]
 
         http.request( Method.POST ) {
+
+            if (apiKey != null) {
+                headers.'apiKey' = apiKey
+            }
 
             send ContentType.URLENC, postParams
 

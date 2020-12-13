@@ -127,21 +127,6 @@ $(document).ready(function() {
         if(code!=""){
             $('#assertionSubmitProgress').css({'display':'block'});
 
-            if (myAnnotationQueryId) {
-                var orig_state = $('#notifyChangeCheckbox').prop('data-origstate');
-                var new_state = $('#notifyChangeCheckbox').prop('checked');
-
-                // only update when user changed preference
-                if (orig_state !== new_state) {
-                    // to add alerts
-                    if (new_state) {
-                        $.post(OCC_REC.alertsURL + "/occurrences/addAlert?queryId=" + myAnnotationQueryId);
-                    } else { // to remove alerts
-                        $.post(OCC_REC.alertsURL + "/occurrences/deleteAlert?queryId=" + myAnnotationQueryId);
-                    }
-                }
-            }
-
             $.get( OCC_REC.contextPath + "/assertions/" + OCC_REC.recordUuid, function(data) {
                 var bPreventAddingIssue = false;
                 for (var i = 0; i < data.userAssertions.length; i++) {
@@ -179,6 +164,18 @@ $(document).ready(function() {
                             relatedRecordReason: relatedRecordReason,
                         },
                         function (data) {
+                            // when add assertion succeeds, we update alert settings
+                            if (myAnnotationQueryId) {
+                                var orig_state = $('#notifyChangeCheckbox').prop('data-origstate');
+                                var new_state = $('#notifyChangeCheckbox').prop('checked');
+
+                                // only update when user changed preference
+                                if (orig_state !== new_state) {
+                                    var actionpath = new_state ? ("/occurrences/addAlert?queryId=" + myAnnotationQueryId) : ("/occurrences/deleteAlert?queryId=" + myAnnotationQueryId)
+                                    $.post(OCC_REC.contextPath + actionpath)
+                                }
+                            }
+
                             $('#assertionSubmitProgress').css({'display': 'none'});
                             $("#submitSuccess").html("Thanks for flagging the problem!");
                             $("#issueFormSubmit").hide();
@@ -214,10 +211,12 @@ $(document).ready(function() {
     var myAnnotationQueryId = null
 
     $('#assertionButton').click(function (e) {
-        var getAlerts = OCC_REC.alertsURL + "/occurrences/alerts";
-        var myAnnotationEnabled = false
+        var getAlerts = OCC_REC.contextPath + "/occurrences/alerts";
+        // hide check box until we get user alerts settings
+        $("#notifyChange").hide();
 
         $.getJSON(getAlerts, function (data) {
+            var myAnnotationEnabled = false
             if (data.enabledQueries) {
                 for (var i = 0; i < data.enabledQueries.length; i++) {
                     if (data.enabledQueries[i].name.indexOf(OCC_REC.alertName) !== -1) {
@@ -236,10 +235,9 @@ $(document).ready(function() {
                 }
             }
 
-            // if can't find 'my annotation' hide the check box
-            if (myAnnotationQueryId === null) {
-                $("#notifyChange").hide();
-            } else {
+            // if find 'my annotation' show the check box
+            if (myAnnotationQueryId !== null) {
+                $("#notifyChange").show();
                 $("#notifyChangeCheckbox").prop('checked', myAnnotationEnabled);
                 $("#notifyChangeCheckbox").prop('data-origstate', myAnnotationEnabled);
             }
