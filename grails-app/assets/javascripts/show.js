@@ -216,6 +216,8 @@ $(document).ready(function() {
         $("#notifyChange").hide();
 
         $.getJSON(getAlerts, function (data) {
+            // init status
+            myAnnotationQueryId = null
             var myAnnotationEnabled = false
             if (data.enabledQueries) {
                 for (var i = 0; i < data.enabledQueries.length; i++) {
