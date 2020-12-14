@@ -17,7 +17,6 @@ package au.org.ala.biocache.hubs
 
 import au.org.ala.dataquality.model.QualityProfile
 import au.org.ala.web.CASRoles
-import com.google.common.base.Stopwatch
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
@@ -638,5 +637,35 @@ class OccurrenceController {
         QualityProfile profile = qualityService.activeProfile(requestParams.qualityProfile)
         data.count = qualityService.getExcludeCount(params.categoryLabel, profile.getCategories(), requestParams)
         render data as JSON
+    }
+
+    def getAlerts() {
+        String userId = authService?.getUserId()
+        if (userId == null) {
+            response.status = 404
+            render ([error: 'userId must be supplied to get alerts'] as JSON)
+        } else {
+            render webServicesService.getAlerts(userId) as JSON
+        }
+    }
+
+    def addAlert() {
+        String userId = authService?.getUserId()
+        if (userId == null) {
+            response.status = 404
+            render ([error: 'userId must be supplied to add alert'] as JSON)
+        } else {
+            render webServicesService.addAlert(userId, params.queryId) as JSON
+        }
+    }
+
+    def deleteAlert() {
+        String userId = authService?.getUserId()
+        if (userId == null) {
+            response.status = 404
+            render ([error: 'userId must be supplied to delete alert'] as JSON)
+        } else {
+            render webServicesService.deleteAlert(userId, params.queryId) as JSON
+        }
     }
 }

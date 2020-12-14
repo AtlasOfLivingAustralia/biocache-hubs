@@ -100,6 +100,21 @@ class WebServicesService {
         getJsonElements(url)
     }
 
+    def getAlerts(String userId) {
+        def url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId
+        return getJsonElements(url, "${grailsApplication.config.alerts.apiKey}")
+    }
+
+    def addAlert(String userId, String queryId) {
+        String url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/subscribe/" + queryId
+        postFormData(url, [:], grailsApplication.config.alerts.apiKey as String)
+    }
+
+    def deleteAlert(String userId, String queryId) {
+        String url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/unsubscribe/" + queryId
+        postFormData(url, [:], grailsApplication.config.alerts.apiKey as String)
+    }
+
     def JSONObject getDuplicateRecordDetails(JSONObject record) {
         log.debug "getDuplicateRecordDetails -> ${record?.processed?.occurrence?.associatedOccurrences}"
         if (record?.processed?.occurrence?.associatedOccurrences) {
@@ -401,12 +416,15 @@ class WebServicesService {
      * @param url
      * @return
      */
-    JSONElement getJsonElements(String url) {
+    JSONElement getJsonElements(String url, String apiKey = null) {
         log.debug "(internal) getJson URL = " + url
         def conn = new URL(url).openConnection()
         try {
             conn.setConnectTimeout(10000)
             conn.setReadTimeout(50000)
+            if (apiKey != null) {
+                conn.setRequestProperty('apiKey', apiKey)
+            }
             return JSON.parse(conn.getInputStream(), "UTF-8")
         } catch (Exception e) {
             def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
@@ -445,12 +463,16 @@ class WebServicesService {
      * @param postParams
      * @return postResponse (Map with keys: statusCode (int) and statusMsg (String)
      */
-    def Map postFormData(String uri, Map postParams) {
+    def Map postFormData(String uri, Map postParams, String apiKey = null) {
         HTTPBuilder http = new HTTPBuilder(uri)
         log.debug "POST (form encoded) to ${http.uri}"
         Map postResponse = [:]
 
         http.request( Method.POST ) {
+
+            if (apiKey != null) {
+                headers.'apiKey' = apiKey
+            }
 
             send ContentType.URLENC, postParams
 

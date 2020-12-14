@@ -152,7 +152,6 @@ $(document).ready(function() {
                     alert("You can't mark a record as a duplicate of itself");
                     return;
                 } else {
-
                     $.post(OCC_REC.contextPath + "/occurrences/assertions/add",
                         {
                             recordUuid: recordUuid,
@@ -165,6 +164,18 @@ $(document).ready(function() {
                             relatedRecordReason: relatedRecordReason,
                         },
                         function (data) {
+                            // when add assertion succeeds, we update alert settings
+                            if (myAnnotationQueryId) {
+                                var orig_state = $('#notifyChangeCheckbox').prop('data-origstate');
+                                var new_state = $('#notifyChangeCheckbox').prop('checked');
+
+                                // only update when user changed preference
+                                if (orig_state !== new_state) {
+                                    var actionpath = new_state ? ("/occurrences/addAlert?queryId=" + myAnnotationQueryId) : ("/occurrences/deleteAlert?queryId=" + myAnnotationQueryId)
+                                    $.post(OCC_REC.contextPath + actionpath)
+                                }
+                            }
+
                             $('#assertionSubmitProgress').css({'display': 'none'});
                             $("#submitSuccess").html("Thanks for flagging the problem!");
                             $("#issueFormSubmit").hide();
@@ -197,6 +208,43 @@ $(document).ready(function() {
         $(el).html(replaceURLWithHTMLLinks(html)); // convert it
     });
 
+    var myAnnotationQueryId = null
+
+    $('#assertionButton').click(function (e) {
+        var getAlerts = OCC_REC.contextPath + "/occurrences/alerts";
+        // hide check box until we get user alerts settings
+        $("#notifyChange").hide();
+
+        $.getJSON(getAlerts, function (data) {
+            // init status
+            myAnnotationQueryId = null
+            var myAnnotationEnabled = false
+            if (data.enabledQueries) {
+                for (var i = 0; i < data.enabledQueries.length; i++) {
+                    if (data.enabledQueries[i].name.indexOf(OCC_REC.alertName) !== -1) {
+                        myAnnotationEnabled = true;
+                        myAnnotationQueryId = data.enabledQueries[i].id
+                    }
+                }
+            }
+
+            if (data.disabledQueries) {
+                for (var i = 0; i < data.disabledQueries.length; i++) {
+                    if (data.disabledQueries[i].name.indexOf(OCC_REC.alertName) !== -1) {
+                        myAnnotationEnabled = false;
+                        myAnnotationQueryId = data.disabledQueries[i].id
+                    }
+                }
+            }
+
+            // if find 'my annotation' show the check box
+            if (myAnnotationQueryId !== null) {
+                $("#notifyChange").show();
+                $("#notifyChangeCheckbox").prop('checked', myAnnotationEnabled);
+                $("#notifyChangeCheckbox").prop('data-origstate', myAnnotationEnabled);
+            }
+        })
+    })
 
     // bind to form "close" button TODO
     $("input#close").on("click", function(e) {
@@ -598,7 +646,6 @@ function updateConfirmVerificationEvents(occUuid, assertionUuid, userDisplayName
         }
 
         console.log("Submitting an assertion with userAssertionStatus: " + userAssertionStatus)
-
         $.post(OCC_REC.contextPath + "/occurrences/assertions/add",
             { recordUuid: occUuid,
                 code: code,
