@@ -504,7 +504,7 @@ class PostProcessingService {
         layerObjects
     }
 
-    def processUserFQInteraction(SpatialSearchRequestParams requestParams, activeFacetObj) {
+    def processUserFQInteraction(SpatialSearchRequestParams requestParams) {
         def disabled = requestParams.disableQualityFilter as Set
 
         // map from category label to filter names

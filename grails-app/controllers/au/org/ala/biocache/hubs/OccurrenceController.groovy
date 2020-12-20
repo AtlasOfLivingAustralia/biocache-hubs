@@ -168,7 +168,7 @@ class OccurrenceController {
             def groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
             def qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')] }
 
-            def (fqInteract, dqInteract, UserFQColors, DQColors) = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj) }
+            def (fqInteract, dqInteract, UserFQColors, DQColors) = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams) }
 
             def messagePropertiesFile = time("message properties file") { webServicesService.getMessagesPropertiesFile() }
             def assertionCodeMap = time("assertionCodeMap") { webServicesService.getAssertionCodeMap() }
