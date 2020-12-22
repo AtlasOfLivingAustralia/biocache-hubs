@@ -25,6 +25,9 @@ class QualityService {
     @Value('${dataquality.baseUrl}')
     def dataQualityBaseUrl
 
+    @Value('${dataquality.apiKey}')
+    String dataQualityAPIKey
+
     @Value('${dataquality.recordCountCacheSpec}')
     String recordCountCacheSpec
 
@@ -39,6 +42,7 @@ class QualityService {
     def init() {
         if (dataQualityEnabled) {
             def apiClient = new ApiClient()
+            apiClient.setApiKey(dataQualityAPIKey)
             apiClient.adapterBuilder.baseUrl(dataQualityBaseUrl)
             apiClient.okBuilder.addInterceptor { chain ->
                 def request = chain.request().newBuilder().addHeader('User-Agent', "${grailsApplication.config.info.app.name}/${grailsApplication.config.info.app.version}").build()
@@ -50,9 +54,9 @@ class QualityService {
         recordCountCache = CacheBuilder.from(recordCountCacheSpec).build { webServicesService.fullTextSearch(it)?.totalRecords }
     }
 
-    Map<String, String> getEnabledFiltersByLabel(String profileName) {
+    Map<String, String> getEnabledFiltersByLabel(String profileName, userId = null) {
         if (dataQualityEnabled) {
-            return responseOrThrow(api.getEnabledFiltersByLabel(profileName))
+            return responseOrThrow(api.getEnabledFiltersByLabel(profileName, userId))
         } else {
             return [:]
         }
@@ -66,26 +70,26 @@ class QualityService {
         }
     }
 
-    Map<String, List<QualityFilter>> getGroupedEnabledFilters(String profileName) {
+    Map<String, List<QualityFilter>> getGroupedEnabledFilters(String profileName, String userId = null) {
         if (dataQualityEnabled) {
-            return responseOrThrow(api.getGroupedEnabledFilters(profileName))
+            return responseOrThrow(api.getGroupedEnabledFilters(profileName, userId))
         } else {
             return [:]
         }
-
     }
 
-    List<QualityCategory> findAllEnabledCategories(String profileName) {
+    List<QualityCategory> findAllEnabledCategories(String profileName, String userId = null) {
         if (dataQualityEnabled) {
-            return responseOrThrow(api.findAllEnabledCategories(profileName))
+            return responseOrThrow(api.findAllEnabledCategories(profileName, userId))
         } else {
             return []
         }
     }
 
-    QualityProfile activeProfile(String profileName) {
+    QualityProfile activeProfile(String profileName, String userId = null) {
         if (dataQualityEnabled) {
-            return responseOrThrow(api.activeProfile(profileName))
+            QualityProfile qp = responseOrThrow(api.activeProfile(profileName, userId))
+            return qp
         } else {
             return null
         }
@@ -115,9 +119,9 @@ class QualityService {
         }
     }
 
-    List<QualityProfile> findAllEnabledProfiles(boolean enabled) {
+    List<QualityProfile> findAllEnabledProfiles(boolean enabled, String userId = null) {
         if (dataQualityEnabled) {
-            return responseOrThrow(dataProfilesApi.dataProfiles(null, null, null, null, enabled, null, null))
+            return responseOrThrow(dataProfilesApi.dataProfiles(null, null, null, null, enabled, null, null, userId))
         } else {
             return []
         }
