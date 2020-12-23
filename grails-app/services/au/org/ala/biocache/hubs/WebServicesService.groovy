@@ -105,13 +105,13 @@ class WebServicesService {
         return getJsonElements(url, "${grailsApplication.config.alerts.apiKey}")
     }
 
-    def addAlert(String userId, String queryId) {
-        String url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/subscribe/" + queryId
+    def addMyAnnotationAlert(String userId) {
+        String url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/addMyAnnotationAlert"
         postFormData(url, [:], grailsApplication.config.alerts.apiKey as String)
     }
 
-    def deleteAlert(String userId, String queryId) {
-        String url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/unsubscribe/" + queryId
+    def deleteMyAnnotationAlert(String userId) {
+        String url = "${grailsApplication.config.alerts.baseURL}" + "/api/alerts/user/" + userId + "/deleteMyAnnotationAlert"
         postFormData(url, [:], grailsApplication.config.alerts.apiKey as String)
     }
 

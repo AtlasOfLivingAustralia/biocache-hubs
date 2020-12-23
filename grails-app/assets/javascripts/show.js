@@ -165,14 +165,14 @@ $(document).ready(function() {
                         },
                         function (data) {
                             // when add assertion succeeds, we update alert settings
-                            if (myAnnotationQueryId) {
+                            if (myAnnotationAvailable) {
                                 var orig_state = $('#notifyChangeCheckbox').prop('data-origstate');
                                 var new_state = $('#notifyChangeCheckbox').prop('checked');
 
                                 // only update when user changed preference
                                 if (orig_state !== new_state) {
-                                    var actionpath = new_state ? ("/occurrences/addAlert?queryId=" + myAnnotationQueryId) : ("/occurrences/deleteAlert?queryId=" + myAnnotationQueryId)
-                                    $.post(OCC_REC.contextPath + actionpath)
+                                    var actionpath = new_state ? "/occurrences/addMyAnnotationAlert" : "/occurrences/deleteMyAnnotationAlert";
+                                    $.post(OCC_REC.contextPath + actionpath);
                                 }
                             }
 
@@ -208,7 +208,7 @@ $(document).ready(function() {
         $(el).html(replaceURLWithHTMLLinks(html)); // convert it
     });
 
-    var myAnnotationQueryId = null
+    var myAnnotationAvailable = false
 
     $('#assertionButton').click(function (e) {
         var getAlerts = OCC_REC.contextPath + "/occurrences/alerts";
@@ -217,28 +217,17 @@ $(document).ready(function() {
 
         $.getJSON(getAlerts, function (data) {
             // init status
-            myAnnotationQueryId = null
+            myAnnotationAvailable = false
             var myAnnotationEnabled = false
-            if (data.enabledQueries) {
-                for (var i = 0; i < data.enabledQueries.length; i++) {
-                    if (data.enabledQueries[i].name.indexOf(OCC_REC.alertName) !== -1) {
-                        myAnnotationEnabled = true;
-                        myAnnotationQueryId = data.enabledQueries[i].id
-                    }
-                }
-            }
-
-            if (data.disabledQueries) {
-                for (var i = 0; i < data.disabledQueries.length; i++) {
-                    if (data.disabledQueries[i].name.indexOf(OCC_REC.alertName) !== -1) {
-                        myAnnotationEnabled = false;
-                        myAnnotationQueryId = data.disabledQueries[i].id
-                    }
+            if (data && data.myannotation) {
+                myAnnotationAvailable = true
+                if (data.myannotation.length > 0) {
+                    myAnnotationEnabled = true
                 }
             }
 
             // if find 'my annotation' show the check box
-            if (myAnnotationQueryId !== null) {
+            if (myAnnotationAvailable) {
                 $("#notifyChange").show();
                 $("#notifyChangeCheckbox").prop('checked', myAnnotationEnabled);
                 $("#notifyChangeCheckbox").prop('data-origstate', myAnnotationEnabled);

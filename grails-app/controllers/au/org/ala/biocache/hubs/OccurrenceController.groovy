@@ -24,12 +24,10 @@ import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
 
-import javax.servlet.http.HttpServletResponse
 import java.text.SimpleDateFormat
 
 import static au.org.ala.biocache.hubs.TimingUtils.time
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
-import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
 
 /**
  * Controller for occurrence searches and records
@@ -649,23 +647,23 @@ class OccurrenceController {
         }
     }
 
-    def addAlert() {
+    def addMyAnnotationAlert() {
         String userId = authService?.getUserId()
         if (userId == null) {
             response.status = 404
             render ([error: 'userId must be supplied to add alert'] as JSON)
         } else {
-            render webServicesService.addAlert(userId, params.queryId) as JSON
+            render webServicesService.addMyAnnotationAlert(userId) as JSON
         }
     }
 
-    def deleteAlert() {
+    def deleteMyAnnotationAlert() {
         String userId = authService?.getUserId()
         if (userId == null) {
             response.status = 404
             render ([error: 'userId must be supplied to delete alert'] as JSON)
         } else {
-            render webServicesService.deleteAlert(userId, params.queryId) as JSON
+            render webServicesService.deleteMyAnnotationAlert(userId) as JSON
         }
     }
 }
