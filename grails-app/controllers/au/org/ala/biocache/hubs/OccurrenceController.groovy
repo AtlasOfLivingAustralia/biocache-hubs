@@ -63,7 +63,7 @@ class OccurrenceController {
     def list(SpatialSearchRequestParams requestParams) {
         def start = System.currentTimeMillis()
 
-        def activeProfile = time("active profile") { qualityService.activeProfile(requestParams.qualityProfile) }
+        def activeProfile = time("active profile") { qualityService.activeProfile(requestParams.qualityProfile, authService?.getUserId()) }
 
         normaliseRequestParams(requestParams)
 
@@ -215,7 +215,7 @@ class OccurrenceController {
                     UserFQColors: UserFQColors,
                     DQColors: DQColors,
                     activeProfile: activeProfile,
-                    qualityProfiles: time("findAllEnabledProfiles") { qualityService.findAllEnabledProfiles(true) },
+                    qualityProfiles: time("findAllEnabledProfiles") { qualityService.findAllEnabledProfiles(true, authService?.getUserId()) },
                     inverseFilters: inverseFilters
             ]
 

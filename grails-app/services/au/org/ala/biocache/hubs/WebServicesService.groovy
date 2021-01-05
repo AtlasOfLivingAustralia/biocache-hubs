@@ -29,7 +29,7 @@ class WebServicesService {
 
     public static final String ENVIRONMENTAL = "Environmental"
     public static final String CONTEXTUAL = "Contextual"
-    def grailsApplication, facetsCacheServiceBean
+    def grailsApplication, facetsCacheServiceBean, authService
     QualityService qualityService
 
     @Value('${dataquality.enabled}')
@@ -665,7 +665,7 @@ class WebServicesService {
     def populateProfile(requestParams) {
         // force set the profile if none provided
         if (dataQualityEnabled && !requestParams.qualityProfile && !requestParams.disableAllQualityFilters) {
-            def activeProfile = qualityService.activeProfile(requestParams.qualityProfile)
+            def activeProfile = qualityService.activeProfile(requestParams.qualityProfile, authService?.getUserId())
             requestParams.qualityProfile = activeProfile?.shortName
         }
     }
