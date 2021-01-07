@@ -76,7 +76,7 @@ dependencies {
     //compile 'com.google.guava:guava:19.0' // replaces ehcache
     compile "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1"
 
-    compile "au.org.ala:data-quality-filter-service-client:1.1.0", noCache
+    compile "au.org.ala:data-quality-filter-service-client:1.2.0-SNAPSHOT", noCache
 
     //plugins
     //compile 'org.grails.plugins:cache-ehcache:3.0.0.M1'

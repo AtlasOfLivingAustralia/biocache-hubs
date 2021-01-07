@@ -54,9 +54,9 @@ class QualityService {
         recordCountCache = CacheBuilder.from(recordCountCacheSpec).build { webServicesService.fullTextSearch(it)?.totalRecords }
     }
 
-    Map<String, String> getEnabledFiltersByLabel(String profileName, userId = null) {
+    Map<String, String> getEnabledFiltersByLabel(String profileName) {
         if (dataQualityEnabled) {
-            return responseOrThrow(api.getEnabledFiltersByLabel(profileName, userId))
+            return responseOrThrow(api.getEnabledFiltersByLabel(profileName))
         } else {
             return [:]
         }
@@ -70,26 +70,33 @@ class QualityService {
         }
     }
 
-    Map<String, List<QualityFilter>> getGroupedEnabledFilters(String profileName, String userId = null) {
+    Map<String, List<QualityFilter>> getGroupedEnabledFilters(String profileName) {
         if (dataQualityEnabled) {
-            return responseOrThrow(api.getGroupedEnabledFilters(profileName, userId))
+            return responseOrThrow(api.getGroupedEnabledFilters(profileName))
         } else {
             return [:]
         }
     }
 
-    List<QualityCategory> findAllEnabledCategories(String profileName, String userId = null) {
+    List<QualityCategory> findAllEnabledCategories(String profileName) {
         if (dataQualityEnabled) {
-            return responseOrThrow(api.findAllEnabledCategories(profileName, userId))
+            return responseOrThrow(api.findAllEnabledCategories(profileName))
         } else {
             return []
         }
     }
 
-    QualityProfile activeProfile(String profileName, String userId = null) {
+    QualityProfile activeProfile(String profileName = null, String userId = null) {
         if (dataQualityEnabled) {
-            QualityProfile qp = responseOrThrow(api.activeProfile(profileName, userId))
-            return qp
+            return responseOrThrow(api.activeProfile(profileName, userId))
+        } else {
+            return null
+        }
+    }
+
+    QualityProfile getDefaultProfile(String userId = null) {
+        if (dataQualityEnabled) {
+            return responseOrThrow(api.getDefaultProfile(userId))
         } else {
             return null
         }
