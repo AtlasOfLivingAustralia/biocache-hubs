@@ -522,7 +522,7 @@ class PostProcessingService {
             }
         }
 
-        def profile = qualityService.activeProfile(requestParams.qualityProfile)
+        def profile = qualityService.getProfile(requestParams.qualityProfile)
         // label to name map
         def labelToNameMap = profile?.categories?.collectEntries{ [(it.label): it.name] } ?: [:]
 

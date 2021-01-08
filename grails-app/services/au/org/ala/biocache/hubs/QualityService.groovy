@@ -3,6 +3,7 @@ package au.org.ala.biocache.hubs
 import au.org.ala.dataquality.api.DataProfilesApi
 import au.org.ala.dataquality.api.QualityServiceRpcApi
 import au.org.ala.dataquality.client.ApiClient
+import au.org.ala.dataquality.client.auth.ApiKeyAuth
 import au.org.ala.dataquality.model.QualityCategory
 import au.org.ala.dataquality.model.QualityFilter
 import au.org.ala.dataquality.model.QualityProfile
@@ -42,8 +43,9 @@ class QualityService {
     def init() {
         if (dataQualityEnabled) {
             def apiClient = new ApiClient()
-            apiClient.setApiKey(dataQualityAPIKey)
             apiClient.adapterBuilder.baseUrl(dataQualityBaseUrl)
+            apiClient.addAuthorization('apiKeyAuth', new ApiKeyAuth('header', 'apiKey'))
+            apiClient.setApiKey(dataQualityAPIKey)
             apiClient.okBuilder.addInterceptor { chain ->
                 def request = chain.request().newBuilder().addHeader('User-Agent', "${grailsApplication.config.info.app.name}/${grailsApplication.config.info.app.version}").build()
                 chain.proceed(request)
@@ -89,6 +91,14 @@ class QualityService {
     QualityProfile activeProfile(String profileName = null, String userId = null) {
         if (dataQualityEnabled) {
             return responseOrThrow(api.activeProfile(profileName, userId))
+        } else {
+            return null
+        }
+    }
+
+    QualityProfile getProfile(String profileName) {
+        if (dataQualityEnabled) {
+            return responseOrThrow(dataProfilesApi.dataProfilesId(profileName))
         } else {
             return null
         }

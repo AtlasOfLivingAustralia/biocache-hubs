@@ -632,7 +632,7 @@ class OccurrenceController {
 
     def getExcluded(SpatialSearchRequestParams requestParams) {
         def data = [:]
-        QualityProfile profile = qualityService.activeProfile(requestParams.qualityProfile)
+        QualityProfile profile = qualityService.activeProfile(requestParams.qualityProfile, authService?.getUserId())
         data.count = qualityService.getExcludeCount(params.categoryLabel, profile.getCategories(), requestParams)
         render data as JSON
     }
