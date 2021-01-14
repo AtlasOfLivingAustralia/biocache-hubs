@@ -26,7 +26,7 @@ import java.util.regex.Matcher
  * Service to perform processing of data between the DAO and View layers
  */
 class PostProcessingService {
-    def grailsApplication, webServicesService
+    def grailsApplication, webServicesService, qualityService
 
     /**
      * Determine if the record contains images
@@ -502,5 +502,181 @@ class PostProcessingService {
         }
 
         layerObjects
+    }
+
+    def processUserFQInteraction(SpatialSearchRequestParams requestParams, activeFacetObj) {
+        def disabled = requestParams.disableQualityFilter as Set
+
+        // map from category label to filter names
+        // Suppose there's a default quality filter occurrence_decade_i:[1900 TO *] and user has a filter occurrence_decade_i:[1990 TO *].
+        // In this case, the exclude count of the DQ filter is 0 since user filter returns a subset of what DQ filter returns.
+        // This means a user filter can interact with a DQ filter even when its exclude count == 0
+        def categoryToKeyMap = [:]
+
+        if (!requestParams.disableAllQualityFilters) {
+            categoryToKeyMap = qualityService.getGroupedEnabledFilters(requestParams.qualityProfile).findAll { label, list ->
+                !disabled.contains(label)
+            }.collectEntries { label, list ->
+                def keys = list*.filter.collect { getKeysFromFilter(it) }.flatten()
+                keys.isEmpty() ? [:] : [(label): keys as Set]
+            }
+        }
+
+        def profile = qualityService.activeProfile(requestParams.qualityProfile)
+        // label to name map
+        def labelToNameMap = profile?.categories?.collectEntries{ [(it.label): it.name] } ?: [:]
+
+        // all used keys by quality filters
+        def keys = categoryToKeyMap.values().flatten() as Set
+
+        // map from keys to categories labels { field key -> label set }
+        def keyToCategoryMap = keys.collectEntries { [(it): categoryToKeyMap.findAll { k, v -> v.contains(it) }.collect { it.key }] }
+
+
+        // find all fqs interact with dq filters
+        def interactingFq = requestParams.fq.findAll {getKeysFromFilter(it).find {keyToCategoryMap.containsKey(it)}}
+        // userfq -> { key : [label, label]}
+        def fqkeyToCategory = interactingFq.collectEntries {fq -> [(fq): getKeysFromFilter(fq).findAll { keyToCategoryMap.containsKey(it) }.collectEntries { [(it): keyToCategoryMap.get(it)]}]}
+        def fqInteract = fqkeyToCategory.collectEntries {fq, dic ->
+            [(fq), dic.collect { key, val ->
+                'This filter may conflict with <b>[' + val.collect{labelToNameMap[it]}.join(', ') + ']</b> because they ' + (val.size() == 1? 'both' : 'all') + ' use field: <b>[' + key + ']</b>'
+            }.join('<br><br>')]
+        }
+
+        // all keys in user fq
+        def alluserkeys = requestParams.fq.collect{ getKeysFromFilter(it) }.flatten()
+        // key -> [userfq, userfq]
+        def keyToUserfq = alluserkeys.collectEntries {key -> [(key): requestParams.fq.findAll {getKeysFromFilter(it).contains(key)}]}
+        // filter it so it only contains dq categories interact with user fqs
+        categoryToKeyMap = categoryToKeyMap.collectEntries {label, keySet -> [(label) : keySet.findAll { alluserkeys.contains(it) }]}.findAll {label, keySet -> keySet.size() > 0}
+        def dqInteract = categoryToKeyMap.collectEntries {label, keySet ->
+            [(label), keySet.collect { key ->
+                'This category may conflict with <b>[' + keyToUserfq[key].join(', ') + ']</b> because they ' + (keyToUserfq[key].size() == 1 ? 'both' : 'all') + ' use field:<b>[' + key + ']</b>'
+            }.join('<br><br>')]
+        }
+
+        // map from user fq to category labels (user fq -> label, only those do interact appear in map)
+        def userFqInteractDQCategoryLabel = requestParams.fq.collectEntries { [(it): getKeysFromFilter(it).collect { key -> keyToCategoryMap.get(key) }.findAll { it != null }.flatten() as Set] }.findAll { key, val -> !val.isEmpty() }
+
+        def colors = [
+                "#C10020", //# Vivid Red
+                "#007D34", //# Vivid Green
+                "#FF8E00", //# Vivid Orange Yellow
+                "#803E75", //# Strong Purple
+                "#93AA00", //# Vivid Yellowish Green
+                "#593315", //# Deep Yellowish Brown
+                "#00538A", //# Strong Blue
+                "#F6768E", //# Strong Purplish Pink
+                "#FF7A5C", //# Strong Yellowish Pink
+                "#53377A", //# Strong Violet
+                "#F13A13",// # Vivid Reddish Orange
+                "#B32851", //# Strong Purplish Red
+                "#7F180D", //# Strong Reddish Brown
+                "#232C16",// # Dark Olive Green
+                "#CEA262", //# Grayish Yellow
+                "#817066", //# Medium Gray
+                "#FF6800", //# Vivid Orange
+        ]
+
+        def DQColors = [:]
+        def UserFQColors = [:]
+
+        userFqInteractDQCategoryLabel.eachWithIndex {it, index ->
+            def color = colors[index % colors.size()]
+            UserFQColors.put(it.key, color)
+            it.value.each { DQColors.put(it, color) }
+        }
+
+        return [fqInteract, dqInteract, UserFQColors, DQColors]
+    }
+
+    /**
+     * Parse a fq string to get a list of filter names
+     *
+     * @return filter names in the fq as Set
+     */
+    private def getKeysFromFilter(String fq) {
+        int pos = 0
+        int start = 0
+        List keys = []
+        while ((pos = fq.indexOf(':', pos)) != -1) {
+            // ':' at pos
+            start = fq.lastIndexOf(' ', pos)
+            if (start == -1) {
+                keys.add(fq.substring(0, pos))
+            } else {
+                keys.add(fq.substring(start + 1, pos))
+            }
+            pos++
+        }
+
+        // the values in the keys can now be "-(xxx", "-xxx", "(xxx"
+        // need to remove '-' and '('
+        keys = keys.collect {
+            it = it.replace("(",  "")
+            if (it?.startsWith("-")) it = it.substring(1)
+            it
+        }
+
+        keys as Set
+    }
+
+    def translateValues(qualityFiltersByLabel, propertyMap, assertionMap) {
+        def translatedFilterMap = [:]
+        qualityFiltersByLabel.each { label, filters ->
+            def translatedFilters = [:]
+            filters.each { filter ->
+                def rslt = parseSimpleFq(filter.filter, propertyMap, assertionMap)
+                if (rslt != null) {
+                    translatedFilters[rslt[0]] = rslt[1]
+                }
+            }
+
+            if (!translatedFilters.isEmpty()) {
+                // need a json object here so that it can be passed to html element as data-* attribute
+                translatedFilterMap[label] = new JSONObject(translatedFilters)
+            }
+        }
+        translatedFilterMap
+    }
+
+    /**
+     * To lookup translation of a filter value
+     *
+     * @return null if no translation found. [value, translation] otherwise
+     */
+
+    private def parseSimpleFq(String fq, propertyMap, assertionMap) {
+        def idx = fq.indexOf(':')
+        if (idx == -1) return null
+
+        // to extract field and value (with leading " and surrounding '()' '""' removed)
+        // then look up translation
+        String key = fq.substring(0, idx)
+        String value = fq.substring(idx + 1)
+        if (key.length() > 0 && key[0] == '-') key = key.substring(1)
+        if ((key.length() > 0 && key[0] == '(') && (value.length() > 0 && value[value.length() - 1] == ')')) {
+            key = key.substring(1)
+            value = value.substring(0, value.length() - 1)
+        }
+
+        if (value.length() >= 2 && value[0] == '"' && value[value.length() - 1] == '"') value = value.substring(1, value.length() - 1)
+
+        def retVal = null
+        // if it's an assertion, find it in assertion map first
+        if (key.equals('assertions')) {
+            // need a json object here so that it can be passed to html as an object instead of a String
+            retVal = assertionMap.get(value) ? new JSONObject(assertionMap.get(value)) : null
+        }
+
+        if (retVal == null) {
+            def lookup = key + '.' + value
+
+            retVal = propertyMap.get(lookup)
+            if (retVal == null) {
+                retVal = propertyMap.get(value)
+            }
+        }
+        return retVal != null ? [value, retVal] : null
     }
 }

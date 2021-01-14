@@ -1,12 +1,16 @@
 package au.org.ala.biocache.hubs
 
 import grails.validation.Validateable
+import groovy.transform.AutoClone
+import groovy.transform.EqualsAndHashCode
 
 /**
  * Created with IntelliJ IDEA.
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
+@AutoClone
+@EqualsAndHashCode(callSuper = true)
 class SpatialSearchRequestParams extends SearchRequestParams implements Validateable {
     protected Float radius = null;
     protected Float lat = null;
