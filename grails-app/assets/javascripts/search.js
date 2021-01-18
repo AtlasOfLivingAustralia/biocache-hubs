@@ -487,7 +487,11 @@ $(document).ready(function() {
         var methodName = $(this).data("method");
         var url = alertsUrlPrefix + "/ws/" + methodName + "?";
         var searchParamsEncoded = encodeURIComponent(decodeURIComponent(BC_CONF.searchString)); // prevent double encoding of chars
-        url += "queryDisplayName="+encodeURIComponent(query);
+        if (query.length >= 250) {
+            url += "queryDisplayName="+encodeURIComponent(query.substring(0, 149) + "...");
+        } else {
+            url += "queryDisplayName="+encodeURIComponent(query);
+        }
         url += "&baseUrlForWS=" + encodeURIComponent(BC_CONF.biocacheServiceUrl);
         url += "&baseUrlForUI=" + encodeURIComponent(BC_CONF.serverName);
         url += "&webserviceQuery=%2Foccurrences%2Fsearch" + searchParamsEncoded;
