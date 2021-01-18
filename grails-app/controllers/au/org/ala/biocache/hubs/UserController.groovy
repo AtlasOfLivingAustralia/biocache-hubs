@@ -15,13 +15,8 @@
 
 package au.org.ala.biocache.hubs
 
-import au.org.ala.web.CASRoles
-import grails.converters.JSON
-import org.grails.web.json.JSONArray
-import org.grails.web.json.JSONElement
-import org.grails.web.json.JSONObject
 
-import java.text.SimpleDateFormat
+import grails.converters.JSON
 
 /**
  * Controller for occurrence searches and records

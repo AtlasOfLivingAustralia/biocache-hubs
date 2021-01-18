@@ -1,5 +1,17 @@
-package au.org.ala.biocache.hubs
+/*
+ * Copyright (C) 2014 Atlas of Living Australia
+ * All Rights Reserved.
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ */
 
+package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
 import grails.plugin.cache.CacheEvict
@@ -321,12 +333,6 @@ class WebServicesService {
         }
     }
 
-    @Cacheable('longTermCache')
-    def JSONArray getAssertionCodes() {
-        def url = "${grailsApplication.config.biocache.baseUrl}/assertions/codes"
-        return getJsonElements(url)
-    }
-
     /**
      * Generate a Map of image url (key) with image file size (like ls -h) (value)
      *
@@ -566,11 +572,13 @@ class WebServicesService {
 
     @Cacheable('longTermCache')
     def getAssertionCodeMap() {
-        JSONArray codes = grailsApplication.mainContext.getBean('webServicesService').getAssertionCodes() // code <-> name
+        def url = "${grailsApplication.config.biocache.baseUrl}/assertions/codes" // code --> name
+        def codes = getJsonElements(url)
+
         Map dataQualityCodes = getAllCodes() // code -> detail
 
         // convert to name -> detail
-        return codes.findAll{dataQualityCodes.containsKey(String.valueOf(it.code))}.collectEntries{[(it.name) : dataQualityCodes.get(String.valueOf(it.code))]}
+        return codes?.findAll{dataQualityCodes.containsKey(String.valueOf(it.code))}?.collectEntries{[(it.name): dataQualityCodes.get(String.valueOf(it.code))]}
     }
 
     def getAllCodes() {

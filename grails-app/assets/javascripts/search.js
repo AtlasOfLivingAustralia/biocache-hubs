@@ -349,6 +349,7 @@ $(document).ready(function() {
         loadMoreFacets(facetName, displayName, null);
     });
 
+    // When user clicks the 'view profile description' icon next to profiles selection drop-down
     $('.DQProfileDetailsLink').click(function() {
         $.each($(".cat-table"), function(idx, el) {
             var filters = $(el).data('filters');
@@ -407,11 +408,12 @@ $(document).ready(function() {
         })
     })
 
+    // when user clicks 'ok' button in the 'data profiles applied' warning dialog
     $('#hide-dq-warning').click(function() {
         document.cookie = 'dq_warn_off=true; path=/';
     })
 
-    // each category
+    // when use clicks <i/> to view details of a category
     $('.DQCategoryDetailsLink').click(function() {
         var link = this;
         var fq = $(link).data("fq");
