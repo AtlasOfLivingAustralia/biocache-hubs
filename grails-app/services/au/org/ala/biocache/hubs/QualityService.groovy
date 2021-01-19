@@ -28,6 +28,11 @@ import retrofit2.HttpException
 
 import javax.annotation.PostConstruct
 
+/**
+ * This service provides below functions
+ * 1. wrap API calls to data-quality-filter-service
+ * 2. get excluded counts of quality categories
+ */
 class QualityService {
 
     def webServicesService
