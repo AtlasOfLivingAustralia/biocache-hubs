@@ -143,7 +143,6 @@ alwaysshow.imagetab = false
 
 facets.defaultSelected = "data_resource_uid,taxon_name,year,multimedia"
 
-myannotation.name="My Annotations"
 mapdownloads {
     baseLayers {
         default_layer {

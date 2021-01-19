@@ -60,7 +60,6 @@
                 </g:each>
             },
             hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean},
-            alertName: "${grailsApplication.config.myannotation.name}"
         }
 
         // Google charts
