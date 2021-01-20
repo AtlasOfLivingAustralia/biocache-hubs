@@ -62,6 +62,8 @@
             hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
         }
 
+        var BC_CONF = OCC_REC; // For compatibility with common JS components which require BC_CONF
+
         // Google charts
         if(!OCC_REC.hasGoogleKey) {
             google.load('maps', '3.3', {other_params: "sensor=false"});
@@ -143,7 +145,7 @@
                     </h1>
                     <g:if test="${record.raw.classification}">
                         <div id="recordHeadingLine2">
-                            <g:message code="basicOfRecord.${record.processed.occurrence?.basisOfRecord}" default="${record.processed.occurrence?.basisOfRecord}"/>
+                            <g:message code="basisOfRecord.${record.processed.occurrence?.basisOfRecord}" default="${record.processed.occurrence?.basisOfRecord}"/>
                             <g:message code="show.heading.of" default="of"/>
                             <g:if test="${record.processed.classification.scientificName}">
                                 <alatag:formatSciName rankId="${record.processed.classification.taxonRankID}" name="${record.processed.classification.scientificName}"/>
@@ -264,7 +266,6 @@
                 <div class="col-md-8 col-md-offset-4">
                     <div id="userAnnotationsDiv" class="additionalData">
                         <h3><g:message code="show.userannotationsdiv.title" default="User flagged issues"/><a id="userAnnotations">&nbsp;</a></h3>
-                        <h4><g:message code="user.assertion.status" default="User Assertion Status"/>: <i><span id="userAssertionStatus"></span></i></h4>
                         <ul id="userAnnotationsList"></ul>
                     </div>
 

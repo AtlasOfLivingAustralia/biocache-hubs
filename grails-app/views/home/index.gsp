@@ -5,7 +5,7 @@
   Time: 3:15 PM
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page import="org.springframework.web.servlet.support.RequestContextUtils; au.org.ala.biocache.hubs.FacetsName; org.apache.commons.lang.StringUtils" contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.springframework.web.servlet.support.RequestContextUtils; au.org.ala.biocache.hubs.FacetsName; org.apache.commons.lang.StringUtils; grails.util.Environment" contentType="text/html;charset=UTF-8" %>
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
 <g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocache.baseUrl}"/>
 <g:set var="serverName" value="${grailsApplication.config.serverName ?: grailsApplication.config.biocache.baseUrl}"/>
@@ -42,6 +42,8 @@
         /* Load Spring i18n messages into JS
          */
         jQuery.i18n.properties({
+            cache: true,
+            async: true,
             name: 'messages',
             path: BC_CONF.contextPath + '/messages/i18n/',
             mode: 'map',

@@ -1,8 +1,8 @@
-# biocache-hubs [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/biocache-hubs.svg?branch=master)](http://travis-ci.org/AtlasOfLivingAustralia/biocache-hubs) 
+# biocache-hubs [![Build Status](https://travis-ci.com/AtlasOfLivingAustralia/biocache-hubs.svg?branch=master)](https://travis-ci.com/AtlasOfLivingAustralia/biocache-hubs) 
 
-**biocache-hubs** is a Grails plugin that provides the core functionality for the _Atlas of Living Australia_ (ALA) [Occurrence search portal](http://biocache.ala.org.au/search) (Biocache) front-end.
+**biocache-hubs** is a Grails plugin that provides the core functionality for the _Atlas of Living Australia_ (ALA) [Occurrence search portal](https://biocache.ala.org.au/search) (Biocache) front-end.
 
-This application/plugin provides a web UI for a back-end service called [**biocache-service**](https://github.com/AtlasOfLivingAustralia/biocache-service) (see [biocache-service API](http://biocache.ala.org.au/ws)) - a full-text search and record retreival for occurrence data records, using JSON data format.
+This application/plugin provides a web UI for a back-end service called [**biocache-service**](https://github.com/AtlasOfLivingAustralia/biocache-service) (see [biocache-service API](https://biocache-ws.ala.org.au/ws)) - a full-text search and record retreival for occurrence data records, using JSON data format.
 
 An example Grails application that uses this plugin, is the [**generic-hub**](https://github.com/AtlasOfLivingAustralia/generic-hub) app. There are other implementations listed in the [ALA Github repository](https://github.com/AtlasOfLivingAustralia?query=-hub) (all implementations have a suffix '-hub').
 
@@ -31,7 +31,7 @@ If you have deployed biocache-hubs plugin version 1.4.x or earlier in your own h
 * The minimum version of Java is 8
 * You have to use the latest Grails 3.1.x 
 Use these as reference: 
-    * http://docs.grails.org/3.2.11/guide/upgrading.html#upgrading2x
+    * https://docs.grails.org/3.2.11/guide/upgrading.html#upgrading2x
     * https://docs.grails.org/3.0.x/guide/upgrading.html
 * biocache-hubs now uses ala-auth 3.x, see this [guide](https://github.com/AtlasOfLivingAustralia/ala-auth-plugin/wiki/1.x-Migration-Guide) for configuration changes
 * Grails 3 no longer supports resources pipeline, You will have to migrate resources settings to [Asset pipeline plugin configuration](http://www.asset-pipeline.com/manual/#grails3)

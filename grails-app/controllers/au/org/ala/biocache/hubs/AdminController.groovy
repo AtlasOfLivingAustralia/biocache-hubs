@@ -23,6 +23,7 @@ class AdminController {
     def facetsCacheService
     def webServicesService
     def messageSourceCacheService
+    def qualityService
 
     def index() {
         // [ message: "not used" ]
@@ -71,6 +72,12 @@ class AdminController {
     def doClearPropertiesCache() {
         messageSourceCacheService.clearMessageCache()
         "i18n messages cache cleared\n"
+    }
+
+    def clearRecordCountCache() {
+        qualityService.clearRecordCountCache()
+        flash.message = "record count cache cleared\n"
+        redirect(action: 'index')
     }
 
 }

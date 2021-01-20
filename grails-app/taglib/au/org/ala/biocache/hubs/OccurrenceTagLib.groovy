@@ -15,16 +15,20 @@
 
 package au.org.ala.biocache.hubs
 
+import au.org.ala.dataquality.model.QualityCategory
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang.StringUtils
-import org.grails.web.util.WebUtils
 import org.owasp.html.HtmlPolicyBuilder
 import org.owasp.html.PolicyFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.servlet.support.RequestContextUtils
 import grails.util.Environment
 
 import java.util.regex.Pattern
+
+import static au.org.ala.biocache.hubs.TimingUtils.time
 
 /**
  * Custom taglib for biocache-hubs
@@ -36,10 +40,11 @@ class OccurrenceTagLib {
     def webServicesService
     def messageSourceCacheService
     def userService
+    def qualityService
 
     //static defaultEncodeAs = 'html'
     //static encodeAsForTags = [tagName: 'raw']
-    static returnObjectForTags = ['getLoggerReasons','message']
+    static returnObjectForTags = ['getLoggerReasons','message','createFilterItemLink','createInverseQualityCategoryLink']
     static namespace = 'alatag'     // namespace for headers and footers
     static rangePattern = ~/\[\d+(\.\d+)? TO \d+(\.\d+)?\]/
 
@@ -70,12 +75,13 @@ class OccurrenceTagLib {
             output = fieldName[0..-4].replaceAll("_", " ") + " (range)"
         } else {
 
-            def label = message(code:"facet." + fieldCode, default:fieldName)
+            def label = message(code:"facet." + fieldCode, default:"")
             if (!label){
+                // try without "facet."
                 label = message(code:fieldCode, default:"")
             }
 
-            label = label ?: camelCaseToHuman(text: fieldName)
+            label = label ?: fieldName
             output = label
         }
         output
@@ -140,17 +146,26 @@ class OccurrenceTagLib {
     /**
      * Generate HTML for current filters
      *
-     * @attr item REQUIRED
+     * @attr item the activeFacetMap map entry, required if no key and value provided
+     * @attr key String the filter key
+     * @attr value Map<String,String> the filter result json object
+     * @attr facetValue String the value the corresponds to the existing fq, defaults to $key:${value.value}
      * @attr addCheckBox Boolean
      * @attr cssClass String
      * @attr addCloseBtn Boolean
      */
     def currentFilterItem = { attrs ->
         def item = attrs.item
-        def filterLabel = item.value.displayName.replaceFirst(/^\-/, "") // remove leading "-" for exclude searches
-        def preFix = (item.value.displayName.startsWith('-')) ? "<span class='excludeFq'>[exclude]</span> " : ""
+        def key = attrs.key ?: item.key
+        def value = attrs.value ?: item.value
+        // activeFacetMap regenerates the original fq with key + ':' + value.value
+        // activeFacetObj the original fq is in value.value
+        // the caller can elect to provide facetValue or have it default to the activeFacetMap value
+        def facetValue = attrs.facetValue ?: key + ':' + value.value
+        def filterLabel = value.displayName.replaceFirst(/^\-/, "") // remove leading "-" for exclude searches
+        def preFix = (value.displayName.startsWith('-')) ? "<span class='excludeFq'>[exclude]</span> " : ""
         def fqLabel = preFix + filterLabel
-        String facetKey = item.key.replaceFirst("\\(","") // remove brace
+        String facetKey = key.replaceFirst("\\(","") // remove brace
         String i18nLabel = alatag.message(code: "facet.${facetKey}", default: "") // i18n lookup
 
         if (i18nLabel) {
@@ -158,20 +173,27 @@ class OccurrenceTagLib {
             fqLabel = fqLabel.replaceAll(facetKey, i18nLabel)
         }
 
+        String hrefValue = currentFilterItemLink(attrs, facetValue)
+        String color = attrs.cssColor != null ? "color:${attrs.cssColor}" : ""
+        String title = (attrs.title != null ? "${attrs.title}<br><br>" : "") + alatag.message(code:"title.filter.remove", default:"Click to remove this filter")
+
         def mb = new MarkupBuilder(out)
-        mb.a(   href:"#",
+        mb.a(   href: hrefValue,
                 class: "${attrs.cssClass} tooltips activeFilter",
-                    title: alatag.message(code:"title.filter.remove", default:"Click to remove this filter"),
-                    "data-facet": facetKey
-                    //"data-facet":"${item.key}:${item.value.value.encodeAsURL()}",
-                    //onClick:"removeFacet(this); return false;"
+                style: color,
+                title: title
             ) {
+            if (attrs.addCloseBtn) {
+                span(class:'closeX pull-right') {
+                    mkp.yieldUnescaped("&times;")
+                }
+            }
             if (attrs.addCheckBox) {
                 span(class:'fa fa-check-square-o') {
                     mkp.yieldUnescaped("&nbsp;")
                 }
             }
-            if (item.key.contains("occurrence_year")) {
+            if (key.contains("occurrence_year")) {
                 fqLabel = fqLabel.replaceAll(':',': ').replaceAll('occurrence_year', alatag.message(code: 'facet.occurrence_year', default:'occurrence_year'))
                 mkp.yieldUnescaped( fqLabel.replaceAll(/(\d{4})\-.*?Z/) { all, year ->
                     def year10 = year?.toInteger() + 10
@@ -180,13 +202,56 @@ class OccurrenceTagLib {
             } else {
                 mkp.yieldUnescaped(alatag.message(code: fqLabel, default: fqLabel).replaceFirst(':',': '))
             }
-            if (attrs.addCloseBtn) {
-                mkp.yieldUnescaped("&nbsp;")
-                span(class:'closeX') {
-                    mkp.yieldUnescaped("&times;")
-                }
-            }
         }
+    }
+
+    def download = { attrs, body ->
+        def sr = attrs.remove('searchResults')
+        SearchRequestParams searchRequestParams = attrs.remove('searchRequestParams')
+
+        attrs.controller = 'download'
+        attrs.params = [
+                searchParams: sr?.urlParameters,
+                targetUri: request.forwardURI,
+                totalRecords: sr?.totalRecords ?: 0
+        ]
+
+        out << g.link(attrs, body)
+    }
+
+    def createFilterItemLink = { attrs ->
+        return currentFilterItemLink(attrs, attrs.facet)
+    }
+
+    private String currentFilterItemLink(Map attrs, String facet) {
+        def fqList = params.list('fq')
+
+        List<String> newFqList
+        if (facet == "all") {
+            newFqList = []
+        } else {
+            def idx = fqList.findIndexOf { it == facet }
+            newFqList = new ArrayList<>(fqList)
+            newFqList.remove(idx)
+        }
+
+        GrailsParameterMap newParams = params.clone()
+        if (newFqList) {
+            newParams.fq = newFqList
+        } else {
+            newParams.remove('fq')
+        }
+
+        newParams.remove('startIndex')
+        newParams.remove('offset')
+        newParams.remove('max')
+
+        attrs.params = newParams
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+
+        createLink(attrs)
     }
 
     /**
@@ -846,7 +911,7 @@ class OccurrenceTagLib {
         paramsCopy.remove("wkt")
         paramsCopy.remove("action")
         paramsCopy.remove("controller")
-        def queryString = WebUtils.toQueryString(paramsCopy)
+        def queryString = MoreWebUtils.toQueryString(paramsCopy)
         log.debug "queryString = ${queryString}"
         out << queryString
     }
@@ -858,7 +923,7 @@ class OccurrenceTagLib {
         paramsCopy.remove("radius")
         paramsCopy.remove("action")
         paramsCopy.remove("controller")
-        def queryString = WebUtils.toQueryString(paramsCopy)
+        def queryString = MoreWebUtils.toQueryString(paramsCopy)
         log.debug "queryString = ${queryString}"
         out << queryString
     }
@@ -962,5 +1027,180 @@ class OccurrenceTagLib {
         log.warn "input = ${message}"
         log.warn "output = ${output}"
         out << output
+    }
+
+    @Value('${dataquality.enabled}')
+    boolean dataQualityEnabled
+
+    def ifDataQualityEnabled = { attrs, body ->
+        if (dataQualityEnabled) {
+            out << body()
+        }
+    }
+
+    def invertQualityCategory = { attrs, body ->
+        QualityCategory category = attrs.remove('category')
+        Map<String,String> inverseFilters = attrs.remove('inverseFilters')
+
+        GrailsParameterMap newParams = params.clone()
+        List<String> existingFilters = newParams.list('fq')
+
+        def inverseFilter
+        if (inverseFilters) {
+            inverseFilter = inverseFilters[category.label]
+        } else {
+            inverseFilter = time("getInverseCategoryFilter") { qualityService.getInverseCategoryFilter(category) }
+        }
+        if (inverseFilter) {
+            existingFilters += inverseFilter
+        }
+        newParams.disableAllQualityFilters = true
+        newParams.fq = existingFilters
+
+        attrs['class'] = (attrs['class'] as Set) + 'inverse-filter-link'
+
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+        newParams.remove('startIndex')
+        newParams.remove('offset')
+        newParams.remove('max')
+        attrs.params = newParams
+
+        out << g.link(attrs, body)
+    }
+
+    def createInverseQualityCategoryLink = { attrs, body ->
+        QualityCategory category = attrs.remove('category')
+        Map<String,String> inverseFilters = attrs.remove('inverseFilters')
+
+        GrailsParameterMap newParams = params.clone()
+        List<String> existingFilters = newParams.list('fq')
+
+        def inverseFilter
+        if (inverseFilters) {
+            inverseFilter = inverseFilters[category.label]
+        } else {
+            inverseFilter = time("getInverseCategoryFilter") { qualityService.getInverseCategoryFilter(category) }
+        }
+        if (inverseFilter) {
+            existingFilters += inverseFilter
+        }
+        newParams.disableAllQualityFilters = true
+        newParams.fq = existingFilters
+
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+        newParams.remove('startIndex')
+        newParams.remove('offset')
+        newParams.remove('max')
+        attrs.params = newParams
+
+        out << g.createLink(attrs, body)
+    }
+
+    /**
+     * Convert a data quality category into user filter queries or vice versa
+     *
+     * @attr category REQUIRED The QualityCategory to enable/disable in the link
+     * @attr enable REQUIRED Whether to enable or disable the QualityCategory in this link
+     * @attr expand REQUIRED Whether to expand (or contract) the QualityCategory into individual filter queries
+     */
+    def linkQualityCategory = { attrs, body ->
+
+        QualityCategory category = attrs.remove('category')
+        boolean enable = attrs.remove('enable')
+        boolean expand = attrs.remove('expand')
+
+        GrailsParameterMap newParams = params.clone()
+        List<String> disables
+        if (enable) {
+            disables = params.list('disableQualityFilter') - category.label
+        } else {
+            disables = params.list('disableQualityFilter') + category.label
+        }
+        if (expand) {
+            List<String> filters
+            if (enable) {
+                List<String> existingFilters = new ArrayList<String>(params.list('fq'))
+                List<String> removedFilters = category.qualityFilters.findAll { it.enabled }*.filter
+                // TODO O(mn)
+                removedFilters.each { existingFilters.remove(it) }
+                filters = existingFilters
+            }
+            else {
+                filters = params.list('fq') + category.qualityFilters.findAll { it.enabled }*.filter
+            }
+
+            if (filters) {
+                newParams.fq = filters
+            } else {
+                newParams.remove('fq')
+            }
+        }
+        if (disables) {
+            newParams.disableQualityFilter = disables
+        } else {
+            newParams.remove('disableQualityFilter')
+        }
+
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+        newParams.remove('startIndex')
+        newParams.remove('offset')
+        newParams.remove('max')
+        attrs.params = newParams
+
+        out << g.link(attrs, body)
+    }
+
+    def linkToggeleDQFilters = { attrs ->
+        GrailsParameterMap newParams = params.clone()
+        def cap = ""
+        if (params.disableAllQualityFilters) {
+            attrs.title = 'Click to re-enable Data Quality filters'
+            cap = 'Enable Quality filters'
+            newParams.remove('disableAllQualityFilters')
+        } else {
+            attrs.title = 'Click to disable All Data Quality filters'
+            cap = 'Disable All Quality filters'
+            newParams.put('disableAllQualityFilters', true)
+        }
+
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+
+        attrs.params = newParams
+
+        out << g.link(attrs, cap)
+    }
+
+    def linkResetSearch = { attrs, body ->
+        def filters =  attrs.remove('filters')
+
+        GrailsParameterMap newParams = params.clone()
+        newParams.remove('disableQualityFilter')
+        newParams.remove('disableAllQualityFilters')
+        newParams.remove('qualityProfile')
+
+        def newfq = params.list('fq').findAll {!filters.contains(it)}
+        if (newfq.size() > 0) {
+            newParams.fq = newfq
+        } else {
+            newParams.remove('fq')
+        }
+        newParams.remove('startIndex')
+        newParams.remove('offset')
+        newParams.remove('max')
+
+        if (!attrs.action) {
+            attrs.action = actionName
+        }
+        attrs.params = newParams
+
+        out << g.link(attrs, body)
     }
 }

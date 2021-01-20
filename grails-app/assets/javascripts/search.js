@@ -24,6 +24,17 @@ $(document).ready(function() {
 
     //alert("doc is loaded");
     // listeners for sort & paging widgets
+    var excludeCounts = {};
+    $.get(BC_CONF.excludeCountUrl).done(function(data) {
+        $('.exclude-loader').hide();
+        for (var key in data) {
+            var categoryEnabled = $('.exclude-count-label[data-category='+key+']').data('enabled')
+            data[key] = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : 0
+            $('.exclude-count-label[data-category='+key+']').text(data[key]).show();
+            $('.exclude-count-facet[data-category='+key+']').text("-("+data[key]+")").show();
+        }
+        excludeCounts = data;
+    });
     $("select#sort").change(function() {
         var val = $("option:selected", this).val();
         reloadWithParam('sort',val);
@@ -110,10 +121,6 @@ $(document).ready(function() {
     }
 
     // active facets/filters
-    $('.activeFilter').click(function(e) {
-        e.preventDefault();
-        removeFilter(this);
-    });
 
     // bootstrap dropdowns - allow clicking inside dropdown div
     $('#facetCheckboxes').children().not('#updateFacetOptions').click(function(e) {
@@ -342,6 +349,268 @@ $(document).ready(function() {
         loadMoreFacets(facetName, displayName, null);
     });
 
+    // When user clicks the 'view profile description' icon next to profiles selection drop-down
+    $('.DQProfileDetailsLink').click(function() {
+        $.each($(".cat-table"), function(idx, el) {
+            var filters = $(el).data('filters');
+
+            var filterlist = filters.split(' AND ');
+            var keys = [];
+            for (var i = 0; i < filterlist.length; i++) {
+                var val = parseFilter(filterlist[i]);
+                if (val.length > 0) {
+                    keys.push(val[0]);
+                }
+            }
+
+            // remove duplicate
+            keys = removeDuplicates(keys);
+            var jsonUri = BC_CONF.biocacheServiceUrl + "/index/fields?fl=" + keys.join(',');
+            var map = new Map();
+            $.when($.getJSON(jsonUri)).done(function(jarray) {
+                for (var i = 0; i < jarray.length; i++) {
+                    var obj = jarray[i];
+                    if (obj.infoUrl) {
+                        map.set(obj.name, obj.infoUrl);
+                    }
+                }
+
+                var translation = $(el).data('translation');
+                var descs = $(el).find('td.filter-description');
+                var fqs = $(el).find('td.filter-value');
+                var wikis = $(el).find('td.filter-wiki');
+
+                $.each(fqs, function(idx, el) {
+                    var fq = $(el).text();
+                    var vals = parseFilter(fq);
+                    if (vals.length > 0) {
+                        var key = vals[0];
+                        var val = vals[1];
+
+                        // if there's wiki for the value
+                        var wiki = '';
+                        if (translation && val in translation && typeof (translation[val]) === 'object') {
+                            wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + translation[val].name + "' target='wiki'>Link</a>";
+                        }
+
+                        // otherwise if there's wiki for the key
+                        if (wiki === '' && map.has(key)) {
+                            wiki = replaceURL(map.get(key), 'Link');
+                        }
+
+                        $(wikis[idx]).html(wiki);
+
+                        var desc = $(descs[idx]).data('val');
+                        $(descs[idx]).html(replaceURL(desc));
+                    }
+                })
+            });
+        })
+    })
+
+    // when user clicks 'ok' button in the 'data profiles applied' warning dialog
+    $('#hide-dq-warning').click(function() {
+        document.cookie = 'dq_warn_off=true; path=/';
+    })
+
+    // when use clicks <i/> to view details of a category
+    $('.DQCategoryDetailsLink').click(function() {
+        var link = this;
+        var fq = $(link).data("fq");
+        var fqs = fq.split(' AND ')
+
+        var description = $(link).data("description");
+        var dqCategoryLabel = $(link).data('categorylabel')
+        var dqtranslation = $(link).data("translation");
+        var dqInverse = $(link).data('inverse-filter');
+
+        // show filter name
+        $("#fqdetail-heading-name").text($(link).data("dqcategoryname"));
+        $("#fqdetail-heading-description").text($(link).data("dqcategorydescription"));
+        $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i>");
+        $("#view-excluded").attr('href', dqInverse);
+
+        if (excludeCounts[dqCategoryLabel]) {
+            $("#excluded .exclude-count-label").text(excludeCounts[dqCategoryLabel]).removeData('category').removeAttr('category');
+        } else {
+            $("#excluded .exclude-count-label").text('').data('category', dqCategoryLabel).attr('data-category', dqCategoryLabel);
+        }
+
+        var pos = 0;
+        var start = 0;
+        var keys = [];
+        // get all filter keys
+        while ((pos = fq.indexOf(':', pos)) != -1) {
+            // ':' at pos
+            start = fq.lastIndexOf(' ', pos);
+            var key = "";
+            if (start == -1) {
+                key = fq.substring(0, pos);
+            } else {
+                key = fq.substring(start + 1, pos);
+            }
+
+            if (key.length > 0 && key[0] == '-') key = key.substr(1);
+            if (key.length > 0 && key[0] == '(') key = key.substr(1);
+            keys.push(key);
+            pos++;
+        }
+
+        // remove duplicate
+        keys = removeDuplicates(keys);
+
+        // one AJAX request for each key
+        var requests = [];
+        keys.forEach(function (key) {
+            requests.push(getField(key));
+        })
+
+        var numberOfResponse = keys.length;
+
+        var map = new Map();
+        var successStatus = "success";
+
+        // when all requests finish (depending on the number of requests, the result
+        // structure is different, that's why there's numberOfResponse == 1)
+        // map = {fieldKey : [fieldDescription, fieldInfo]}
+        // description and info could be null so convert it to "" when it's null
+        $.when.apply($, requests).done(function () {
+            if (numberOfResponse === 1) {
+                if (successStatus === arguments[1] && arguments[0].length > 0) {
+                    map.set(arguments[0][0].name, [arguments[0][0].info ? arguments[0][0].info : (arguments[0][0].description ? arguments[0][0].description : ""), arguments[0][0].infoUrl ? arguments[0][0].infoUrl : ""]);
+                }
+            } else {
+                for (var i = 0; i < arguments.length; i++) {
+                    if (successStatus === arguments[i][1] && arguments[i][0].length > 0) {
+                        map.set(arguments[i][0][0].name, [arguments[i][0][0].info ? arguments[i][0][0].info : (arguments[i][0][0].description ? arguments[i][0][0].description : ""), arguments[i][0][0].infoUrl ? arguments[i][0][0].infoUrl : ""]);
+                    }
+                }
+            }
+
+            // field table
+            var html = "";
+            $.each(keys, function (index, key) {
+                if (map.has(key)) {
+                    html += "<tr><td style='word-break: normal'>" + key + "</td><td style='word-break: break-word'>" + replaceURL(map.get(key)[0]) + "</td><td style='word-break: normal'>" + replaceURL(map.get(key)[1], 'Link') + "</td></tr>";
+                }
+            })
+
+            var descs = description.split(' and ')
+            var valuesHtml = ""
+
+            $.each(fqs, function(idx, el) {
+                var vals = parseFilter(el);
+                if (vals.length > 0) {
+                    var key = vals[0];
+                    var val = vals[1];
+
+                    var wiki = '';
+                    // if value has a wiki link
+                    if (dqtranslation && val in dqtranslation && typeof (dqtranslation[val]) === 'object') {
+                        wiki = "<a href='https://github.com/AtlasOfLivingAustralia/ala-dataquality/wiki/" + dqtranslation[val].name + "' target='_blank'>Link</a>";
+                    }
+
+                    // if values has no wiki, show wiki link of key
+                    if (wiki === '' && map.has(key)) {
+                        wiki = replaceURL(map.get(key)[1], 'Link');
+                    }
+
+                    // make sure no beak between '-' and key
+                    var els = el.split(':');
+                    el = '<span style="white-space: nowrap;">' + els[0] + '</span>:' + els[1];
+                    valuesHtml += '<tr><td style=\"word-break: break-word\">' + replaceURL(descs[idx]) + '</td><td style=\"word-break: normal\">' + el + '</td><td>' + wiki + '</td></tr>';
+                }
+            })
+
+            $('.spinnerRow').hide();
+
+            // clear content
+            $("table#DQDetailsTable tbody").html("");
+            $("table#DQDetailsTable tbody").append(html);
+
+            $("table#DQFiltersTable tbody").html("");
+            $("table#DQFiltersTable tbody").append(valuesHtml);
+
+            // if we should disable/hide the expand button
+            var category_disabled = $(link).data('disabled');
+            var expandButton = $('#expandfilters');
+            $(expandButton).prop('disabled', category_disabled);
+            if (category_disabled) {
+                $(expandButton).hide();
+            } else {
+                $(expandButton).data('category', $(link).data('categorylabel'));
+                $(expandButton).data('filters', $(link).data("fq").split(' AND '));
+                $(expandButton).show();
+            }
+        })
+    })
+
+    function parseFilter(filter) {
+        var idx = filter.indexOf(":");
+        if (idx === -1) return [];
+
+        var val = filter.substring(idx + 1);
+        if (val.startsWith('"') && val.endsWith('"')) val = val.substring(1, val.length - 1)
+
+        var key = filter.substring(0, idx);
+
+        if (key.startsWith('-')) key = key.substring(1);
+        if (key.startsWith('(')) key = key.substring(1);
+
+        return [key, val];
+    }
+
+    // to expand a category
+    $('#expandfilters').on("click", function(e) {
+        var category = $(this).data('category');
+        var filters = $(this).data('filters');
+
+        var url = $(location).attr('href');
+        // step 1, disable this category
+        url = appendURL(url, "&disableQualityFilter=" + encodeURIComponent(category).replace(/%20/g, "+").replace(/[()]/g, escape));
+
+        // step 2, append all enabled fqs as user fq
+        for (var i = 0; i < filters.length; i++) {
+            // console.log('filter = ' + filters[i]);
+            url = appendURL(url, '&fq=' + encodeURIComponent(filters[i]).replace(/%20/g, "+").replace(/[()]/g, escape));
+        }
+
+        window.location.href = url;
+    })
+
+    function removeDuplicates(data) {
+        var unique = [];
+        data.forEach(function(el) {
+            if (!unique.includes(el)) {
+                unique.push(el);
+            }
+        })
+        return unique;
+    }
+
+    function replaceURL(el, text) {
+        if (el.indexOf('http') == -1) return el
+
+        var start = el.indexOf('http')
+        var end = el.indexOf(' ', start)
+        if (end == -1) end = el.length - 1
+
+        var url = el.substr(start, end - start + 1)
+
+        if (typeof text === 'undefined') {
+            el = el.replace(url, '<a href="' + url + '" target="_blank">' + url + '</a>')
+        } else {
+            el = el.replace(url, '<a href="' + url + '" target="_blank">' + text + '</a>')
+        }
+        return el
+    }
+
+    function getField(key) {
+        //var jsonUri = "https://biocache-ws.ala.org.au/ws/index/fields?fl=" + key
+        var jsonUri = BC_CONF.biocacheServiceUrl + "/index/fields?fl=" + key
+        return $.getJSON(jsonUri)
+    }
+
     $('#multipleFacets').on('hidden.bs.modal', function () {
         // clear the tbody content
         $("tbody.scrollContent tr").not("#spinnerRow").remove();
@@ -350,7 +619,7 @@ $(document).ready(function() {
     $("#downloadFacet").on("click", function(e) {
         var facetName = $("table#fullFacets").data("facet");
         //console.log('clicked ' + window.location.href );
-        window.location.href = BC_CONF.biocacheServiceUrl + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName + '&count=true&lookup=true';
+        window.location.href = BC_CONF.serverName + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName;
     });
 
     // form validation for form#facetRefineForm
@@ -402,6 +671,284 @@ $(document).ready(function() {
             alert("Please select at least one checkbox.");
         }
     });
+
+    // switch caret style
+    $('.dq-filters-collapse').click(function (e) {
+        var el = $(this).find('i');
+        if ($(el).hasClass('fa-caret-right')) {
+            $(el).removeClass('fa-caret-right');
+            $(el).addClass('fa-caret-down');
+        } else if ($(el).hasClass('fa-caret-down')) {
+            $(el).removeClass('fa-caret-down');
+            $(el).addClass('fa-caret-right');
+        }
+    });
+
+    // when dlg pops, load and init status, set checkall status
+    $('.multipleFiltersLink').click(function() {
+        var filterStatus = $("form#filterRefineForm").find(":input.filters");
+        $.each(filterStatus, function( i, status ) {
+            $(this).prop('checked', $(this).data('enabled'));
+        })
+
+        setCheckAllStatus();
+        setFiltersInitialStatus();
+    });
+
+    // check checkbox for each single filter, then set checkall
+    function setCheckAllStatus() {
+        var filterStatus = $("form#filterRefineForm").find(":input.filters");
+        var allchecked = true;
+        var allunchecked = true;
+        $.each(filterStatus, function( i, el ) {
+            allchecked = allchecked && $(el).prop('checked');
+            allunchecked = allunchecked && !($(el).prop('checked'));
+        })
+
+        if (allchecked) {
+            $("#filterRefineForm .checkall").prop('checked', true);
+        } else if (allunchecked) {
+            $("#filterRefineForm .checkall").prop('checked', false);
+        } else {
+            $("#filterRefineForm .checkall").prop('checked', false);
+        }
+    }
+
+    function setFiltersInitialStatus() {
+        var filterStatus = $("form#filterRefineForm").find(":input.filters");
+        var filters = $("form#filterRefineForm").find("td.filternames");
+
+        $.each(filterStatus, function( i, el ) {
+            var checked = $(el).prop('checked');
+            var category = $(el).data('category');
+            // 3 states, 'enabled', 'expanded', 'disabled'
+            if (checked === true) {
+                $("#filterRefineForm").find('.expand[data-category="' + category + '"]').show();
+                $("#filterRefineForm").find('.expanded[data-category="' + category + '"]').hide();
+                $(filters[i]).attr('data-expanded', false);
+            } else {
+                // if not checked, check if it's expanded
+                $("#filterRefineForm").find('.expand[data-category="' + category + '"]').hide();
+
+                if (ifExpanded($(el).data('category'), $(filters[i]).data("filters"))) {
+                    $("#filterRefineForm").find('.expanded[data-category="' + category + '"]').show();
+                    $(filters[i]).attr('data-expanded', true);
+                } else {
+                    $("#filterRefineForm").find('.expanded[data-category="' + category + '"]').hide();
+                    $(filters[i]).attr('data-expanded', false);
+                }
+            }
+        })
+    }
+
+    function ifExpanded(categoryName, filters) {
+        // get all disabled categories from the url
+        var disableQualityFilterSet = new Set();
+        var disabledFilter = $.url().param('disableQualityFilter');
+        if (typeof disabledFilter === "object") {
+            disableQualityFilterSet = new Set(disabledFilter);
+        } else if (typeof disabledFilter === "string") {
+            disableQualityFilterSet.add(disabledFilter);
+        }
+
+        // if not disabled it can't be expanded
+        if (!disableQualityFilterSet.has(categoryName)) return false;
+
+        var fqSet = new Set();
+
+        var fqs = $.url().param('fq');
+        if (typeof fqs === "object") {
+            fqSet = new Set(fqs);
+        } else if (typeof fqs === "string") {
+            fqSet.add(fqs);
+        }
+
+        var len = filters.length;
+        if ((len > 0) && filters.startsWith('[') && filters.endsWith(']')) {
+            filters = filters.substring(1, len - 1);
+        }
+
+        filters = filters.split(', ')
+
+        for (var i = 0; i < filters.length; i++) {
+            if (!fqSet.has(filters[i])) return false;
+        }
+
+        return true;
+    }
+
+    // handle enable/disable all
+    $("#filterRefineForm .checkall").on("click", function(e) {
+        $("form#filterRefineForm").find(":input.filters").prop('checked', $(this).prop('checked'));
+        setCheckAllStatus();
+        updateFiltersStatus();
+    });
+
+    function updateFiltersStatus() {
+        var checks = $("form#filterRefineForm").find(":input.filters")
+
+        $.each(checks, function( i, el ) {
+            updateIndividualStatus($(el));
+        })
+    }
+    // handle checkbox for each filter
+    $("#filterRefineForm :input.filters").on("click", function() {
+        setCheckAllStatus();
+        updateIndividualStatus($(this));
+    })
+
+    function updateIndividualStatus(el) {
+        var checked = $(el).prop('checked');
+        var category = $(el).data('category');
+        if (checked) {
+            $("#filterRefineForm").find('.expand[data-category="' + category + '"]').show();
+        } else {
+            $("#filterRefineForm").find('.expand[data-category="' + category + '"]').hide();
+        }
+        $("#filterRefineForm").find('.expanded[data-category="' + category + '"]').hide();
+    }
+
+    // expand button clicked
+    $("#filterRefineForm :button.expand").on("click", function(e) {
+        e.preventDefault();
+        var category = $(this).data('category');
+        // if expand clicked, uncheck enabled
+        $("#filterRefineForm").find('.filters[data-category="' + category + '"]').prop('checked', false);
+        // hide expand button
+        $(this).hide();
+        // show 'Expanded' status
+        $("#filterRefineForm").find('.expanded[data-category="' + category + '"]').show();
+        // unselect all checked
+        $("#filterRefineForm .checkall").prop('checked', false);
+    })
+
+    $("#submitFilters :input.submit").on("click", function(e) {
+        e.preventDefault();
+
+        // get all disabled categories from the url
+        // we don't care disableall param
+        var disableQualityFilterSet = new Set();
+        var disabledFilter = $.url().param('disableQualityFilter');
+        if (typeof disabledFilter === "object") {
+            disableQualityFilterSet = new Set(disabledFilter);
+        } else if (typeof disabledFilter === "string") {
+            disableQualityFilterSet.add(disabledFilter);
+        }
+
+        // get current url
+        var url = $(location).attr('href');
+
+        var fitlers = $("form#filterRefineForm").find("td.filternames");
+        var filterStatus = $("form#filterRefineForm").find(":input.filters");
+        var expanded = $("form#filterRefineForm").find(".expanded");
+
+        // replace url encoded %20 with '+' because groovy encodes space to '+'
+        $.each(filterStatus, function( i, status ) {
+            var filterlabel = $(fitlers[i]).data('category');
+            // get checked status
+            var toDisable = !this.checked;
+
+            if (toDisable) { // if to disable, add it to disable list
+                if (!disableQualityFilterSet.has(filterlabel)) {
+                    url = appendURL(url, "&disableQualityFilter=" + encodeURIComponent(filterlabel).replace(/%20/g, "+").replace(/[()]/g, escape));
+                }
+
+                var alreadyExpanded = $(fitlers[i]).data('expanded');
+                var nowToExpand = !$(expanded[i]).is(":hidden");
+
+                if (nowToExpand && !alreadyExpanded) {
+                    url = appendFiltersToUrl(url, $(fitlers[i]).data("filters"));
+                } else if (!nowToExpand && alreadyExpanded) {
+                    url = removeFiltersFromFq($(fitlers[i]).data("filters"), url);
+                }
+            } else { // if to enable, remove it from disable list + remove expanded fqs
+                if (disableQualityFilterSet.has(filterlabel)) {
+                    url = removeFromURL(url, "disableQualityFilter=" + encodeURIComponent(filterlabel).replace(/%20/g, "+").replace(/[()]/g, escape), true);
+                }
+
+                url = removeFiltersFromFq($(fitlers[i]).data("filters"), url);
+            }
+        })
+
+        window.location.href = url;
+    })
+
+    function appendFiltersToUrl(url, filters) {
+        var len = filters.length;
+        if ((len > 0) && filters.startsWith('[') && filters.endsWith(']')) {
+            filters = filters.substring(1, len - 1);
+        }
+
+        // split all fqs
+        filters.split(', ').forEach(function(filter) {
+            var queryToAppend = "&fq=" + encodeURIComponent(filter).replace(/%20/g, "+").replace(/[()]/g, escape);
+            if (url.indexOf(queryToAppend) === -1) {
+                url = appendURL(url, queryToAppend);
+            }
+        })
+
+        return url;
+    }
+
+    function removeFiltersFromFq(filters, url) {
+        var len = filters.length;
+        if ((len > 0) && filters.startsWith('[') && filters.endsWith(']')) {
+            filters = filters.substring(1, len - 1);
+        }
+
+        // get all enabled filters in this category
+        filters.split(', ').forEach(function(filter) {
+            url = removeFromURL(url, 'fq=' + encodeURIComponent(filter).replace(/%20/g, "+").replace(/[()]/g, escape), true);
+        })
+
+        return url;
+    }
+
+    // insert query string into url, before the # tag
+    function appendURL(url, sToAppend) {
+        var idx = url.indexOf("#");
+        if (idx == -1) {
+            return url.concat(sToAppend);
+        } else {
+            return url.slice(0, idx) + sToAppend + url.slice(idx);
+        }
+    }
+
+    function removeFromURL(url, sToRemove, exactMatch) {
+        var qIndex = url.indexOf('?');
+        var serverPath = "";
+        if (qIndex != -1) {
+            serverPath = url.substring(0, qIndex + 1);
+            url = url.substring(qIndex + 1);
+        }
+
+        var anchorpos = url.indexOf('#');
+        var anchorpart = "";
+        if (anchorpos != -1) {
+            anchorpart = url.substring(anchorpos);
+            url = url.substring(0, anchorpos);
+        }
+
+        var tokens = url.split('&');
+        var idx = -1;
+        // Match the exact value
+        if (exactMatch) {
+            idx = tokens.indexOf(sToRemove);
+        } else {
+            for (var i = 0; i < tokens.length; i++) {
+                if (tokens[i].startsWith(sToRemove)) {
+                    idx = i;
+                    break;
+                }
+            }
+        }
+
+        if (idx != -1) {
+            tokens.splice(idx, 1);
+        }
+
+        return serverPath + tokens.join('&') + anchorpart;
+    }
 
     // Drop-down option on facet popup div - for wildcard fq searches
     $('#submitFacets a.wildcard').on('click', function(e) {
@@ -487,10 +1034,14 @@ $(document).ready(function() {
         var methodName = $(this).data("method");
         var url = alertsUrlPrefix + "/ws/" + methodName + "?";
         var searchParamsEncoded = encodeURIComponent(decodeURIComponent(BC_CONF.searchString)); // prevent double encoding of chars
-        url += "queryDisplayName="+encodeURIComponent(query);
-        url += "&baseUrlForWS=" + encodeURIComponent(BC_CONF.biocacheServiceUrl.replace(/\/ws$/,""));
+        if (query.length >= 250) {
+            url += "queryDisplayName="+encodeURIComponent(query.substring(0, 149) + "...");
+        } else {
+            url += "queryDisplayName="+encodeURIComponent(query);
+        }
+        url += "&baseUrlForWS=" + encodeURIComponent(BC_CONF.biocacheServiceUrl);
         url += "&baseUrlForUI=" + encodeURIComponent(BC_CONF.serverName);
-        url += "&webserviceQuery=%2Fws%2Foccurrences%2Fsearch" + searchParamsEncoded;
+        url += "&webserviceQuery=%2Foccurrences%2Fsearch" + searchParamsEncoded;
         url += "&uiQuery=%2Foccurrences%2Fsearch" + searchParamsEncoded;
         url += "&resourceName=" + encodeURIComponent(BC_CONF.resourceName);
         //console.log("url", query, methodName, searchParamsEncoded, url);
@@ -531,7 +1082,7 @@ $(document).ready(function() {
     });
 
     // scroll bars on facet values
-    $(".nano").nanoScroller({ preventPageScrolling: true, sliderMinHeight: 90 });
+    $(".nano").nanoScroller({ preventPageScrolling: true});
     //$(".nano").overlayScrollbars({  });
 
     // store last search in local storage for a "back button" on record pages
@@ -597,6 +1148,8 @@ $(document).ready(function() {
         height *= 0.8
         $("#viewerContainerId").height(height);
     }
+
+    $('#modal-dismiss-dq').modal()
 }); // end JQuery document ready
 
 /**
@@ -614,6 +1167,10 @@ function reloadWithParam(paramName, paramValue) {
     var lon = $.url().param('lon');
     var rad = $.url().param('radius');
     var taxa = $.url().param('taxa');
+    var qualityProfile = $.url().param('qualityProfile');
+    var disableQualityFilter = $.url().param('disableQualityFilter');
+    var disableAllQualityFilters = $.url().param('disableAllQualityFilters');
+
     // add query param
     if (q != null) {
         paramList.push("q=" + q);
@@ -661,128 +1218,26 @@ function reloadWithParam(paramName, paramValue) {
         paramList.push("wkt=" + wkt);
     }
 
+    if (qualityProfile) {
+        paramList.push('qualityProfile=' + qualityProfile)
+    }
+
+    if (disableQualityFilter) {
+        if (typeof disableQualityFilter === "string") {
+            disableQualityFilter = [ disableQualityFilter ]
+        }
+        disableQualityFilter.forEach(function(value, index, array) {
+            paramList.push('disableQualityFilter=' + value);
+        })
+    }
+
+    if (disableAllQualityFilters) {
+        paramList.push('disableAllQualityFilters=' + disableAllQualityFilters);
+    }
+
     //alert("params = "+paramList.join("&"));
     //alert("url = "+window.location.pathname);
     window.location.href = window.location.pathname + '?' + paramList.join('&');
-}
-
-/**
- * triggered when user removes an active facet - re-calculates the request params for
- * page minus the requested fq param
- */
-function removeFacet(el) {
-    var facet = $(el).data("facet").replace(/\+/g,' ');
-    var q = $.url().param('q'); //$.query.get('q')[0];
-    var fqList = $.url().param('fq'); //$.query.get('fq');
-    var lat = $.url().param('lat');
-    var lon = $.url().param('lon');
-    var rad = $.url().param('radius');
-    var taxa = $.url().param('taxa');
-    var paramList = [];
-    if (q != null) {
-        paramList.push("q=" + q);
-    }
-    //console.log("0. fqList", fqList);
-    // add filter query param
-    if (fqList && typeof fqList === "string") {
-        fqList = [ fqList ];
-    }
-
-    //console.log("1. fqList", fqList);
-    
-    if (lat && lon && rad) {
-        paramList.push("lat=" + lat);
-        paramList.push("lon=" + lon);
-        paramList.push("radius=" + rad);
-    }
-    
-    if (taxa) {
-        paramList.push("taxa=" + taxa);
-    }
-
-    //alert("this.facet = "+facet+"; fqList = "+fqList.join('|'));
-
-    if (fqList instanceof Array) {
-        //alert("fqList is an array");
-        for (var i in fqList) {
-            var thisFq = decodeURIComponent(fqList[i].replace(/\+/g,' ')); //.replace(':[',':'); // for dates to work
-            //alert("fq = "+thisFq + " || facet = "+decodeURIComponent(facet));
-            if (thisFq.indexOf(decodeURIComponent(facet)) != -1) {  // if(str1.indexOf(str2) != -1){
-                //alert("removing fq: "+fqList[i]);
-                fqList.splice($.inArray(fqList[i], fqList), 1);
-            }
-        }
-    } else {
-        //alert("fqList is NOT an array");
-        if (decodeURIComponent(fqList) == facet) {
-            fqList = null;
-        }
-    }
-    //alert("(post) fqList = "+fqList.join('|'));
-    if (fqList != null) {
-        paramList.push("fq=" + fqList.join("&fq="));
-    }
-
-    window.location.href = window.location.pathname + '?' + paramList.join('&') + window.location.hash +"";
-}
-
-function removeFilter(el) {
-    var facet = $(el).data("facet").replace(/^\-/g,''); // remove leading "-" for exclude searches
-    var q = $.url().param('q'); //$.query.get('q')[0];
-    var fqList = $.url().param('fq'); //$.query.get('fq');
-    var lat = $.url().param('lat');
-    var lon = $.url().param('lon');
-    var rad = $.url().param('radius');
-    var taxa = $.url().param('taxa');
-    var wkt = $.url().param('wkt');
-    var paramList = [];
-    if (q != null) {
-        paramList.push("q=" + q);
-    }
-    //console.log("0. fqList", fqList);
-    // add filter query param
-    if (fqList && typeof fqList === "string") {
-        fqList = [ fqList ];
-    }
-
-    //console.log("1. fqList", fqList);
-
-    if (lat && lon && rad) {
-        paramList.push("lat=" + lat);
-        paramList.push("lon=" + lon);
-        paramList.push("radius=" + rad);
-    }
-
-    if (wkt) {
-        paramList.push("wkt=" + wkt);
-    }
-
-    if (taxa) {
-        paramList.push("taxa=" + taxa);
-    }
-
-    for (var i in fqList) {
-        var fqParts = fqList[i].split(':');
-        var fqField = fqParts[0].replace(/[\(\)\-]/g,"");
-        //alert("fqField = " + fqField + " vs " + facet);
-
-        if (fqField.indexOf(facet) != -1) {  // if(str1.indexOf(str2) != -1){
-            //alert("removing fq: "+fqList[i]);
-            fqList.splice($.inArray(fqList[i], fqList), 1);
-        }
-    }
-
-    if (facet == "all") {
-        fqList = [];
-    }
-
-    if (fqList != null) {
-        paramList.push("fq=" + fqList.join("&fq="));
-    }
-
-    //alert("paramList = " + paramList.join('&'));
-
-    window.location.href = window.location.pathname + '?' + paramList.join('&') + window.location.hash +"";
 }
 
 /**
@@ -1200,7 +1655,7 @@ function loadMoreFacets(facetName, displayName, fsort, foffset) {
 }
 
 function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets) {
-    var jsonUri = BC_CONF.biocacheServiceUrl + "/occurrences/search.json" + BC_CONF.searchString +
+    var jsonUri = BC_CONF.serverName + "/occurrences/facets" + BC_CONF.searchString +
         "&facets=" + facetName + "&flimit=" + facetLimit + "&foffset=" + foffset + "&pageSize=0"; // + "&fsort=" + fsort
 
     if (fsort) {

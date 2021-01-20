@@ -13,8 +13,12 @@
 
 package au.org.ala.biocache.hubs
 
+import au.org.ala.dataquality.model.QualityCategory
+import au.org.ala.dataquality.model.QualityFilter
 import grails.test.mixin.TestFor
+import grails.util.Holders
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
  * Unit tests for {@link au.org.ala.biocache.hubs.OccurrenceTagLib}
@@ -23,6 +27,16 @@ import spock.lang.Specification
  */
 @TestFor(OccurrenceTagLib)
 class OccurrenceTagLibSpec extends Specification {
+
+    def setup() {
+        Holders.grailsApplication.config.dataResourceUuid.alaSightings = "dr364"
+        Holders.grailsApplication.config.dataResourceUuid.iNaturalist = "dr1411"
+        Holders.grailsApplication.config.dataResourceUuid.flickr = "dr360"
+    }
+
+    static doWithConfig(config) {
+        config.dataquality.enabled = 'true'
+    }
 
     void "test sanitizeBodyText plain text"() {
         given:
@@ -160,5 +174,26 @@ class OccurrenceTagLibSpec extends Specification {
             def html = tagLib.getLinkForUserId(userName:"Donald Hobern", dataResourceUid: "dr360", occurrenceId: "https://www.flickr.com/photos/dhobern/5466675452/")
         then:
             html == "<a href=\"https://www.flickr.com/photos/dhobern\">Donald Hobern</a>"
+    }
+
+    @Unroll
+    void 'test linkQualityCategory enable: #enable expand #expand'(boolean enable, boolean expand, Map searchParams, String result) {
+        given:
+        QualityCategory category = new QualityCategory(name: 'asdf', label: 'asdf', qualityFilters: [new QualityFilter(filter: 'a:b', enabled: true), new QualityFilter(filter: 'c:d', enabled: true), new QualityFilter(filter: 'e:f', enabled: false)])
+        params.q = '*:*'
+        params.putAll(searchParams)
+
+        when:
+        def html = applyTemplate('<alatag:linkQualityCategory class="tooltips" title="asdf" controller="occurrence" action="search" category="${category}" enable="${' + enable + '}" expand="${' + expand + '}">FOO</alatag:linkQualityCategory>', [category: category])
+
+        then:
+        html == result
+
+        where:
+        enable || expand || searchParams || result
+        true    | true    | [fq: ['a:z', 'c:d'], disableQualityFilter: ['qwerty', 'asdf']] | '<a href="/occurrence/search?q=*%3A*&amp;fq=a%3Az&amp;disableQualityFilter=qwerty" class="tooltips" title="asdf">FOO</a>'
+        true    | false   | [fq: ['a:z', 'c:d'], disableQualityFilter: ['qwerty', 'asdf']] | '<a href="/occurrence/search?q=*%3A*&amp;fq=a%3Az&amp;fq=c%3Ad&amp;disableQualityFilter=qwerty" class="tooltips" title="asdf">FOO</a>'
+        false   | true    | [fq: ['x:y', 'y:z'], disableQualityFilter: ['qwerty']] | '<a href="/occurrence/search?q=*%3A*&amp;fq=x%3Ay&amp;fq=y%3Az&amp;fq=a%3Ab&amp;fq=c%3Ad&amp;disableQualityFilter=qwerty&amp;disableQualityFilter=asdf" class="tooltips" title="asdf">FOO</a>'
+        false   | false   | [fq: ['x:y', 'y:z'], disableQualityFilter: 'qwerty'] | '<a href="/occurrence/search?q=*%3A*&amp;fq=x%3Ay&amp;fq=y%3Az&amp;disableQualityFilter=qwerty&amp;disableQualityFilter=asdf" class="tooltips" title="asdf">FOO</a>'
     }
 }
