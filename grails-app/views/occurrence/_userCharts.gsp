@@ -16,7 +16,7 @@
 <asset:script type="text/javascript">
     <charts:biocache
             biocacheServiceUrl="${alatag.getBiocacheAjaxUrl()}"
-            biocacheWebappUrl="${grailsApplication.config.serverName}${request.contextPath}"
+            biocacheWebappUrl="${g.createLink(absolute:true, uri:'')}"
             q="${searchString.replace('?q=','')}"
             qc=""
             fq=""

@@ -305,9 +305,6 @@ function refreshUserAnnotations(){
         }
         $('#userAnnotationsList').empty();
 
-        var userAssertionStatus = jQuery.i18n.prop("user_assertions." + data.userAssertionStatus);
-        $("#userAssertionStatus").text(userAssertionStatus);
-
         for(var i=0; i < data.assertionQueries.length; i++){
             var $clone = $('#userAnnotationTemplate').clone();
             $clone.find('.issue').text(data.assertionQueries[i].assertionType);

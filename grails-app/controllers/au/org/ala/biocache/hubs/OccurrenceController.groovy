@@ -15,15 +15,18 @@
 
 package au.org.ala.biocache.hubs
 
+import au.org.ala.dataquality.model.QualityProfile
+import au.org.ala.web.CASRoles
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
-import au.org.ala.web.CASRoles
 
 import java.text.SimpleDateFormat
+
+import static au.org.ala.biocache.hubs.TimingUtils.time
 
 /**
  * Controller for occurrence searches and records
@@ -35,6 +38,7 @@ class OccurrenceController {
     def SESSION_NAVIGATION_DTO = "SESSION_NAVIGATION_DTO"
 
     GeoIpService geoIpService
+    QualityService qualityService
 
     def ENVIRO_LAYER = "el"
     def CONTEXT_LAYER = "cl"
@@ -57,38 +61,25 @@ class OccurrenceController {
      */
     def list(SpatialSearchRequestParams requestParams) {
         def start = System.currentTimeMillis()
-        requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
 
-        log.debug "requestParams = ${requestParams}"
+        def activeProfile = time("active profile") { qualityService.activeProfile(requestParams.qualityProfile) }
 
-        List taxaQueries = (ArrayList<String>) params.list("taxa") // will be list for even one instance
-        log.debug "skin.useAlaBie = ${grailsApplication.config.skin.useAlaBie}"
-        log.debug "taxaQueries = ${taxaQueries} || q = ${requestParams.q}"
-
-        if (grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean() &&
-                grailsApplication.config.bie.baseUrl && taxaQueries && taxaQueries[0]) {
-            // check for list with empty string
-            // taxa query - attempt GUID lookup
-            List guidsForTaxa = webServicesService.getGuidsForTaxa(taxaQueries)
-            def additionalQ = (params.q) ? " AND " + params.q : "" // advanced search form can provide both taxa and q params
-            requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, guidsForTaxa) + additionalQ
-        } else if (!params.q && taxaQueries && taxaQueries[0]) {
-            // Bypass BIE lookup and pass taxa query in as text
-            List emptyGuidList = taxaQueries.clone().collect { it = ""} // list of empty strings, of equal size to taxaQueries
-            requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, emptyGuidList)
-        }
-
-        if (!requestParams.q) {
-            requestParams.q = "*:*"
-        }
+        normaliseRequestParams(requestParams)
 
         try {
             //the configured grouping
-            Map configuredGroupedFacets = webServicesService.getGroupedFacets()
-            List listOfGroupedFacets = postProcessingService.getListFromGroupedFacets(configuredGroupedFacets)
-            Map defaultFacets = postProcessingService.getAllFacets(listOfGroupedFacets)
-            String[] userFacets = postProcessingService.getFacetsFromCookie(request)
-            String[] filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
+            Map configuredGroupedFacets
+            List listOfGroupedFacets
+            Map defaultFacets
+            String[] userFacets
+            String[] filteredFacets
+            time("all facets") {
+                configuredGroupedFacets = webServicesService.getGroupedFacets()
+                listOfGroupedFacets = postProcessingService.getListFromGroupedFacets(configuredGroupedFacets)
+                defaultFacets = postProcessingService.getAllFacets(listOfGroupedFacets)
+                userFacets = postProcessingService.getFacetsFromCookie(request)
+                filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
+            }
 
             final facetsDefaultSelectedConfig = grailsApplication.config.facets.defaultSelected
             if (!userFacets && facetsDefaultSelectedConfig) {
@@ -110,15 +101,22 @@ class OccurrenceController {
 
             if (grailsApplication.config.facets.includeDynamicFacets?.toString()?.toBoolean()) {
                 // Sandbox only...
-                dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
-                requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
+                time("sandbox only facets") {
+                    dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
+                    requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
+                }
             }
 
             requestParams.facets = requestedFacets
 
             def wsStart = System.currentTimeMillis()
-            JSONObject searchResults = webServicesService.fullTextSearch(requestParams)
+            JSONObject searchResults = time("full text search") { webServicesService.fullTextSearch(requestParams) }
             def wsTime = (System.currentTimeMillis() - wsStart)
+
+            // If there's an error, treat it as an exception so error page can be shown
+            if (searchResults.status == 'ERROR') {
+                throw new Exception(searchResults.errorMessage)
+            }
 
             //create a facet lookup map
             Map groupedFacetsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
@@ -127,20 +125,51 @@ class OccurrenceController {
             Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)
 
             //remove qc from active facet map
-            if (params?.qc && searchResults?.activeFacetMap) {
-                def remove = null
-                searchResults?.activeFacetMap.each { k, v ->
-                    if (k + ':' + v?.value == params.qc) {
-                        remove = k
+            if (params?.qc) {
+                def qc = params.qc
+                if (searchResults?.activeFacetMap) {
+                    def remove = null
+                    searchResults?.activeFacetMap.each { k, v ->
+                        if (k + ':' + v?.value == qc) {
+                            remove = k
+                        }
+                    }
+                    if (remove) searchResults?.activeFacetMap?.remove(remove)
+                }
+
+                if (searchResults?.activeFacetObj) {
+                    def removeKey = null
+                    def removeIdx = null
+                    searchResults?.activeFacetObj.each { k, v ->
+                        def idx = v.findIndexOf { it.value == qc }
+                        if (idx > -1) {
+                            removeKey = k
+                            removeIdx = idx
+                        }
+                    }
+                    if (removeKey && removeIdx != null) {
+                        searchResults.activeFacetObj[removeKey].remove(removeIdx)
                     }
                 }
-                if (remove) searchResults?.activeFacetMap?.remove(remove)
+
             }
 
             def hasImages = postProcessingService.resultsHaveImages(searchResults)
             if(grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()){
                 hasImages = true
             }
+
+            def qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
+            def qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
+            def qualityTotalCount = time("quality total count") { qualityService.countTotalRecords(requestParams) }
+            def groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
+            def qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')] }
+
+            def (fqInteract, dqInteract, UserFQColors, DQColors) = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj) }
+
+            def messagePropertiesFile = time("message properties file") { webServicesService.getMessagesPropertiesFile() }
+            def assertionCodeMap = time("assertionCodeMap") { webServicesService.getAssertionCodeMap() }
+            def translatedFilterMap = postProcessingService.translateValues(groupedEnabledFilters, messagePropertiesFile, assertionCodeMap)
 
             log.debug "defaultFacets = ${defaultFacets}"
 
@@ -154,6 +183,10 @@ class OccurrenceController {
             navigationDTO.setSearchRequestResultSize(searchResults.totalRecords);
             request.getSession().setAttribute(SESSION_NAVIGATION_DTO, navigationDTO);
 
+            def inverseFilters = time("inverseFilters") { qualityService.getAllInverseCategoryFiltersForProfile(activeProfile) }
+
+            def processingTime = (System.currentTimeMillis() - start)
+            log.info ("Timing - list processing time: {} ms", processingTime)
             [
                     sr: searchResults,
                     searchRequestParams: requestParams,
@@ -161,6 +194,7 @@ class OccurrenceController {
                     groupedFacets: groupedFacets,
                     groupedFacetsMap: groupedFacetsMap,
                     dynamicFacets: dynamicFacets,
+                    translatedFilterMap: translatedFilterMap,
                     selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: hasImages,
                     showSpeciesImages: false,
@@ -170,7 +204,18 @@ class OccurrenceController {
                     userId: authService?.getUserId(),
                     userEmail: authService?.getEmail(),
                     processingTime: (System.currentTimeMillis() - start),
-                    wsTime: wsTime
+                    wsTime: wsTime,
+                    qualityCategories: qualityCategories,
+                    qualityFiltersByLabel: qualityFiltersByLabel,
+                    qualityTotalCount: qualityTotalCount,
+                    fqInteract: fqInteract,
+                    qualityFilterDescriptionsByLabel: qualityFilterDescriptionsByLabel,
+                    dqInteract: dqInteract,
+                    UserFQColors: UserFQColors,
+                    DQColors: DQColors,
+                    activeProfile: activeProfile,
+                    qualityProfiles: time("findAllEnabledProfiles") { qualityService.findAllEnabledProfiles(true) },
+                    inverseFilters: inverseFilters
             ]
 
         } catch (Exception ex) {
@@ -178,6 +223,50 @@ class OccurrenceController {
             flash.message = "${ex.message}"
             render view:'../error'
         }
+    }
+
+    /**
+     * Massage the request params with defaults and processing additional query params
+     * @param requestParams The request params to normalise
+     */
+    private void normaliseRequestParams(SpatialSearchRequestParams requestParams) {
+        requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
+
+        log.debug "requestParams = ${requestParams}"
+
+
+        List taxaQueries = (ArrayList<String>) params.list("taxa") // will be list for even one instance
+        log.debug "skin.useAlaBie = ${grailsApplication.config.skin.useAlaBie}"
+        log.debug "taxaQueries = ${taxaQueries} || q = ${requestParams.q}"
+
+        if (grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean() &&
+                grailsApplication.config.bie.baseUrl && taxaQueries && taxaQueries[0]) {
+            // check for list with empty string
+            // taxa query - attempt GUID lookup
+            List guidsForTaxa = webServicesService.getGuidsForTaxa(taxaQueries)
+            def additionalQ = (params.q) ? " AND " + params.q : "" // advanced search form can provide both taxa and q params
+            requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, guidsForTaxa) + additionalQ
+        } else if (!params.q && taxaQueries && taxaQueries[0]) {
+            // Bypass BIE lookup and pass taxa query in as text
+            List emptyGuidList = taxaQueries.clone().collect { it = ""} // list of empty strings, of equal size to taxaQueries
+            requestParams.q = postProcessingService.createQueryWithTaxaParam(taxaQueries, emptyGuidList)
+        }
+
+        if (!requestParams.q) {
+            requestParams.q = "*:*"
+        }
+    }
+
+    def dataQualityExcludeCounts(SpatialSearchRequestParams requestParams) {
+        normaliseRequestParams(requestParams)
+        // assign profile here. Since WebServiceService.fullTextSearch always attach a profile before searching (so if profile in req is null it changes to 'Default' after search)
+        // if incoming request has a null profile and we don't assign Default to it. it will never hit the cache
+        webServicesService.populateProfile(requestParams)
+
+        def qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
+        def qualityExcludeCount = time("quality exclude count") { qualityService.getExcludeCount(qualityCategories, requestParams) }
+        def result = qualityExcludeCount
+        render result as JSON
     }
 
     def taxa(String id) {
@@ -466,7 +555,7 @@ class OccurrenceController {
 
         searchResults?.facetResults?.each { fr ->
             if (fr.fieldName == 'species_guid') {
-                fg.guids = fr.fieldResult?.label // groovy does an implicit collect
+                fg.guids = fr.fieldResult?.label
             }
         }
 
@@ -501,6 +590,17 @@ class OccurrenceController {
         }
     }
 
+    def facets(SpatialSearchRequestParams requestParams) {
+        requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
+        render webServicesService.facetSearch(requestParams) as JSON
+    }
+
+    def facetsDownload(SpatialSearchRequestParams requestParams) {
+        requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
+        response.setHeader('Content-Disposition', 'attachment; filename="data.csv"')
+        render webServicesService.facetCSVDownload(requestParams), contentType: 'text/csv', fileName: 'data.csv'
+    }
+
     /**
      * JSON webservices for debugging/testing
      */
@@ -516,5 +616,12 @@ class OccurrenceController {
         combined.record = webServicesService.getRecord(id)
         combined.compareRecord = webServicesService.getCompareRecord(id)
         render combined as JSON
+    }
+
+    def getExcluded(SpatialSearchRequestParams requestParams) {
+        def data = [:]
+        QualityProfile profile = qualityService.activeProfile(requestParams.qualityProfile)
+        data.count = qualityService.getExcludeCount(params.categoryLabel, profile.getCategories(), requestParams)
+        render data as JSON
     }
 }

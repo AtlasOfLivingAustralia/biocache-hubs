@@ -1,9 +1,21 @@
+/*
+ * Copyright (C) 2014 Atlas of Living Australia
+ * All Rights Reserved.
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ */
+
 package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
 import grails.plugin.cache.CacheEvict
 import grails.plugin.cache.Cacheable
-
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
@@ -13,7 +25,12 @@ import org.apache.commons.io.FileUtils
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.client.RestClientException
+import org.supercsv.cellprocessor.ift.CellProcessor
+import org.supercsv.io.CsvListReader
+import org.supercsv.io.ICsvListReader
+import org.supercsv.prefs.CsvPreference
 
 import javax.annotation.PostConstruct
 
@@ -25,6 +42,10 @@ class WebServicesService {
     public static final String ENVIRONMENTAL = "Environmental"
     public static final String CONTEXTUAL = "Contextual"
     def grailsApplication, facetsCacheServiceBean
+    QualityService qualityService
+
+    @Value('${dataquality.enabled}')
+    boolean dataQualityEnabled
 
     Map cachedGroupedFacets = [:] // keep a copy in case method throws an exception and then blats the saved version
 
@@ -33,14 +54,15 @@ class WebServicesService {
         facetsCacheServiceBean = grailsApplication.mainContext.getBean('facetsCacheService')
     }
 
-    def JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
+    JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
+        populateProfile(requestParams)
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
-        getJsonElements(url)
+        def result = getJsonElements(url)
+        return result
     }
 
-    def JSONObject cachedFullTextSearch(SpatialSearchRequestParams requestParams) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
-        getJsonElements(url)
+    JSONObject cachedFullTextSearch(SpatialSearchRequestParams requestParams) {
+        fullTextSearch(requestParams)
     }
 
     def JSONObject getRecord(String id, Boolean hasClubView) {
@@ -506,5 +528,128 @@ class WebServicesService {
         def bin = new ByteArrayInputStream(bos.toByteArray())
         def ois = new ObjectInputStream(bin)
         return ois.readObject()
+    }
+
+    JSONElement facetSearch(SearchRequestParams requestParams) {
+        requestParams.pageSize = 0
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
+        def result = getJsonElements(url)
+
+
+        return result
+    }
+
+    String facetCSVDownload(SearchRequestParams requestParams) {
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/facets/download?${requestParams.getEncodedParams()}&count=true&lookup=true"
+        def result = getText(url)
+        return result
+    }
+
+    def getAllOccurrenceFields() {
+        def url = "${grailsApplication.config.biocache.baseUrl}/index/fields"
+        return getJsonElements(url)?.collect {it.name}
+    }
+
+    @Cacheable('longTermCache')
+    def getMessagesPropertiesFile() {
+        def url = "${grailsApplication.config.biocache.baseUrl}/facets/i18n"
+
+        def map = [:]
+        def lineContent
+        // split text to get lines
+        def lines = getText(url).split("\\r?\\n")
+        lines?.each {
+            // if not comment
+            if (!it.startsWith('#')) {
+                lineContent = it.split('=')
+                if (lineContent.length == 2) {
+                    map[lineContent[0]] = lineContent[1]
+                }
+            }
+        }
+        return map
+    }
+
+    @Cacheable('longTermCache')
+    def getAssertionCodeMap() {
+        def url = "${grailsApplication.config.biocache.baseUrl}/assertions/codes" // code --> name
+        def codes = getJsonElements(url)
+
+        Map dataQualityCodes = getAllCodes() // code -> detail
+
+        // convert to name -> detail
+        return codes?.findAll{dataQualityCodes.containsKey(String.valueOf(it.code))}?.collectEntries{[(it.name): dataQualityCodes.get(String.valueOf(it.code))]}
+    }
+
+    def getAllCodes() {
+        Map dataQualityCodes = [:]
+
+        String dataQualityCsv = grailsApplication.mainContext.getBean('webServicesService').getDataQualityCsv() // cached
+
+        ICsvListReader listReader = null
+
+        try {
+            listReader = new CsvListReader(new StringReader(dataQualityCsv), CsvPreference.STANDARD_PREFERENCE)
+            listReader.getHeader(true) // skip the header (can't be used with CsvListReader)
+            final CellProcessor[] processors = getProcessors()
+
+            List<Object> dataQualityList
+            while ((dataQualityList = listReader.read(processors)) != null) {
+                //log.debug("row: " + StringUtils.join(dataQualityList, "|"));
+                Map<String, String> dataQualityEls = new HashMap<String, String>();
+                if (dataQualityList.get(1) != null) {
+                    dataQualityEls.put("name", (String) dataQualityList.get(1));
+                }
+                if (dataQualityList.get(3) != null) {
+                    dataQualityEls.put("description", (String) dataQualityList.get(3));
+                }
+                if (dataQualityList.get(4) != null) {
+                    dataQualityEls.put("wiki", (String) dataQualityList.get(4));
+                }
+                if (dataQualityList.get(0) != null) {
+                    dataQualityCodes.put((String) dataQualityList.get(0), dataQualityEls);
+                }
+            }
+        } finally {
+            if (listReader != null) {
+                listReader.close();
+            }
+        }
+        dataQualityCodes
+    }
+
+    /**
+     * CellProcessor method as required by SuperCSV
+     *
+     * @return
+     */
+    private static CellProcessor[] getProcessors() {
+        final CellProcessor[] processors = [
+                null, // col 1
+                null, // col 2
+                null, // col 3
+                null, // col 4
+                null, // col 5
+                null, // col 6
+                null, // col 7
+                null, // col 8
+                null, // col 9
+                null, // col 10
+                null, // col 11
+                null, // col 12
+                null, // col 13
+                null, // col 14
+                null, // col 15
+        ]
+
+        return processors
+    }
+
+    def populateProfile(requestParams) {
+        // force set the profile if none provided
+        if (dataQualityEnabled && !requestParams.qualityProfile && !requestParams.disableAllQualityFilters) {
+            def activeProfile = qualityService.activeProfile(requestParams.qualityProfile)
+            requestParams.qualityProfile = activeProfile?.shortName
+        }
     }
 }

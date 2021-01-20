@@ -2,6 +2,8 @@ package au.org.ala.biocache.hubs
 
 import grails.util.Holders
 import grails.validation.Validateable
+import groovy.transform.AutoClone
+import groovy.transform.EqualsAndHashCode
 import groovy.util.logging.Slf4j
 import org.apache.commons.httpclient.URIException
 import org.apache.commons.httpclient.util.URIUtil
@@ -13,7 +15,9 @@ import org.apache.commons.httpclient.util.URIUtil
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 @Slf4j
-public class SearchRequestParams implements Validateable{
+@AutoClone
+@EqualsAndHashCode
+class SearchRequestParams implements Validateable{
     Long qId // "qid:12312321"
     String formattedQuery
     String q = ""
@@ -42,6 +46,13 @@ public class SearchRequestParams implements Validateable{
     String qc = Holders.config.biocache.queryContext?:""
     /** To disable facets */
     Boolean facet = true
+
+    /** The quality profile to use, null for default */
+    String qualityProfile
+    /** If to disable all default filters*/
+    boolean disableAllQualityFilters = false
+    /** Default filters to disable (currently can only disable on category, so it's a list of disabled category name)*/
+    List<String> disableQualityFilter = []
 
     /**
      * Custom toString method to produce a String to be used as the request parameters
@@ -75,6 +86,19 @@ public class SearchRequestParams implements Validateable{
         fq.each { filter ->
             req.append("&fq=").append(conditionalEncode(filter, encodeParams))
         }
+
+        if (disableAllQualityFilters) {
+            req.append("&disableAllQualityFilters=true")
+        }
+
+        if (qualityProfile) {
+            req.append("&qualityProfile=").append(conditionalEncode(qualityProfile, encodeParams))
+        }
+
+        disableQualityFilter.each { dqf ->
+            req.append("&disableQualityFilter=").append(conditionalEncode(dqf, encodeParams))
+        }
+
         req.append("&start=").append(offset?:start);
         req.append("&pageSize=").append(max?:(pageSize>0)?pageSize:20) // fix for #337 (revert if fieldguides is fixed)
         req.append("&sort=").append(sort);
@@ -154,6 +178,18 @@ public class SearchRequestParams implements Validateable{
 
         if(qc){
             req.append("&qc=").append(URLEncoder.encode(qc, "UTF-8"));
+        }
+
+        if (disableAllQualityFilters) {
+            req.append("&disableAllQualityFilters=true")
+        }
+
+        if (qualityProfile) {
+            req.append("&qualityProfile=").append(URLEncoder.encode(qualityProfile, "UTF-8"))
+        }
+
+        disableQualityFilter.each { dqf ->
+            req.append("&disableQualityFilter=").append(URLEncoder.encode(dqf, "UTF-8"))
         }
         return req.toString();
     }
