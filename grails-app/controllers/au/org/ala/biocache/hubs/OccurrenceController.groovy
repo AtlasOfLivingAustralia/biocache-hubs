@@ -160,14 +160,25 @@ class OccurrenceController {
                 hasImages = true
             }
 
-            def qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
-            def qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
+            def qualityCategories = []
+            def qualityFiltersByLabel = [:]
+            def groupedEnabledFilters = [:]
+            def qualityFilterDescriptionsByLabel = [:]
+            def fqInteract = [:]
+            def dqInteract = [:]
+            def UserFQColors = [:]
+            def DQColors = [:]
+
+            // if disable all quality filters, we don't need to retrieve them, it saves time
+            if (!requestParams.disableAllQualityFilters) {
+                qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
+                qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
+                groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
+                qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries { [(it.key): it.value*.description.join(' and ')] }
+                (fqInteract, dqInteract, UserFQColors, DQColors) = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams) }
+            }
+
             def qualityTotalCount = time("quality total count") { qualityService.countTotalRecords(requestParams) }
-            def groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
-            def qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')] }
-
-            def (fqInteract, dqInteract, UserFQColors, DQColors) = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams) }
-
             def messagePropertiesFile = time("message properties file") { webServicesService.getMessagesPropertiesFile() }
             def assertionCodeMap = time("assertionCodeMap") { webServicesService.getAssertionCodeMap() }
             def translatedFilterMap = postProcessingService.translateValues(groupedEnabledFilters, messagePropertiesFile, assertionCodeMap)
