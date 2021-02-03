@@ -616,14 +616,18 @@ class OccurrenceController {
     def exists(String id) {
         def record = webServicesService.getRecord(id, false)
         if (record.keySet()) {
-            log.trace("{}", record)
-            def result = "${record?.processed?.classification?.scientificName ?: record?.raw?.classification?.scientificName ?: ''}, ${record?.processed?.location?.stateProvince ?: record?.raw?.location?.stateProvince ?: ''}, ${record?.processed?.location?.decimalLongitude ?: record?.raw?.location?.decimalLongitude ?: ''}, ${record?.processed?.location?.decimalLatitude ?: record?.raw?.location?.decimalLatitude ?: ''}, ${record?.processed?.event?.eventDate ?: record?.raw?.event?.eventDate ?: ''}"
-            render text: result
+            def rslt = [:]
+            rslt.scientificName = record?.processed?.classification?.scientificName ?: (record?.raw?.classification?.scientificName ?: '')
+            rslt.stateProvince = record?.processed?.location?.stateProvince ?: (record?.raw?.location?.stateProvince ?: '')
+            rslt.decimalLongitude = record?.processed?.location?.decimalLongitude ?: (record?.raw?.location?.decimalLongitude ?: '')
+            rslt.decimalLatitude = record?.processed?.location?.decimalLatitude ?: (record?.raw?.location?.decimalLatitude ?: '')
+            rslt.eventDate = record?.processed?.event?.eventDate ?: (record?.raw?.event?.eventDate ?: '')
+            render rslt as JSON
         } else {
             render status: SC_NOT_FOUND, text: ''
         }
     }
-
+    
     /**
      * JSON webservices for debugging/testing
      */

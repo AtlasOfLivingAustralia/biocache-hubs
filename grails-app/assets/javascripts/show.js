@@ -56,7 +56,8 @@ $(document).ready(function() {
         var val = $this.val();
         var $submit = $('#issueForm input[type=submit]');
         var $p = $('#related-record-p, #related-record-reason-p');
-        if (val == '20020') {
+        // if duplicate record
+        if (val === '20020') {
             $('#relatedRecordId').val('');
             recordIdValid = false;
             $p.show();
@@ -65,37 +66,67 @@ $(document).ready(function() {
             $('#related-record-id-not-found').hide();
             $('#related-record-id-found').hide();
             $('#related-record-id-loading').hide();
+            // hide the records table
+            $('#records_comparison_table').hide();
+            $('#records_comparison_heading').hide();
         }
         setIssueFormButtonState();
     });
+
     $('#relatedRecordReason').on('change', function(e) {
+        var col_reason = $('#col_duplicate_reason');
+        var relatedRecordReason = $('#relatedRecordReason').val();
+        if (relatedRecordReason === '') {
+            $(col_reason).text('');
+        } else if (relatedRecordReason === 'sameoccurence') {
+            $(col_reason).text(jQuery.i18n.prop('related.record.reason.sameoccurrence.description'));
+        } else if (relatedRecordReason === 'tissuesample') {
+            $(col_reason).text(jQuery.i18n.prop('related.record.reason.tissuesample.description'));
+        } else if (relatedRecordReason === 'splitspecimen') {
+            $(col_reason).text(jQuery.i18n.prop('related.record.reason.splitspecimen.description'));
+        }
         setIssueFormButtonState();
     })
+
     $('#relatedRecordId').on('change', function(e) {
         var $this = $(this);
         var $submit = $('#issueForm input[type=submit]');
         var val = $this.val().trim();
-        if (val == OCC_REC.recordUuid) {
+        if (val === OCC_REC.recordUuid) {
             alert("You can't mark this record as a duplicate of itself!");
             recordIdValid = false;
-        } else if (val == '') {
+        } else if (val === '') {
             $('#related-record-id-not-found').hide();
             $('#related-record-id-found').hide();
             $('#related-record-id-loading').hide();
+            $('#records_comparison_table').hide();
+            $('#records_comparison_heading').hide();
+            $('#relatedRecordReason').val("");
+            $('#col_duplicate_reason').text('');
             recordIdValid = false;
         } else {
             $('#related-record-id-loading').show();
             $.get( OCC_REC.contextPath + "/occurrence/exists/" + val).success(function(data) {
+                $('#related-record-id-loading').hide();
                 $('#related-record-id-not-found').hide();
                 $('#related-record-id-found').show();
-                $('#related-record-id-found-other').text(data);
-                $('#related-record-id-loading').hide();
+                $('#records_comparison_table').show();
+                $('#records_comparison_heading').show();
+                // populate the table
+                $('#t_scientificName').text(data.scientificName ? data.scientificName : '');
+                $('#t_stateProvince').text(data.stateProvince ? data.stateProvince : '');
+                $('#t_decimalLongitude').text(data.decimalLongitude ? data.decimalLongitude : '');
+                $('#t_decimalLatitude').text(data.decimalLatitude ? data.decimalLatitude : '');
+                $('#t_eventDate').text(data.eventDate ? data.eventDate : '');
                 recordIdValid = true;
             }).error(function () {
                 $('#related-record-id-not-found').show();
                 $('#related-record-id-found').hide();
                 $('#related-record-id-loading').hide();
-                recordIdValid = false;
+                $('#records_comparison_table').hide();
+                $('#records_comparison_heading').hide();
+                $('#relatedRecordReason').val("");
+                $('#col_duplicate_reason').text('');
             }).always(function() {
                 setIssueFormButtonState();
             });

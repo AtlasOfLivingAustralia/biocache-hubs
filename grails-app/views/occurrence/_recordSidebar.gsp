@@ -332,15 +332,39 @@
                                     <span style="display: none; color:red;" id="related-record-id-not-found">The record id can't be found.</span>
                                     <span style="display: none;" id="related-record-id-loading"><i class="fa fa-gear fa-spin"></i></span>
                                     <span style="display: none;" id="related-record-id-found">
-                                        <g:message code="show.issueform.relatedrecord.found.this" default="You are indicating this record (the one you are viewing):"/> <span id="related-record-id-found-this">${record?.processed?.classification?.scientificName ?: record?.raw?.classification?.scientificName ?: ''}, ${record?.processed?.location?.stateProvince ?: record?.raw?.location?.stateProvince ?: ''}, ${record?.processed?.location?.decimalLongitude ?: record?.raw?.location?.decimalLongitude ?: ''}, ${record?.processed?.location?.decimalLatitude ?: record?.raw?.location?.decimalLatitude ?: ''}, ${record?.processed?.event?.eventDate ?: record?.raw?.event?.eventDate ?: ''}</span>
-                                        <br/>
-                                        <g:message code="show.issueform.relatedrecord.found.other" default="is a duplicate of this record (the id you provided):"/> <span id="related-record-id-found-other"></span>
+                                        <span style="display: none;" id="records_comparison_heading"><g:message code="record.compare_table.heading" default="You are indicating that"/>:</span>
+                                        <table style="display: none;" id='records_comparison_table' class="table table-bordered table-condensed table-striped scrollTable">
+                                            <tr>
+                                                <th width="35%"><g:message code="record.compare_table.source_record.heading" default="This record you are viewing"/></th>
+                                                <th rowspan="6" id="col_duplicate_reason"></th>
+                                                <th width="35%"><g:message code="record.compare_table.target_record.heading" default="This record ID provided"/></th></tr>
+                                            <tr>
+                                                <td>${record?.processed?.classification?.scientificName ?: record?.raw?.classification?.scientificName ?: ''}</td>
+                                                <td id="t_scientificName"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>${record?.processed?.location?.stateProvince ?: record?.raw?.location?.stateProvince ?: ''}</td>
+                                                <td id="t_stateProvince"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>${record?.processed?.location?.decimalLongitude ?: record?.raw?.location?.decimalLongitude ?: ''}</td>
+                                                <td id="t_decimalLongitude"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>${record?.processed?.location?.decimalLatitude ?: record?.raw?.location?.decimalLatitude ?: ''}</td>
+                                                <td id="t_decimalLatitude"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>${record?.processed?.event?.eventDate ?: record?.raw?.event?.eventDate ?: ''}</td>
+                                                <td id="t_eventDate"></td>
+                                            </tr>
+                                        </table>
                                     </span>
                                 </p>
                             </p>
                             <p id="related-record-reason-p" style="display: none; margin-top:30px;">
                                 <label for="relatedRecordId" style="vertical-align:top;"><g:message code="show.issueform.label04" default="Duplicate Reason:"/><span style="color: red;">*</span></label>
-                                <select name="relatedRecordReason" id="relatedRecordReason" autocomplete="off
+                                <select name="relatedRecordReason" id="relatedRecordReason" autocomplete="off">
                                     <option value=""><g:message code="related.record.reason.select" default="-- Select a reason --" /></option>
                                     <option value="sameoccurence"><g:message code="related.record.reason.sameoccurence" default="Same occurence"/></option>
                                     <option value="tissuesample"><g:message code="related.record.reason.tissuesample" default="Tissue sample"/></option>
@@ -358,7 +382,7 @@
 
                             <p style="margin-top:20px;">
                                 <input id="issueFormSubmit" type="submit" value="<g:message code="show.issueform.button.submit" default="Submit"/>" class="btn btn-primary" />
-                                <input type="reset" value="<g:message code="show.issueform.button.cancel" default="Cancel"/>" class="btn btn-default" onClick="$('#loginOrFlag').modal('hide');"/>
+                                <input type="button" value="<g:message code="show.issueform.button.cancel" default="Cancel"/>" class="btn btn-default" onClick="$('#loginOrFlag').modal('hide');"/>
                                 <input type="button" id="close" value="<g:message code="show.issueform.button.close" default="Close"/>" class="btn btn-default" style="display:none;"/>
                                 <span id="submitSuccess"></span>
                             </p>
