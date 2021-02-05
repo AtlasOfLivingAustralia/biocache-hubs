@@ -108,19 +108,30 @@ $(document).ready(function() {
             $('#related-record-id-loading').show();
             $.get( OCC_REC.contextPath + "/occurrence/exists/" + val).success(function(data) {
                 $('#related-record-id-loading').hide();
-                $('#related-record-id-not-found').hide();
-                $('#related-record-id-found').show();
-                $('#records_comparison_table').show();
-                $('#records_comparison_heading').show();
-                // populate the table
-                $('#t_scientificName').text(data.scientificName ? data.scientificName : '');
-                $('#t_stateProvince').text(data.stateProvince ? data.stateProvince : '');
-                $('#t_decimalLongitude').text(data.decimalLongitude ? data.decimalLongitude : '');
-                $('#t_decimalLatitude').text(data.decimalLatitude ? data.decimalLatitude : '');
-                $('#t_eventDate').text(data.eventDate ? data.eventDate : '');
-                recordIdValid = true;
+                if (data.error) {
+                    // show error
+                    $('#related-record-id-not-found').text('More than 1 record found with specified id, please use a more specific id').show();
+                    // hide compare table
+                    $('#records_comparison_heading').hide();
+                    $('#records_comparison_table').hide();
+                    recordIdValid = false;
+                } else {
+                    // hide error
+                    $('#related-record-id-not-found').hide();
+                    // show compare table
+                    $('#related-record-id-found').show();
+                    $('#records_comparison_table').show();
+                    $('#records_comparison_heading').show();
+                    // populate the table
+                    $('#t_scientificName').text(data.scientificName ? data.scientificName : '');
+                    $('#t_stateProvince').text(data.stateProvince ? data.stateProvince : '');
+                    $('#t_decimalLongitude').text(data.decimalLongitude ? data.decimalLongitude : '');
+                    $('#t_decimalLatitude').text(data.decimalLatitude ? data.decimalLatitude : '');
+                    $('#t_eventDate').text(data.eventDate ? data.eventDate : '');
+                    recordIdValid = true;
+                }
             }).error(function () {
-                $('#related-record-id-not-found').show();
+                $('#related-record-id-not-found').text("The record id can't be found.").show();
                 $('#related-record-id-found').hide();
                 $('#related-record-id-loading').hide();
                 $('#records_comparison_table').hide();

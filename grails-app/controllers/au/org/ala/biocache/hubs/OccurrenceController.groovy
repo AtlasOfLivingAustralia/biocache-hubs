@@ -614,8 +614,12 @@ class OccurrenceController {
     }
 
     def exists(String id) {
+        // getRecord can return either 1 record or a list of records
+        // if a list returned, asking user to be more specific
         def record = webServicesService.getRecord(id, false)
-        if (record.keySet()) {
+        if (record.occurrences) {
+            render ([error: 'id not unique'] as JSON)
+        } else if (record.keySet()) {
             def rslt = [:]
             rslt.scientificName = record?.processed?.classification?.scientificName ?: (record?.raw?.classification?.scientificName ?: '')
             rslt.stateProvince = record?.processed?.location?.stateProvince ?: (record?.raw?.location?.stateProvince ?: '')
