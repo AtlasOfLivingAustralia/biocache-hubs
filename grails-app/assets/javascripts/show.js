@@ -490,7 +490,9 @@ function refreshUserAnnotations(){
             var $clone = $('#userAnnotationTemplate').clone();
             $clone.find('.issue').text(data.assertionQueries[i].assertionType);
             $clone.find('.user').text(data.assertionQueries[i].userName);
-            $clone.find('.comment').text('Comment: ' + data.assertionQueries[i].comment);
+            if (data.assertionQueries[i].hasOwnProperty('comment')) {
+                $clone.find('.comment').text('Comment: ' + data.assertionQueries[i].comment);
+            }
             $clone.find('.created').text('Date created: ' + (moment(data.assertionQueries[i].createdDate).format('YYYY-MM-DD')));
             if(data.assertionQueries[i].recordCount > 1){
                 $clone.find('.viewMore').css({display:'block'});
@@ -513,7 +515,9 @@ function refreshUserAnnotations(){
                 $clone.prop('id', "userAnnotation_" + userAssertion.uuid);
                 $clone.find('.issue').text(jQuery.i18n.prop(userAssertion.name));
                 $clone.find('.user').text(userAssertion.userDisplayName);
-                $clone.find('.comment').text('Comment: ' + userAssertion.comment);
+                if (userAssertion.hasOwnProperty('comment')) {
+                    $clone.find('.comment').text('Comment: ' + userAssertion.comment);
+                }
                 $clone.find('.userRole').text(userAssertion.userRole != null ? userAssertion.userRole : '');
                 $clone.find('.userEntity').text(userAssertion.userEntityName != null ? userAssertion.userEntityName : '');
                 $clone.find('.created').text('Date created: ' + (moment(userAssertion.created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));
