@@ -11,6 +11,7 @@
 //= require linkifyjs/linkify-jquery.js
 //= require leaflet/leaflet.js
 //= require leaflet-plugins/layer/tile/Google.js
+//= require biocache-hubs.js
 //= require_self
  */
 /**
@@ -482,9 +483,6 @@ function refreshUserAnnotations(){
             $('#userAnnotationsNav').css("display","block");
         }
         $('#userAnnotationsList').empty();
-
-        var userAssertionStatus = jQuery.i18n.prop("user_assertions." + data.userAssertionStatus);
-        $("#userAssertionStatus").text(userAssertionStatus);
 
         for(var i=0; i < data.assertionQueries.length; i++){
             var $clone = $('#userAnnotationTemplate').clone();

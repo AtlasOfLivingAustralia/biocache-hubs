@@ -668,7 +668,7 @@ class PostProcessingService {
         // if it's an assertion, find it in assertion map first
         if (key.equals('assertions')) {
             // need a json object here so that it can be passed to html as an object instead of a String
-            retVal = assertionMap.get(value) ? new JSONObject(assertionMap.get(value)) : null
+            retVal = assertionMap?.get(value) ? new JSONObject(assertionMap?.get(value)) : null
         }
 
         if (retVal == null) {

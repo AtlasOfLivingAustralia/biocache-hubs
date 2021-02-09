@@ -349,6 +349,7 @@ $(document).ready(function() {
         loadMoreFacets(facetName, displayName, null);
     });
 
+    // When user clicks the 'view profile description' icon next to profiles selection drop-down
     $('.DQProfileDetailsLink').click(function() {
         $.each($(".cat-table"), function(idx, el) {
             var filters = $(el).data('filters');
@@ -407,11 +408,12 @@ $(document).ready(function() {
         })
     })
 
+    // when user clicks 'ok' button in the 'data profiles applied' warning dialog
     $('#hide-dq-warning').click(function() {
         document.cookie = 'dq_warn_off=true; path=/';
     })
 
-    // each category
+    // when use clicks <i/> to view details of a category
     $('.DQCategoryDetailsLink').click(function() {
         var link = this;
         var fq = $(link).data("fq");
@@ -565,12 +567,12 @@ $(document).ready(function() {
 
         var url = $(location).attr('href');
         // step 1, disable this category
-        url = appendURL(url, "&disableQualityFilter=" + encodeURIComponent(category).replace(/%20/g, "+").replace(/[()]/g, escape));
+        url = appendURL(url, "disableQualityFilter=" + encodeURIComponent(category).replace(/%20/g, "+").replace(/[()]/g, escape));
 
         // step 2, append all enabled fqs as user fq
         for (var i = 0; i < filters.length; i++) {
             // console.log('filter = ' + filters[i]);
-            url = appendURL(url, '&fq=' + encodeURIComponent(filters[i]).replace(/%20/g, "+").replace(/[()]/g, escape));
+            url = appendURL(url, 'fq=' + encodeURIComponent(filters[i]).replace(/%20/g, "+").replace(/[()]/g, escape));
         }
 
         window.location.href = url;
@@ -848,7 +850,7 @@ $(document).ready(function() {
 
             if (toDisable) { // if to disable, add it to disable list
                 if (!disableQualityFilterSet.has(filterlabel)) {
-                    url = appendURL(url, "&disableQualityFilter=" + encodeURIComponent(filterlabel).replace(/%20/g, "+").replace(/[()]/g, escape));
+                    url = appendURL(url, "disableQualityFilter=" + encodeURIComponent(filterlabel).replace(/%20/g, "+").replace(/[()]/g, escape));
                 }
 
                 var alreadyExpanded = $(fitlers[i]).data('expanded');
@@ -879,7 +881,7 @@ $(document).ready(function() {
 
         // split all fqs
         filters.split(', ').forEach(function(filter) {
-            var queryToAppend = "&fq=" + encodeURIComponent(filter).replace(/%20/g, "+").replace(/[()]/g, escape);
+            var queryToAppend = "fq=" + encodeURIComponent(filter).replace(/%20/g, "+").replace(/[()]/g, escape);
             if (url.indexOf(queryToAppend) === -1) {
                 url = appendURL(url, queryToAppend);
             }
@@ -903,31 +905,32 @@ $(document).ready(function() {
     }
 
     // insert query string into url, before the # tag
-    function appendURL(url, sToAppend) {
+    function appendURL(url, queryParamsToAppend) {
         var idx = url.indexOf("#");
-        if (idx == -1) {
-            return url.concat(sToAppend);
+        if (idx === -1) {
+            return url.concat((url.indexOf('?') === -1 ? '?' : '&') + queryParamsToAppend);
         } else {
-            return url.slice(0, idx) + sToAppend + url.slice(idx);
+            return url.slice(0, idx) + (url.indexOf('?') === -1 ? '?' : '&') + queryParamsToAppend + url.slice(idx);
         }
     }
 
     function removeFromURL(url, sToRemove, exactMatch) {
-        var qIndex = url.indexOf('?');
-        var serverPath = "";
-        if (qIndex != -1) {
-            serverPath = url.substring(0, qIndex + 1);
-            url = url.substring(qIndex + 1);
-        }
-
         var anchorpos = url.indexOf('#');
         var anchorpart = "";
-        if (anchorpos != -1) {
+        if (anchorpos !== -1) {
             anchorpart = url.substring(anchorpos);
             url = url.substring(0, anchorpos);
         }
 
-        var tokens = url.split('&');
+        var serverPath = url;
+        var queryString = ""
+        var qIndex = url.indexOf('?');
+        if (qIndex !== -1) {
+            serverPath = url.substring(0, qIndex);
+            queryString = url.substring(qIndex + 1);
+        }
+
+        var tokens = queryString.split('&');
         var idx = -1;
         // Match the exact value
         if (exactMatch) {
@@ -941,11 +944,12 @@ $(document).ready(function() {
             }
         }
 
-        if (idx != -1) {
+        if (idx !== -1) {
             tokens.splice(idx, 1);
         }
 
-        return serverPath + tokens.join('&') + anchorpart;
+        queryString = tokens.join('&')
+        return serverPath + (queryString.length > 0 ? '?' : '') + queryString + anchorpart;
     }
 
     // Drop-down option on facet popup div - for wildcard fq searches
@@ -1032,10 +1036,14 @@ $(document).ready(function() {
         var methodName = $(this).data("method");
         var url = alertsUrlPrefix + "/ws/" + methodName + "?";
         var searchParamsEncoded = encodeURIComponent(decodeURIComponent(BC_CONF.searchString)); // prevent double encoding of chars
-        url += "queryDisplayName="+encodeURIComponent(query);
-        url += "&baseUrlForWS=" + encodeURIComponent(BC_CONF.biocacheServiceUrl.replace(/\/ws$/,""));
+        if (query.length >= 250) {
+            url += "queryDisplayName="+encodeURIComponent(query.substring(0, 149) + "...");
+        } else {
+            url += "queryDisplayName="+encodeURIComponent(query);
+        }
+        url += "&baseUrlForWS=" + encodeURIComponent(BC_CONF.biocacheServiceUrl);
         url += "&baseUrlForUI=" + encodeURIComponent(BC_CONF.serverName);
-        url += "&webserviceQuery=%2Fws%2Foccurrences%2Fsearch" + searchParamsEncoded;
+        url += "&webserviceQuery=%2Foccurrences%2Fsearch" + searchParamsEncoded;
         url += "&uiQuery=%2Foccurrences%2Fsearch" + searchParamsEncoded;
         url += "&resourceName=" + encodeURIComponent(BC_CONF.resourceName);
         //console.log("url", query, methodName, searchParamsEncoded, url);

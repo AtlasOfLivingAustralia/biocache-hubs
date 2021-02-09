@@ -203,6 +203,13 @@
                 </p>
             </g:else>
         </div>
+        <g:if test="${grailsApplication.config.alerts.baseUrl}">
+            <div id="alertsNorecords" class="btn btn-default btn-sm">
+                <a href="#alert" role="button" data-toggle="modal" class="tooltips"
+                   title="<g:message code="list.alerts.navigator.title.norecords"/>"><i
+                        class="fa fa-bell"></i>&nbsp;&nbsp;<g:message code="list.alerts.navigator" default="Alerts"/></a>
+            </div> <g:message code="list.alerts.navigator.title.norecords.text" default='Receive "Alert" emails when new records appear for this search'/>
+        </g:if>
     </g:elseif>
     <g:else>
         <!--  first row (#searchInfoRow), contains customise facets button and number of results for query, etc.  -->
@@ -627,46 +634,6 @@
             </div>
             <g:set var="postFacets" value="${System.currentTimeMillis()}"/>
             <div id="content2" class="col-sm-9 col-md-9">
-                <g:if test="${grailsApplication.config.alerts.baseUrl}">
-                    <div id="alert" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="alertLabel"
-                         aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-
-                                    <h3 id="myModalLabel"><g:message code="list.alert.title" default="Email alerts"/></h3>
-                                </div>
-
-                                <div class="modal-body">
-                                    <div class="">
-                                        <a href="#alertNewRecords" id="alertNewRecords" class="btn tooltips btn-default"
-                                           data-method="createBiocacheNewRecordsAlert"
-                                           title="<g:message code="list.alert.navigator01.title"/>"><g:message
-                                                code="list.alert.navigator01" default="Get email alerts for new records"/></a>
-                                    </div>
-                                    <br/>
-
-                                    <div class="">
-                                        <a href="#alertNewAnnotations" id="alertNewAnnotations"
-                                           data-method="createBiocacheNewAnnotationsAlert"
-                                           class="btn tooltips btn-default"
-                                           title="<g:message code="list.alert.navigator02.title"/>"><g:message
-                                                code="list.alert.navigator02" default="Get email alerts for new annotations"/></a>
-                                    </div>
-                                    <p>&nbsp;</p>
-                                    <p><a href="${grailsApplication.config.alerts.baseUrl}/notification/myAlerts"><g:message
-                                            code="list.alert.navigator03" default="View your current alerts"/></a></p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message
-                                            code="list.alert.button01" default="Close"/></button>
-                                </div>
-                            </div><!-- /.modal-content -->
-                        </div><!-- /.modal-dialog -->
-                    </div><!-- /#alerts -->
-                </g:if>
-
                 <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
                     <g:render template="download"/>
                     <div style="display:none"></div>
@@ -887,6 +854,47 @@
             </div>
         </div>
     </g:else>
+
+    <g:if test="${grailsApplication.config.alerts.baseUrl}">
+        <div id="alert" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="alertLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                        <h3 id="myModalLabel"><g:message code="list.alert.title" default="Email alerts"/></h3>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="">
+                            <a href="#alertNewRecords" id="alertNewRecords" class="btn tooltips btn-default"
+                               data-method="createBiocacheNewRecordsAlert"
+                               title="<g:message code="list.alert.navigator01.title"/>"><g:message
+                                    code="list.alert.navigator01" default="Get email alerts for new records"/></a>
+                        </div>
+                        <br/>
+
+                        <div class="">
+                            <a href="#alertNewAnnotations" id="alertNewAnnotations"
+                               data-method="createBiocacheNewAnnotationsAlert"
+                               class="btn tooltips btn-default"
+                               title="<g:message code="list.alert.navigator02.title"/>"><g:message
+                                    code="list.alert.navigator02" default="Get email alerts for new annotations"/></a>
+                        </div>
+                        <p>&nbsp;</p>
+                        <p><a href="${grailsApplication.config.alerts.baseUrl}/notification/myAlerts"><g:message
+                                code="list.alert.navigator03" default="View your current alerts"/></a></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message
+                                code="list.alert.button01" default="Close"/></button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /#alerts -->
+    </g:if>
+
     <div id="imageDialog" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">

@@ -16,6 +16,7 @@ package au.org.ala.biocache.hubs
 import au.org.ala.dataquality.model.QualityCategory
 import au.org.ala.dataquality.model.QualityFilter
 import grails.test.mixin.TestFor
+import grails.util.Holders
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -26,6 +27,12 @@ import spock.lang.Unroll
  */
 @TestFor(OccurrenceTagLib)
 class OccurrenceTagLibSpec extends Specification {
+
+    def setup() {
+        Holders.grailsApplication.config.dataResourceUuid.alaSightings = "dr364"
+        Holders.grailsApplication.config.dataResourceUuid.iNaturalist = "dr1411"
+        Holders.grailsApplication.config.dataResourceUuid.flickr = "dr360"
+    }
 
     static doWithConfig(config) {
         config.dataquality.enabled = 'true'

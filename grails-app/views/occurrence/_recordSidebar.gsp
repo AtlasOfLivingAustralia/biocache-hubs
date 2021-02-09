@@ -240,13 +240,13 @@
                             <cite><b><g:message code="show.sidebar03.image.title" default="Title"/>:</b> <alatag:sanitizeContent>${raw(record.raw.miscProperties.TITLE)}</alatag:sanitizeContent></cite><br/>
                         </g:if>
                         <g:if test="${record.raw.occurrence.photographer || image.metadata?.creator}">
-                            <cite><b><g:message code="show.sidebar03.cite01" default="Photographer"/>:</b> ${record.raw.occurrence.photographer ?: image.metadata?.creator}</cite><br/>
+                            <cite><b><g:message code="show.sidebar03.cite01" default="Photographer"/>:</b> ${image.metadata?.creator ?: record.raw.occurrence.photographer}</cite><br/>
                         </g:if>
                         <g:if test="${record.raw.occurrence.rights || image.metadata?.rights}">
-                            <cite><b><g:message code="show.sidebar03.cite02" default="Rights"/>:</b> ${record.raw.occurrence.rights ?: image.metadata?.rights}</cite><br/>
+                            <cite><b><g:message code="show.sidebar03.cite02" default="Rights"/>:</b> ${image.metadata?.rights ?: record.raw.occurrence.rights}</cite><br/>
                         </g:if>
-                        <g:if test="${record.raw.occurrence.rightsholder || image.metadata?.rightsholder}">
-                            <cite><b><g:message code="show.sidebar03.cite03" default="Rights holder"/>:</b> ${record.raw.occurrence.rightsholder ?: image.metadata?.rightsholder}</cite><br/>
+                        <g:if test="${record.raw.occurrence.rightsholder || image.metadata?.rightsHolder}">
+                            <cite><b><g:message code="show.sidebar03.cite03" default="Rights holder"/>:</b> ${image.metadata?.rightsHolder ?: record.raw.occurrence.rightsholder}</cite><br/>
                         </g:if>
                         <g:if test="${record.raw.miscProperties.rightsHolder}">
                             <cite><b><g:message code="show.sidebar03.cite03" default="Rights holder"/>:</b> ${record.raw.miscProperties.rightsHolder}</cite><br/>

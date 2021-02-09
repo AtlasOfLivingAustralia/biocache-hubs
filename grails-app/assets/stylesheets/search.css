@@ -454,7 +454,7 @@ div#currentFilter {
     border-top: 1px solid silver;
 }
 
-#downloads a, #alerts a, #mapView .btn btn-default btn-default a, #customiseFacetsButton > .btn btn-default btn-default {
+#downloads a, #alerts a, #alertsNorecords a, #mapView .btn btn-default btn-default a, #customiseFacetsButton > .btn btn-default btn-default {
     /*font-size: 12px;*/
     /*font-weight: bold;*/
     color: inherit;
@@ -956,7 +956,7 @@ span.red {
     margin-top: 5px;
     font-size: 14px;
     line-height: 2.0em;
-    border: 1px black solid;
+    border: 1px #999 solid;
 }
 
 .activeFilters .btn {

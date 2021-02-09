@@ -16,7 +16,6 @@ package au.org.ala.biocache.hubs
 
 import com.maxmind.db.CHMCache
 import com.maxmind.geoip2.DatabaseReader
-import com.maxmind.geoip2.exception.AddressNotFoundException
 import com.maxmind.geoip2.model.CityResponse
 import com.maxmind.geoip2.record.Location
 import groovy.util.logging.Slf4j

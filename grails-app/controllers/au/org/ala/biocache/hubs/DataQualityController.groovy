@@ -17,10 +17,6 @@ package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
 import grails.core.GrailsApplication
-import org.supercsv.cellprocessor.ift.CellProcessor
-import org.supercsv.io.CsvListReader
-import org.supercsv.io.ICsvListReader
-import org.supercsv.prefs.CsvPreference
 
 /**
  * Generate codes and metadata for the data quality checks.
@@ -30,7 +26,6 @@ import org.supercsv.prefs.CsvPreference
 class DataQualityController {
     GrailsApplication grailsApplication
     def webServicesService
-    def qualityService
 
     static responseFormats = [
             list: ['json']
