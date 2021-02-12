@@ -33,12 +33,11 @@ import static au.org.ala.biocache.hubs.TimingUtils.time
  */
 @Slf4j
 class OccurrenceController {
-    def webServicesService, facetsCacheService, postProcessingService, authService
+    def webServicesService, facetsCacheService, postProcessingService, authService, qualityService, userService
 
     def SESSION_NAVIGATION_DTO = "SESSION_NAVIGATION_DTO"
 
     GeoIpService geoIpService
-    QualityService qualityService
 
     def ENVIRO_LAYER = "el"
     def CONTEXT_LAYER = "cl"
@@ -62,9 +61,10 @@ class OccurrenceController {
     def list(SpatialSearchRequestParams requestParams) {
         def start = System.currentTimeMillis()
 
-        def activeProfile = time("active profile") { qualityService.activeProfile(requestParams.qualityProfile) }
-
-        normaliseRequestParams(requestParams)
+        // get the user preference settings
+        def userPref = userService.getUserPref(authService?.getUserId(), request)
+        // apply the user preference settings
+        normaliseRequestParams(requestParams, userPref)
 
         try {
             //the configured grouping
@@ -159,17 +159,25 @@ class OccurrenceController {
                 hasImages = true
             }
 
-            def qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
-            def qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
+            def qualityCategories = []
+            def qualityFiltersByLabel = [:]
+            def groupedEnabledFilters = [:]
+            def qualityFilterDescriptionsByLabel = [:]
+            def translatedFilterMap = [:]
+            def (fqInteract, dqInteract, UserFQColors, DQColors) = [[:], [:], [:], [:]]
+            // if disable all quality filters, we don't need to retrieve them, it saves time
+            if (!requestParams.disableAllQualityFilters) {
+                qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
+                qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
+                groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
+                qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')] }
+                (fqInteract, dqInteract, UserFQColors, DQColors) = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj) }
+
+                def messagePropertiesFile = time("message properties file") { webServicesService.getMessagesPropertiesFile() }
+                def assertionCodeMap = time("assertionCodeMap") { webServicesService.getAssertionCodeMap() }
+                translatedFilterMap = postProcessingService.translateValues(groupedEnabledFilters, messagePropertiesFile, assertionCodeMap)
+            }
             def qualityTotalCount = time("quality total count") { qualityService.countTotalRecords(requestParams) }
-            def groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
-            def qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')] }
-
-            def (fqInteract, dqInteract, UserFQColors, DQColors) = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj) }
-
-            def messagePropertiesFile = time("message properties file") { webServicesService.getMessagesPropertiesFile() }
-            def assertionCodeMap = time("assertionCodeMap") { webServicesService.getAssertionCodeMap() }
-            def translatedFilterMap = postProcessingService.translateValues(groupedEnabledFilters, messagePropertiesFile, assertionCodeMap)
 
             log.debug "defaultFacets = ${defaultFacets}"
 
@@ -183,6 +191,7 @@ class OccurrenceController {
             navigationDTO.setSearchRequestResultSize(searchResults.totalRecords);
             request.getSession().setAttribute(SESSION_NAVIGATION_DTO, navigationDTO);
 
+            def activeProfile = time("active profile") { qualityService.activeProfile(requestParams.qualityProfile) }
             def inverseFilters = time("inverseFilters") { qualityService.getAllInverseCategoryFiltersForProfile(activeProfile) }
 
             def processingTime = (System.currentTimeMillis() - start)
@@ -214,6 +223,7 @@ class OccurrenceController {
                     UserFQColors: UserFQColors,
                     DQColors: DQColors,
                     activeProfile: activeProfile,
+                    userPref: userPref,
                     qualityProfiles: time("findAllEnabledProfiles") { qualityService.findAllEnabledProfiles(true) },
                     inverseFilters: inverseFilters
             ]
@@ -229,7 +239,7 @@ class OccurrenceController {
      * Massage the request params with defaults and processing additional query params
      * @param requestParams The request params to normalise
      */
-    private void normaliseRequestParams(SpatialSearchRequestParams requestParams) {
+    private void normaliseRequestParams(SpatialSearchRequestParams requestParams, userPref = null) {
         requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
 
         log.debug "requestParams = ${requestParams}"
@@ -254,6 +264,17 @@ class OccurrenceController {
 
         if (!requestParams.q) {
             requestParams.q = "*:*"
+        }
+
+        // if no dq profile selected, see if we can get any preference settings
+        if (!requestParams.disableAllQualityFilters && !requestParams.qualityProfile && userPref != null) {
+            // if user disables all
+            if (userPref.disableAll == true) {
+                requestParams.disableAllQualityFilters = true
+            } else if (userPref.dataProfile != null && qualityService.isProfileEnabled(userPref.dataProfile)) {
+                // if user has a valid default profile preset
+                requestParams.qualityProfile = userPref.dataProfile
+            }
         }
     }
 

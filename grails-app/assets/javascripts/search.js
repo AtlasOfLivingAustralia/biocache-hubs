@@ -622,6 +622,100 @@ $(document).ready(function() {
         window.location.href = BC_CONF.serverName + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName;
     });
 
+    // when open the user preference dlg
+    $('.DQPrefSettingsLink').click(function() {
+        var prefSettings = $('#DQPrefSettings');
+        var userPref = prefSettings.data('userpref-json');
+        var profiles = prefSettings.data('profiles');
+
+        var userProfileEnabled = false;
+
+        // if not disable all
+        if (!userPref.disableAll) {
+            var no_profile_selected_label = $('#no_profile_selected');
+            var profile_not_enabled_label = $('#profile_not_enabled');
+
+            // if preferred profile set
+            var userProfileSet = userPref.dataProfile != null && userPref.dataProfile.length > 0;
+
+            for (var i = 0; i < profiles.length; i++) {
+                if (profiles[i] === userPref.dataProfile) {
+                    userProfileEnabled = true;
+                    break;
+                }
+            }
+
+            if (userProfileSet) {
+                no_profile_selected_label.hide();
+                if (!userProfileEnabled) {
+                    profile_not_enabled_label.show();
+                } else {
+                    profile_not_enabled_label.hide();
+                }
+            } else {
+                no_profile_selected_label.show();
+            }
+        }
+
+        var profileSelect = $('#prefer_profile');
+
+        // select none by default
+        profileSelect.val('');
+        if (userPref.disableAll) { // if disabled
+            profileSelect.val('disableall-option');
+        } else if (userProfileEnabled && userPref.dataProfile !== null) { // else if a profile set
+            profileSelect.val(userPref.dataProfile);
+        }
+
+        $('#profile_expand').val(userPref.expand ? 'expanded' : 'collapsed');
+        setPrefFormButtonState();
+    })
+
+    // when submit the user preference dlg
+    $("#submitPref :input.submit").on("click", function(e) {
+        e.preventDefault();
+        var userPref = $('#DQPrefSettings').data('userpref-json');
+
+        // check user preferred profile
+        var prefProfile = $('#prefer_profile').val();
+        if (prefProfile === 'disableall-option') {
+            userPref.disableAll = true;
+            userPref.dataProfile = null;
+        } else {
+            userPref.disableAll = false;
+            userPref.dataProfile = prefProfile;
+        }
+
+        // set expand
+        userPref.expand = $('#profile_expand').val() === 'expanded';
+        // if user logged in
+        if (BC_CONF.userId) {
+            $.ajax({
+                url: BC_CONF.serverName + "/user/" + BC_CONF.prefKey,
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify(userPref)
+            }).done(function() {
+                $('#DQPrefSettings').data('userpref-json', userPref).data('userpref', userPref);
+            });
+        } else { // else save in cookie
+            $.cookie.json = true;
+            $.cookie(BC_CONF.prefKey, userPref, { expires: 365 });
+        }
+    })
+
+    $('#prefer_profile').on('change', function(e) {
+        setPrefFormButtonState();
+    })
+
+    function setPrefFormButtonState() {
+        $('#submitPref :input.submit').prop('disabled', !validatePrefForm());
+    }
+
+    function validatePrefForm() {
+        return $('#prefer_profile').val() !== '';
+    }
+
     // form validation for form#facetRefineForm
     $("#submitFacets :input.submit").on("click", function(e) {
         e.preventDefault();
@@ -1152,6 +1246,25 @@ $(document).ready(function() {
     }
 
     $('#modal-dismiss-dq').modal()
+
+    // expand / collapse data profile details
+    var dqFilterCollapse = $('#dq-filters-collapse')
+    dqFilterCollapse.collapse({
+        toggle: !BC_CONF.expandFilterDetails
+    })
+
+    switchCaretStyle($('.dq-filters-collapse'));
+
+    function switchCaretStyle(elem) {
+        var el = elem.find('i');
+        if (elem.hasClass('collapsed')) {
+            $(el).removeClass('fa-caret-down');
+            $(el).addClass('fa-caret-right');
+        } else {
+            $(el).removeClass('fa-caret-right');
+            $(el).addClass('fa-caret-down');
+        }
+    }
 }); // end JQuery document ready
 
 /**

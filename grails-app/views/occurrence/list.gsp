@@ -69,7 +69,10 @@
 ' Image does not support the identification of the species, subject is unclear and identifying features are difficult to see or not visible.<br/></div>',
             savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
             getPreferredSpeciesListUrl:  "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}",
-            excludeCountUrl: "${createLink(controller: 'occurrence', action: 'dataQualityExcludeCounts', params: params.clone()).encodeAsJavaScript()}"
+            excludeCountUrl: "${createLink(controller: 'occurrence', action: 'dataQualityExcludeCounts', params: params.clone()).encodeAsJavaScript()}",
+            expandFilterDetails: ${userPref.expand},
+            userId: "${userId}",
+            prefKey: "${grailsApplication.config.dataquality.prefkey}"
         };
 </script>
 
@@ -462,11 +465,57 @@
                             <g:if test="${!searchRequestParams.disableAllQualityFilters && qualityCategories.size() > 1}">
                                 <span style="vertical-align: middle;"><a href="#DQManageFilters" class="multipleFiltersLink tooltips" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="Select filters"/></a></span>
                             </g:if>
+                                <a href="#DQPrefSettings" class="DQPrefSettingsLink" data-toggle="modal" role="button" style="float: right; color: black"><i class="fa fa-cog tooltips" title="<g:message code="dq.profilesettings.button.tooltip" default="Data profile settings"/>"></i></a>
+                                <div id="DQPrefSettings" class="modal fade" role="dialog" tabindex="-1" data-userpref="${userPref}" data-userpref-json="${groovy.json.JsonOutput.toJson(userPref)}" data-profiles="${groovy.json.JsonOutput.toJson(qualityProfiles.collect {it.shortName})}">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                <h3><g:message code="dq.prefsettings.dlg.title" default="Data profile user settings"/></h3>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="col-md-12" id="userPrefBody">
+                                                    <h4 class="text-danger" id="no_profile_selected" hidden><g:message code="dq.userpref.nopreferprofile" default="Your don't have a preferred profile selected"/></h4>
+                                                    <h4 class="text-danger" id="profile_not_enabled" hidden><g:message code="dq.userpref.profilenotenabled" args="${userPref.dataProfile}"/></h4>
+                                                    <form>
+                                                        <div class="form-group row">
+                                                            <label for="prefer_profile" class="col-sm-4 col-form-label"><g:message code="dq.profilesettings.label.defaultprofile" default="Default profile"/></label>
+                                                            <div class="col-sm-8">
+                                                                <select id='prefer_profile' class="form-control col-md-6">
+                                                                    <option value=""><g:message code="dq.userpref.defaultprofile" default="-- Select a profile --" /></option>
+                                                                    <g:each in="${qualityProfiles}" var="profile">
+                                                                        <option value="${profile.shortName}">${profile.name}</option>
+                                                                    </g:each>
+                                                                    <option value="disableall-option"><alatag:message code="dq.buttontext.disableall" default="Disable data profiles"/></option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <label for="profile_expand" class="col-sm-4 col-form-label"><g:message code="dq.profilesettings.label.showexpend" default="Show data profile details"/></label>
+                                                            <div class="col-sm-8">
+                                                                <select id='profile_expand' class="form-control col-md-6">
+                                                                    <option value="collapsed"><g:message code="dq.profilesettings.select.option.collapsed" default="Collapsed" /></option>
+                                                                    <option value="expanded"><g:message code="dq.profilesettings.select.option.expanded" default="Expanded" /></option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <div id="submitPref" class="modal-footer">
+                                                <button class="btn btn-default" data-dismiss="modal" ><alatag:message code="dq.profilesettings.button.cancel" default="Cancel"/></button>
+                                                <button type='submit' class="submit btn btn-primary" data-dismiss="modal" ><alatag:message code="dq.profilesettings.button.save" default="Save"/></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <g:if test="${searchRequestParams.disableAllQualityFilters}">
-                                <div class="alert alert-warning alert-sm">
-                                    <alatag:message code="quality.filters.disabled" default="Data Quality filters have been disabled for this search"/>
+                                <div class="collapse in" id="dq-filters-collapse">
+                                    <div class="alert alert-warning alert-sm">
+                                        <alatag:message code="dq.data.profiles.disabled" default="Data profiles have been disabled for this search"/>
+                                    </div>
                                 </div>
                             </g:if>
                             <g:else>
