@@ -1250,7 +1250,7 @@ $(document).ready(function() {
     // expand / collapse data profile details
     var dqFilterCollapse = $('#dq-filters-collapse')
     dqFilterCollapse.collapse({
-        toggle: !BC_CONF.expandFilterDetails
+        toggle: BC_CONF.expandFilterDetails
     })
 
     switchCaretStyle($('.dq-filters-collapse'));

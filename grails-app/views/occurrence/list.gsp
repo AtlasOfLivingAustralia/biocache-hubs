@@ -336,7 +336,7 @@
                     <alatag:ifDataQualityEnabled>
                         <div class="activeFilters col-sm-12">
                             <div>
-                            <a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse" class="dq-filters-collapse" style="vertical-align: middle;"><i class="fa fa-caret-down" style="width: 8px;color: black"></i>&nbsp;<b><alatag:message code="quality.filters.group.title" default="Data Profile"/></b>:</a>
+                            <a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse" class="dq-filters-collapse" style="vertical-align: middle;"><i class="fa fa-caret-right" style="width: 8px;color: black"></i>&nbsp;<b><alatag:message code="quality.filters.group.title" default="Data Profile"/></b>:</a>
                             <g:if test="${qualityProfiles.size() >= 1}">
                                 <span class="dropdown">
                                     <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to switch profiles">
@@ -519,7 +519,7 @@
                                 </div>
                             </g:if>
                             <g:else>
-                                <div class="collapse in" id="dq-filters-collapse">
+                                <div class="collapse" id="dq-filters-collapse">
                                     <g:each var="qualityCategory" in="${qualityCategories}">
                                         <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
                                         <div class="col-sm-6 dq-active-filter-item">
