@@ -466,7 +466,7 @@
                                 <span style="vertical-align: middle;"><a href="#DQManageFilters" class="multipleFiltersLink tooltips" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="Select filters"/></a></span>
                             </g:if>
                                 <a href="#DQPrefSettings" class="DQPrefSettingsLink" data-toggle="modal" role="button" style="float: right; color: black"><i class="fa fa-cog tooltips" title="<g:message code="dq.profilesettings.button.tooltip" default="Data profile settings"/>"></i></a>
-                                <div id="DQPrefSettings" class="modal fade" role="dialog" tabindex="-1" data-userpref="${userPref}" data-userpref-json="${groovy.json.JsonOutput.toJson(userPref)}" data-profiles="${groovy.json.JsonOutput.toJson(qualityProfiles.collect {it.shortName})}">
+                                <div id="DQPrefSettings" class="modal fade" role="dialog" tabindex="-1" data-defaultprofilename="${defaultProfileName}" data-userpref="${userPref}" data-userpref-json="${groovy.json.JsonOutput.toJson(userPref)}" data-profiles="${groovy.json.JsonOutput.toJson(qualityProfiles.collect {it.shortName})}">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -475,14 +475,11 @@
                                             </div>
                                             <div class="modal-body">
                                                 <div class="col-md-12" id="userPrefBody">
-                                                    <h4 class="text-danger" id="no_profile_selected" hidden><g:message code="dq.userpref.nopreferprofile" default="Your don't have a preferred profile selected"/></h4>
-                                                    <h4 class="text-danger" id="profile_not_enabled" hidden><g:message code="dq.userpref.profilenotenabled" args="${userPref.dataProfile}"/></h4>
                                                     <form>
                                                         <div class="form-group row">
                                                             <label for="prefer_profile" class="col-sm-4 col-form-label"><g:message code="dq.profilesettings.label.defaultprofile" default="Default profile"/></label>
                                                             <div class="col-sm-8">
                                                                 <select id='prefer_profile' class="form-control col-md-6">
-                                                                    <option value=""><g:message code="dq.userpref.defaultprofile" default="-- Select a profile --" /></option>
                                                                     <g:each in="${qualityProfiles}" var="profile">
                                                                         <option value="${profile.shortName}">${profile.name}</option>
                                                                     </g:each>
@@ -512,7 +509,7 @@
                             </div>
 
                             <g:if test="${searchRequestParams.disableAllQualityFilters}">
-                                <div class="collapse in" id="dq-filters-collapse">
+                                <div class="collapse" id="dq-filters-collapse">
                                     <div class="alert alert-warning alert-sm">
                                         <alatag:message code="dq.data.profiles.disabled" default="Data profiles have been disabled for this search"/>
                                     </div>

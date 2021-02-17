@@ -632,9 +632,6 @@ $(document).ready(function() {
 
         // if not disable all
         if (!userPref.disableAll) {
-            var no_profile_selected_label = $('#no_profile_selected');
-            var profile_not_enabled_label = $('#profile_not_enabled');
-
             // if preferred profile set
             var userProfileSet = userPref.dataProfile != null && userPref.dataProfile.length > 0;
 
@@ -644,31 +641,19 @@ $(document).ready(function() {
                     break;
                 }
             }
-
-            if (userProfileSet) {
-                no_profile_selected_label.hide();
-                if (!userProfileEnabled) {
-                    profile_not_enabled_label.show();
-                } else {
-                    profile_not_enabled_label.hide();
-                }
-            } else {
-                no_profile_selected_label.show();
-            }
         }
 
         var profileSelect = $('#prefer_profile');
 
-        // select none by default
-        profileSelect.val('');
-        if (userPref.disableAll) { // if disabled
+        if (userPref.disableAll) { // if disable all
             profileSelect.val('disableall-option');
-        } else if (userProfileEnabled && userPref.dataProfile !== null) { // else if a profile set
+        } else if (userProfileEnabled && userPref.dataProfile !== null) { // if a profile selected and enabled
             profileSelect.val(userPref.dataProfile);
+        } else { // if no profile selected or selected profile disabled, use system default
+            profileSelect.val(prefSettings.data('defaultprofilename'));
         }
 
         $('#profile_expand').val(userPref.expand ? 'expanded' : 'collapsed');
-        setPrefFormButtonState();
     })
 
     // when submit the user preference dlg
@@ -703,18 +688,6 @@ $(document).ready(function() {
             $.cookie(BC_CONF.prefKey, userPref, { expires: 365 });
         }
     })
-
-    $('#prefer_profile').on('change', function(e) {
-        setPrefFormButtonState();
-    })
-
-    function setPrefFormButtonState() {
-        $('#submitPref :input.submit').prop('disabled', !validatePrefForm());
-    }
-
-    function validatePrefForm() {
-        return $('#prefer_profile').val() !== '';
-    }
 
     // form validation for form#facetRefineForm
     $("#submitFacets :input.submit").on("click", function(e) {

@@ -223,6 +223,7 @@ class OccurrenceController {
                     UserFQColors: UserFQColors,
                     DQColors: DQColors,
                     activeProfile: activeProfile,
+                    defaultProfileName: qualityService.activeProfile()?.shortName,
                     userPref: userPref,
                     qualityProfiles: time("findAllEnabledProfiles") { qualityService.findAllEnabledProfiles(true) },
                     inverseFilters: inverseFilters
