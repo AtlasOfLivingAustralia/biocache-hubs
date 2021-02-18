@@ -659,7 +659,8 @@ $(document).ready(function() {
     // when submit the user preference dlg
     $("#submitPref :input.submit").on("click", function(e) {
         e.preventDefault();
-        var userPref = $('#DQPrefSettings').data('userpref-json');
+        var prefSettings = $('#DQPrefSettings');
+        var userPref = prefSettings.data('userpref-json');
 
         // check user preferred profile
         var prefProfile = $('#prefer_profile').val();
@@ -687,6 +688,63 @@ $(document).ready(function() {
             $.cookie.json = true;
             $.cookie(BC_CONF.prefKey, userPref, { expires: 365 });
         }
+
+        // enabled filters of current profile, used to remove expanded fqs in url
+        var filtersvalue = prefSettings.data('filters');
+        var filterSet = new Set();
+        for (var i = 0; i < filtersvalue.length; i++) {
+            filterSet.add(filtersvalue[i]);
+        }
+
+        // get current url
+        var url = $(location).attr('href');
+
+        // 1. remove qualityProfile from URL
+        url = removeFromURL(url, "qualityProfile=", false);
+        // 2. remove disable all from URL
+        url = removeFromURL(url, "disableAllQualityFilters=", false);
+        // 3. remove disableQualityFilter from URL
+        var disabledQualityFilters = $.url().param('disableQualityFilter');
+        if (disabledQualityFilters !== undefined) {
+            // if only 1 category disabled
+            if (typeof disabledQualityFilters === "string") {
+                url = removeFromURL(url, "disableQualityFilter=", false);
+            } else {
+                for (var i = 0; i < disabledQualityFilters.length; i++) {
+                    url = removeFromURL(url, "disableQualityFilter=", false);
+                }
+            }
+        }
+
+        // fqs contains current fqs in url, it could be expanded or user specified
+        var fqList = $.url().param('fq');
+        var fqs = [];
+        if (fqList !== undefined) {
+            if (typeof fqList === "object") {
+                for (var i = 0; i < fqList.length; i++) {
+                    fqs.push(fqList[i]);
+                }
+            } else if (typeof fqList === "string") {
+                fqs.push(fqList);
+            }
+        }
+
+        // 4. remove fqs from URL
+        for (var i = 0; i < fqs.length; i++) {
+            // remove those belong to this profile so only user specified fqs stay
+            if (filterSet.has(fqs[i])) {
+                url = removeFromURL(url, 'fq=' + encodeURIComponent(fqs[i]).replace(/%20/g, "+").replace(/[()]/g, escape), true);
+            }
+        }
+
+        // 5. add qualityProfile=xxx or disableAllQualityFilter=true to URL
+        if (userPref.disableAll) {
+            url = prependURL(url,"disableAllQualityFilters=true", true);
+        } else {
+            url = prependURL(url, "qualityProfile=" + encodeURIComponent(userPref.dataProfile).replace(/%20/g, "+").replace(/[()]/g, escape), true);
+        }
+
+        window.location.href = url;
     })
 
     // form validation for form#facetRefineForm
@@ -979,6 +1037,43 @@ $(document).ready(function() {
         } else {
             return url.slice(0, idx) + (url.indexOf('?') === -1 ? '?' : '&') + queryParamsToAppend + url.slice(idx);
         }
+    }
+
+    function prependURL(url, queryParamsToAppend, afterSearchKey = false) {
+        var anchorpos = url.indexOf("#");
+        var ancchorpart = '';
+        if (anchorpos !== -1) {
+            ancchorpart = url.substring(anchorpos);
+            url = url.substring(0, anchorpos);
+        }
+
+        var queryStringpos = url.indexOf('?');
+        var queryString = ''
+        if (queryStringpos !== -1) {
+            queryString = url.substring(queryStringpos + 1);
+            url = url.substring(0, queryStringpos);
+        }
+
+        // trim query string
+        queryString = queryString.trim();
+        var queries = []
+        if (queryString !== '') {
+            queries = queryString.split('&');
+        }
+
+        var idx = 0;
+        // if insert it after search keys: q=, qid=, lat=, lng=, radius=
+        if (afterSearchKey) {
+            for (; idx < queries.length; idx++) {
+                var query = queries[idx];
+                if (!query.startsWith('q=') && !query.startsWith('qid=') && !query.startsWith('lat=') && !query.startsWith('lng=') && !query.startsWith('radius=') && !query.startsWith('taxa=')) {
+                    break;
+                }
+            }
+        }
+
+        queries.splice(idx, 0, queryParamsToAppend)
+        return url + '?' + queries.join('&') + ancchorpart;
     }
 
     function removeFromURL(url, sToRemove, exactMatch) {

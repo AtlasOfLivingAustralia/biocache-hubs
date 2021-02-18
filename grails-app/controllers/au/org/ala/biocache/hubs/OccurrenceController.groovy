@@ -159,7 +159,7 @@ class OccurrenceController {
                 hasImages = true
             }
 
-            def qualityCategories = []
+            def qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
             def qualityFiltersByLabel = [:]
             def groupedEnabledFilters = [:]
             def qualityFilterDescriptionsByLabel = [:]
@@ -167,7 +167,6 @@ class OccurrenceController {
             def (fqInteract, dqInteract, UserFQColors, DQColors) = [[:], [:], [:], [:]]
             // if disable all quality filters, we don't need to retrieve them, it saves time
             if (!requestParams.disableAllQualityFilters) {
-                qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
                 qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
                 groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
                 qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')] }
