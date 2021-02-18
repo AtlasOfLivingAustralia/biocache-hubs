@@ -161,9 +161,8 @@
                     <thead class="fixedHeader">
                     <tr>
                         <th class="speciesIndex">&nbsp;&nbsp;</th>
-                        <th class="sciName"><a href="0" id="speciesSort" data-sort="taxa" title="sort by taxa"><g:message code="eya.table.02.th01" default="Species"/></a>
-                            <span id="sortSeparator">:</span>
-                            <a href="0" id="commonSort" data-sort="common" title="sort by common name"><g:message code="eya.table.02.th01.a" default="Common Name"/></a></th>
+                        <th class="sciName"><a href="0" id="commonSort" data-sort="common" title="sort by common name"><g:message code="eya.table.02.th01.a" default="Common Name"/></a></th>
+                        <th class="sciName"><a href="0" id="speciesSort" data-sort="taxa" title="sort by scientific name"><g:message code="eya.table.02.th01" default="Scientific Name"/></a></th>
                         <th class="rightCounts"><a href="0" data-sort="count" title="sort by record count"><g:message code="eya.table.02.th02" default="Records"/></a></th>
                     </tr>
                     </thead>

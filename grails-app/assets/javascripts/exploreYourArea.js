@@ -633,6 +633,7 @@ function groupClicked(el) {
         radius: $('#radius').val(),
         fq: "geospatial_kosher:true",
         qc: MAP_VAR.queryContext,
+        sort: "count",
         pageSize: 50
     };
     //var params = "?latitude=${latitude}&longitude=${longitude}&radius=${radius}&taxa="+taxa+"&rank="+rank;
@@ -659,21 +660,23 @@ function processSpeciesJsonData(data, appendResults) {
         var infoTitle = "view species page";
         var recsTitle = "view list of records";
         // iterate over list of species from search
-        for (i=0;i<data.length;i++) {
+        for (i = 0; i < data.length; i++) {
             // create new table row
             var count = i + lastRow;
             // add count
             var tr = '<tr><td class="speciesIndex">'+(count+1)+'.</td>';
-            // add scientific name
-            tr = tr + '<td class="sciName"><a id="' + data[i].guid + '" class="taxonBrowse2" title="'+linkTitle+'" href="'+ // id=taxon_name
-                data[i].name+'"><i>'+data[i].name+'</i></a>';
             // add common name
             if (data[i].commonName) {
-                tr = tr + ' : ' + data[i].commonName+'';
+                tr = tr + '<td class="sciName">' + data[i].commonName +'</td>';
+            } else {
+                tr = tr + ' <td class="sciName"> [Not supplied] </td>';
             }
+            // add scientific name
+            tr = tr + '<td class="sciName"><a id="' + data[i].guid + '" class="taxonBrowse2" title="'+linkTitle+'" href="'+ // id=taxon_name
+                data[i].name+'"><i>'+data[i].name+'</i></a></td>';
+
             // add links to species page and occurrence search (inside hidden div)
             if(MAP_VAR.speciesPageUrl) {
-
                 var speciesInfo = '<div class="speciesInfo">';
                 if (data[i].guid) {
                     speciesInfo = speciesInfo + '<a class="speciesPageLink" title="' + infoTitle + '" href="' + MAP_VAR.speciesPageUrl + data[i].guid +
