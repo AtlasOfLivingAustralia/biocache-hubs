@@ -1039,7 +1039,7 @@ $(document).ready(function() {
         }
     }
 
-    function prependURL(url, queryParamsToAppend, afterSearchKey = false) {
+    function prependURL(url, queryParamsToAppend, afterSearchKey) {
         var anchorpos = url.indexOf("#");
         var ancchorpart = '';
         if (anchorpos !== -1) {

@@ -504,7 +504,7 @@
                                             </div>
                                             <div id="submitPref" class="modal-footer">
                                                 <button class="btn btn-default" data-dismiss="modal"><alatag:message code="dq.profilesettings.button.cancel" default="Cancel"/></button>
-                                                <button type='submit' class="submit btn btn-primary"><alatag:message code="dq.profilesettings.button.save" default="Save"/></button>
+                                                <button type='submit' class="submit btn btn-primary" data-dismiss="modal"><alatag:message code="dq.profilesettings.button.save" default="Save"/></button>
                                             </div>
                                         </div>
                                     </div>
