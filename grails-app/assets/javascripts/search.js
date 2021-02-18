@@ -1039,7 +1039,7 @@ $(document).ready(function() {
         }
     }
 
-    function prependURL(url, queryParamsToAppend, afterSearchKey = false) {
+    function prependURL(url, queryParamsToAppend, afterSearchKey) {
         var anchorpos = url.indexOf("#");
         var ancchorpart = '';
         if (anchorpos !== -1) {
@@ -1135,6 +1135,18 @@ $(document).ready(function() {
         position: {
             target: 'mouse',
             adjust: { x: 6, y: 14 }
+        }
+    });
+
+    // user preference settings and download link tooltips will be above the control
+    $("#usersettings, a.newDownload").qtip({
+        style: {
+            classes: 'ui-tooltip-rounded ui-tooltip-shadow'
+        },
+        position: {
+            target: 'mouse',
+            my: 'bottom center',
+            adjust: { x: -6, y: -10 }
         }
     });
 

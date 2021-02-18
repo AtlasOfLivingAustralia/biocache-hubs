@@ -465,7 +465,7 @@
                             <g:if test="${!searchRequestParams.disableAllQualityFilters && qualityCategories.size() > 1}">
                                 <span style="vertical-align: middle;"><a href="#DQManageFilters" class="multipleFiltersLink tooltips" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="Select filters"/></a></span>
                             </g:if>
-                                <a href="#DQPrefSettings" class="DQPrefSettingsLink" data-toggle="modal" role="button" style="float: right; color: black"><g:message code="dq.profilesettings.button.label" default="Settings"/>&nbsp;<i class="fa fa-cog tooltips" title="<g:message code="dq.profilesettings.button.tooltip" default="Data profile settings"/>"></i></a>
+                                <a href="#DQPrefSettings" class="DQPrefSettingsLink" data-toggle="modal" role="button" style="float: right; color: black"><span id='usersettings' title="<g:message code="dq.profilesettings.button.tooltip" default="Data profile settings"/>"><span><g:message code="dq.profilesettings.button.label" default="Settings"/>&nbsp;</span><i class="fa fa-cog"></i></span></a>
                                 <div id="DQPrefSettings" class="modal fade" role="dialog" tabindex="-1" data-defaultprofilename="${defaultProfileName}" data-userpref="${userPref}" data-userpref-json="${groovy.json.JsonOutput.toJson(userPref)}" data-profiles="${groovy.json.JsonOutput.toJson(qualityProfiles.collect {it.shortName})}" data-filters="${groovy.json.JsonOutput.toJson(qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten())}">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
@@ -504,7 +504,7 @@
                                             </div>
                                             <div id="submitPref" class="modal-footer">
                                                 <button class="btn btn-default" data-dismiss="modal"><alatag:message code="dq.profilesettings.button.cancel" default="Cancel"/></button>
-                                                <button type='submit' class="submit btn btn-primary"><alatag:message code="dq.profilesettings.button.save" default="Save"/></button>
+                                                <button type='submit' class="submit btn btn-primary" data-dismiss="modal"><alatag:message code="dq.profilesettings.button.save" default="Save"/></button>
                                             </div>
                                         </div>
                                     </div>
