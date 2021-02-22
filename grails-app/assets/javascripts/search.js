@@ -680,12 +680,21 @@ $(document).ready(function() {
                 url: BC_CONF.serverName + "/user/" + BC_CONF.prefKey,
                 type: "POST",
                 contentType: 'application/json',
-                data: JSON.stringify(userPref)
-            });
+                data: JSON.stringify(userPref),
+                success: applyUserPreference // reload on success
+            }).always(function() {
+                $('#DQPrefSettings').modal('hide');
+            })
         } else { // else save in cookie
             $.cookie.json = true;
             $.cookie(BC_CONF.prefKey, userPref, { expires: 365 });
+            $('#DQPrefSettings').modal('hide');
+            applyUserPreference(userPref)
         }
+    })
+
+    function applyUserPreference(userPref) {
+        var prefSettings = $('#DQPrefSettings');
 
         // enabled filters of current profile, used to remove expanded fqs in url
         var filtersvalue = prefSettings.data('filters');
@@ -743,7 +752,7 @@ $(document).ready(function() {
         }
 
         window.location.href = url;
-    })
+    }
 
     // form validation for form#facetRefineForm
     $("#submitFacets :input.submit").on("click", function(e) {

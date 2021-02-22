@@ -34,7 +34,7 @@ class UserController {
             render status: 403
         } else if (data && userId) {
             userDataService.set(userId, type, data)
-            render status: 200
+            render data as JSON
         } else {
             render status: 404
         }
