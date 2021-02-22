@@ -681,8 +681,6 @@ $(document).ready(function() {
                 type: "POST",
                 contentType: 'application/json',
                 data: JSON.stringify(userPref)
-            }).done(function() {
-                $('#DQPrefSettings').data('userpref-json', userPref).data('userpref', userPref);
             });
         } else { // else save in cookie
             $.cookie.json = true;
