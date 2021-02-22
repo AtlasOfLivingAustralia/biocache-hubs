@@ -19,11 +19,13 @@ import au.org.ala.dataquality.model.QualityProfile
 import au.org.ala.web.CASRoles
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
 
+import javax.servlet.http.HttpServletRequest
 import java.text.SimpleDateFormat
 
 import static au.org.ala.biocache.hubs.TimingUtils.time
@@ -223,6 +225,7 @@ class OccurrenceController {
                     DQColors: DQColors,
                     activeProfile: activeProfile,
                     defaultProfileName: qualityService.activeProfile()?.shortName,
+                    expandProfileDetails: getProfileDetailExpandState(userPref, request),
                     userPref: userPref,
                     qualityProfiles: time("findAllEnabledProfiles") { qualityService.findAllEnabledProfiles(true) },
                     inverseFilters: inverseFilters
@@ -644,5 +647,25 @@ class OccurrenceController {
         QualityProfile profile = qualityService.activeProfile(requestParams.qualityProfile)
         data.count = qualityService.getExcludeCount(params.categoryLabel, profile.getCategories(), requestParams)
         render data as JSON
+    }
+
+    // profile details expand/collapse will be kept for whole session
+    private def getProfileDetailExpandState(userPref, HttpServletRequest request) {
+        def expandKey = "${grailsApplication.config.dataquality.expandKey}"
+        def rawCookie = PostProcessingService.getCookieValue(request.getCookies(), expandKey, null)
+
+        // if already have expand/collapse settings, use it to overwrite user preference
+        if (rawCookie != null) {
+            try {
+                // apply session settings
+                def val = new JsonSlurper().parseText(URLDecoder.decode(rawCookie, "UTF-8"))
+                return val.expand
+            } catch (UnsupportedEncodingException ex) {
+                log.error(ex.getMessage(), ex)
+            }
+        }
+        // rawCookie == null means the start of session so use default user settings
+
+        return userPref.expand
     }
 }

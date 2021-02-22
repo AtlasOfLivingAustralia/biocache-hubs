@@ -33,6 +33,7 @@ dataquality.enabled = true
 dataquality.baseUrl = 'https://data-quality-service-test.ala.org.au'
 dataquality.recordCountCacheSpec = 'expireAfterWrite=1d'
 dataquality.prefkey = 'dqUserProfile'
+dataquality.expandKey = 'dqDetailExpand'
 
 // skin settings
 organisation.baseUrl = "https://www.ala.org.au"

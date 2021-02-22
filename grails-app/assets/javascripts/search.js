@@ -674,8 +674,11 @@ $(document).ready(function() {
 
         // set expand
         userPref.expand = $('#profile_expand').val() === 'expanded';
+        $.cookie.json = true;
         // if user logged in
         if (BC_CONF.userId) {
+            // save the dq profile detail expand/collapse state
+            $.cookie(BC_CONF.expandKey, {expand: userPref.expand});
             $.ajax({
                 url: BC_CONF.serverName + "/user/" + BC_CONF.prefKey,
                 type: "POST",
@@ -686,8 +689,9 @@ $(document).ready(function() {
                 $('#DQPrefSettings').modal('hide');
             })
         } else { // else save in cookie
-            $.cookie.json = true;
             $.cookie(BC_CONF.prefKey, userPref, { expires: 365 });
+            // save the dq profile detail expand/collapse state
+            $.cookie(BC_CONF.expandKey, {expand: userPref.expand});
             $('#DQPrefSettings').modal('hide');
             applyUserPreference(userPref)
         }
@@ -806,13 +810,18 @@ $(document).ready(function() {
 
     // switch caret style
     $('.dq-filters-collapse').click(function (e) {
+        $.cookie.json = true;
         var el = $(this).find('i');
         if ($(el).hasClass('fa-caret-right')) {
             $(el).removeClass('fa-caret-right');
             $(el).addClass('fa-caret-down');
+            // save the expand/collapse state to cookie so when page refresh
+            // we can restore the state
+            $.cookie(BC_CONF.expandKey, {expand: true});
         } else if ($(el).hasClass('fa-caret-down')) {
             $(el).removeClass('fa-caret-down');
             $(el).addClass('fa-caret-right');
+            $.cookie(BC_CONF.expandKey, {expand: false});
         }
     });
 
@@ -1337,7 +1346,7 @@ $(document).ready(function() {
     // expand / collapse data profile details
     var dqFilterCollapse = $('#dq-filters-collapse')
     dqFilterCollapse.collapse({
-        toggle: BC_CONF.expandFilterDetails
+        toggle: BC_CONF.expandProfileDetails
     })
 
     switchCaretStyle($('.dq-filters-collapse'));

@@ -70,9 +70,10 @@
             savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
             getPreferredSpeciesListUrl:  "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}",
             excludeCountUrl: "${createLink(controller: 'occurrence', action: 'dataQualityExcludeCounts', params: params.clone()).encodeAsJavaScript()}",
-            expandFilterDetails: ${userPref.expand},
+            expandProfileDetails: ${expandProfileDetails},
             userId: "${userId}",
-            prefKey: "${grailsApplication.config.dataquality.prefkey}"
+            prefKey: "${grailsApplication.config.dataquality.prefkey}",
+            expandKey: "${grailsApplication.config.dataquality.expandKey}"
         };
 </script>
 
