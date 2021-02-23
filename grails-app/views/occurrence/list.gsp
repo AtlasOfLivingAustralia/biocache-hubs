@@ -290,12 +290,7 @@
                 </g:if>
                 <div id="resultsReturned">
                     <g:render template="sandboxUploadSourceLinks" model="[dataResourceUid: selectedDataResource]"/>
-                    <span id="returnedText">
-                        <strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong>
-                        <g:message code="list.resultsretuened.span.returnedtotal" default="records returned of"/></span>
-                        <strong><g:formatNumber number="${qualityTotalCount}" format="#,###,###"/></strong>
-                        <g:message code="list.resultsretuened.span.returnedtext" default="for"/>
-                    </span>
+                    <alatag:resultCount totalRecords="${sr.totalRecords}" qualityTotalCount="${qualityTotalCount}" />
                     <span class="queryDisplay"><strong>
                         <g:set var="queryToShow"><alatag:sanitizeContent>${raw(queryDisplay)}</alatag:sanitizeContent></g:set>
                         ${raw(queryToShow) ?: params.taxa ?: params.q}
