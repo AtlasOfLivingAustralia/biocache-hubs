@@ -15,11 +15,16 @@ package au.org.ala.biocache.hubs
 
 import au.org.ala.web.UserDetails
 import groovy.json.JsonSlurper
+import org.springframework.beans.factory.annotation.Value
 
 import javax.servlet.http.HttpServletRequest
 
 class UserService {
     def authService, userDataService, grailsApplication
+
+    @Value('${dataquality.enabled}')
+    boolean dataQualityEnabled
+
     /**
      * Get both email and displayName for a numeric user id.  Preferring to use the auth service
      * unless it's unavailable, then fall back to database
@@ -45,28 +50,29 @@ class UserService {
         }
     }
 
-    def getUserPref(String userId, HttpServletRequest request) {
+    Map getUserPref(String userId, HttpServletRequest request) {
         def pref = [:]
-        def prefKey = "${grailsApplication.config.dataquality.prefkey}"
-        if (userId != null) { // retrieve data from userdetails
-            pref = userDataService.get(userId, prefKey)
-        } else { // use cookie
-            def rawCookie = PostProcessingService.getCookieValue(request.getCookies(), prefKey, null)
+        if (dataQualityEnabled) {
+            def prefKey = "${grailsApplication.config.dataquality.prefkey}"
+            if (userId != null) { // retrieve data from userdetails
+                pref = userDataService.get(userId, prefKey)
+            } else { // use cookie
+                def rawCookie = PostProcessingService.getCookieValue(request.getCookies(), prefKey, null)
 
-            if (rawCookie) {
-                try {
-                    pref = new JsonSlurper().parseText(URLDecoder.decode(rawCookie, "UTF-8"))
-                } catch (UnsupportedEncodingException ex) {
-                    log.error(ex.getMessage(), ex)
+                if (rawCookie) {
+                    try {
+                        pref = new JsonSlurper().parseText(URLDecoder.decode(rawCookie, "UTF-8"))
+                    } catch (UnsupportedEncodingException ex) {
+                        log.error(ex.getMessage(), ex)
+                    }
                 }
             }
+
+            // make sure values exists
+            pref.disableAll = pref?.containsKey('disableAll') ? pref.disableAll : false
+            pref.dataProfile = pref?.containsKey('dataProfile') ? pref.dataProfile : null
+            pref.expand = pref?.containsKey('expand') ? pref.expand : true
         }
-
-        // make sure values exists
-        pref.disableAll = pref?.containsKey('disableAll') ? pref.disableAll : false
-        pref.dataProfile = pref?.containsKey('dataProfile') ? pref.dataProfile : null
-        pref.expand = pref?.containsKey('expand') ? pref.expand : true
-
         pref
     }
 }

@@ -72,8 +72,8 @@
             excludeCountUrl: "${createLink(controller: 'occurrence', action: 'dataQualityExcludeCounts', params: params.clone()).encodeAsJavaScript()}",
             expandProfileDetails: ${expandProfileDetails},
             userId: "${userId}",
-            prefKey: "${grailsApplication.config.dataquality.prefkey}",
-            expandKey: "${grailsApplication.config.dataquality.expandKey}"
+            prefKey: "${(grailsApplication.config.getProperty("dataquality.prefkey", String, "dqUserProfile"))}",
+            expandKey: "${(grailsApplication.config.getProperty("dataquality.expandKey", String, "dqDetailExpand"))}"
         };
 </script>
 

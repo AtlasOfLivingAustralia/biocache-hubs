@@ -504,9 +504,10 @@ class PostProcessingService {
         layerObjects
     }
 
-    def processUserFQInteraction(SpatialSearchRequestParams requestParams, activeFacetObj) {
+    Map processUserFQInteraction(SpatialSearchRequestParams requestParams, activeFacetObj) {
+        def interactionMap = [:]
         if (requestParams.disableAllQualityFilters) {
-            return [[:], [:], [:], [:]]
+            return interactionMap
         }
 
         def disabled = requestParams.disableQualityFilter as Set
@@ -589,7 +590,11 @@ class PostProcessingService {
             it.value.each { DQColors.put(it, color) }
         }
 
-        return [fqInteract, dqInteract, UserFQColors, DQColors]
+        interactionMap.fqInteract = fqInteract
+        interactionMap.dqInteract = dqInteract
+        interactionMap.UserFQColors = UserFQColors
+        interactionMap.DQColors = DQColors
+        interactionMap
     }
 
     /**

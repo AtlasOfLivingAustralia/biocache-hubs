@@ -44,10 +44,14 @@ class UserDataService {
         data
     }
 
-    def set(userId, type, data) {
+    // return value indicates if set succeeds
+    boolean set(userId, type, data) {
         if (userId && grailsApplication.config.userdetails.baseUrl) {
-            webService.post(grailsApplication.config.userdetails.baseUrl + '/property/saveProperty', null,
+            def response = webService.post(grailsApplication.config.userdetails.baseUrl + '/property/saveProperty', null,
                     [alaId: userId, name: NAME_PREFIX + type, value: (data as JSON).toString()])
+
+            return response?.statusCode == 200
         }
+        return false
     }
 }

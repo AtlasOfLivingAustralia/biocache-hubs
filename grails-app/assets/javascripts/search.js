@@ -684,7 +684,10 @@ $(document).ready(function() {
                 type: "POST",
                 contentType: 'application/json',
                 data: JSON.stringify(userPref),
-                success: applyUserPreference // reload on success
+                success: applyUserPreference, // reload on success
+                error: function() {
+                    window.alert(jQuery.i18n.prop('dq.warning.failedtosave'));
+                }
             }).always(function() {
                 $('#DQPrefSettings').modal('hide');
             })
