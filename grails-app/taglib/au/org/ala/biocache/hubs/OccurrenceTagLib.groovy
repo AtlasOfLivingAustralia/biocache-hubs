@@ -1210,14 +1210,14 @@ class OccurrenceTagLib {
         if (dataQualityEnabled) {
             mb.span(id:'returnedText') {
                 strong g.formatNumber(number: "${attrs.totalRecords}", format: "#,###,###")
-                span alatag.message(code: "list.resultsretuened.span.returnedtotal", default: 'records returned of')
+                span alatag.message(code: "list.resultsreturned.span.returnedtotal", default: 'records returned of')
                 strong g.formatNumber(number: "${attrs.qualityTotalCount}", format:"#,###,###")
-                span alatag.message(code:"list.resultsretuened.span.returnedtext", default:'for')
+                span alatag.message(code:"list.resultsreturned.span.returnedtext", default:'for')
             }
         } else {
             mb.span(id:'returnedText') {
                 strong g.formatNumber(number: "${attrs.totalRecords}", format: "#,###,###")
-                span alatag.message(code:"list.resultsretuened.span.returnedtext1", default:'results for')
+                span alatag.message(code:"list.resultsreturned.span.returnedtext1", default:'results for')
             }
         }
     }
