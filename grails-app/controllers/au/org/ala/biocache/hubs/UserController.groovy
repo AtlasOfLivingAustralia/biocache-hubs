@@ -26,17 +26,21 @@ class UserController {
     def authService
     def userDataService
 
-    def set(String type) {
+    // return true if set succeeds, return false otherwise
+    boolean set(String type) {
         def userId = authService.getUserId()
         def data = request.JSON
 
         if (!userId) {
             render status: 403
-        } else if (data && userId) {
-            userDataService.set(userId, type, data)
-            render status: 200
-        } else {
+        } else if (!data) {
             render status: 404
+        }
+
+        if (userDataService.set(userId, type, data)) {
+            render data as JSON
+        } else {
+            render status: 500
         }
     }
 

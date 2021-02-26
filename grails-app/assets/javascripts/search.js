@@ -622,6 +622,145 @@ $(document).ready(function() {
         window.location.href = BC_CONF.serverName + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName;
     });
 
+    // when open the user preference dlg
+    $('.DQPrefSettingsLink').click(function() {
+        var prefSettings = $('#DQPrefSettings');
+        var userPref = prefSettings.data('userpref-json');
+        var profiles = prefSettings.data('profiles');
+
+        var userProfileEnabled = false;
+
+        // if not disable all
+        if (!userPref.disableAll) {
+            // if preferred profile set
+            var userProfileSet = userPref.dataProfile != null && userPref.dataProfile.length > 0;
+
+            for (var i = 0; i < profiles.length; i++) {
+                if (profiles[i] === userPref.dataProfile) {
+                    userProfileEnabled = true;
+                    break;
+                }
+            }
+        }
+
+        var profileSelect = $('#prefer_profile');
+
+        if (userPref.disableAll) { // if disable all
+            profileSelect.val('disableall-option');
+        } else if (userProfileEnabled && userPref.dataProfile !== null) { // if a profile selected and enabled
+            profileSelect.val(userPref.dataProfile);
+        } else { // if no profile selected or selected profile disabled, use system default
+            profileSelect.val(prefSettings.data('defaultprofilename'));
+        }
+
+        $('#profile_expand').val(userPref.expand ? 'expanded' : 'collapsed');
+    })
+
+    // when submit the user preference dlg
+    $("#submitPref :input.submit").on("click", function(e) {
+        e.preventDefault();
+        var prefSettings = $('#DQPrefSettings');
+        var userPref = prefSettings.data('userpref-json');
+
+        // check user preferred profile
+        var prefProfile = $('#prefer_profile').val();
+        if (prefProfile === 'disableall-option') {
+            userPref.disableAll = true;
+            userPref.dataProfile = null;
+        } else {
+            userPref.disableAll = false;
+            userPref.dataProfile = prefProfile;
+        }
+
+        // set expand
+        userPref.expand = $('#profile_expand').val() === 'expanded';
+        $.cookie.json = true;
+        // if user logged in
+        if (BC_CONF.userId) {
+            // save the dq profile detail expand/collapse state
+            $.cookie(BC_CONF.expandKey, {expand: userPref.expand});
+            $.ajax({
+                url: BC_CONF.serverName + "/user/" + BC_CONF.prefKey,
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify(userPref),
+                success: applyUserPreference, // reload on success
+                error: function() {
+                    window.alert(jQuery.i18n.prop('dq.warning.failedtosave'));
+                }
+            }).always(function() {
+                $('#DQPrefSettings').modal('hide');
+            })
+        } else { // else save in cookie
+            $.cookie(BC_CONF.prefKey, userPref, { expires: 365 });
+            // save the dq profile detail expand/collapse state
+            $.cookie(BC_CONF.expandKey, {expand: userPref.expand});
+            $('#DQPrefSettings').modal('hide');
+            applyUserPreference(userPref)
+        }
+    })
+
+    function applyUserPreference(userPref) {
+        var prefSettings = $('#DQPrefSettings');
+
+        // enabled filters of current profile, used to remove expanded fqs in url
+        var filtersvalue = prefSettings.data('filters');
+        var filterSet = new Set();
+        for (var i = 0; i < filtersvalue.length; i++) {
+            filterSet.add(filtersvalue[i]);
+        }
+
+        // get current url
+        var url = $(location).attr('href');
+
+        // 1. remove qualityProfile from URL
+        url = removeFromURL(url, "qualityProfile=", false);
+        // 2. remove disable all from URL
+        url = removeFromURL(url, "disableAllQualityFilters=", false);
+        // 3. remove disableQualityFilter from URL
+        var disabledQualityFilters = $.url().param('disableQualityFilter');
+        if (disabledQualityFilters !== undefined) {
+            // if only 1 category disabled
+            if (typeof disabledQualityFilters === "string") {
+                url = removeFromURL(url, "disableQualityFilter=", false);
+            } else {
+                for (var i = 0; i < disabledQualityFilters.length; i++) {
+                    url = removeFromURL(url, "disableQualityFilter=", false);
+                }
+            }
+        }
+
+        // fqs contains current fqs in url, it could be expanded or user specified
+        var fqList = $.url().param('fq');
+        var fqs = [];
+        if (fqList !== undefined) {
+            if (typeof fqList === "object") {
+                for (var i = 0; i < fqList.length; i++) {
+                    fqs.push(fqList[i]);
+                }
+            } else if (typeof fqList === "string") {
+                fqs.push(fqList);
+            }
+        }
+
+        // 4. remove fqs from URL
+        for (var i = 0; i < fqs.length; i++) {
+            // remove those belong to this profile so only user specified fqs stay
+            if (filterSet.has(fqs[i])) {
+                url = removeFromURL(url, 'fq=' + encodeURIComponent(fqs[i]).replace(/%20/g, "+").replace(/[()]/g, escape), true);
+            }
+        }
+
+        // 5. add qualityProfile=xxx or disableAllQualityFilter=true to URL
+        if (userPref.disableAll) {
+            url = prependURL(url,"disableAllQualityFilters=true", true);
+        } else {
+            url = prependURL(url, "qualityProfile=" + encodeURIComponent(userPref.dataProfile).replace(/%20/g, "+").replace(/[()]/g, escape), true);
+        }
+
+        window.location.href = url;
+    }
+
     // form validation for form#facetRefineForm
     $("#submitFacets :input.submit").on("click", function(e) {
         e.preventDefault();
@@ -674,13 +813,18 @@ $(document).ready(function() {
 
     // switch caret style
     $('.dq-filters-collapse').click(function (e) {
+        $.cookie.json = true;
         var el = $(this).find('i');
         if ($(el).hasClass('fa-caret-right')) {
             $(el).removeClass('fa-caret-right');
             $(el).addClass('fa-caret-down');
+            // save the expand/collapse state to cookie so when page refresh
+            // we can restore the state
+            $.cookie(BC_CONF.expandKey, {expand: true});
         } else if ($(el).hasClass('fa-caret-down')) {
             $(el).removeClass('fa-caret-down');
             $(el).addClass('fa-caret-right');
+            $.cookie(BC_CONF.expandKey, {expand: false});
         }
     });
 
@@ -914,6 +1058,43 @@ $(document).ready(function() {
         }
     }
 
+    function prependURL(url, queryParamsToAppend, afterSearchKey) {
+        var anchorpos = url.indexOf("#");
+        var ancchorpart = '';
+        if (anchorpos !== -1) {
+            ancchorpart = url.substring(anchorpos);
+            url = url.substring(0, anchorpos);
+        }
+
+        var queryStringpos = url.indexOf('?');
+        var queryString = ''
+        if (queryStringpos !== -1) {
+            queryString = url.substring(queryStringpos + 1);
+            url = url.substring(0, queryStringpos);
+        }
+
+        // trim query string
+        queryString = queryString.trim();
+        var queries = []
+        if (queryString !== '') {
+            queries = queryString.split('&');
+        }
+
+        var idx = 0;
+        // if insert it after search keys: q=, qid=, lat=, lng=, radius=
+        if (afterSearchKey) {
+            for (; idx < queries.length; idx++) {
+                var query = queries[idx];
+                if (!query.startsWith('q=') && !query.startsWith('qid=') && !query.startsWith('lat=') && !query.startsWith('lng=') && !query.startsWith('radius=') && !query.startsWith('taxa=')) {
+                    break;
+                }
+            }
+        }
+
+        queries.splice(idx, 0, queryParamsToAppend)
+        return url + '?' + queries.join('&') + ancchorpart;
+    }
+
     function removeFromURL(url, sToRemove, exactMatch) {
         var anchorpos = url.indexOf('#');
         var anchorpart = "";
@@ -973,6 +1154,18 @@ $(document).ready(function() {
         position: {
             target: 'mouse',
             adjust: { x: 6, y: 14 }
+        }
+    });
+
+    // user preference settings and download link tooltips will be above the control
+    $("#usersettings, a.newDownload").qtip({
+        style: {
+            classes: 'ui-tooltip-rounded ui-tooltip-shadow'
+        },
+        position: {
+            target: 'mouse',
+            my: 'bottom center',
+            adjust: { x: -6, y: -10 }
         }
     });
 
@@ -1152,6 +1345,25 @@ $(document).ready(function() {
     }
 
     $('#modal-dismiss-dq').modal()
+
+    // expand / collapse data profile details
+    var dqFilterCollapse = $('#dq-filters-collapse')
+    dqFilterCollapse.collapse({
+        toggle: BC_CONF.expandProfileDetails
+    })
+
+    switchCaretStyle($('.dq-filters-collapse'));
+
+    function switchCaretStyle(elem) {
+        var el = elem.find('i');
+        if (elem.hasClass('collapsed')) {
+            $(el).removeClass('fa-caret-down');
+            $(el).addClass('fa-caret-right');
+        } else {
+            $(el).removeClass('fa-caret-right');
+            $(el).addClass('fa-caret-down');
+        }
+    }
 }); // end JQuery document ready
 
 /**

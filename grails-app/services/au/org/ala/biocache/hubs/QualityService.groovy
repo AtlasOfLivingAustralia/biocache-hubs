@@ -141,6 +141,17 @@ class QualityService {
         }
     }
 
+    // QualityProfile.isDefault is not in the returned json (it's a bug should be fixed in dq-service side)
+    // this is just a workaround: go through each enabled profile to match the name
+    boolean isProfileEnabled(String profileShortName) {
+        if (dataQualityEnabled) {
+            def enabledProfiles = findAllEnabledProfiles(true)
+            return enabledProfiles?.any { it.shortName == profileShortName}
+        } else {
+            return false
+        }
+    }
+
     def clearRecordCountCache() {
         recordCountCache.invalidateAll()
     }

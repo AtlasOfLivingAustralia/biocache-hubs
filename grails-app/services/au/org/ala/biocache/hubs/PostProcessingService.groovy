@@ -229,7 +229,7 @@ class PostProcessingService {
      * @param defaultValue
      * @return
      */
-    private static String getCookieValue(Cookie[] cookies, String cookieName, String defaultValue) {
+    static String getCookieValue(Cookie[] cookies, String cookieName, String defaultValue) {
         String cookieValue = defaultValue // fall back
 
         cookies.each { cookie ->
@@ -504,7 +504,12 @@ class PostProcessingService {
         layerObjects
     }
 
-    def processUserFQInteraction(SpatialSearchRequestParams requestParams, activeFacetObj) {
+    Map processUserFQInteraction(SpatialSearchRequestParams requestParams, activeFacetObj) {
+        def interactionMap = [:]
+        if (requestParams.disableAllQualityFilters) {
+            return interactionMap
+        }
+
         def disabled = requestParams.disableQualityFilter as Set
 
         // map from category label to filter names
@@ -513,13 +518,11 @@ class PostProcessingService {
         // This means a user filter can interact with a DQ filter even when its exclude count == 0
         def categoryToKeyMap = [:]
 
-        if (!requestParams.disableAllQualityFilters) {
-            categoryToKeyMap = qualityService.getGroupedEnabledFilters(requestParams.qualityProfile).findAll { label, list ->
-                !disabled.contains(label)
-            }.collectEntries { label, list ->
-                def keys = list*.filter.collect { getKeysFromFilter(it) }.flatten()
-                keys.isEmpty() ? [:] : [(label): keys as Set]
-            }
+        categoryToKeyMap = qualityService.getGroupedEnabledFilters(requestParams.qualityProfile).findAll { label, list ->
+            !disabled.contains(label)
+        }.collectEntries { label, list ->
+            def keys = list*.filter.collect { getKeysFromFilter(it) }.flatten()
+            keys.isEmpty() ? [:] : [(label): keys as Set]
         }
 
         def profile = qualityService.activeProfile(requestParams.qualityProfile)
@@ -587,7 +590,11 @@ class PostProcessingService {
             it.value.each { DQColors.put(it, color) }
         }
 
-        return [fqInteract, dqInteract, UserFQColors, DQColors]
+        interactionMap.fqInteract = fqInteract
+        interactionMap.dqInteract = dqInteract
+        interactionMap.UserFQColors = UserFQColors
+        interactionMap.DQColors = DQColors
+        interactionMap
     }
 
     /**
