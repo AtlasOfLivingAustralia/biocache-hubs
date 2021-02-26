@@ -294,12 +294,7 @@
                 </g:if>
                 <div id="resultsReturned">
                     <g:render template="sandboxUploadSourceLinks" model="[dataResourceUid: selectedDataResource]"/>
-                    <span id="returnedText">
-                        <strong><g:formatNumber number="${sr.totalRecords}" format="#,###,###"/></strong>
-                        <g:message code="list.resultsretuened.span.returnedtotal" default="records returned of"/></span>
-                        <strong><g:formatNumber number="${qualityTotalCount}" format="#,###,###"/></strong>
-                        <g:message code="list.resultsretuened.span.returnedtext" default="for"/>
-                    </span>
+                    <alatag:resultCount totalRecords="${sr.totalRecords}" qualityTotalCount="${qualityTotalCount}" />
                     <span class="queryDisplay"><strong>
                         <g:set var="queryToShow"><alatag:sanitizeContent>${raw(queryDisplay)}</alatag:sanitizeContent></g:set>
                         ${raw(queryToShow) ?: params.taxa ?: params.q}
@@ -621,53 +616,53 @@
                             <g:if test="${params.wkt}"><%-- WKT spatial filter   --%>
                                 <g:set var="spatialType" value="${params.wkt =~ /^\w+/}"/>
                                 <a href="${alatag.getQueryStringForWktRemove()}" class="btn tooltips btn-default btn-xs"
-                                   title="<g:message code="list.resultsretuened.click.to.remove.filters"/>"><g:message code="list.resultsretuened.spatial.filter"/>: ${spatialType[0]}
+                                   title="<g:message code="list.resultsreturned.click.to.remove.filters"/>"><g:message code="list.resultsreturned.spatial.filter"/>: ${spatialType[0]}
                                     <span class="closeX">&times;</span>
                                 </a>
                             </g:if>
                             <g:elseif test="${params.radius && params.lat && params.lon}">
                                 <a href="${alatag.getQueryStringForRadiusRemove()}" class="btn tooltips btn-default btn-xs"
-                                   title="<g:message code="list.resultsretuened.click.to.remove.filters"/>"><g:message code="list.resultsretuened.spatial.filter"/>: <g:message code="list.resultsretuened.circle"/>
+                                   title="<g:message code="list.resultsreturned.click.to.remove.filters"/>"><g:message code="list.resultsreturned.spatial.filter"/>: <g:message code="list.resultsreturned.circle"/>
                                     <span class="closeX">&times;</span>
                                 </a>
                             </g:elseif>
                             <g:if test="${sr.activeFacetObj?.collect { it.value.size() }.sum() > 1 }">
                                 <a href="${alatag.createFilterItemLink(facet: 'all')}" class="btn btn-primary activeFilter btn-xs"
-                                   title="<g:message code="list.resultsretuened.button01.title"/>"><span
-                                        class="closeX">&gt;&nbsp;</span><g:message code="list.resultsretuened.button01"
+                                   title="<g:message code="list.resultsreturned.button01.title"/>"><span
+                                        class="closeX">&gt;&nbsp;</span><g:message code="list.resultsreturned.button01"
                                                                                    default="Clear all"/></a>
                             </g:if>
                         </div>
                     </g:if>
                 <%-- jQuery template used for taxon drop-downs --%>
                     <div class="btn-group hide" id="template">
-                        <a class="btn btn-default btn-sm" href="" id="taxa_" title="<g:message code="list.resultsretuened.navigator01.title"/>" target="BIE"><g:message
-                                code="list.resultsretuened.navigator01" default="placeholder"/></a>
+                        <a class="btn btn-default btn-sm" href="" id="taxa_" title="<g:message code="list.resultsreturned.navigator01.title"/>" target="BIE"><g:message
+                                code="list.resultsreturned.navigator01" default="placeholder"/></a>
                         <button class="btn dropdown-toggle btn-default btn-sm" data-toggle="dropdown"
-                                title="<g:message code="list.resultsretuened.click.more.info"/>">
+                                title="<g:message code="list.resultsreturned.click.more.info"/>">
                             <span class="caret"></span>
                         </button>
 
                         <div class="dropdown-menu" aria-labelledby="taxa_">
                             <div class="taxaMenuContent">
-                                <g:message code="list.resultsretuened.div01.des01"
+                                <g:message code="list.resultsreturned.div01.des01"
                                            default="The search results include records for synonyms and child taxa of"/>
-                                <b class="nameString"><g:message code="list.resultsretuened.div01.des02"
+                                <b class="nameString"><g:message code="list.resultsreturned.div01.des02"
                                                                  default="placeholder"/></b> (<span
-                                    class="speciesPageLink"><g:message code="list.resultsretuened.div01.des03"
+                                    class="speciesPageLink"><g:message code="list.resultsreturned.div01.des03"
                                                                        default="link placeholder"/></span>).
 
                                 <form name="raw_taxon_search" class="rawTaxonSearch"
                                       action="${request.contextPath}/occurrences/search/taxa" method="POST">
                                     <div class="refineTaxaSearch">
-                                        <g:message code="list.resultsretuened.form.des01"
+                                        <g:message code="list.resultsreturned.form.des01"
                                                    default="The result set contains records provided under the following names"/>:
                                         <input type="submit" class="btn  btn-default btn-sm rawTaxonSumbit"
-                                               value="<g:message code="list.resultsretuened.form.button01"
+                                               value="<g:message code="list.resultsreturned.form.button01"
                                                                  default="Refine search"/>"
-                                               title="<g:message code="list.resultsretuened.restrict.results"/>">
+                                               title="<g:message code="list.resultsreturned.restrict.results"/>">
 
-                                        <div class="rawTaxaList"><g:message code="list.resultsretuened.form.div01"
+                                        <div class="rawTaxaList"><g:message code="list.resultsreturned.form.div01"
                                                                             default="placeholder taxa list"/></div>
                                     </div>
                                 </form>
