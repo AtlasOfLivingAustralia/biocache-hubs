@@ -609,7 +609,7 @@
                                 <g:if test="${items.key}">
                                     <g:each var="item" in="${items.value}">
                                         <g:set var="hasFq" value="${true}"/>
-                                        <alatag:currentFilterItem key="${items.key}" value="${item}" facetValue="${item.value}" cssClass="btn btn-default btn-xs" cssColor="${UserFQColors[item.value]}" title="${fqInteract[item.value]}" addCloseBtn="${true}"/>
+                                        <alatag:currentFilterItem key="${items.key}" value="${item}" facetValue="${item.value}" cssClass="btn btn-default btn-xs" cssColor="${UserFQColors != null ? UserFQColors[item.value] : null}" title="${fqInteract != null ? fqInteract[item.value] : null}" addCloseBtn="${true}"/>
                                     </g:each>
                                 </g:if>
                             </g:each>
