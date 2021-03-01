@@ -70,7 +70,7 @@
             savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
             getPreferredSpeciesListUrl:  "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}",
             excludeCountUrl: "${createLink(controller: 'occurrence', action: 'dataQualityExcludeCounts', params: params.clone()).encodeAsJavaScript()}",
-            expandProfileDetails: ${expandProfileDetails},
+            expandProfileDetails: ${grailsApplication.config.getProperty('dataquality.enabled', Boolean, false) ? expandProfileDetails : true},
             userId: "${userId}",
             prefKey: "${(grailsApplication.config.getProperty("dataquality.prefkey", String, "dqUserProfile"))}",
             expandKey: "${(grailsApplication.config.getProperty("dataquality.expandKey", String, "dqDetailExpand"))}"
