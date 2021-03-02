@@ -673,7 +673,7 @@ function processSpeciesJsonData(data, appendResults) {
             }
             // add scientific name
             tr = tr + '<td class="sciName"><a id="' + data[i].guid + '" class="taxonBrowse2" title="'+linkTitle+'" href="'+ // id=taxon_name
-                data[i].name+'"><i>'+data[i].name+'</i></a></td>';
+                data[i].name+'"><i>'+data[i].name+'</i></a>';
 
             // add links to species page and occurrence search (inside hidden div)
             if(MAP_VAR.speciesPageUrl) {
