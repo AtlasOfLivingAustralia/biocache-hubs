@@ -410,7 +410,7 @@ $(document).ready(function() {
 
     // when user clicks 'ok' button in the 'data profiles applied' warning dialog
     $('#hide-dq-warning').click(function() {
-        document.cookie = 'dq_warn_off=true; path=/';
+        $.cookie('dq_warn_off', true, { expires: 365, path: '/' });
     })
 
     // when use clicks <i/> to view details of a category
