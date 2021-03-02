@@ -304,7 +304,7 @@
                         (<g:message code="list.taxa.notfound" args="${[params.taxa]}" default="(Note: no matched taxon name found for {0})"/>)
                     </g:if>
                     <alatag:ifDataQualityEnabled>
-                        <g:if test="${!cookie(name:'dq_warn_off')}">
+                        <g:if test="${grailsApplication.config.getProperty('dataquality.warningOn', Boolean, false) && !cookie(name:'dq_warn_off')}">
                             <div class="modal fade" id="modal-dismiss-dq" tabindex="-1" role="dialog" aria-labelledby="dq-applied-warning">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
