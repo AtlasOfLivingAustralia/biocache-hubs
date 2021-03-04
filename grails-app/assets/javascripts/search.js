@@ -575,8 +575,19 @@ $(document).ready(function() {
             url = appendURL(url, 'fq=' + encodeURIComponent(filters[i]).replace(/%20/g, "+").replace(/[()]/g, escape));
         }
 
+        // profile in URL may be invalid, replace it with the actual profile being used
+        url = replaceInvalidProfile(url, $.url().param('qualityProfile'), $(this).attr('data-profile'))
+
         window.location.href = url;
     })
+
+    function replaceInvalidProfile(url, profileInURL, actualProfile) {
+        if (profileInURL !== undefined && profileInURL !== actualProfile) {
+            url = removeFromURL(url, "qualityProfile=", false);
+            url = prependURL(url, "qualityProfile=" + encodeURIComponent(actualProfile).replace(/%20/g, "+").replace(/[()]/g, escape), true);
+        }
+        return url
+    }
 
     function removeDuplicates(data) {
         var unique = [];
@@ -982,9 +993,10 @@ $(document).ready(function() {
         // get current url
         var url = $(location).attr('href');
 
-        var fitlers = $("form#filterRefineForm").find("td.filternames");
-        var filterStatus = $("form#filterRefineForm").find(":input.filters");
-        var expanded = $("form#filterRefineForm").find(".expanded");
+        var filterForm = $("form#filterRefineForm")
+        var fitlers = filterForm.find("td.filternames");
+        var filterStatus = filterForm.find(":input.filters");
+        var expanded = filterForm.find(".expanded");
 
         // replace url encoded %20 with '+' because groovy encodes space to '+'
         $.each(filterStatus, function( i, status ) {
@@ -1013,6 +1025,9 @@ $(document).ready(function() {
                 url = removeFiltersFromFq($(fitlers[i]).data("filters"), url);
             }
         })
+
+        // profile in URL may be invalid, replace it with the actual profile being used
+        url = replaceInvalidProfile(url, $.url().param('qualityProfile'), filterForm.attr('data-profile'))
 
         window.location.href = url;
     })
