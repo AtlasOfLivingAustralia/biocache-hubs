@@ -101,16 +101,19 @@
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="occurrenceID" fieldName="Occurrence ID">
     ${fieldsMap.put("occurrenceID", true)}
     <g:if test="${record.processed.occurrence.occurrenceID && record.raw.occurrence.occurrenceID}">
-        <%-- links removed as per issue #6 (github)  --%>
-        %{--<g:if test="${StringUtils.startsWith(record.processed.occurrence.occurrenceID,'http://')}"><a href="${record.processed.occurrence.occurrenceID}" target="_blank"></g:if>--}%
-        ${record.processed.occurrence.occurrenceID}
-        %{--<g:if test="${StringUtils.startsWith(record.processed.occurrence.occurrenceID,'http://')}"></a></g:if>--}%
+        <g:set var="hasProcessedUrl" value="${StringUtils.startsWith(record.processed.occurrence.occurrenceID,'http://') ||
+                StringUtils.startsWith(record.processed.occurrence.occurrenceID,'https://')}"/>
+        <g:if test="${hasProcessedUrl}"><a href="${record.processed.occurrence.occurrenceID}" target="_blank"></g:if>
+            ${record.processed.occurrence.occurrenceID}
+        <g:if test="${hasProcessedUrl}"></a></g:if>
         <br/><span class="originalValue">Supplied as "${record.raw.occurrence.occurrenceID}"</span>
     </g:if>
     <g:else>
-        %{--<g:if test="${StringUtils.startsWith(record.raw.occurrence.occurrenceID,'http://')}"><a href="${record.raw.occurrence.occurrenceID}" target="_blank"></g:if>--}%
-        ${record.raw.occurrence.occurrenceID}
-        %{--<g:if test="${StringUtils.startsWith(record.raw.occurrence.occurrenceID,'http://')}"></a></g:if>--}%
+        <g:set var="hasRawUrl" value="${StringUtils.startsWith(record.raw.occurrence.occurrenceID,'http://') ||
+                StringUtils.startsWith(record.raw.occurrence.occurrenceID,'https://')}"/>
+        <g:if test="${hasRawUrl}"><a href="${record.raw.occurrence.occurrenceID}" target="_blank"></g:if>
+            ${record.raw.occurrence.occurrenceID}
+        <g:if test="${hasRawUrl}"></a></g:if>
     </g:else>
 </alatag:occurrenceTableRow>
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="citation" fieldName="Record citation">

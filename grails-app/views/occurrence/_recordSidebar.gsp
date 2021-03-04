@@ -1,4 +1,4 @@
-<g:if test="${isUnderCas && !isReadOnly && record.processed.attribution.provenance != 'Draft'}">
+<g:if test="${isUnderCas && !isReadOnly}">
     <button class="btn btn-default" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="report a problem or suggest a correction for this record">
         <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="glyphicon glyphicon-flag"></i> <g:message code="show.button.assertionbutton.span" default="Flag an issue"/></span>
     </button>
@@ -145,10 +145,6 @@
                 <g:message code="show.sidebar01.p" default="This record was transcribed from the label by an online volunteer. It has not yet been validated by the owner institution"/>
                 <a href="https://volunteer.ala.org.au/"><g:message code="show.sidebar01.volunteer.navigator" default="Biodiversity Volunteer Portal"/></a>.
             </p>
-
-            <button class="btn btn-default" id="viewDraftButton" >
-                <span id="viewDraftSpan" title="View Draft"><g:message code="show.button.viewdraftbutton.span" default="See draft in Biodiversity Volunteer Portal"/></span>
-            </button>
         </div>
     </g:if>
     <g:if test="${record.processed.location.decimalLatitude && record.processed.location.decimalLongitude}">
