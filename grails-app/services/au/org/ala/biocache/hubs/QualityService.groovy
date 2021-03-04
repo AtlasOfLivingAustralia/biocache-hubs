@@ -152,6 +152,10 @@ class QualityService {
         }
     }
 
+    boolean isProfileValid(profileName) {
+        return profileName && isProfileEnabled(profileName)
+    }
+
     def clearRecordCountCache() {
         recordCountCache.invalidateAll()
     }

@@ -220,6 +220,8 @@ class OccurrenceController {
                 def activeProfile = time("active profile") { qualityService.activeProfile(requestParams.qualityProfile) }
                 def inverseFilters = time("inverseFilters") { qualityService.getAllInverseCategoryFiltersForProfile(activeProfile) }
 
+                // params.qualityProfile is used to construct exclude count link, we need to set with the actual profile being used
+                params.qualityProfile = activeProfile?.shortName
                 resultData.translatedFilterMap = translatedFilterMap
                 resultData.qualityCategories = qualityCategories
                 resultData.qualityFiltersByLabel = qualityFiltersByLabel
@@ -280,13 +282,13 @@ class OccurrenceController {
         }
 
         // if no dq profile selected, see if we can get any preference settings
-        if (!requestParams.disableAllQualityFilters && !requestParams.qualityProfile && userPref?.size() > 0) {
+        if (!requestParams.disableAllQualityFilters && !qualityService.isProfileValid(requestParams.qualityProfile) && userPref?.size() > 0) {
             // if user disables all
             if (userPref.disableAll == true) {
                 requestParams.disableAllQualityFilters = true
-            } else if (userPref.dataProfile != null && qualityService.isProfileEnabled(userPref.dataProfile)) {
-                // if user has a valid default profile preset
-                requestParams.qualityProfile = userPref.dataProfile
+            } else {
+                // apply user preferred profile or system default
+                requestParams.qualityProfile = qualityService.isProfileValid(userPref.dataProfile) ? userPref.dataProfile : qualityService.activeProfile()?.shortName
             }
         }
     }
