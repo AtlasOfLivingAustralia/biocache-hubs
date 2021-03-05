@@ -281,18 +281,39 @@ class OccurrenceController {
             requestParams.q = "*:*"
         }
 
-        // if no dq profile selected, see if we can get any preference settings
-        if (!requestParams.disableAllQualityFilters && !qualityService.isProfileValid(requestParams.qualityProfile) && userPref?.size() > 0) {
-            // if user disables all
-            if (userPref.disableAll == true) {
-                requestParams.disableAllQualityFilters = true
-            } else {
-                // apply user preferred profile or system default
-                def profileToUse = qualityService.isProfileValid(userPref.dataProfile) ? userPref.dataProfile : qualityService.activeProfile()?.shortName
-                if (requestParams.qualityProfile) { // profile not null then it's disabled or not-exist
-                    flash.message = "The selected profile ${requestParams.qualityProfile} is not available, ${profileToUse} is currently applied.".toString()
+
+        if (!requestParams.disableAllQualityFilters && userPref?.size() > 0) {
+            // find all enabled profiles, this list will be used for both requested profile and user default profile
+            def enabledProfiles = qualityService.findAllEnabledProfiles(true)
+            def requestProfileValid = requestParams.qualityProfile && enabledProfiles?.any { it.shortName == requestParams.qualityProfile }
+
+            // if no valid profile setting, see if we can get any preference settings
+            if (!requestProfileValid) {
+                // if user disables all
+                if (userPref.disableAll == true) {
+                    requestParams.disableAllQualityFilters = true
+                } else {
+                    // apply user preferred profile then system default
+                    def profileToUse = ''
+                    def profileToUseFullName = ''
+
+                    def userPrefProfileValid = userPref.dataProfile && enabledProfiles?.any { it.shortName == userPref.dataProfile }
+                    if (userPrefProfileValid) {
+                        profileToUse = userPref.dataProfile
+                        profileToUseFullName = enabledProfiles?.find { it.shortName == userPref.dataProfile }?.name
+                    } else {
+                        def systemDefaultProfile = qualityService.activeProfile()
+                        profileToUse = systemDefaultProfile?.shortName
+                        profileToUseFullName = systemDefaultProfile.name
+                    }
+
+                    // profile not null then it's disabled or not-exist
+                    if (requestParams.qualityProfile) {
+                        // to display full name of the profile being used
+                        flash.message = "The selected profile ${requestParams.qualityProfile} is not available, ${profileToUseFullName} is currently applied.".toString()
+                    }
+                    requestParams.qualityProfile = profileToUse
                 }
-                requestParams.qualityProfile = profileToUse
             }
         }
     }
