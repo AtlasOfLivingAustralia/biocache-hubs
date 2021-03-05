@@ -288,7 +288,11 @@ class OccurrenceController {
                 requestParams.disableAllQualityFilters = true
             } else {
                 // apply user preferred profile or system default
-                requestParams.qualityProfile = qualityService.isProfileValid(userPref.dataProfile) ? userPref.dataProfile : qualityService.activeProfile()?.shortName
+                def profileToUse = qualityService.isProfileValid(userPref.dataProfile) ? userPref.dataProfile : qualityService.activeProfile()?.shortName
+                if (requestParams.qualityProfile) { // profile not null then it's disabled or not-exist
+                    flash.message = "The selected profile ${requestParams.qualityProfile} is not available, ${profileToUse} is currently applied.".toString()
+                }
+                requestParams.qualityProfile = profileToUse
             }
         }
     }
