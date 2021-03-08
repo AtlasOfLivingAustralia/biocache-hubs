@@ -30,8 +30,10 @@ auth.admin_role = "ROLE_ADMIN"
 serverName = 'http://dev.ala.org.au:8080'
 
 dataquality.enabled = false
-dataquality.baseUrl = 'https://biocache.ala.org.au/data-quality/'
+dataquality.baseUrl = 'https://data-quality-service-test.ala.org.au'
 dataquality.recordCountCacheSpec = 'expireAfterWrite=1d'
+dataquality.prefkey = 'dqUserProfile'
+dataquality.expandKey = 'dqDetailExpand'
 
 // skin settings
 organisation.baseUrl = "https://www.ala.org.au"

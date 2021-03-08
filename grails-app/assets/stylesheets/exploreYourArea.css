@@ -132,7 +132,8 @@ table#cellCountsLegend {
     width: 5%;
 }
 #rightList .sciName {
-    width: 85%;
+    text-align: left;
+    width: 50%;
 }
 #rightList .rightCounts {
     padding-right: 5px;

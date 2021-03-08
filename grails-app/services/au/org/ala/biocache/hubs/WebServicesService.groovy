@@ -647,9 +647,8 @@ class WebServicesService {
 
     def populateProfile(requestParams) {
         // force set the profile if none provided
-        if (dataQualityEnabled && !requestParams.qualityProfile && !requestParams.disableAllQualityFilters) {
-            def activeProfile = qualityService.activeProfile(requestParams.qualityProfile)
-            requestParams.qualityProfile = activeProfile?.shortName
+        if (dataQualityEnabled && !qualityService.isProfileValid(requestParams.qualityProfile) && !requestParams.disableAllQualityFilters) {
+            requestParams.qualityProfile = qualityService.activeProfile()?.shortName
         }
     }
 }

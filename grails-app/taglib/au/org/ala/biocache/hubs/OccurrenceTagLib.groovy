@@ -1203,4 +1203,22 @@ class OccurrenceTagLib {
 
         out << g.link(attrs, body)
     }
+
+    def resultCount = { attrs, body ->
+        def mb = new MarkupBuilder(out)
+
+        if (dataQualityEnabled) {
+            mb.span(id:'returnedText') {
+                strong g.formatNumber(number: "${attrs.totalRecords}", format: "#,###,###")
+                span alatag.message(code: "list.resultsreturned.span.returnedtotal", default: 'records returned of')
+                strong g.formatNumber(number: "${attrs.qualityTotalCount}", format:"#,###,###")
+                span alatag.message(code:"list.resultsreturned.span.returnedtext", default:'for')
+            }
+        } else {
+            mb.span(id:'returnedText') {
+                strong g.formatNumber(number: "${attrs.totalRecords}", format: "#,###,###")
+                span alatag.message(code:"list.resultsreturned.span.returnedtext1", default:'results for')
+            }
+        }
+    }
 }

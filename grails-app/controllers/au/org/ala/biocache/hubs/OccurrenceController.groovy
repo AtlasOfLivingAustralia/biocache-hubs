@@ -19,11 +19,14 @@ import au.org.ala.dataquality.model.QualityProfile
 import au.org.ala.web.CASRoles
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
+import org.springframework.beans.factory.annotation.Value
 
+import javax.servlet.http.HttpServletRequest
 import java.text.SimpleDateFormat
 
 import static au.org.ala.biocache.hubs.TimingUtils.time
@@ -33,12 +36,14 @@ import static au.org.ala.biocache.hubs.TimingUtils.time
  */
 @Slf4j
 class OccurrenceController {
-    def webServicesService, facetsCacheService, postProcessingService, authService
+    def webServicesService, facetsCacheService, postProcessingService, authService, qualityService, userService
 
     def SESSION_NAVIGATION_DTO = "SESSION_NAVIGATION_DTO"
 
+    @Value('${dataquality.enabled}')
+    boolean dataQualityEnabled
+
     GeoIpService geoIpService
-    QualityService qualityService
 
     def ENVIRO_LAYER = "el"
     def CONTEXT_LAYER = "cl"
@@ -62,9 +67,10 @@ class OccurrenceController {
     def list(SpatialSearchRequestParams requestParams) {
         def start = System.currentTimeMillis()
 
-        def activeProfile = time("active profile") { qualityService.activeProfile(requestParams.qualityProfile) }
-
-        normaliseRequestParams(requestParams)
+        // get the user preference settings
+        def userPref = userService.getUserPref(authService?.getUserId(), request)
+        // apply the user preference settings
+        normaliseRequestParams(requestParams, userPref)
 
         try {
             //the configured grouping
@@ -159,18 +165,6 @@ class OccurrenceController {
                 hasImages = true
             }
 
-            def qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
-            def qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
-            def qualityTotalCount = time("quality total count") { qualityService.countTotalRecords(requestParams) }
-            def groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
-            def qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')] }
-
-            def (fqInteract, dqInteract, UserFQColors, DQColors) = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj) }
-
-            def messagePropertiesFile = time("message properties file") { webServicesService.getMessagesPropertiesFile() }
-            def assertionCodeMap = time("assertionCodeMap") { webServicesService.getAssertionCodeMap() }
-            def translatedFilterMap = postProcessingService.translateValues(groupedEnabledFilters, messagePropertiesFile, assertionCodeMap)
-
             log.debug "defaultFacets = ${defaultFacets}"
 
             OccurrenceNavigationDTO navigationDTO = new OccurrenceNavigationDTO();
@@ -183,18 +177,14 @@ class OccurrenceController {
             navigationDTO.setSearchRequestResultSize(searchResults.totalRecords);
             request.getSession().setAttribute(SESSION_NAVIGATION_DTO, navigationDTO);
 
-            def inverseFilters = time("inverseFilters") { qualityService.getAllInverseCategoryFiltersForProfile(activeProfile) }
-
-            def processingTime = (System.currentTimeMillis() - start)
-            log.info ("Timing - list processing time: {} ms", processingTime)
-            [
+            def resultData =
+                [
                     sr: searchResults,
                     searchRequestParams: requestParams,
                     defaultFacets: defaultFacets,
                     groupedFacets: groupedFacets,
                     groupedFacetsMap: groupedFacetsMap,
                     dynamicFacets: dynamicFacets,
-                    translatedFilterMap: translatedFilterMap,
                     selectedDataResource: getSelectedResource(requestParams.q),
                     hasImages: hasImages,
                     showSpeciesImages: false,
@@ -204,20 +194,55 @@ class OccurrenceController {
                     userId: authService?.getUserId(),
                     userEmail: authService?.getEmail(),
                     processingTime: (System.currentTimeMillis() - start),
-                    wsTime: wsTime,
-                    qualityCategories: qualityCategories,
-                    qualityFiltersByLabel: qualityFiltersByLabel,
-                    qualityTotalCount: qualityTotalCount,
-                    fqInteract: fqInteract,
-                    qualityFilterDescriptionsByLabel: qualityFilterDescriptionsByLabel,
-                    dqInteract: dqInteract,
-                    UserFQColors: UserFQColors,
-                    DQColors: DQColors,
-                    activeProfile: activeProfile,
-                    qualityProfiles: time("findAllEnabledProfiles") { qualityService.findAllEnabledProfiles(true) },
-                    inverseFilters: inverseFilters
-            ]
+                    wsTime: wsTime
+                ]
 
+            if (dataQualityEnabled) {
+                def qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
+                def qualityFiltersByLabel = [:]
+                def groupedEnabledFilters = [:]
+                def qualityFilterDescriptionsByLabel = [:]
+                def translatedFilterMap = [:]
+                def interactionMap = [:]
+                // if disable all quality filters, we don't need to retrieve them, it saves time
+                if (!requestParams.disableAllQualityFilters) {
+                    qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
+                    groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
+                    qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')] }
+                    interactionMap = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj) }
+
+                    def messagePropertiesFile = time("message properties file") { webServicesService.getMessagesPropertiesFile() }
+                    def assertionCodeMap = time("assertionCodeMap") { webServicesService.getAssertionCodeMap() }
+                    translatedFilterMap = postProcessingService.translateValues(groupedEnabledFilters, messagePropertiesFile, assertionCodeMap)
+                }
+                def qualityTotalCount = time("quality total count") { qualityService.countTotalRecords(requestParams) }
+
+                def activeProfile = time("active profile") { qualityService.activeProfile(requestParams.qualityProfile) }
+                def inverseFilters = time("inverseFilters") { qualityService.getAllInverseCategoryFiltersForProfile(activeProfile) }
+
+                // params.qualityProfile is used to construct exclude count link, we need to set with the actual profile being used
+                params.qualityProfile = activeProfile?.shortName
+                resultData.translatedFilterMap = translatedFilterMap
+                resultData.qualityCategories = qualityCategories
+                resultData.qualityFiltersByLabel = qualityFiltersByLabel
+                resultData.qualityTotalCount = qualityTotalCount
+                resultData.fqInteract = interactionMap.fqInteract ?: [:]
+                resultData.qualityFilterDescriptionsByLabel = qualityFilterDescriptionsByLabel
+                resultData.dqInteract = interactionMap.dqInteract ?: [:]
+                resultData.UserFQColors = interactionMap.UserFQColors ?: [:]
+                resultData.DQColors = interactionMap.DQColors ?: [:]
+                resultData.activeProfile = activeProfile
+                resultData.defaultProfileName = qualityService.activeProfile()?.shortName
+                resultData.expandProfileDetails = getProfileDetailExpandState(userPref, request)
+                resultData.userPref = userPref
+                resultData.qualityProfiles = time("findAllEnabledProfiles") { qualityService.findAllEnabledProfiles(true) }
+                resultData.inverseFilters = inverseFilters
+            }
+
+            def processingTime = (System.currentTimeMillis() - start)
+            log.info ("Timing - list processing time: {} ms", processingTime)
+
+            resultData
         } catch (Exception ex) {
             log.warn "Error getting search results: $ex.message", ex
             flash.message = "${ex.message}"
@@ -229,7 +254,7 @@ class OccurrenceController {
      * Massage the request params with defaults and processing additional query params
      * @param requestParams The request params to normalise
      */
-    private void normaliseRequestParams(SpatialSearchRequestParams requestParams) {
+    private void normaliseRequestParams(SpatialSearchRequestParams requestParams, userPref = null) {
         requestParams.fq = params.list("fq") as String[] // override Grails binding which splits on internal commas in value
 
         log.debug "requestParams = ${requestParams}"
@@ -254,6 +279,42 @@ class OccurrenceController {
 
         if (!requestParams.q) {
             requestParams.q = "*:*"
+        }
+
+
+        if (!requestParams.disableAllQualityFilters && userPref?.size() > 0) {
+            // find all enabled profiles, this list will be used for both requested profile and user default profile
+            def enabledProfiles = qualityService.findAllEnabledProfiles(true)
+            def requestProfileValid = requestParams.qualityProfile && enabledProfiles?.any { it.shortName == requestParams.qualityProfile }
+
+            // if no valid profile setting, see if we can get any preference settings
+            if (!requestProfileValid) {
+                // if user disables all
+                if (userPref.disableAll == true) {
+                    requestParams.disableAllQualityFilters = true
+                } else {
+                    // apply user preferred profile then system default
+                    def profileToUse = ''
+                    def profileToUseFullName = ''
+
+                    def userPrefProfileValid = userPref.dataProfile && enabledProfiles?.any { it.shortName == userPref.dataProfile }
+                    if (userPrefProfileValid) {
+                        profileToUse = userPref.dataProfile
+                        profileToUseFullName = enabledProfiles?.find { it.shortName == userPref.dataProfile }?.name
+                    } else {
+                        def systemDefaultProfile = qualityService.activeProfile()
+                        profileToUse = systemDefaultProfile?.shortName
+                        profileToUseFullName = systemDefaultProfile.name
+                    }
+
+                    // profile not null then it's disabled or not-exist
+                    if (requestParams.qualityProfile) {
+                        // to display full name of the profile being used
+                        flash.message = "The selected profile ${requestParams.qualityProfile} is not available, ${profileToUseFullName} is currently applied.".toString()
+                    }
+                    requestParams.qualityProfile = profileToUse
+                }
+            }
         }
     }
 
@@ -623,5 +684,25 @@ class OccurrenceController {
         QualityProfile profile = qualityService.activeProfile(requestParams.qualityProfile)
         data.count = qualityService.getExcludeCount(params.categoryLabel, profile.getCategories(), requestParams)
         render data as JSON
+    }
+
+    // profile details expand/collapse will be kept for whole session
+    private def getProfileDetailExpandState(userPref, HttpServletRequest request) {
+        def expandKey = "${grailsApplication.config.dataquality.expandKey}"
+        def rawCookie = PostProcessingService.getCookieValue(request.getCookies(), expandKey, null)
+
+        // if already have expand/collapse settings, use it to overwrite user preference
+        if (rawCookie != null) {
+            try {
+                // apply session settings
+                def val = new JsonSlurper().parseText(URLDecoder.decode(rawCookie, "UTF-8"))
+                return val.expand
+            } catch (UnsupportedEncodingException ex) {
+                log.error(ex.getMessage(), ex)
+            }
+        }
+        // rawCookie == null means the start of session so use default user settings
+
+        return userPref.expand
     }
 }
