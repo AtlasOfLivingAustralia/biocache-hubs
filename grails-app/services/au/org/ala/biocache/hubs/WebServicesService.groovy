@@ -41,7 +41,7 @@ class WebServicesService {
 
     public static final String ENVIRONMENTAL = "Environmental"
     public static final String CONTEXTUAL = "Contextual"
-    def grailsApplication, facetsCacheServiceBean
+    def grailsApplication, facetsCacheServiceBean, authService
     QualityService qualityService
 
     @Value('${dataquality.enabled}')
@@ -194,13 +194,16 @@ class WebServicesService {
      * @return Map postResponse
      */
     Map addAssertion(String recordUuid, String code, String comment, String userId, String userDisplayName,
-                         String userAssertionStatus, String assertionUuid) {
+                         String userAssertionStatus, String assertionUuid, String relatedRecordId,
+                         String relatedRecordReason) {
         Map postBody =  [
                 recordUuid: recordUuid,
                 code: code,
                 comment: comment,
                 userAssertionStatus: userAssertionStatus,
                 assertionUuid: assertionUuid,
+                relatedRecordId: relatedRecordId,
+                relatedRecordReason: relatedRecordReason,
                 userId: userId,
                 userDisplayName: userDisplayName,
                 apiKey: grailsApplication.config.biocache.apiKey
@@ -404,12 +407,15 @@ class WebServicesService {
      * @param url
      * @return
      */
-    JSONElement getJsonElements(String url) {
+    JSONElement getJsonElements(String url, String apiKey = null) {
         log.debug "(internal) getJson URL = " + url
         def conn = new URL(url).openConnection()
         try {
             conn.setConnectTimeout(10000)
             conn.setReadTimeout(50000)
+            if (apiKey != null) {
+                conn.setRequestProperty('apiKey', apiKey)
+            }
             return JSON.parse(conn.getInputStream(), "UTF-8")
         } catch (Exception e) {
             def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
@@ -448,12 +454,16 @@ class WebServicesService {
      * @param postParams
      * @return postResponse (Map with keys: statusCode (int) and statusMsg (String)
      */
-    def Map postFormData(String uri, Map postParams) {
+    def Map postFormData(String uri, Map postParams, String apiKey = null) {
         HTTPBuilder http = new HTTPBuilder(uri)
         log.debug "POST (form encoded) to ${http.uri}"
         Map postResponse = [:]
 
         http.request( Method.POST ) {
+
+            if (apiKey != null) {
+                headers.'apiKey' = apiKey
+            }
 
             send ContentType.URLENC, postParams
 

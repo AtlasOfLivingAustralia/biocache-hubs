@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest
 import java.text.SimpleDateFormat
 
 import static au.org.ala.biocache.hubs.TimingUtils.time
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
 /**
  * Controller for occurrence searches and records
@@ -662,6 +663,25 @@ class OccurrenceController {
         render webServicesService.facetCSVDownload(requestParams), contentType: 'text/csv', fileName: 'data.csv'
     }
 
+    def exists(String id) {
+        // getRecord can return either 1 record or a list of records
+        // if a list returned, asking user to be more specific
+        def record = webServicesService.getRecord(id, false)
+        if (record.occurrences) {
+            render ([error: 'id not unique'] as JSON)
+        } else if (record.keySet()) {
+            def rslt = [:]
+            rslt.scientificName = record?.processed?.classification?.scientificName ?: (record?.raw?.classification?.scientificName ?: '')
+            rslt.stateProvince = record?.processed?.location?.stateProvince ?: (record?.raw?.location?.stateProvince ?: '')
+            rslt.decimalLongitude = record?.processed?.location?.decimalLongitude ?: (record?.raw?.location?.decimalLongitude ?: '')
+            rslt.decimalLatitude = record?.processed?.location?.decimalLatitude ?: (record?.raw?.location?.decimalLatitude ?: '')
+            rslt.eventDate = record?.processed?.event?.eventDate ?: (record?.raw?.event?.eventDate ?: '')
+            render rslt as JSON
+        } else {
+            render status: SC_NOT_FOUND, text: ''
+        }
+    }
+    
     /**
      * JSON webservices for debugging/testing
      */

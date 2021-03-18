@@ -178,6 +178,10 @@
                 </div><!-- end div#SidebarBox -->
                 <div id="" class="col-md-8">
                     <div class="text-right">
+                        <input id="hidden-uuid" type="hidden" value="${uuid}">
+                        <span id="copyRecordIdToClipboard-parent" data-toggle="tooltip" data-trigger="manual" data-title="${uuid} copied!">
+                            <button class="btn btn-default" id="copyRecordIdToClipboard" role="button" title="Copy this record's id to the clipboard"><g:message code="show.sidebar02.copyrecordid" default="Copy record id" /></button>
+                        </span>
                         <button href="#processedVsRawView" class="btn btn-default" id="showRawProcessed" role="button" data-toggle="modal"
                                 title="Table showing both original and processed record values">
                             <span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="glyphicon glyphicon-transfer"></i>
@@ -697,6 +701,17 @@
         <ul style="display:none;">
             <li id="userAnnotationTemplate" class="userAnnotationTemplate well well-sm">
                 <h4><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h4>
+                <p class="related-record-reason" style="display:none;"><g:message code="show.userannotationtemplate.relatedrecord.reason.label" default="Reason:"/> <span class="related-record-reason-span"></span></p>
+                <p class="related-record" style="display:none;">
+                    <g:link class="related-record-link" controller="occurrence" action="show" id="replace-me">
+                        <span class="related-record-span-user-duplicate" style="display:none;">
+                            <g:message code="show.userannotationtemplate.relatedrecord.userduplicate.a" default="View duplicated record"/>
+                        </span>
+                        <span class="related-record-span-default" style="display:none;">
+                            <g:message code="show.userannotationtemplate.relatedrecord.default.a" default="View related record"/>
+                        </span>
+                    </g:link>
+                </p>
                 <p class="comment"></p>
                 <p class="hide userDisplayName"></p>
                 <p class="created small"></p>
