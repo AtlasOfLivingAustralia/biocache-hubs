@@ -59,8 +59,7 @@
                    status="s">'${sds}': '${grailsApplication.config.sensitiveDatasets[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
                 </g:each>
             },
-            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean},
-            myAnnotationEnabled: ${(grailsApplication.config.getProperty("alerts.myannotation.enabled", Boolean, false))}
+            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
         }
 
         var BC_CONF = OCC_REC; // For compatibility with common JS components which require BC_CONF
@@ -704,14 +703,7 @@
                 <h4><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h4>
                 <p class="related-record-reason" style="display:none;"><g:message code="show.userannotationtemplate.relatedrecord.reason.label" default="Reason:"/> <span class="related-record-reason-span"></span></p>
                 <p class="related-record" style="display:none;">
-                    <p class="related-record-reason-explanation" style="display:none;"></p>
-                    <p class="related-record-id" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.id.label" default="record ID"/>: <span class="related-record-id-span"></span></p>
-                    <p class="related-record-name" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.name.label" default="scientific name"/>: <span class="related-record-name-span"></span></p>
-                    <p class="related-record-state" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.state.label" default="state"/>: <span class="related-record-state-span"></span></p>
-                    <p class="related-record-latitude" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.latitude.label" default="latitude"/>: <span class="related-record-latitude-span"></span></p>
-                    <p class="related-record-longitude" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.longitude.label" default="longitude"/>: <span class="related-record-longitude-span"></span></p>
-                    <p class="related-record-eventdate" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.eventdate.label" default="eventDate"/>: <span class="related-record-eventdate-span"></span></p>
-                    <g:link class="related-record-link" controller="occurrence" action="show" id="replace-me" target="_blank">
+                    <g:link class="related-record-link" controller="occurrence" action="show" id="replace-me">
                         <span class="related-record-span-user-duplicate" style="display:none;">
                             <g:message code="show.userannotationtemplate.relatedrecord.userduplicate.a" default="View duplicated record"/>
                         </span>
@@ -844,7 +836,7 @@
         </g:if>
     </g:if>
     <g:else>
-        <h3><g:message code="show.body.error.title" default="An error occurred"/> <br/><alatag:stripApiKey message="${flash.message}"/></h3>
+        <h3><g:message code="show.body.error.title" default="An error occurred"/> <br/>${flash.message}</h3>
     </g:else>
 </body>
 </html>

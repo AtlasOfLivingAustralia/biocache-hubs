@@ -1,4 +1,4 @@
-<g:if test="${isUnderCas && !isReadOnly}">
+<g:if test="${isUnderCas && !isReadOnly && record.processed.attribution.provenance != 'Draft'}">
     <button class="btn btn-default" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="report a problem or suggest a correction for this record">
         <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="glyphicon glyphicon-flag"></i> <g:message code="show.button.assertionbutton.span" default="Flag an issue"/></span>
     </button>
@@ -145,6 +145,10 @@
                 <g:message code="show.sidebar01.p" default="This record was transcribed from the label by an online volunteer. It has not yet been validated by the owner institution"/>
                 <a href="https://volunteer.ala.org.au/"><g:message code="show.sidebar01.volunteer.navigator" default="Biodiversity Volunteer Portal"/></a>.
             </p>
+
+            <button class="btn btn-default" id="viewDraftButton" >
+                <span id="viewDraftSpan" title="View Draft"><g:message code="show.button.viewdraftbutton.span" default="See draft in Biodiversity Volunteer Portal"/></span>
+            </button>
         </div>
     </g:if>
     <g:if test="${record.processed.location.decimalLatitude && record.processed.location.decimalLongitude}">
@@ -331,7 +335,7 @@
                                         <span style="display: none;" id="records_comparison_heading"><g:message code="record.compare_table.heading" default="You are indicating that"/>:</span>
                                         <table style="display: none;" id='records_comparison_table' class="table table-bordered table-condensed table-striped scrollTable">
                                             <tr>
-                                                <th width="35%"><g:message code="record.compare_table.source_record.heading" default="This record"/></th>
+                                                <th width="35%"><g:message code="record.compare_table.source_record.heading" default="This record you are viewing"/></th>
                                                 <th rowspan="6" id="col_duplicate_reason"></th>
                                                 <th width="35%"><g:message code="record.compare_table.target_record.heading" default="This record ID provided"/></th></tr>
                                             <tr>
@@ -362,7 +366,7 @@
                                 <label for="relatedRecordId" style="vertical-align:top;"><g:message code="show.issueform.label04" default="Duplicate Reason:"/><span style="color: red;">*</span></label>
                                 <select name="relatedRecordReason" id="relatedRecordReason" autocomplete="off">
                                     <option value=""><g:message code="related.record.reason.select" default="-- Select a reason --" /></option>
-                                    <option value="sameoccurrence"><g:message code="related.record.reason.sameoccurrence" default="Duplicate occurrence"/></option>
+                                    <option value="sameoccurence"><g:message code="related.record.reason.sameoccurence" default="Same occurence"/></option>
                                     <option value="tissuesample"><g:message code="related.record.reason.tissuesample" default="Tissue sample"/></option>
                                     <option value="splitspecimen"><g:message code="related.record.reason.splitspecimen" default="Split specimen"/></option>
                                 </select>
@@ -371,16 +375,9 @@
                                 <label for="issueComment" style="vertical-align:top;"><g:message code="show.issueform.label02" default="Comment:"/></label>
                                 <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
                             </p>
-
-                            <g:if test="${grailsApplication.config.alerts.myannotation.enabled.toBoolean()}">
-                                <p style="margin-top:30px;">
-                                    <label style="width:100%" id="notifyChange"><input type="checkbox" id="notifyChangeCheckbox" name="notifyChange" value="">&nbsp;<g:message code="show.issueform.notifyme" default="Notify me when records I have annotated are updated"/></label>
-                                </p>
-                            </g:if>
-
                             <p style="margin-top:20px;">
                                 <input id="issueFormSubmit" type="submit" value="<g:message code="show.issueform.button.submit" default="Submit"/>" class="btn btn-primary" />
-                                <input type="button" id="cancel" value="<g:message code="show.issueform.button.cancel" default="Cancel"/>" class="btn btn-default" onClick="$('#loginOrFlag').modal('hide');"/>
+                                <input type="button" value="<g:message code="show.issueform.button.cancel" default="Cancel"/>" class="btn btn-default" onClick="$('#loginOrFlag').modal('hide');"/>
                                 <input type="button" id="close" value="<g:message code="show.issueform.button.close" default="Close"/>" class="btn btn-default" style="display:none;"/>
                                 <span id="submitSuccess"></span>
                             </p>
