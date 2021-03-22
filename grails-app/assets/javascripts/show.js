@@ -572,7 +572,7 @@ function deleteAssertionPrompt(event) {
     var isConfirmed = confirm('Are you sure you want to delete this flagged issue?');
     if (isConfirmed === true) {
         $('#' + event.data.qa_uuid + ' .deleteAssertionSubmitProgress').css({'display':'inline'});
-        console.log(event.data.qa_uuid);
+        //console.log(event.data.qa_uuid);
         deleteAssertion(event.data.rec_uuid, event.data.qa_uuid);
     }
 }
@@ -630,7 +630,7 @@ function updateConfirmVerificationEvents(occUuid, assertionUuid, userDisplayName
             return false;
         }
 
-        console.log("Submitting an assertion with userAssertionStatus: " + userAssertionStatus)
+        //console.log("Submitting an assertion with userAssertionStatus: " + userAssertionStatus)
         $.post(OCC_REC.contextPath + "/occurrences/assertions/add",
             { recordUuid: occUuid,
                 code: code,
