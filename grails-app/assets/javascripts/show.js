@@ -79,12 +79,8 @@ $(document).ready(function() {
         var relatedRecordReason = $('#relatedRecordReason').val();
         if (relatedRecordReason === '') {
             $(col_reason).text('');
-        } else if (relatedRecordReason === 'sameoccurence') {
-            $(col_reason).text(jQuery.i18n.prop('related.record.reason.sameoccurrence.description'));
-        } else if (relatedRecordReason === 'tissuesample') {
-            $(col_reason).text(jQuery.i18n.prop('related.record.reason.tissuesample.description'));
-        } else if (relatedRecordReason === 'splitspecimen') {
-            $(col_reason).text(jQuery.i18n.prop('related.record.reason.splitspecimen.description'));
+        } else {
+            $(col_reason).text(jQuery.i18n.prop('related.record.reason.description.' + relatedRecordReason));
         }
         setIssueFormButtonState();
     })
@@ -200,7 +196,7 @@ $(document).ready(function() {
                             $('#assertionSubmitProgress').css({'display': 'none'});
                             $("#submitSuccess").html("Thanks for flagging the problem!");
                             $("#issueFormSubmit").hide();
-                            $("input:reset").hide();
+                            $("input#cancel").hide();
                             $("input#close").show();
                             //retrieve all assertions
                             $.get(OCC_REC.contextPath + '/assertions/' + OCC_REC.recordUuid, function (data) { // recordUuid=${record.raw.uuid}
@@ -424,7 +420,6 @@ function getMessage(userAssertionCode) {
 function refreshUserAnnotations(){
 
     $.get( OCC_REC.contextPath + "/assertions/" + OCC_REC.recordUuid, function(data) {
-
         if (data.assertionQueries.length == 0 && data.userAssertions.length == 0) {
             $('#userAnnotationsDiv').hide('slow');
             $('#userAssertionsContainer').hide("slow");
@@ -473,17 +468,50 @@ function refreshUserAnnotations(){
                 $clone.find('.created').text('Date created: ' + (moment(userAssertion.created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));
                 if (userAssertion.relatedRecordId) {
                     $clone.find('.related-record').show();
+                    // show related record id
+                    $clone.find('.related-record-id').show();
+                    $clone.find('.related-record-id-span').text(userAssertion.relatedRecordId);
                     var href = $clone.find('.related-record-link').attr('href');
                     $clone.find('.related-record-link').attr('href', href.replace('replace-me', userAssertion.relatedRecordId));
-                    if (userAssertion.code == 20020) {
+                    if (userAssertion.code === 20020) {
                         $clone.find('.related-record-span-user-duplicate').show();
+
+                        $.get( OCC_REC.contextPath + "/occurrence/exists/" + userAssertion.relatedRecordId).success(function(data) {
+                            if (!data.error) {
+                                if (data.scientificName) {
+                                    $clone.find('.related-record-name').show();
+                                    $clone.find('.related-record-name-span').text(data.scientificName);
+                                }
+
+                                if (data.stateProvince) {
+                                    $clone.find('.related-record-state').show();
+                                    $clone.find('.related-record-state-span').text(data.stateProvince);
+                                }
+
+                                if (data.decimalLongitude) {
+                                    $clone.find('.related-record-latitude').show();
+                                    $clone.find('.related-record-latitude-span').text(data.decimalLongitude);
+                                }
+
+                                if (data.decimalLatitude) {
+                                    $clone.find('.related-record-longitude').show();
+                                    $clone.find('.related-record-longitude-span').text(data.decimalLatitude);
+                                }
+
+                                if (data.eventDate) {
+                                    $clone.find('.related-record-eventdate').show();
+                                    $clone.find('.related-record-eventdate-span').text(data.eventDate);
+                                }
+                            }
+                        })
                     } else {
                         $clone.find('.related-record-span-default').show();
                     }
                 }
                 if (userAssertion.relatedRecordReason) {
                     $clone.find('.related-record-reason').show();
-                    $clone.find('.related-record-reason-span').text(jQuery.i18n.prop('related.record.reason.'+userAssertion.relatedRecordReason));
+                    $clone.find('.related-record-reason-span').text(jQuery.i18n.prop('related.record.reason.' + userAssertion.relatedRecordReason));
+                    $clone.find('.related-record-reason-explanation').text(jQuery.i18n.prop('related.record.reason.explanation.' + userAssertion.relatedRecordReason)).show();
                 }
                 if (userAssertion.userRole != null) {
                     $clone.find('.userRole').text(', ' + userAssertion.userRole);
