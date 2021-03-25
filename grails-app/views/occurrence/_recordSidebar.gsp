@@ -375,6 +375,13 @@
                                 <label for="issueComment" style="vertical-align:top;"><g:message code="show.issueform.label02" default="Comment:"/></label>
                                 <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
                             </p>
+
+                            <g:if test="${grailsApplication.config.alerts.myannotation.enabled.toBoolean()}">
+                                <p style="margin-top:30px;">
+                                    <label style="width:100%" id="notifyChange"><input type="checkbox" id="notifyChangeCheckbox" name="notifyChange" value="">&nbsp;<g:message code="show.issueform.notifyme" default="Notify me when records I have annotated are updated"/></label>
+                                </p>
+                            </g:if>
+
                             <p style="margin-top:20px;">
                                 <input id="issueFormSubmit" type="submit" value="<g:message code="show.issueform.button.submit" default="Submit"/>" class="btn btn-primary" />
                                 <input type="button" value="<g:message code="show.issueform.button.cancel" default="Cancel"/>" class="btn btn-default" onClick="$('#loginOrFlag').modal('hide');"/>

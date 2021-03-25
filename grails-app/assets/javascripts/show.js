@@ -197,6 +197,18 @@ $(document).ready(function() {
                             relatedRecordReason: relatedRecordReason,
                         },
                         function (data) {
+                            // when add assertion succeeds, we update alert settings (only when myannotation is enabled)
+                            if (OCC_REC.myAnnotationEnabled) {
+                                var orig_state = $('#notifyChangeCheckbox').prop('data-origstate');
+                                var new_state = $('#notifyChangeCheckbox').prop('checked');
+
+                                // only update when user changed preference
+                                if (orig_state !== new_state) {
+                                    var actionpath = new_state ? "/occurrences/addMyAnnotationAlert" : "/occurrences/deleteMyAnnotationAlert";
+                                    $.post(OCC_REC.contextPath + actionpath);
+                                }
+                            }
+
                             $('#assertionSubmitProgress').css({'display': 'none'});
                             $("#submitSuccess").html("Thanks for flagging the problem!");
                             $("#issueFormSubmit").hide();
@@ -229,6 +241,17 @@ $(document).ready(function() {
         $(el).html(replaceURLWithHTMLLinks(html)); // convert it
     });
 
+    $('#assertionButton').click(function (e) {
+        // if myannotation enabled, to retrieve current settings
+        if (OCC_REC.myAnnotationEnabled) {
+            var getAlerts = OCC_REC.contextPath + "/occurrences/alerts";
+            $.getJSON(getAlerts, function (data) {
+                var myAnnotationEnabled =  data && data.myannotation && data.myannotation.length > 0;
+                $("#notifyChangeCheckbox").prop('checked', myAnnotationEnabled);
+                $("#notifyChangeCheckbox").prop('data-origstate', myAnnotationEnabled);
+            })
+        }
+    })
 
     // bind to form "close" button TODO
     $("input#close").on("click", function(e) {

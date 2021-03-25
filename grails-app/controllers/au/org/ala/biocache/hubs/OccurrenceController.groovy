@@ -725,4 +725,34 @@ class OccurrenceController {
 
         return userPref.expand
     }
+
+    def getAlerts() {
+        String userId = authService?.getUserId()
+        if (userId == null) {
+            response.status = 404
+            render ([error: 'userId must be supplied to get alerts'] as JSON)
+        } else {
+            render webServicesService.getAlerts(userId) as JSON
+        }
+    }
+
+    def addMyAnnotationAlert() {
+        String userId = authService?.getUserId()
+        if (userId == null) {
+            response.status = 404
+            render ([error: 'userId must be supplied to add alert'] as JSON)
+        } else {
+            render webServicesService.addMyAnnotationAlert(userId) as JSON
+        }
+    }
+
+    def deleteMyAnnotationAlert() {
+        String userId = authService?.getUserId()
+        if (userId == null) {
+            response.status = 404
+            render ([error: 'userId must be supplied to delete alert'] as JSON)
+        } else {
+            render webServicesService.deleteMyAnnotationAlert(userId) as JSON
+        }
+    }
 }
