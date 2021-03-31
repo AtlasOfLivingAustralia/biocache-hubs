@@ -27,6 +27,121 @@ $(document).ready(function() {
         $('.missingPropResult').toggle();
     });
 
+    $('#copyRecordIdToClipboard').on('click', function(e) {
+        var copyText = document.querySelector("#hidden-uuid");
+        copyText.type = 'text';
+        copyText.select();
+        document.execCommand("copy");
+        copyText.type = 'hidden';
+        var $parent = $('#copyRecordIdToClipboard-parent');
+        $parent.tooltip('show');
+        setTimeout(function() {
+            $parent.tooltip('hide');
+        }, 1000);
+        // alert("Copied");
+    });
+    var recordIdValid = false;
+    function validateIssueForm() {
+        var issueCode = $('#issue').val();
+        var relatedRecordReason = $('#relatedRecordReason').val();
+        if (issueCode == '20020') {
+            return recordIdValid && relatedRecordReason;
+        }
+        return true;
+    }
+    function setIssueFormButtonState() {
+        $('#issueForm input[type=submit]').prop('disabled', !validateIssueForm());
+    }
+    $('#issue').on('change', function(e) {
+        var $this = $(this);
+        var val = $this.val();
+        var $submit = $('#issueForm input[type=submit]');
+        var $p = $('#related-record-p, #related-record-reason-p');
+        // if duplicate record
+        if (val === '20020') {
+            $('#relatedRecordId').val('');
+            recordIdValid = false;
+            $p.show();
+        } else {
+            $p.hide();
+            $('#related-record-id-not-found').hide();
+            $('#related-record-id-found').hide();
+            $('#related-record-id-loading').hide();
+            // hide the records table
+            $('#records_comparison_table').hide();
+            $('#records_comparison_heading').hide();
+        }
+        setIssueFormButtonState();
+    });
+
+    $('#relatedRecordReason').on('change', function(e) {
+        var col_reason = $('#col_duplicate_reason');
+        var relatedRecordReason = $('#relatedRecordReason').val();
+        if (relatedRecordReason === '') {
+            $(col_reason).text('');
+        } else {
+            $(col_reason).text(jQuery.i18n.prop('related.record.reason.description.' + relatedRecordReason));
+        }
+        setIssueFormButtonState();
+    })
+
+    $('#relatedRecordId').on('change', function(e) {
+        var $this = $(this);
+        var $submit = $('#issueForm input[type=submit]');
+        var val = $this.val().trim();
+        if (val === OCC_REC.recordUuid) {
+            alert("You can't mark this record as a duplicate of itself!");
+            recordIdValid = false;
+        } else if (val === '') {
+            $('#related-record-id-not-found').hide();
+            $('#related-record-id-found').hide();
+            $('#related-record-id-loading').hide();
+            $('#records_comparison_table').hide();
+            $('#records_comparison_heading').hide();
+            $('#relatedRecordReason').val("");
+            $('#col_duplicate_reason').text('');
+            recordIdValid = false;
+        } else {
+            $('#related-record-id-loading').show();
+            $.get( OCC_REC.contextPath + "/occurrence/exists/" + val).success(function(data) {
+                $('#related-record-id-loading').hide();
+                if (data.error) {
+                    // show error
+                    $('#related-record-id-not-found').text('More than 1 record found with specified id, please use a more specific id').show();
+                    // hide compare table
+                    $('#records_comparison_heading').hide();
+                    $('#records_comparison_table').hide();
+                    recordIdValid = false;
+                } else {
+                    // hide error
+                    $('#related-record-id-not-found').hide();
+                    // show compare table
+                    $('#related-record-id-found').show();
+                    $('#records_comparison_table').show();
+                    $('#records_comparison_heading').show();
+                    // populate the table
+                    $('#t_scientificName').text(data.scientificName ? data.scientificName : '');
+                    $('#t_stateProvince').text(data.stateProvince ? data.stateProvince : '');
+                    $('#t_decimalLongitude').text(data.decimalLongitude ? data.decimalLongitude : '');
+                    $('#t_decimalLatitude').text(data.decimalLatitude ? data.decimalLatitude : '');
+                    $('#t_eventDate').text(data.eventDate ? data.eventDate : '');
+                    recordIdValid = true;
+                }
+            }).error(function () {
+                $('#related-record-id-not-found').text("The record id can't be found.").show();
+                $('#related-record-id-found').hide();
+                $('#related-record-id-loading').hide();
+                $('#records_comparison_table').hide();
+                $('#records_comparison_heading').hide();
+                $('#relatedRecordReason').val("");
+                $('#col_duplicate_reason').text('');
+            }).always(function() {
+                setIssueFormButtonState();
+            });
+        }
+        setIssueFormButtonState();
+    });
+
     refreshUserAnnotations();
 
     // bind to form submit for assertions
@@ -34,6 +149,8 @@ $(document).ready(function() {
         e.preventDefault();
         var comment = $("#issueComment").val();
         var code = $("#issue").val();
+        var relatedRecordId = $('#relatedRecordId').val();
+        var relatedRecordReason = $('#relatedRecordReason').val();
         var userDisplayName = OCC_REC.userDisplayName //'${userDisplayName}';
         var recordUuid = OCC_REC.recordUuid //'${ala:escapeJS(record.raw.rowKey)}';
         if(code!=""){
@@ -54,8 +171,16 @@ $(document).ready(function() {
                 if (bPreventAddingIssue) {
                     alert("You cannot flag an issue with the same type that has already been verified.");
                     return;
+                } else if (code == '20020' && !relatedRecordId) {
+                    alert("You must provide a duplicate record id to mark this as a duplicate");
+                    return;
+                } else if (code == '20020' && !relatedRecordReason) {
+                    alert("You must select a reason to mark this record as a duplicate");
+                    return;
+                } else if (code == '20020' && relatedRecordId == recordUuid) {
+                    alert("You can't mark a record as a duplicate of itself");
+                    return;
                 } else {
-
                     $.post(OCC_REC.contextPath + "/occurrences/assertions/add",
                         {
                             recordUuid: recordUuid,
@@ -63,13 +188,15 @@ $(document).ready(function() {
                             comment: comment,
                             userAssertionStatus: 'Open issue',
                             userId: OCC_REC.userId,
-                            userDisplayName: userDisplayName
+                            userDisplayName: userDisplayName,
+                            relatedRecordId: relatedRecordId,
+                            relatedRecordReason: relatedRecordReason,
                         },
                         function (data) {
                             $('#assertionSubmitProgress').css({'display': 'none'});
                             $("#submitSuccess").html("Thanks for flagging the problem!");
                             $("#issueFormSubmit").hide();
-                            $("input:reset").hide();
+                            $("input#cancel").hide();
                             $("input#close").show();
                             //retrieve all assertions
                             $.get(OCC_REC.contextPath + '/assertions/' + OCC_REC.recordUuid, function (data) { // recordUuid=${record.raw.uuid}
@@ -293,7 +420,6 @@ function getMessage(userAssertionCode) {
 function refreshUserAnnotations(){
 
     $.get( OCC_REC.contextPath + "/assertions/" + OCC_REC.recordUuid, function(data) {
-
         if (data.assertionQueries.length == 0 && data.userAssertions.length == 0) {
             $('#userAnnotationsDiv').hide('slow');
             $('#userAssertionsContainer').hide("slow");
@@ -309,7 +435,9 @@ function refreshUserAnnotations(){
             var $clone = $('#userAnnotationTemplate').clone();
             $clone.find('.issue').text(data.assertionQueries[i].assertionType);
             $clone.find('.user').text(data.assertionQueries[i].userName);
-            $clone.find('.comment').text('Comment: ' + data.assertionQueries[i].comment);
+            if (data.assertionQueries[i].hasOwnProperty('comment')) {
+                $clone.find('.comment').text('Comment: ' + data.assertionQueries[i].comment);
+            }
             $clone.find('.created').text('Date created: ' + (moment(data.assertionQueries[i].createdDate).format('YYYY-MM-DD')));
             if(data.assertionQueries[i].recordCount > 1){
                 $clone.find('.viewMore').css({display:'block'});
@@ -332,10 +460,59 @@ function refreshUserAnnotations(){
                 $clone.prop('id', "userAnnotation_" + userAssertion.uuid);
                 $clone.find('.issue').text(jQuery.i18n.prop(userAssertion.name));
                 $clone.find('.user').text(userAssertion.userDisplayName);
-                $clone.find('.comment').text('Comment: ' + userAssertion.comment);
+                if (userAssertion.hasOwnProperty('comment')) {
+                    $clone.find('.comment').text('Comment: ' + userAssertion.comment);
+                }
                 $clone.find('.userRole').text(userAssertion.userRole != null ? userAssertion.userRole : '');
                 $clone.find('.userEntity').text(userAssertion.userEntityName != null ? userAssertion.userEntityName : '');
                 $clone.find('.created').text('Date created: ' + (moment(userAssertion.created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));
+                if (userAssertion.relatedRecordId) {
+                    $clone.find('.related-record').show();
+                    // show related record id
+                    $clone.find('.related-record-id').show();
+                    $clone.find('.related-record-id-span').text(userAssertion.relatedRecordId);
+                    var href = $clone.find('.related-record-link').attr('href');
+                    $clone.find('.related-record-link').attr('href', href.replace('replace-me', userAssertion.relatedRecordId));
+                    if (userAssertion.code === 20020) {
+                        $clone.find('.related-record-span-user-duplicate').show();
+
+                        $.get( OCC_REC.contextPath + "/occurrence/exists/" + userAssertion.relatedRecordId).success(function(data) {
+                            if (!data.error) {
+                                if (data.scientificName) {
+                                    $clone.find('.related-record-name').show();
+                                    $clone.find('.related-record-name-span').text(data.scientificName);
+                                }
+
+                                if (data.stateProvince) {
+                                    $clone.find('.related-record-state').show();
+                                    $clone.find('.related-record-state-span').text(data.stateProvince);
+                                }
+
+                                if (data.decimalLongitude) {
+                                    $clone.find('.related-record-latitude').show();
+                                    $clone.find('.related-record-latitude-span').text(data.decimalLongitude);
+                                }
+
+                                if (data.decimalLatitude) {
+                                    $clone.find('.related-record-longitude').show();
+                                    $clone.find('.related-record-longitude-span').text(data.decimalLatitude);
+                                }
+
+                                if (data.eventDate) {
+                                    $clone.find('.related-record-eventdate').show();
+                                    $clone.find('.related-record-eventdate-span').text(data.eventDate);
+                                }
+                            }
+                        })
+                    } else {
+                        $clone.find('.related-record-span-default').show();
+                    }
+                }
+                if (userAssertion.relatedRecordReason) {
+                    $clone.find('.related-record-reason').show();
+                    $clone.find('.related-record-reason-span').text(jQuery.i18n.prop('related.record.reason.' + userAssertion.relatedRecordReason));
+                    $clone.find('.related-record-reason-explanation').text(jQuery.i18n.prop('related.record.reason.explanation.' + userAssertion.relatedRecordReason)).show();
+                }
                 if (userAssertion.userRole != null) {
                     $clone.find('.userRole').text(', ' + userAssertion.userRole);
                 }
@@ -423,7 +600,7 @@ function deleteAssertionPrompt(event) {
     var isConfirmed = confirm('Are you sure you want to delete this flagged issue?');
     if (isConfirmed === true) {
         $('#' + event.data.qa_uuid + ' .deleteAssertionSubmitProgress').css({'display':'inline'});
-        console.log(event.data.qa_uuid);
+        //console.log(event.data.qa_uuid);
         deleteAssertion(event.data.rec_uuid, event.data.qa_uuid);
     }
 }
@@ -481,8 +658,7 @@ function updateConfirmVerificationEvents(occUuid, assertionUuid, userDisplayName
             return false;
         }
 
-        console.log("Submitting an assertion with userAssertionStatus: " + userAssertionStatus)
-
+        //console.log("Submitting an assertion with userAssertionStatus: " + userAssertionStatus)
         $.post(OCC_REC.contextPath + "/occurrences/assertions/add",
             { recordUuid: occUuid,
                 code: code,
