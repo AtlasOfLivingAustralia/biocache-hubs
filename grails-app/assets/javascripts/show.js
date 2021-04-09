@@ -199,20 +199,15 @@ $(document).ready(function() {
                         function (data) {
                             // when add assertion succeeds, we update alert settings (only when myannotation is enabled)
                             if (OCC_REC.myAnnotationEnabled) {
-                                var orig_state = $('#notifyChangeCheckbox').prop('data-origstate');
                                 var new_state = $('#notifyChangeCheckbox').prop('checked');
-
-                                // only update when user changed preference
-                                if (orig_state !== new_state) {
-                                    var actionpath = new_state ? "/occurrences/addMyAnnotationAlert" : "/occurrences/deleteMyAnnotationAlert";
-                                    $.post(OCC_REC.contextPath + actionpath);
-                                }
+                                var actionpath = new_state ? "/occurrences/addMyAnnotationAlert" : "/occurrences/deleteMyAnnotationAlert";
+                                $.post(OCC_REC.contextPath + actionpath);
                             }
 
                             $('#assertionSubmitProgress').css({'display': 'none'});
                             $("#submitSuccess").html("Thanks for flagging the problem!");
                             $("#issueFormSubmit").hide();
-                            $("input:reset").hide();
+                            $("input#cancel").hide();
                             $("input#close").show();
                             //retrieve all assertions
                             $.get(OCC_REC.contextPath + '/assertions/' + OCC_REC.recordUuid, function (data) { // recordUuid=${record.raw.uuid}
@@ -244,11 +239,12 @@ $(document).ready(function() {
     $('#assertionButton').click(function (e) {
         // if myannotation enabled, to retrieve current settings
         if (OCC_REC.myAnnotationEnabled) {
+            // by default off
+            $("#notifyChangeCheckbox").prop('checked', false);
             var getAlerts = OCC_REC.contextPath + "/occurrences/alerts";
             $.getJSON(getAlerts, function (data) {
                 var myAnnotationEnabled =  data && data.myannotation && data.myannotation.length > 0;
                 $("#notifyChangeCheckbox").prop('checked', myAnnotationEnabled);
-                $("#notifyChangeCheckbox").prop('data-origstate', myAnnotationEnabled);
             })
         }
     })
