@@ -200,7 +200,7 @@ $(document).ready(function() {
                             // when add assertion succeeds, we update alert settings (only when myannotation is enabled)
                             if (OCC_REC.myAnnotationEnabled) {
                                 var new_state = $('#notifyChangeCheckbox').prop('checked');
-                                var actionpath = new_state ? "/occurrences/addMyAnnotationAlert" : "/occurrences/deleteMyAnnotationAlert";
+                                var actionpath = new_state ? "/occurrences/subscribeMyAnnotation" : "/occurrences/unsubscribeMyAnnotation";
                                 $.post(OCC_REC.contextPath + actionpath);
                             }
 

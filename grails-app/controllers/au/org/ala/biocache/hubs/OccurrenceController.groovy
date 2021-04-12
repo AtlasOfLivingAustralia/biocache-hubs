@@ -736,23 +736,23 @@ class OccurrenceController {
         }
     }
 
-    def addMyAnnotationAlert() {
+    def subscribeMyAnnotation() {
         String userId = authService?.getUserId()
         if (userId == null) {
             response.status = 404
             render ([error: 'userId must be supplied to add alert'] as JSON)
         } else {
-            render webServicesService.addMyAnnotationAlert(userId) as JSON
+            render webServicesService.subscribeMyAnnotation(userId) as JSON
         }
     }
 
-    def deleteMyAnnotationAlert() {
+    def unsubscribeMyAnnotation() {
         String userId = authService?.getUserId()
         if (userId == null) {
             response.status = 404
             render ([error: 'userId must be supplied to delete alert'] as JSON)
         } else {
-            render webServicesService.deleteMyAnnotationAlert(userId) as JSON
+            render webServicesService.unsubscribeMyAnnotation(userId) as JSON
         }
     }
 }

@@ -12,8 +12,8 @@ class BootStrap {
         if (grailsApplication.config.getProperty('alerts.myannotation.enabled', Boolean, false)) {
             grailsUrlMappingsHolder.addMappings({
                 "/occurrences/alerts"(controller: 'occurrence', action: [GET: 'getAlerts'])
-                "/occurrences/addMyAnnotationAlert"(controller: 'occurrence', action: [POST: 'addMyAnnotationAlert'])
-                "/occurrences/deleteMyAnnotationAlert"(controller: 'occurrence', action: [POST: 'deleteMyAnnotationAlert'])
+                "/occurrences/subscribeMyAnnotation"(controller: 'occurrence', action: [POST: 'subscribeMyAnnotation'])
+                "/occurrences/unsubscribeMyAnnotation"(controller: 'occurrence', action: [POST: 'unsubscribeMyAnnotation'])
             })
         }
 
