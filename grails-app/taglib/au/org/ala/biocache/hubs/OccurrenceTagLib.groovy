@@ -286,7 +286,7 @@ class OccurrenceTagLib {
         mb.ul(class:'facets nano-content') {
             facetResult.fieldResult.each { fieldResult ->
 
-                if(fieldResult.count > 0) {
+                if (fieldResult.count > 0) {
                     // Catch specific facets fields
                     if (fieldResult.fq) {
                         // biocache-service has provided a fq field in the fieldResults list
@@ -299,8 +299,8 @@ class OccurrenceTagLib {
                                     mkp.yieldUnescaped("&nbsp;")
                                 }
                                 span(class: "facet-item") {
-                                    if(fieldResult.i18nCode){
-                                        mkp.yield(alatag.message(code: fieldResult.i18nCode ?: 'unknown', default: fieldResult.label))
+                                    if (fieldResult.i18nCode) {
+                                        mkp.yield(alatag.message(code: fieldResult.i18nCode, default: fieldResult.label))
                                     } else {
                                         mkp.yield(alatag.message(code: fieldResult.label ?: 'unknown', default: fieldResult.label))
                                     }

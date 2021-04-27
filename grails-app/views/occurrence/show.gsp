@@ -59,7 +59,8 @@
                    status="s">'${sds}': '${grailsApplication.config.sensitiveDatasets[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
                 </g:each>
             },
-            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean}
+            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean},
+            myAnnotationEnabled: ${(grailsApplication.config.getProperty("alerts.myannotation.enabled", Boolean, false))}
         }
 
         var BC_CONF = OCC_REC; // For compatibility with common JS components which require BC_CONF
