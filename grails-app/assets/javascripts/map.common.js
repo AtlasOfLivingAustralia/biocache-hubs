@@ -178,7 +178,7 @@ function getExistingParams() {
     decoder.innerHTML = decodeURI(BC_CONF.queryContext);
     paramsObj.qc = decoder.value;
     //otherwise get context like "Isle of Man" as %26quot%3BIsle of Man%26quot%3B (encoded html entities), which never matches any records
-    return $.param(paramsObj);
+    return $.param(paramsObj, true);
 }
 
 function drawWktObj(wktString) {
