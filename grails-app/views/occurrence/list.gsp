@@ -142,7 +142,7 @@
         <div id="errorAlert" class="alert alert-danger alert-dismissible alert-dismissable" role="alert">
             <button type="button" class="close" onclick="$(this).parent().hide()" aria-label="Close"><span
                     aria-hidden="true">&times;</span></button>
-            <h4>${flash.message}</h4>
+            <h4><alatag:stripApiKey message="${flash.message}"/></h4>
 
             <p>Please contact <a
                     href="mailto:${grailsApplication.config.supportEmail ?: 'support@ala.org.au'}?subject=biocache error"
@@ -281,7 +281,7 @@
                 <g:if test="${false && flash.message}"><%-- OFF for now --%>
                     <div class="alert alert-info alert-dismissable" style="margin-left: -30px;">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        ${flash.message}
+                        <alatag:stripApiKey message="${flash.message}"/>
                     </div>
                 </g:if>
                 <g:if test="${grailsApplication.config.useDownloadPlugin?.toBoolean()}">

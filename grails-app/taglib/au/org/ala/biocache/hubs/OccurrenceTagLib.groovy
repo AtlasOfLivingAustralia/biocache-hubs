@@ -1024,8 +1024,8 @@ class OccurrenceTagLib {
     def stripApiKey = { attrs, body ->
         String message = attrs.message
         String output = message.replaceAll(/apiKey=[a-z0-9_\-]*/, "")
-        log.warn "input = ${message}"
-        log.warn "output = ${output}"
+        log.debug "stripApiKey input = ${message}"
+        log.debug "stripApiKey output = ${output}"
         out << output
     }
 

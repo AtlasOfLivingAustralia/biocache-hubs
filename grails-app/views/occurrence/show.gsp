@@ -844,7 +844,7 @@
         </g:if>
     </g:if>
     <g:else>
-        <h3><g:message code="show.body.error.title" default="An error occurred"/> <br/>${flash.message}</h3>
+        <h3><g:message code="show.body.error.title" default="An error occurred"/> <br/><alatag:stripApiKey message="${flash.message}"/></h3>
     </g:else>
 </body>
 </html>
