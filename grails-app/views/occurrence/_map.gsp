@@ -81,7 +81,7 @@
 
 <div id="template" style="display:none">
     <div class="colourbyTemplate">
-        <a class="colour-by-legend-toggle colour-by-control tooltips" href="#" title="Map legend - click to expand"><i class="fa fa-list-ul fa-lg"></i></a>
+        <a class="colour-by-legend-toggle colour-by-control tooltips" href="#" title="<g:message code="map.legend.click.to.expand" default="Map legend - click to expand"/>"><i class="fa fa-list-ul fa-lg"></i></a>
         <form class="leaflet-control-layers-list">
             <div class="leaflet-control-layers-overlays">
                 <div style="overflow:auto; max-height:400px;">

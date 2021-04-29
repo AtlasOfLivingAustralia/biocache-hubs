@@ -798,6 +798,8 @@
                         </g:if>
                         <div id="searchNavBar" class="pagination">
                             <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}"
+                                        next="${message(code: "show.nextbtn.navigator", default:"Next")}"
+                                        prev="${message(code: "show.previousbtn.navigator", default:"Previous")}"
                                         omitLast="true"
                                         params="${params.clone().with { it.remove('max'); it.remove('offset'); it } }"
                             />
