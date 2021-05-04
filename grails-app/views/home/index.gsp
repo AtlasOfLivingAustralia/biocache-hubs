@@ -304,7 +304,7 @@
     <g:if test="${flash.message}">
         <div class="message alert alert-info alert-dismissable">
             <button type="button" class="close" onclick="$(this).parent().hide()">×</button>
-            <b><g:message code="home.index.body.alert" default="Alert:"/></b> ${raw(flash.message)}
+            <b><g:message code="home.index.body.alert" default="Alert:"/></b> <alatag:stripApiKey message="${flash.message}"/>
         </div>
     </g:if>
     <div class="row" id="content">

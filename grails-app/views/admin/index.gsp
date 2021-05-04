@@ -30,7 +30,7 @@
         <g:if test="${flash.message}">
             <div class="message alert alert-info">
                 <button type="button" class="close" onclick="$(this).parent().hide()">×</button>
-                <b>Alert:</b> ${raw(flash.message)}
+                <b><g:message code="home.index.body.alert" default="Alert:"/></b> <alatag:stripApiKey message="${flash.message}"/>
             </div>
         </g:if>
 
