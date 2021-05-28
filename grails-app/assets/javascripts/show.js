@@ -23,6 +23,10 @@ $(document).ready(function() {
         $('.uncheckTestResult').toggle();
     });
 
+    $('#showPassedPropResult').on('click', function(e){
+        $('.passedPropResult').toggle();
+    });
+
     $('#showMissingPropResult').on('click', function(e){
         $('.missingPropResult').toggle();
     });

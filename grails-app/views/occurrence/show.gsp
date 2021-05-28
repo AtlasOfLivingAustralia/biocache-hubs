@@ -316,9 +316,16 @@
                                 </tr>
                             </g:each>
 
+                            <g:if test="${record.systemAssertions.passed}">
+                                <tr>
+                                    <td colspan="2">
+                                        <a href="javascript:void(0)" id="showPassedPropResult"><g:message code="show.tabledataqualityresults.tr04td02" default="Show/Hide"/>  ${record.systemAssertions.passed.length()} passed properties</a>
+                                    </td>
+                                </tr>
+                            </g:if>
                             <g:set var="testSet" value="${record.systemAssertions.passed}"/>
                             <g:each in="${testSet}" var="test">
-                                <tr>
+                                <tr class="passedPropResult" style="display:none;">
                                     <td><g:message code="${test.name}" default="${test.name}"/><alatag:dataQualityHelp code="${test.code}"/></td>
                                     <td><i class="fa fa-check-circle" style="color:green;"></i> <g:message code="show.tabledataqualityresults.tr03td02" default="Passed"/></td>
                                     <%--<td>More info</td>--%>
