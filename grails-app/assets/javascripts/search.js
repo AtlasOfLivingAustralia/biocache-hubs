@@ -416,8 +416,8 @@ $(document).ready(function() {
     // when use clicks <i/> to view details of a category
     $('.DQCategoryDetailsLink').click(function() {
         var link = this;
+        var filters = $(link).data("filters");
         var fq = $(link).data("fq");
-        var fqs = fq.split(' AND ')
 
         var description = $(link).data("description");
         var dqCategoryLabel = $(link).data('categorylabel')
@@ -498,7 +498,7 @@ $(document).ready(function() {
             var descs = description.split(' and ')
             var valuesHtml = ""
 
-            $.each(fqs, function(idx, el) {
+            $.each(filters, function(idx, el) {
                 var vals = parseFilter(el);
                 if (vals.length > 0) {
                     var key = vals[0];

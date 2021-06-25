@@ -967,6 +967,14 @@ span.red {
     text-overflow: ellipsis;
 }
 
+@media (min-width: 768px) {
+    #DQDetailsModal.modal-dialog,
+    #DQProfileDetailsModal.modal-dialog {
+        width: 80vw;
+        max-width: 900px;
+    }
+}
+
 .dq-active-filter-item {
     font-size: 13px;
     padding-left: 0;
