@@ -388,7 +388,7 @@
                                                                 <g:if test="${filter.enabled}">
                                                                     <tr>
                                                                         <td class='filter-description' style="word-break: break-word;" data-val="${filter.description}"></td>
-                                                                        <td class='filter-value' style="word-break: keep-all"><span style="white-space: nowrap;">${filter.filter}</span></td>
+                                                                        <td class='filter-value' style="word-break: keep-all;"><span style="white-space: nowrap;">${filter.filter}</span></td>
                                                                         <td class="filter-wiki"></td>
                                                                     </tr>
                                                                 </g:if>
