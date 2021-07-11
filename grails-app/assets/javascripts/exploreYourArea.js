@@ -627,20 +627,22 @@ function groupClicked(el) {
     if (MAP_VAR.map) loadRecordsLayer();
     // AJAX...
     var uri = MAP_VAR.biocacheServiceUrl + "/explore/group/"+speciesGroup+".json";
+    var sortField = "count"
     var params = {
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
         radius: $('#radius').val(),
         fq: "geospatial_kosher:true",
         qc: MAP_VAR.queryContext,
-        sort: "count",
+        sort: sortField,
         pageSize: 50
     };
     //var params = "?latitude=${latitude}&longitude=${longitude}&radius=${radius}&taxa="+taxa+"&rank="+rank;
     $('#taxaDiv').html('[loading...]');
+    $("div#rightList").data("sort", sortField); // save 'sort' value to the DOM
     $.getJSON(uri, params, function(data) {
         // process JSON data from request
-        if (data) processSpeciesJsonData(data);
+        if (data) processSpeciesJsonData(data, false);
     });
 }
 
@@ -748,7 +750,7 @@ function processSpeciesJsonData(data, appendResults) {
             taxa = []; // array of taxa
             taxa = (thisTaxon.indexOf("|") > 0) ? thisTaxon.split("|") : thisTaxon;
             var start = $(this).attr('href');
-            var sortOrder = $(this).data("sort") ? $(this).data("sort") : "index";
+            var sortOrder = $(this).data("sort") ? $(this).data("sort") : "count";
             var sortParam = sortOrder;
             var commonName = false;
             if (sortOrder == "common") {
