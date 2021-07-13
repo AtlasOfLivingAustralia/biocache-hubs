@@ -431,7 +431,16 @@ class WebServicesService {
             if (apiKey != null) {
                 conn.setRequestProperty('apiKey', apiKey)
             }
-            return JSON.parse(conn.getInputStream(), "UTF-8")
+
+            def code = conn.getResponseCode()
+
+            if (code == 200) {
+                return JSON.parse(conn.getInputStream(), "UTF-8")
+            } else if (code == 404) {
+                return new JSONObject()
+            } else {
+                return null
+            }
         } catch (Exception e) {
             def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
             log.error error
