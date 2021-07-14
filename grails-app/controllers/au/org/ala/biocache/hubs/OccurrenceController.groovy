@@ -460,7 +460,9 @@ class OccurrenceController {
                         skin: grailsApplication.config.skin.layout
                 ])
             } else {
-                flash.message = "No record found with id: ${id}"
+                if (record != null) {
+                    flash.message = "No record found with id: ${id}"
+                }
                 render view:'../error'
             }
         } catch (Exception ex) {
