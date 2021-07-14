@@ -432,14 +432,17 @@ class WebServicesService {
                 conn.setRequestProperty('apiKey', apiKey)
             }
 
-            def code = conn.getResponseCode()
-
-            if (code == 200) {
+            if (conn instanceof HttpURLConnection) {
+                def code = conn.getResponseCode()
+                if (code == 200) {
+                    return JSON.parse(conn.getInputStream(), "UTF-8")
+                } else if (code == 404) {
+                    return new JSONObject()
+                } else {
+                    return null
+                }
+            } else { // when read local files it's a FileURLConnection which doesn't have a status code
                 return JSON.parse(conn.getInputStream(), "UTF-8")
-            } else if (code == 404) {
-                return new JSONObject()
-            } else {
-                return null
             }
         } catch (Exception e) {
             def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
