@@ -619,7 +619,6 @@ function groupClicked(el) {
     } else {
         $("#recordsGroupText").text("selected");
     }
-
     // load records layer on map
     //console.log('about to run: loadRecordsLayer()');
     // update links to downloads and records list
