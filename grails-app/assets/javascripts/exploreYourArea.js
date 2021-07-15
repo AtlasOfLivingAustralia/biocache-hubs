@@ -451,8 +451,7 @@ function loadRecordsLayer(retry) {
     }, true);
 
     // records popups need to know the species group
-    MAP_VAR.removeFqs = "&fq=species_group:" + (speciesGroup == "ALL_SPECIES" ? "*" : speciesGroup) + "&fq=taxon_name:" + (taxon ? taxon : "*");
-
+    MAP_VAR.removeFqs = "&fq=species_group:" + (speciesGroup === "ALL_SPECIES" ? "*" : speciesGroup) + "&fq=taxon_name:" + (taxon ? ("\"" + taxon + "\""): "*");
     // console.log("alaParams = ", alaParams, speciesGroupParam);
 
     var alaMapUrl = MAP_VAR.biocacheServiceUrl + "/ogc/wms/reflect?" + alaParams;
@@ -605,6 +604,7 @@ function addAddressToPage(response) {
  * Species group was clicked
  */
 function groupClicked(el) {
+    console.log("alex it's clicked ***")
     // Change the global var speciesGroup
     speciesGroup = $(el).find('a.taxonBrowse').attr('id');
     taxon = null; // clear any species click
@@ -620,6 +620,9 @@ function groupClicked(el) {
     } else {
         $("#recordsGroupText").text("selected");
     }
+
+    console.log("alex speciesGroup = " + speciesGroup);
+
     // load records layer on map
     //console.log('about to run: loadRecordsLayer()');
     // update links to downloads and records list
