@@ -352,10 +352,10 @@ $(document).ready(function() {
     // When user clicks the 'view profile description' icon next to profiles selection drop-down
     $('.DQProfileDetailsLink').click(function() {
         $.each($(".cat-table"), function(idx, el) {
-            var filters = $(el).data('filters');
 
-            var filterlist = filters.split(' AND ');
+            var filterlist = $(el).data('filters');
             var keys = [];
+
             for (var i = 0; i < filterlist.length; i++) {
                 var val = parseFilter(filterlist[i]);
                 if (val.length > 0) {
@@ -495,7 +495,6 @@ $(document).ready(function() {
                 }
             })
 
-            var descs = description.split(' and ')
             var valuesHtml = ""
 
             $.each(filters, function(idx, el) {
@@ -515,10 +514,11 @@ $(document).ready(function() {
                         wiki = replaceURL(map.get(key)[1], 'Link');
                     }
 
-                    // make sure no beak between '-' and key
-                    var els = el.split(':');
-                    el = '<span style="white-space: nowrap;">' + els[0] + '</span>:' + els[1];
-                    valuesHtml += '<tr><td style=\"word-break: break-word\">' + replaceURL(descs[idx]) + '</td><td style=\"word-break: normal\">' + el + '</td><td>' + wiki + '</td></tr>';
+                    valuesHtml += '<tr>'
+                    valuesHtml += '<td class="filter-description" style="word-break: break-word">' + replaceURL(description[idx]) + '</td>'
+                    valuesHtml += '<td class="filter-value" style="word-break: normal"><span style="white-space: nowrap;">' + el + '</span></td>'
+                    valuesHtml += '<td class="filter-wiki">' + wiki + '</td>'
+                    valuesHtml += '</tr>'
                 }
             })
 
