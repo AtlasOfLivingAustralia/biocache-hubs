@@ -604,7 +604,6 @@ function addAddressToPage(response) {
  * Species group was clicked
  */
 function groupClicked(el) {
-    console.log("alex it's clicked ***")
     // Change the global var speciesGroup
     speciesGroup = $(el).find('a.taxonBrowse').attr('id');
     taxon = null; // clear any species click
@@ -620,8 +619,6 @@ function groupClicked(el) {
     } else {
         $("#recordsGroupText").text("selected");
     }
-
-    console.log("alex speciesGroup = " + speciesGroup);
 
     // load records layer on map
     //console.log('about to run: loadRecordsLayer()');
