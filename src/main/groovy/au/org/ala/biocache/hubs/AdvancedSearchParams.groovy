@@ -118,7 +118,7 @@ class AdvancedSearchParams implements Validateable {
         // iterate over the taxa search inputs and if lsid is set use it otherwise use taxa input
         taxonText.each { tt ->
             if (tt) {
-                taxas.add(stripChars(quoteText(tt)));
+                taxas.add(quoteText(tt));
             }
         }
 
@@ -134,7 +134,7 @@ class AdvancedSearchParams implements Validateable {
 
             if (nameType == "taxa") {
                 // special case
-                taxa = StringUtils.join(taxas*.trim(), " OR " ).replaceAll('"','') // remove quotes which break the "taxa=foo bar" query type
+                taxa = StringUtils.join(taxas*.trim(), " OR " )
             } else {
                 // build up OR'ed taxa query with braces if more than one taxon
                 queryItems.add(braces[0] + nameType + ":" + StringUtils.join(taxas, " OR " + nameType + ":") + braces[1])
