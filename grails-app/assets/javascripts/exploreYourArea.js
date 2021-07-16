@@ -451,8 +451,7 @@ function loadRecordsLayer(retry) {
     }, true);
 
     // records popups need to know the species group
-    MAP_VAR.removeFqs = "&fq=species_group:" + (speciesGroup == "ALL_SPECIES" ? "*" : speciesGroup) + "&fq=taxon_name:" + (taxon ? taxon : "*");
-
+    MAP_VAR.removeFqs = "&fq=species_group:" + (speciesGroup === "ALL_SPECIES" ? "*" : speciesGroup) + "&fq=taxon_name:" + (taxon ? ("\"" + taxon + "\""): "*");
     // console.log("alaParams = ", alaParams, speciesGroupParam);
 
     var alaMapUrl = MAP_VAR.biocacheServiceUrl + "/ogc/wms/reflect?" + alaParams;
