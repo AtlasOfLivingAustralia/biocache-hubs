@@ -209,7 +209,7 @@ class OccurrenceController {
                 if (!requestParams.disableAllQualityFilters) {
                     qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
                     groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
-                    qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')] }
+                    qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description] }
                     interactionMap = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj) }
 
                     def messagePropertiesFile = time("message properties file") { webServicesService.getMessagesPropertiesFile() }
@@ -460,7 +460,9 @@ class OccurrenceController {
                         skin: grailsApplication.config.skin.layout
                 ])
             } else {
-                flash.message = "No record found with id: ${id}"
+                if (record != null) {
+                    flash.message = "No record found with id: ${id}"
+                }
                 render view:'../error'
             }
         } catch (Exception ex) {

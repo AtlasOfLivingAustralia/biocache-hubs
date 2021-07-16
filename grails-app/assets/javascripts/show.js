@@ -23,6 +23,10 @@ $(document).ready(function() {
         $('.uncheckTestResult').toggle();
     });
 
+    $('#showPassedPropResult').on('click', function(e){
+        $('.passedPropResult').toggle();
+    });
+
     $('#showMissingPropResult').on('click', function(e){
         $('.missingPropResult').toggle();
     });
@@ -720,7 +724,7 @@ function getDataQualityItem(code) {
             url: url,
             dataType: 'json',
             success: function(data) {
-                if (data && data[1]) {
+                if (data) {
                     $.each(data, function(key, val) {
                         //console.log("data", key, val);
                         dataQualityItems[key] = val;
