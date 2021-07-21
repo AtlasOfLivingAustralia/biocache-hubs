@@ -86,7 +86,7 @@ class AdvancedSearchParams implements Validateable {
     public String toString() {
         List queryItems = []
         // build up q from the simple fields first...
-        if (text) queryItems.add(quoteText(text))
+        if (text) queryItems.add(text)
         if (raw_taxon_name) queryItems.add("raw_name:" + quoteText(raw_taxon_name))
         if (species_group) queryItems.add("species_group:" + species_group)
         if (state) queryItems.add("state:" + quoteText(state))
@@ -134,7 +134,7 @@ class AdvancedSearchParams implements Validateable {
 
             if (nameType == "taxa") {
                 // special case
-                taxa = StringUtils.join(taxas*.trim(), " OR " )
+                taxa = StringUtils.join(taxas*.trim(), " OR " ).replaceAll('"','') // remove quotes which break the "taxa=foo bar" query type
             } else {
                 // build up OR'ed taxa query with braces if more than one taxon
                 queryItems.add(braces[0] + nameType + ":" + StringUtils.join(taxas, " OR " + nameType + ":") + braces[1])
