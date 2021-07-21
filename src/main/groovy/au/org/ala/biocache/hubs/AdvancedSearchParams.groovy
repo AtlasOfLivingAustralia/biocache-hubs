@@ -118,7 +118,7 @@ class AdvancedSearchParams implements Validateable {
         // iterate over the taxa search inputs and if lsid is set use it otherwise use taxa input
         taxonText.each { tt ->
             if (tt) {
-                taxas.add(stripChars(quoteText(tt)));
+                taxas.add(quoteText(tt));
             }
         }
 
