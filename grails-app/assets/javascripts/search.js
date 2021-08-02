@@ -349,6 +349,12 @@ $(document).ready(function() {
         loadMoreFacets(facetName, displayName, null);
     });
 
+    $('#profiles-selection').click(function(e) {
+        e.preventDefault();
+        $('#active-profile-name').text(e.target.innerText)
+        window.location.href = e.target.href
+    })
+
     // When user clicks the 'view profile description' icon next to profiles selection drop-down
     $('.DQProfileDetailsLink').click(function() {
         $.each($(".cat-table"), function(idx, el) {

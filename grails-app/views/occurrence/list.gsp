@@ -336,10 +336,10 @@
                             <g:if test="${qualityProfiles.size() >= 1}">
                                 <span class="dropdown">
                                     <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to switch profiles">
-                                        ${searchRequestParams.disableAllQualityFilters ? 'Disabled' : activeProfile.name}
+                                        <span id="active-profile-name">${searchRequestParams.disableAllQualityFilters ? 'Disabled' : activeProfile.name}</span>
                                         <span class="caret"></span>
                                     </button>
-                                    <ul class="dropdown-menu" aria-labelledby="profile-dropdown">
+                                    <ul class="dropdown-menu" id="profiles-selection" aria-labelledby="profile-dropdown">
                                         <g:each in="${qualityProfiles}" var="profile">
                                             <li><g:link action="${actionName}" params="${params.clone().with { if (profile.isDefault) it.remove('qualityProfile') else it.qualityProfile = profile.shortName ; it.remove('disableAllQualityFilters'); it } }" title="Click to enable the ${profile.name} quality filters">${profile.name}<g:if test="${profile.isDefault}"> (Default)</g:if></g:link></li>
                                         </g:each>
