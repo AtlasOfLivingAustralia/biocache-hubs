@@ -25,11 +25,11 @@ class UserService {
     @Value('${dataquality.enabled}')
     boolean dataQualityEnabled
 
-    @Value('${dataquality.disableAllFilters:false}')
-    boolean disableAllFilters
+    @Value('${dataquality.disableAllFiltersByDefault:false}')
+    boolean disableAllFiltersByDefault
 
-    @Value('${dataquality.expandFilters:true}')
-    boolean expandFilters
+    @Value('${dataquality.expandFiltersByDefault:true}')
+    boolean expandFiltersByDefault
 
     /**
      * Get both email and displayName for a numeric user id.  Preferring to use the auth service
@@ -75,9 +75,9 @@ class UserService {
             }
 
             // make sure values exists
-            pref.disableAll = pref?.containsKey('disableAll') ? pref.disableAll : disableAllFilters
+            pref.disableAll = pref?.containsKey('disableAll') ? pref.disableAll : disableAllFiltersByDefault
             pref.dataProfile = pref?.containsKey('dataProfile') ? pref.dataProfile : null
-            pref.expand = pref?.containsKey('expand') ? pref.expand : expandFilters
+            pref.expand = pref?.containsKey('expand') ? pref.expand : expandFiltersByDefault
         }
         pref
     }
