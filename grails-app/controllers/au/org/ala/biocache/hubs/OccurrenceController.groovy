@@ -266,7 +266,7 @@ class OccurrenceController {
         log.debug "taxaQueries = ${taxaQueries} || q = ${requestParams.q}"
 
         if (grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean() &&
-                grailsApplication.config.bie.baseUrl && taxaQueries && taxaQueries[0]) {
+                grailsApplication.config.bieService.baseUrl && taxaQueries && taxaQueries[0]) {
             // check for list with empty string
             // taxa query - attempt GUID lookup
             List guidsForTaxa = webServicesService.getGuidsForTaxa(taxaQueries)

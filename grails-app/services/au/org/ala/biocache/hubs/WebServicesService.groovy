@@ -315,9 +315,13 @@ class WebServicesService {
         JSONObject guidsJson = getJsonElements(url)
 
         taxaQueries.each { key ->
-            def match = guidsJson.get(key)[0]
-            def guid = (match?.acceptedIdentifier) ? match?.acceptedIdentifier : match?.identifier
-            guids.add(guid)
+            if (guidsJson) {
+                def match = guidsJson.get(key)[0]
+                def guid = (match?.acceptedIdentifier) ? match?.acceptedIdentifier : match?.identifier
+                guids.add(guid)
+            } else {
+                guids.add("")
+            }
         }
 
         return guids
