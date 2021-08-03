@@ -453,7 +453,7 @@
                                 </div>
                                 <span style="vertical-align: middle;">
                                     <alatag:linkResetSearch filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}">
-                                        <i class="fas fa-undo fa-xs tooltips" title="<g:message code="quality.filters.resetsearch.tooltip" default="Reset filters"></g:message>"></i>
+                                        <i class="fa fa-undo fa-xs tooltips" title="<g:message code="quality.filters.resetsearch.tooltip" default="Reset filters"></g:message>"></i>
                                     </alatag:linkResetSearch>
                                 </span>&nbsp;
                             </g:if>
