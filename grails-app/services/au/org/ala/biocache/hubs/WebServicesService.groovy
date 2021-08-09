@@ -661,10 +661,9 @@ class WebServicesService {
 
     // maps from country name to iso code
     @Cacheable('longTermCache')
-    private def getCountryNameMap() {
+    def getCountryNameMap() {
         def countryUrl = "${grailsApplication.config.userdetails.baseUrl}/ws/registration/countries.json"
         def countries = getJsonElements(countryUrl)
-
         return countries?.findAll {it -> beAValidCountryOrState(it as JSONObject)}?.collectEntries { [(String)it.get("name"), (String)it.get("isoCode")] }
     }
 
@@ -675,7 +674,7 @@ class WebServicesService {
 
     @Cacheable('longTermCache')
     List<String> getState(String countryName) {
-        Map countryNameMap = getCountryNameMap()
+        Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
         // if a known country name
         if (countryNameMap.containsKey(countryName)) {
             def states = getJsonElements("${grailsApplication.config.userdetails.baseUrl}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
