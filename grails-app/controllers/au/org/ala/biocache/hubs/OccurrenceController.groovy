@@ -757,4 +757,8 @@ class OccurrenceController {
             render webServicesService.unsubscribeMyAnnotation(userId) as JSON
         }
     }
+
+    def getState() {
+        render webServicesService.getState(params.country) as JSON
+    }
 }

@@ -659,6 +659,33 @@ class WebServicesService {
         dataQualityCodes
     }
 
+    // maps from country name to iso code
+    @Cacheable('longTermCache')
+    private def getCountryNameMap() {
+        def countryUrl = "${grailsApplication.config.userdetails.baseUrl}/ws/registration/countries.json"
+        def countries = getJsonElements(countryUrl)
+
+        return countries?.findAll {it -> beAValidCountryOrState(it as JSONObject)}?.collectEntries { [(String)it.get("name"), (String)it.get("isoCode")] }
+    }
+
+
+    private static boolean beAValidCountryOrState(JSONObject obj) {
+        return obj.has("isoCode") && obj.has("name") && obj.get("isoCode") != "" && obj.get("name") != "N/A"
+    }
+
+    @Cacheable('longTermCache')
+    List<String> getState(String countryName) {
+        Map countryNameMap = getCountryNameMap()
+        // if a known country name
+        if (countryNameMap.containsKey(countryName)) {
+            def states = getJsonElements("${grailsApplication.config.userdetails.baseUrl}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
+            if (states) {
+                // only return valid states
+                return states.findAll { it -> beAValidCountryOrState(it) }.collect { it -> (String)it.get("name") }
+            }
+        }
+        []
+    }
     /**
      * CellProcessor method as required by SuperCSV
      *

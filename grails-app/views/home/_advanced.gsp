@@ -85,7 +85,7 @@
     <div class="form-group">
         <label class="col-md-2 control-label" for="state"><g:message code="advancedsearch.table06col02.title" default="State/Territory"/></label>
         <div class="col-md-6">
-            <select class="state form-control" name="state" id="state">
+            <select class="state form-control" name="state" id="state" data-states="${groovy.json.JsonOutput.toJson(request.getAttribute("state"))}">
                 <option value=""><g:message code="advancedsearch.table06col02.option.label" default="-- select a state/territory --"/></option>
                 <g:each var="state" in="${request.getAttribute("state")}">
                     <option value="${state.key}">${state.value}</option>
@@ -229,6 +229,25 @@
 <asset:script type="text/javascript">
     $(document).ready(function() {
         $('.combobox').combobox({bsVersion: '3'});
+    });
+
+    $('#country').on('change', function() {
+         var url = "${request.contextPath}/occurrences/getState?country=" + this.value
+
+         $.getJSON(url, function(data) {
+             $('#state').find('option').remove().end().append('<option value=""><g:message code="advancedsearch.table06col02.option.label" default="-- select a state/territory --"/></option>')
+             // if get the states of the country, populate them
+             if (data.length > 0) {
+                for (var key in data) {
+                    $('#state').append('<option value="' + data[key] + '">' + data[key] + '</option>')
+                }
+             } else {
+                 var statemap = $("#state").data("states")
+                 for (var state in statemap) {
+                     $('#state').append('<option value="' + state + '">' + state + '</option>')
+                 }
+             }
+         })
     });
 
 </asset:script>
