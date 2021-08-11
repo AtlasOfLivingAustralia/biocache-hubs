@@ -676,7 +676,7 @@ class WebServicesService {
     List<String> getStates(String countryName) {
         Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
         // if a known country name
-        if (countryNameMap.containsKey(countryName)) {
+        if (countryNameMap?.containsKey(countryName)) {
             def states = getJsonElements("${grailsApplication.config.userdetails.baseUrl}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
             if (states) {
                 // only return valid states
