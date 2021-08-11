@@ -686,14 +686,18 @@ class WebServicesService {
     @Cacheable('longTermCache')
     List<String> getStates(String countryName) {
         List<String> matchingStates = []
-        Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
-        // if a known country name
-        if (countryNameMap?.containsKey(countryName)) {
-            def states = getJsonElements("${grailsApplication.config.userdetails.baseUrl}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
-            if (states) {
-                // only return valid states
-                matchingStates = states.findAll { it -> beAValidCountryOrState(it) }.collect { it -> (String)it.get("name") }
+        try {
+            Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
+            // if a known country name
+            if (countryNameMap?.containsKey(countryName)) {
+                def states = getJsonElements("${grailsApplication.config.userdetails.baseUrl}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
+                if (states) {
+                    // only return valid states
+                    matchingStates = states.findAll { it -> beAValidCountryOrState(it as JSONObject) }.collect { it -> (String) it.get("name") }
+                }
             }
+        } catch (Exception e) {
+            log.error "getStates failed to get states of " + countryName + ", error = " + e.getMessage()
         }
         matchingStates
     }
