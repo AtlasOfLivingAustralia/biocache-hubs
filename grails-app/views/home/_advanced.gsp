@@ -233,7 +233,7 @@
     });
 
     function populateStates(countryName) {
-        var url = "${request.contextPath}/occurrences/getStates?country=" + countryName;
+        var url = "${request.contextPath}/api/getStates?country=" + countryName;
 
         var $state = $('#state');
         $.getJSON(url, function(data) {
