@@ -758,7 +758,7 @@ class OccurrenceController {
         }
     }
 
-    def getState() {
-        render webServicesService.getState(params.country) as JSON
+    def getStates() {
+        render webServicesService.getStates(params.country) as JSON
     }
 }

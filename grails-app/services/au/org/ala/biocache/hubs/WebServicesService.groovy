@@ -673,7 +673,7 @@ class WebServicesService {
     }
 
     @Cacheable('longTermCache')
-    List<String> getState(String countryName) {
+    List<String> getStates(String countryName) {
         Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
         // if a known country name
         if (countryNameMap.containsKey(countryName)) {
