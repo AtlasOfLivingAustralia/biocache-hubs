@@ -659,7 +659,12 @@ class WebServicesService {
         dataQualityCodes
     }
 
-    // maps from country name to iso code
+    /**
+     * Internal used method to map from full country name to its iso code.
+     * Mapping comes from userdetails.baseUrl/ws/registration/countries.json
+     *
+     * @return a list of String representing the names of states of that country
+     */
     @Cacheable('longTermCache')
     def getCountryNameMap() {
         def countryUrl = "${grailsApplication.config.userdetails.baseUrl}/ws/registration/countries.json"
@@ -672,6 +677,12 @@ class WebServicesService {
         return obj.has("isoCode") && obj.has("name") && obj.get("isoCode") != "" && obj.get("name") != "N/A"
     }
 
+    /**
+     * Method to get a list of states belong to provided country
+     *
+     * @param countryName
+     * @return a list of String representing the names of states of that country
+     */
     @Cacheable('longTermCache')
     List<String> getStates(String countryName) {
         Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
