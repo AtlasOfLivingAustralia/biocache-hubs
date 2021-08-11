@@ -685,16 +685,17 @@ class WebServicesService {
      */
     @Cacheable('longTermCache')
     List<String> getStates(String countryName) {
+        List<String> matchingStates = []
         Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
         // if a known country name
         if (countryNameMap?.containsKey(countryName)) {
             def states = getJsonElements("${grailsApplication.config.userdetails.baseUrl}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
             if (states) {
                 // only return valid states
-                return states.findAll { it -> beAValidCountryOrState(it) }.collect { it -> (String)it.get("name") }
+                matchingStates = states.findAll { it -> beAValidCountryOrState(it) }.collect { it -> (String)it.get("name") }
             }
         }
-        []
+        matchingStates
     }
     /**
      * CellProcessor method as required by SuperCSV
