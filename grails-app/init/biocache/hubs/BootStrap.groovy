@@ -11,9 +11,9 @@ class BootStrap {
         // if my annotation feature turned on, add url mapping to handle add/remove my annotation alert requests
         if (grailsApplication.config.getProperty('alerts.myannotation.enabled', Boolean, false)) {
             grailsUrlMappingsHolder.addMappings({
-                "/occurrences/alerts"(controller: 'occurrence', action: [GET: 'getAlerts'])
-                "/occurrences/subscribeMyAnnotation"(controller: 'occurrence', action: [POST: 'subscribeMyAnnotation'])
-                "/occurrences/unsubscribeMyAnnotation"(controller: 'occurrence', action: [POST: 'unsubscribeMyAnnotation'])
+                "/api/alerts"(controller: 'webservice', action: [GET: 'getAlerts'])
+                "/api/subscribeMyAnnotation"(controller: 'webservice', action: [POST: 'subscribeMyAnnotation'])
+                "/api/unsubscribeMyAnnotation"(controller: 'webservice', action: [POST: 'unsubscribeMyAnnotation'])
             })
         }
 
