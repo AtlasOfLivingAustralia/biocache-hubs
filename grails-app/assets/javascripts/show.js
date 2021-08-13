@@ -220,7 +220,7 @@ $(document).ready(function() {
                         }
                     ).error(function () {
                         $('#assertionSubmitProgress').css({'display': 'none'});
-                        $("#submitSuccess").html("There was problem flagging the issue. Please try again later.");
+                        $("#submitSuccess").html(jQuery.i18n.prop('show.issueform.flagfail.message'));
                     });
                 }
 
