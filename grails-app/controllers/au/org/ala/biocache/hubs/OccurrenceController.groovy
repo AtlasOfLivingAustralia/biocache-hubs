@@ -387,6 +387,8 @@ class OccurrenceController {
                     }
                 }
 
+                populateSound(record)
+
                 String userEmail = authService?.getEmail()
                 Boolean isCollectionAdmin = false
                 Boolean userHasRoleAdmin = authService?.userInRole(CASRoles.ROLE_ADMIN)
@@ -472,6 +474,25 @@ class OccurrenceController {
         }
     }
 
+    /**
+     * Retrieve sound detail link and sound file metadata
+     */
+    private def populateSound(JSONObject record) {
+        if (record?.sounds) {
+            // record.sounds is a list of mediaDTO
+            for (JSONObject mediaDTO in record.sounds) {
+                String soundUrl = mediaDTO?.alternativeFormats?.'audio/mpeg'
+                if (soundUrl) {
+                    String[] parts = soundUrl.split("imageId=")
+                    if (parts.length >= 2) {
+                        log.debug("image id = " + parts[1])
+                        mediaDTO.alternativeFormats.'detailLink' = "${grailsApplication.config.images.baseUrl}/image/${parts[1].encodeAsURL()}"
+                        mediaDTO.metadata = webServicesService.getImageMetadata(parts[1])
+                    }
+                }
+            }
+        }
+    }
     /**
      * Go to the next occurrences of the search results
      * Use the Navigation DTO from session (if available)
