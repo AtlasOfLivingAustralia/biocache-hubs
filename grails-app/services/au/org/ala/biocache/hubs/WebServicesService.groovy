@@ -263,6 +263,12 @@ class WebServicesService {
     }
 
     @Cacheable('longTermCache')
+    def getImageMetadata(String imageId) {
+        def url = "${grailsApplication.config.images.baseUrl}/ws/image/${imageId.encodeAsURL()}.json"
+        getJsonElements(url)
+    }
+
+    @Cacheable('longTermCache')
     Map getLayersMetaData() {
         Map layersMetaMap = [:]
         def url = "${grailsApplication.config.layersservice.baseUrl}/layers"
