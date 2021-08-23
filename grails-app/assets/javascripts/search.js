@@ -165,7 +165,8 @@ $(document).ready(function() {
 
         //Check user has selected at least 1 facet
         if (selectedFacets.length > 0 && selectedFacets.length  <= BC_CONF.maxFacets) {
-            // save facets to the user_facets cookie
+            // save facets to the user_facets cookie as string
+            $.cookie.json = false;
             $.cookie("user_facets", selectedFacets, { expires: 7 });
             // reload page
             document.location.reload(true);
