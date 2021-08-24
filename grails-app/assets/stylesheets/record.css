@@ -445,9 +445,10 @@ div.audiojs div.time {
     font-size: 21px;
 }
 
-#occurrenceImages {
+#occurrenceImages #occurrenceSounds {
     font-size: 14px;
 }
-#occurrenceImages cite {
+
+#occurrenceImages cite, #occurrenceSounds cite {
     font-style: normal;
 }
