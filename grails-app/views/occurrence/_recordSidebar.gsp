@@ -289,7 +289,7 @@
                     </g:if>
 
                     <g:if test="${sound?.metadata?.license}">
-                        <cite><b><g:message code="show.sidebar03.image.license" default="License"/>:</b> ${sound?.metadata?.license}</cite><br/>
+                        <cite><b><g:message code="show.sidebar03.sound.license" default="License"/>:</b> ${sound?.metadata?.license}</cite><br/>
                     </g:if>
 
                     <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean() && sound?.alternativeFormats?.detailLink}">
