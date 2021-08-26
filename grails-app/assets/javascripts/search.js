@@ -645,78 +645,23 @@ $(document).ready(function() {
         window.location.href = BC_CONF.serverName + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName;
     });
 
-    $('#copy-al4r').on('click', function(e) {
+    $('#copy-al4r').on('click', function() {
         var input = document.querySelector('#al4rcode');
-        // if (e.target.id === 'copy-al4r') {
-        //     input = document.querySelector('#al4rcode');
-        // } else if (e.target.id === 'copy-curl') {
-        //     input = document.querySelector('#curlcode');
-        // }
-        // var input = document.querySelector('#copy-input');
-        input.setSelectionRange(0, input.value.length + 1);
-        try {
-            var success = document.execCommand('copy');
-            if (success) {
-                // console.log('succeed')
+        navigator.clipboard.writeText(input.value)
+            .then(() => {
                 $(this).qtip({
-                    content: 'Copied',
+                    content: jQuery.i18n.prop('list.copylinks.tooltip.copied'),
                     show: true,
                     hide: { when: { event: 'mouseout'} }
-                })
-                // $(this).attr('value', 'Copied')
-                $("span", this).text("Copied");
-            } else {
-                console.log('copy failed')
-                // $('#copy-button').trigger('copied', ['Copy with Ctrl-c']);
-                $('#copy-button').attr('title', 'def')
-            }
-        } catch (err) {
-            $('#copy-button').trigger('copied', ['Copy with Ctrl-c']);
-        }
-        input.setSelectionRange(0, 0);
+                })})
+            .catch((error) => { alert(jQuery.i18n.prop('list.copylinks.alert.failed') + error) })
     });
 
-    // $('#copy-button').on('click', function(e) {
-    //     var input = document.querySelector('#copy-input');
-    //     input.setSelectionRange(0, input.value.length + 1);
-    //     try {
-    //         var success = document.execCommand('copy');
-    //         if (success) {
-    //             // $('#copy-button').trigger('copied', ['Copied!']);
-    //             // $('#copy-button').attr('title', 'bbb').tooltip('fixTitle').tooltip('show').attr('title', 'Copy to Clipboard').tooltip('fixTitle')
-    //             // $('#copy-button').attr('title', 'Copied')
-    //             // .qtip({
-    //             // show: true,
-    //             // hide: { when: { event: 'mousemove'} }
-    //             // })
-    //             //.attr('title', 'Copy to Clipboard').tooltip('fixTitle')
-    //
-    //             $('#copy-button').qtip({
-    //                 content: 'Copied',
-    //                 show: true,
-    //                 hide: { when: { event: 'mouseout'} }
-    //             })
-    //
-    //             //     .qtip({
-    //             //     content: 'Copy to clickboard',
-    //             //     show: false
-    //             // })
-    //         } else {
-    //             // $('#copy-button').trigger('copied', ['Copy with Ctrl-c']);
-    //             $('#copy-button').attr('title', 'def')
-    //         }
-    //     } catch (err) {
-    //         $('#copy-button').trigger('copied', ['Copy with Ctrl-c']);
-    //     }
-    // });
-
-    $('#copy-al4r').on('mouseleave', function(e) {
+    $('#copy-al4r').on('mouseleave', function() {
         $(this).qtip({
-            content: 'Copy to Clipboard',
+            content: jQuery.i18n.prop('list.copylinks.tooltip.copytoclipboard'),
             show: { when: { event: 'mouseover'} }
         })
-
-        $("span", this).text("Copy");
     })
 
     // when open the user preference dlg
