@@ -149,11 +149,11 @@
     </g:if>
     <g:if test="${record.processed.location.decimalLatitude && record.processed.location.decimalLongitude}">
         <g:set var="latLngStr">
-            <g:if test="${clubView && record.raw.location.decimalLatitude && record.raw.location.decimalLatitude != record.processed.location.decimalLatitude}">
-                ${record.raw.location.decimalLatitude},${record.raw.location.decimalLongitude}
+            <g:if test="${clubView && record.sensitive && record.raw.location.decimalLatitude && record.raw.location.decimalLongitude}">
+                ${record.raw.location.decimalLatitude}, ${record.raw.location.decimalLongitude}
             </g:if>
             <g:else>
-                ${record.processed.location.decimalLatitude},${record.processed.location.decimalLongitude}
+                ${record.processed.location.decimalLatitude}, ${record.processed.location.decimalLongitude}
             </g:else>
         </g:set>
         <div class="sidebar">
