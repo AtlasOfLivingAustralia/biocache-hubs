@@ -29,9 +29,14 @@ $(document).ready(function() {
         $('.exclude-loader').hide();
         for (var key in data) {
             var categoryEnabled = $('.exclude-count-label[data-category='+key+']').data('enabled')
-            data[key] = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : 0
-            $('.exclude-count-label[data-category='+key+']').text(data[key]).show();
-            $('.exclude-count-facet[data-category='+key+']').text("-("+data[key]+")").show();
+            var count = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : '0';
+            $('.exclude-count-label[data-category='+key+']').text(count).show();
+
+            if (count === '0') {
+                $('.exclude-count-facet[data-category=' + key + ']').text('(' + count + ')').show();
+            } else {
+                $('.exclude-count-facet[data-category=' + key + ']').text('(-' + count + ')').show();
+            }
         }
         excludeCounts = data;
     });
