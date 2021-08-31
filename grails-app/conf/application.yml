@@ -4,10 +4,10 @@ grails:
     codegen:
         defaultPackage: au.org.ala.biocache.hubs
 
-    cache:
-        ehcache:
-            ehcacheXmlLocation: 'classpath:ehcache.xml'
-            lockTimeout: 200 # In milliseconds
+#    cache:
+#        ehcache:
+#            ehcacheXmlLocation: 'classpath:ehcache.xml'
+#            lockTimeout: 200 # In milliseconds
 
 info:
     app:

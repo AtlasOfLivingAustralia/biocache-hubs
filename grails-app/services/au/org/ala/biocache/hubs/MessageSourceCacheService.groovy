@@ -13,7 +13,8 @@
 
 package au.org.ala.biocache.hubs
 
-import grails.plugin.cache.Cacheable
+import org.springframework.cache.annotation.Cacheable
+
 
 /**
  * A service that provides a java.util.Map representation of the i18n

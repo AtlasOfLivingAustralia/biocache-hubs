@@ -14,8 +14,6 @@
 package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
-import grails.plugin.cache.CacheEvict
-import grails.plugin.cache.Cacheable
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
@@ -26,6 +24,8 @@ import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.web.client.RestClientException
 import org.supercsv.cellprocessor.ift.CellProcessor
 import org.supercsv.io.CsvListReader
