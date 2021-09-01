@@ -82,6 +82,5 @@ class AdminController {
 
     def doClearRecordCountCache() {
         qualityService.clearRecordCountCache()
-        "record count cache cleared\n"
     }
 }
