@@ -6,28 +6,28 @@
 
     <cache alias="longTermCache">
         <expiry>
-            <ttl unit="days">1</ttl>
+            <ttl unit="days">30</ttl>
         </expiry>
         <resources>
-            <heap unit="entries">10</heap>
+            <heap unit="entries">50000</heap>
         </resources>
     </cache>
 
     <cache alias="collectoryCache">
         <expiry>
-            <ttl unit="days">1</ttl>
+            <ttl unit="days">30</ttl>
         </expiry>
         <resources>
-            <heap unit="entries">10</heap>
+            <heap unit="entries">1200</heap>
         </resources>
     </cache>
 
     <cache alias="excludedCountCache">
         <expiry>
-            <ttl unit="days">1</ttl>
+            <ttl unit="hours">2</ttl>
         </expiry>
         <resources>
-            <heap unit="entries">100</heap>
+            <heap unit="entries">100000</heap>
         </resources>
     </cache>
 </config>

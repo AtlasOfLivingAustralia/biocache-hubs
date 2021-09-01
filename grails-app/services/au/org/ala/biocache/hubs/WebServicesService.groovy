@@ -22,6 +22,7 @@ import groovyx.net.http.Method
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.io.FileUtils
+import org.grails.plugin.cache.GrailsCacheManager
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
@@ -38,7 +39,7 @@ import javax.annotation.PostConstruct
  * Service to perform web service DAO operations
  */
 class WebServicesService {
-
+    GrailsCacheManager grailsCacheManager
     public static final String ENVIRONMENTAL = "Environmental"
     public static final String CONTEXTUAL = "Contextual"
     def grailsApplication, facetsCacheServiceBean, authService
@@ -705,6 +706,13 @@ class WebServicesService {
             log.error "getStates failed to get states of " + countryName + ", error = " + e.getMessage()
         }
         matchingStates
+    }
+
+    @Cacheable('longTermCache')
+    def test(String id) {
+        Map map = [:]
+        map.put('rslt', id + '_returned')
+        map
     }
     /**
      * CellProcessor method as required by SuperCSV

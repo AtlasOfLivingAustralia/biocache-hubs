@@ -27,6 +27,7 @@ class BiocacheHubsUrlMappings {
         "/occurrences/$id"(controller: 'occurrence', action: 'show')
         "/occurrence/$id"(controller: 'occurrence', action: 'show')
         "/assertions/$id"(controller: 'assertions', action: 'assertions')
+            "/test"(controller: 'webservice', action: 'test')
         "/api/getStates"(controller: 'webservice', action: 'getStates')
         "/explore/your-area"(controller: 'occurrence', action: 'exploreYourArea')
         "/search"(controller: 'home')

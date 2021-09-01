@@ -155,7 +155,7 @@ class QualityService {
         "record count cache cleared\n"
     }
 
-    @Cacheable('excludedCountCache')
+    @Cacheable(value = 'excludedCountCache', key = {requestParams.toString()})
     def getExcludeCount(SpatialSearchRequestParams requestParams) {
         return webServicesService.fullTextSearch(requestParams)?.totalRecords
     }
