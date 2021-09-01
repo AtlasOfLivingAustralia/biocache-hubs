@@ -13,7 +13,7 @@
 
 package au.org.ala.biocache.hubs
 
-import org.springframework.cache.annotation.Cacheable
+import grails.plugin.cache.Cacheable
 
 
 /**
