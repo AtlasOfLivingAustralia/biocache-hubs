@@ -14,10 +14,6 @@
 package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
-//import org.ehcache.Cache
-import grails.plugin.cache.ehcache.*
-import org.ehcache.Cache
-import org.grails.plugin.cache.GrailsCacheManager
 
 /**
  * Controller for web services
@@ -71,19 +67,5 @@ class WebserviceController {
      */
     def getStates(String country) {
         render webServicesService.getStates(country) as JSON
-    }
-
-    GrailsCacheManager grailsCacheManager
-    def test(String id) {
-        GrailsEhcacheCache cache = null;
-        if (grailsCacheManager.cacheExists('excludedCountCache')) {
-            cache = grailsCacheManager.getCache('excludedCountCache')
-        }
-
-//        def v = webServicesService.test(id)
-
-//        cache = grailsCacheManager.getCache('longTermCache')
-
-        render [:] as JSON
     }
 }

@@ -39,7 +39,7 @@ import javax.annotation.PostConstruct
  * Service to perform web service DAO operations
  */
 class WebServicesService {
-    GrailsCacheManager grailsCacheManager
+
     public static final String ENVIRONMENTAL = "Environmental"
     public static final String CONTEXTUAL = "Contextual"
     def grailsApplication, facetsCacheServiceBean, authService
@@ -706,13 +706,6 @@ class WebServicesService {
             log.error "getStates failed to get states of " + countryName + ", error = " + e.getMessage()
         }
         matchingStates
-    }
-
-    @Cacheable('longTermCache')
-    def test(String id) {
-        Map map = [:]
-        map.put('rslt', id + '_returned')
-        map
     }
     /**
      * CellProcessor method as required by SuperCSV
