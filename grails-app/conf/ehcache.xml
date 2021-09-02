@@ -15,7 +15,7 @@
 
     <cache alias="collectoryCache">
         <expiry>
-            <ttl unit="days">30</ttl>
+            <ttl unit="hours">24</ttl>
         </expiry>
         <resources>
             <heap unit="entries">1200</heap>
