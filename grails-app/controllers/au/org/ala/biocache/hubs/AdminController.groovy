@@ -41,6 +41,7 @@ class AdminController {
         message += webServicesService.doClearLongTermCache()
         message += doClearFacetsCache()
         message += doClearPropertiesCache()
+        message += doClearRecordCountCache()
         message
     }
 
@@ -64,6 +65,11 @@ class AdminController {
         redirect(action:'index')
     }
 
+    def clearRecordCountCache() {
+        flash.message = doClearRecordCountCache()
+        redirect(action: 'index')
+    }
+
     def doClearFacetsCache() {
         facetsCacheService.clearCache()
         "facetsCache cache cleared\n"
@@ -74,10 +80,7 @@ class AdminController {
         "i18n messages cache cleared\n"
     }
 
-    def clearRecordCountCache() {
+    def doClearRecordCountCache() {
         qualityService.clearRecordCountCache()
-        flash.message = "record count cache cleared\n"
-        redirect(action: 'index')
     }
-
 }
