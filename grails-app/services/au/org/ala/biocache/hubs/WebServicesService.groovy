@@ -22,6 +22,7 @@ import groovyx.net.http.Method
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.io.FileUtils
+import org.grails.plugin.cache.GrailsCacheManager
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
@@ -158,9 +159,8 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    @Cacheable(value="longTermCache", key = "#root.method.name")
+    @Cacheable(value="longTermCache")
     def Map getGroupedFacets() {
-        log.info "Getting grouped facets with key: #root.methodName"
         def url = "${grailsApplication.config.biocache.baseUrl}/search/grouped/facets"
 
         if (grailsApplication.config.biocache.groupedFacetsUrl) {
