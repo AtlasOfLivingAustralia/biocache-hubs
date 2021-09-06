@@ -22,7 +22,6 @@ import groovyx.net.http.Method
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.io.FileUtils
-import org.grails.plugin.cache.GrailsCacheManager
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
@@ -430,7 +429,7 @@ class WebServicesService {
      * Perform HTTP GET on a JSON web service
      *
      * @param url
-     * @return
+     * @return the object we request or an JSON object containing error info in case of error
      */
     JSONElement getJsonElements(String url, String apiKey = null) {
         log.debug "(internal) getJson URL = " + url
@@ -442,18 +441,14 @@ class WebServicesService {
                 conn.setRequestProperty('apiKey', apiKey)
             }
 
+            InputStream stream = null;
             if (conn instanceof HttpURLConnection) {
-                def code = conn.getResponseCode()
-                if (code == 200) {
-                    return JSON.parse(conn.getInputStream(), "UTF-8")
-                } else if (code == 404) {
-                    return new JSONObject()
-                } else {
-                    return null
-                }
-            } else { // when read local files it's a FileURLConnection which doesn't have a status code
-                return JSON.parse(conn.getInputStream(), "UTF-8")
+                conn.getResponseCode() // this line required to trigger parsing of response
+                stream = conn.getErrorStream() ?: conn.getInputStream()
+            } else { // when read local files it's a FileURLConnection which doesn't have getErrorStream
+                stream = conn.getInputStream()
             }
+            return JSON.parse(stream, "UTF-8")
         } catch (Exception e) {
             def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
             log.error error
