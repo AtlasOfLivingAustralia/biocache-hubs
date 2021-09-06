@@ -2,8 +2,6 @@
         xmlns='http://www.ehcache.org/v3'
         xmlns:jsr107='http://www.ehcache.org/v3/jsr107'>
 
-    <persistence directory="/data/ala-hub/ehcache"/>
-
     <cache alias="longTermCache">
         <expiry>
             <ttl unit="days">30</ttl>
