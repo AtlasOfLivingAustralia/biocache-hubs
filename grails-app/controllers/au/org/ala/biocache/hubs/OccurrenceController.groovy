@@ -121,8 +121,8 @@ class OccurrenceController {
             def wsTime = (System.currentTimeMillis() - wsStart)
 
             // If there's an error, treat it as an exception so error page can be shown
-            if (searchResults.status == 'ERROR') {
-                throw new Exception(searchResults.errorMessage)
+            if (searchResults.errorType) {
+                throw new Exception(searchResults.message)
             }
 
             //create a facet lookup map
@@ -369,7 +369,9 @@ class OccurrenceController {
             JSONObject record = webServicesService.getRecord(id, hasClubView)
             log.debug "hasClubView = ${hasClubView} || ${grailsApplication.config.clubRoleForHub}"
 
-            if (record) {
+            // if backend can't find the record, a JSON error with a field 'message' will be returned
+            // TODO: backend can refine the response to put like errorType into returned JSON
+            if (record && record.size() > 1) {
                 JSONObject compareRecord = webServicesService.getCompareRecord(id)
                 JSONObject collectionInfo = null
                 JSONArray contacts = null
@@ -462,7 +464,7 @@ class OccurrenceController {
                         skin: grailsApplication.config.skin.layout
                 ])
             } else {
-                if (record != null) {
+                if (record?.message == 'Unrecognised UID') {
                     flash.message = "No record found with id: ${id}"
                 }
                 render view:'../error'
