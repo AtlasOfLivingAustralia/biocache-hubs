@@ -29,9 +29,14 @@ $(document).ready(function() {
         $('.exclude-loader').hide();
         for (var key in data) {
             var categoryEnabled = $('.exclude-count-label[data-category='+key+']').data('enabled')
-            data[key] = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : 0
-            $('.exclude-count-label[data-category='+key+']').text(data[key]).show();
-            $('.exclude-count-facet[data-category='+key+']').text("-("+data[key]+")").show();
+            var count = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : '0';
+            $('.exclude-count-label[data-category='+key+']').text(count).show();
+
+            if (count === '0') {
+                $('.exclude-count-facet[data-category=' + key + ']').text('(' + count + ')').show();
+            } else {
+                $('.exclude-count-facet[data-category=' + key + ']').text('(-' + count + ')').show();
+            }
         }
         excludeCounts = data;
     });
@@ -165,7 +170,8 @@ $(document).ready(function() {
 
         //Check user has selected at least 1 facet
         if (selectedFacets.length > 0 && selectedFacets.length  <= BC_CONF.maxFacets) {
-            // save facets to the user_facets cookie
+            // save facets to the user_facets cookie as string
+            $.cookie.json = false;
             $.cookie("user_facets", selectedFacets, { expires: 7 });
             // reload page
             document.location.reload(true);
@@ -348,6 +354,12 @@ $(document).ready(function() {
         //console.log(facetName, displayName);
         loadMoreFacets(facetName, displayName, null);
     });
+
+    $('#profiles-selection').click(function(e) {
+        e.preventDefault();
+        $('#active-profile-name').text(e.target.innerText)
+        window.location.href = e.target.href
+    })
 
     // When user clicks the 'view profile description' icon next to profiles selection drop-down
     $('.DQProfileDetailsLink').click(function() {

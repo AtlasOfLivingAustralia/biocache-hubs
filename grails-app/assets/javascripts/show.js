@@ -200,7 +200,7 @@ $(document).ready(function() {
                             // when add assertion succeeds, we update alert settings (only when myannotation is enabled)
                             if (OCC_REC.myAnnotationEnabled) {
                                 var new_state = $('#notifyChangeCheckbox').prop('checked');
-                                var actionpath = new_state ? "/occurrences/subscribeMyAnnotation" : "/occurrences/unsubscribeMyAnnotation";
+                                var actionpath = new_state ? "/api/subscribeMyAnnotation" : "/api/unsubscribeMyAnnotation";
                                 $.post(OCC_REC.contextPath + actionpath);
                             }
 
@@ -220,7 +220,7 @@ $(document).ready(function() {
                         }
                     ).error(function () {
                         $('#assertionSubmitProgress').css({'display': 'none'});
-                        $("#submitSuccess").html("There was problem flagging the issue. Please try again later.");
+                        $("#submitSuccess").html(jQuery.i18n.prop('show.issueform.flagfail.message'));
                     });
                 }
 
@@ -241,7 +241,7 @@ $(document).ready(function() {
         if (OCC_REC.myAnnotationEnabled) {
             // by default off
             $("#notifyChangeCheckbox").prop('checked', false);
-            var getAlerts = OCC_REC.contextPath + "/occurrences/alerts";
+            var getAlerts = OCC_REC.contextPath + "/api/alerts";
             $.getJSON(getAlerts, function (data) {
                 var myAnnotationEnabled =  data && data.myannotation && data.myannotation.length > 0;
                 $("#notifyChangeCheckbox").prop('checked', myAnnotationEnabled);

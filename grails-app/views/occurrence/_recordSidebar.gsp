@@ -149,11 +149,11 @@
     </g:if>
     <g:if test="${record.processed.location.decimalLatitude && record.processed.location.decimalLongitude}">
         <g:set var="latLngStr">
-            <g:if test="${clubView && record.raw.location.decimalLatitude && record.raw.location.decimalLatitude != record.processed.location.decimalLatitude}">
-                ${record.raw.location.decimalLatitude},${record.raw.location.decimalLongitude}
+            <g:if test="${clubView && record.sensitive && record.raw.location.decimalLatitude && record.raw.location.decimalLongitude}">
+                ${record.raw.location.decimalLatitude}, ${record.raw.location.decimalLongitude}
             </g:if>
             <g:else>
-                ${record.processed.location.decimalLatitude},${record.processed.location.decimalLongitude}
+                ${record.processed.location.decimalLatitude}, ${record.processed.location.decimalLongitude}
             </g:else>
         </g:set>
         <div class="sidebar">
@@ -267,21 +267,37 @@
     <g:if test="${record.sounds}">
         <div class="sidebar">
             <h3 id="soundsHeader" style="margin: 20px 0 0 0;"><g:message code="show.soundsheader.title" default="Sounds"/></h3>
-            <div class="row">
-                <div id="audioWrapper" class="col-md-12">
-                    <audio src="${record.sounds.get(0)?.alternativeFormats?.'audio/mpeg'}" preload="auto" />
-                    <div class="track-details">
-                        ${record.raw.classification.scientificName}
+            <div id="occurrenceSounds" style="margin-top:5px;">
+                <g:each in="${record.sounds}" var="sound">
+                    <div class="row">
+                        <div id="audioWrapper" class="col-md-12">
+                            <audio src="${sound?.alternativeFormats?.'audio/mpeg'}" preload="auto" />
+                            <div class="track-details">
+                                ${record.raw.classification.scientificName}
+                            </div>
+                        </div>
                     </div>
-                </div>
+                    <p>
+                        <g:message code="show.sidebar04.p" default="Please press the play button to hear the sound file associated with this occurrence record."/>
+                    </p>
+
+                    <g:if test="${sound?.metadata?.rights || record.raw.occurrence.rights}">
+                        <cite><b><g:message code="show.sidebar04.cite" default="Rights"/>:</b> ${sound?.metadata?.rights ?: record.raw.occurrence.rights}</cite><br/>
+                    </g:if>
+                    <g:if test="${sound?.metadata?.rightsHolder || record.raw.occurrence.rightsholder}">
+                        <cite><b><g:message code="show.sidebar03.cite03" default="Rights holder"/>:</b> ${sound?.metadata?.rightsHolder ?: record.raw.occurrence.rightsholder}</cite><br/>
+                    </g:if>
+
+                    <g:if test="${sound?.metadata?.license}">
+                        <cite><b><g:message code="show.sidebar03.sound.license" default="License"/>:</b> ${sound?.metadata?.license}</cite><br/>
+                    </g:if>
+
+                    <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean() && sound?.alternativeFormats?.detailLink}">
+                        <a href="${sound?.alternativeFormats?.detailLink}" target="_blank"><g:message code="show.sidebardiv.occurrencesounds.navigator01" default="View sound details"/></a><br/>
+                    </g:if>
+                    <br/>
+                </g:each>
             </div>
-            <g:if test="${record.raw.occurrence.rights}">
-                <br/>
-                <cite><b><g:message code="show.sidebar04.cite" default="Rights"/>:</b> ${record.raw.occurrence.rights}</cite>
-            </g:if>
-            <p>
-                <g:message code="show.sidebar04.p" default="Please press the play button to hear the sound file associated with this occurrence record."/>
-            </p>
         </div>
     </g:if>
     <g:if test="${record.raw.lastModifiedTime && record.processed.lastModifiedTime}">
