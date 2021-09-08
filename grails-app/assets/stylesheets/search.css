@@ -1132,3 +1132,10 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
     vertical-align: middle;
 }
 
+.DQPrefSettingsLink {
+    float: right;
+}
+
+.DQPrefSettingsLink span {
+    color: black;
+}
