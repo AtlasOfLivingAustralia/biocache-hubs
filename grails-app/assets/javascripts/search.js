@@ -29,13 +29,13 @@ $(document).ready(function() {
         $('.exclude-loader').hide();
         for (var key in data) {
             var categoryEnabled = $('.exclude-count-label[data-category='+key+']').data('enabled')
-            var count = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : '0';
-            $('.exclude-count-label[data-category='+key+']').text(count).show();
+            data[key] = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : '0';
+            $('.exclude-count-label[data-category='+key+']').text(data[key]).show();
 
-            if (count === '0') {
-                $('.exclude-count-facet[data-category=' + key + ']').text('(' + count + ')').show();
+            if (data[key] === '0') {
+                $('.exclude-count-facet[data-category=' + key + ']').text('(' + data[key] + ')').show();
             } else {
-                $('.exclude-count-facet[data-category=' + key + ']').text('(-' + count + ')').show();
+                $('.exclude-count-facet[data-category=' + key + ']').text('(-' + data[key] + ')').show();
             }
         }
         excludeCounts = data;
@@ -442,10 +442,10 @@ $(document).ready(function() {
         $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i>");
         $("#view-excluded").attr('href', dqInverse);
 
-        if (excludeCounts[dqCategoryLabel]) {
+        if (excludeCounts[dqCategoryLabel] !== '0') {
             $("#excluded .exclude-count-label").text(excludeCounts[dqCategoryLabel]).removeData('category').removeAttr('category');
         } else {
-            $("#excluded .exclude-count-label").text('').data('category', dqCategoryLabel).attr('data-category', dqCategoryLabel);
+            $("#excluded .exclude-count-label").text(excludeCounts[dqCategoryLabel]).data('category', dqCategoryLabel).attr('data-category', dqCategoryLabel);
         }
 
         var pos = 0;
