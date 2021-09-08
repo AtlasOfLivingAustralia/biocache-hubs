@@ -1128,3 +1128,7 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
     font-style: italic;
 }
 
+.valign-middle {
+    vertical-align: middle;
+}
+
