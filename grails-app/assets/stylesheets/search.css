@@ -1121,3 +1121,10 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
     text-decoration: none;
     font-size: 14px
 }
+
+#DQManageFilters .expanded {
+    vertical-align: middle;
+    margin: 0;
+    font-style: italic;
+}
+

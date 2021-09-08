@@ -432,7 +432,7 @@
                                                                             <button class='btn btn-link btn-sm expand' data-category="${qualityCategory.label}"
                                                                                     title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>">
                                                                             <a><g:message code="dq.selectmultiple.buttontext.expandfilters" default="Expand and edit filters"/></a></button>
-                                                                            <span class="expanded" data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0; font-style: italic;"><g:message code="dq.selectmultiple.text.expanded" default="Expanded"/></span>
+                                                                            <span class="expanded" data-category="${qualityCategory.label}" ><g:message code="dq.selectmultiple.text.expanded" default="Expanded"/></span>
                                                                         </td>
                                                                     </tr>
                                                                 </g:each>
