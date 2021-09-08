@@ -1093,6 +1093,7 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
 }
 
 #excluded .exclude-count-label {
-    color: #c44d34;
-    font-style: italic
+    color: inherit;
+    font-style: normal;
+    font-weight: bold;
 }
