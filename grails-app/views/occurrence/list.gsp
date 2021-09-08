@@ -332,7 +332,7 @@
                     <alatag:ifDataQualityEnabled>
                         <div class="activeFilters col-sm-12">
                             <div>
-                            <a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse" class="dq-filters-collapse" style="vertical-align: middle;"><i class="fa fa-caret-right" style="width: 8px;color: black"></i>&nbsp;<b><alatag:message code="quality.filters.group.title" default="Data Profile"/></b>:</a>
+                            <a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse" class="dq-filters-collapse"><i id='dq-collapse-caret' class="fa fa-caret-right"></i>&nbsp;<b><alatag:message code="quality.filters.group.title" default="Data Profile"/></b>:</a>
                             <g:if test="${qualityProfiles.size() >= 1}">
                                 <span class="dropdown">
                                     <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to switch profiles">
@@ -351,7 +351,7 @@
                                 <alatag:linkToggeleDQFilters class="btn btn-default btn-xs"/>
                             </g:else>
                             <g:if test="${!searchRequestParams.disableAllQualityFilters}">
-                                <span style="vertical-align: middle;">
+                                <span>
                                     <a href="#DQProfileDetails" class="DQProfileDetailsLink" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.profileinfo.button.tooltip" default="Click to view the profile description"></g:message>"></i></a>
                                 </span>&nbsp;
                                 <div id="DQProfileDetails" class="modal fade" role="dialog" tabindex="-1">
@@ -387,8 +387,8 @@
                                                             <g:each var="filter" in="${category.qualityFilters}">
                                                                 <g:if test="${filter.enabled}">
                                                                     <tr>
-                                                                        <td class='filter-description' style="word-break: break-word;" data-val="${filter.description}"></td>
-                                                                        <td class='filter-value' style="word-break: keep-all;"><span style="white-space: nowrap;">${filter.filter}</span></td>
+                                                                        <td class='filter-description' data-val="${filter.description}"></td>
+                                                                        <td class='filter-value'><span>${filter.filter}</span></td>
                                                                         <td class="filter-wiki"></td>
                                                                     </tr>
                                                                 </g:if>
@@ -429,7 +429,7 @@
                                                                         <td class="filternames" data-filters="${qualityCategory.qualityFilters.findAll { it.enabled }*.filter}" data-category="${qualityCategory.label}">${qualityCategory.name}</td>
                                                                         <td>
                                                                             <input type="checkbox" name="filters" class="filters" data-category="${qualityCategory.label}" data-enabled="${!qcDisabled}" value="" style="vertical-align: middle; margin: 0">&nbsp;
-                                                                            <button class='btn btn-link btn-sm expand' data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0; padding: 0; text-decoration: none; font-size: 14px"
+                                                                            <button class='btn btn-link btn-sm expand' data-category="${qualityCategory.label}"
                                                                                     title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>">
                                                                             <a><g:message code="dq.selectmultiple.buttontext.expandfilters" default="Expand and edit filters"/></a></button>
                                                                             <span class="expanded" data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0; font-style: italic;"><g:message code="dq.selectmultiple.text.expanded" default="Expanded"/></span>
