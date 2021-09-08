@@ -1097,3 +1097,27 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
     font-style: normal;
     font-weight: bold;
 }
+
+#dq-collapse-caret {
+    color: black;
+}
+
+#DQProfileDetails .filter-description {
+    word-break: break-word;
+}
+
+#DQProfileDetails .filter-value {
+    word-break: keep-all;
+}
+
+#DQProfileDetails .filter-value span{
+    white-space: nowrap;
+}
+
+#DQManageFilters .expand {
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    font-size: 14px
+}
