@@ -1146,5 +1146,9 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
 
 #view-excluded, #expandfilters {
     text-decoration: none;
-    padding: 0
+    padding: 0;
+}
+
+#DQDetailsTable {
+    margin-top: 20px;
 }
