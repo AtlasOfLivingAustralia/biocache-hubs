@@ -317,7 +317,7 @@
                                                 <alatag:message code="dq.warning.dataprofile.content.line1" default="Search results are now filtered by default to exclude lower quality records according to the ALA General data profile. Data profiles may be disabled or other data profiles are available via the data profile drop down."></alatag:message>
                                             </p>
                                             <p>
-                                                Information on the data profiles and the filters used in each data profile is available via the <i class='fa fa-info-circle' style="color:#c44d34"></i> icons.
+                                                Information on the data profiles and the filters used in each data profile is available via the <a><i class='fa fa-info-circle'></i></a> icons.
                                             </p>
                                         </div>
                                         <div class="modal-footer">
