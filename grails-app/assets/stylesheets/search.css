@@ -1139,3 +1139,12 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
 .DQPrefSettingsLink span {
     color: black;
 }
+
+.margin-bottom-0{
+    margin-bottom: 0
+}
+
+#view-excluded, #expandfilters {
+    text-decoration: none;
+    padding: 0
+}
