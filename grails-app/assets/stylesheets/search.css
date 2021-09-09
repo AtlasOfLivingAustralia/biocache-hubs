@@ -1140,7 +1140,7 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
     color: black;
 }
 
-.margin-bottom-0{
+#excluded, #filter-value {
     margin-bottom: 0
 }
 
