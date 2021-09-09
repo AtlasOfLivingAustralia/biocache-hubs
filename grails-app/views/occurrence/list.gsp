@@ -547,7 +547,7 @@
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                                     <h3 id="fqdetail-heading-name"></h3>
-                                                    <p id="fqdetail-heading-description" style="font-style: italic"></p>
+                                                    <p id="fqdetail-heading-description"></p>
                                                 </div>
 
                                                 <div class="modal-body" id="modal-body">

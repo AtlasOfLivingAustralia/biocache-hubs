@@ -1152,3 +1152,7 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
 #DQDetailsTable {
     margin-top: 20px;
 }
+
+#fqdetail-heading-description {
+    font-style: italic;
+}
