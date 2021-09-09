@@ -551,9 +551,9 @@
                                                 </div>
 
                                                 <div class="modal-body" id="modal-body">
-                                                    <p id="excluded" class="margin-bottom-0"><i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span class="exclude-count-label"></span> <g:message code="dq.excluded.count" default="records are excluded by this category"/></p>
+                                                    <p id="excluded"><i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span class="exclude-count-label"></span> <g:message code="dq.excluded.count" default="records are excluded by this category"/></p>
                                                     <a id="view-excluded" class="btn btn-link" href="#view-excluded" target="_blank"><g:message code="dq.view.excluded" default="View excluded records"/></a>
-                                                    <p id="filter-value" class="margin-bottom-0"></p>
+                                                    <p id="filter-value"></p>
                                                     <button id='expandfilters' class="btn btn-link tooltips" data-dismiss="modal" data-profile=${params.qualityProfile} title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Expand and edit filters"/></button>
 
                                                     <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable">
