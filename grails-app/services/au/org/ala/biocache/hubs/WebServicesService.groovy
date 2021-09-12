@@ -158,7 +158,7 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    @Cacheable(value="longTermCache", key = "#root.method.name")
+    //@Cacheable(value="longTermCache", key = "#root.method.name")
     def Map getGroupedFacets() {
         log.info "Getting grouped facets with key: #root.methodName"
         def url = "${grailsApplication.config.biocache.baseUrl}/search/grouped/facets"

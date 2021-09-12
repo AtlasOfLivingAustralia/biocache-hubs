@@ -42,4 +42,6 @@ Use these as reference:
    * https://github.com/AtlasOfLivingAustralia/ala-hub/blob/77ad912b6007afb21e5ee9d46cd068ba2040eb9f/grails-app/assets/stylesheets/alaBs.css#L11
    * https://github.com/AtlasOfLivingAustralia/ala-hub/blob/c6c999d7e87de985bfc65e1fe6fe5cd13396212f/grails-app/assets/javascripts/alaBs.js#L11
    
+## Grails 4
 
+Starting with version 3.4.0, biocache-hubs has been migrated to run on Grails 4

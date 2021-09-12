@@ -15,3 +15,20 @@ info:
         version: '@info.app.version@'
         grailsVersion: '@info.app.grailsVersion@'
 
+security:
+    cas:
+        casServerName: 'https://auth.ala.org.au'
+        loginUrl: 'https://auth.ala.org.au/cas/login'
+        logoutUrl: 'https://auth.ala.org.au/cas/logout'
+        casServerUrlPrefix: 'https://auth.ala.org.au/cas'
+
+        bypass: false # set to true for non-ALA deployment
+        gateway: false
+        uriExclusionFilterPattern: '/assets.*,/images.*,/css.*,/js.*,/less.*,'
+        uriFilterPattern: '/alaAdmin.*'
+        #if false, ticket params always proceed
+        #true, only processes urls listed in authenticateOnlyIfLoggedInFilterPattern
+        applyUriFiltersToTicketValidation: false
+        authenticateOnlyIfLoggedInFilterPattern: '/master,/master/.*,/manageLayers,/manageLayers/.*,/admin,/admin/.*,/layers/view/more/.*,/layer/download/.*,/workflow.*'
+        disableCAS: false
+        appServerName: ""

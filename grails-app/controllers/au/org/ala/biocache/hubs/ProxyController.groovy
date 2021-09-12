@@ -266,8 +266,7 @@ class ProxyController {
             String stringStatusCode = Integer.toString(intProxyResponseCode);
             String stringLocation = httpMethodProxyRequest.getResponseHeader(STRING_LOCATION_HEADER).getValue();
             if(stringLocation == null) {
-                throw new ServletException("Recieved status code: " + stringStatusCode
-                        + " but no " +  STRING_LOCATION_HEADER + " header was found in the response");
+                throw new ServletException("Recieved status code: " + stringStatusCode + " but no " +  STRING_LOCATION_HEADER + " header was found in the response");
             }
             // Modify the redirect to go to this proxy servlet rather that the proxied host
             String stringMyHostName = httpServletRequest.getServerName();
