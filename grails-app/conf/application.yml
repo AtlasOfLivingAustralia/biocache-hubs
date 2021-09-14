@@ -15,20 +15,37 @@ info:
         version: '@info.app.version@'
         grailsVersion: '@info.app.grailsVersion@'
 
+spring:
+    devtools:
+        restart:
+            exclude:
+                - grails-app/views/**
+                - grails-app/i18n/**
+                - grails-app/conf/**
+
 security:
     cas:
         casServerName: 'https://auth.ala.org.au'
+        uriFilterPattern: '/alaAdmin,/alaAdmin.*'
+        uriExclusionFilterPattern: '/portal/q.*,/portal/messages.*,/portal/sessionCache.*,/static.*,/assets.*'
+        authenticateOnlyIfLoggedInPattern: '/portal.*,/,/portal/config.*,/portal/i18n.*,/hub/[a-zA-Z0-9]+'
         loginUrl: 'https://auth.ala.org.au/cas/login'
         logoutUrl: 'https://auth.ala.org.au/cas/logout'
-        casServerUrlPrefix: 'https://auth.ala.org.au/cas'
-
-        bypass: false # set to true for non-ALA deployment
         gateway: false
-        uriExclusionFilterPattern: '/assets.*,/images.*,/css.*,/js.*,/less.*,'
-        uriFilterPattern: '/alaAdmin.*'
-        #if false, ticket params always proceed
-        #true, only processes urls listed in authenticateOnlyIfLoggedInFilterPattern
-        applyUriFiltersToTicketValidation: false
-        authenticateOnlyIfLoggedInFilterPattern: '/master,/master/.*,/manageLayers,/manageLayers/.*,/admin,/admin/.*,/layers/view/more/.*,/layer/download/.*,/workflow.*'
+        casServerUrlPrefix: 'https://auth.ala.org.au/cas'
+        bypass: false # set to true for non-ALA deployment
         disableCAS: false
-        appServerName: ""
+        roleAttribute: authority
+        ignoreCase: true
+        authCookieName: ALA-Auth
+
+environments:
+    development:
+        security:
+            cas:
+                appServerName: "http://devt.ala.org.au:8081"
+        server:
+            port: 8081
+            use-forward-headers: true
+        grails:
+            serverURL: "http://devt.ala.org.au:8081"

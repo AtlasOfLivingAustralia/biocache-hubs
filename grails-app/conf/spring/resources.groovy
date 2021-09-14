@@ -11,7 +11,7 @@
  * rights and limitations under the License.
  */
 
-import au.org.ala.biocache.hubs.ExtendedPluginAwareResourceBundleMessageSource
+import org.springframework.web.servlet.i18n.CookieLocaleResolver
 
 beans = {
     // Custom message source - This is a duplicate bean def - see original in: src/main/groovy/au/org/ala/biocache/hubs/BiocacheHubsGrailsPlugin.groovy
