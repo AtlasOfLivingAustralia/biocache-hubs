@@ -1,5 +1,5 @@
 /* 
- *  Copyright (C) 2011 Atlas of Living Australia
+ *  Copyright (C) 2021 Atlas of Living Australia
  *  All Rights Reserved.
  * 
  *  The contents of this file are subject to the Mozilla Public
@@ -21,10 +21,10 @@
  */
 jQuery(document).ready(function() {
     // Autocomplete
-    var bieBaseUrl = BC_CONF.bieWebServiceUrl;
-    var bieParams = { limit: 20 };
+    var autocompleteUrl = BC_CONF.autocompleteUrl;
+    var params = { pageSize: 20 };
     var autoHints = BC_CONF.autocompleteHints; // expects { fq: "kingdom:Plantae" }
-    $.extend( bieParams, autoHints ); // merge autoHints into bieParams
+    $.extend( params, autoHints ); // merge autoHints into bieParams
 
     function getMatchingName(item) {
         if (item.scientificNameMatches && item.scientificNameMatches.length) {
@@ -50,13 +50,13 @@ jQuery(document).ready(function() {
 
     $.ui.autocomplete({
         source: function (request, response) {
-            bieParams.q = request.term;
+            params.q = request.term;
             $.ajax( {
-                url: bieBaseUrl + '/search/auto.json',
+                url: autocompleteUrl,
                 dataType: "json",
-                data: bieParams,
+                data: params,
                 success: function( data ) {
-                    response( formatAutocompleteList(data.autoCompleteList) );
+                    response( formatAutocompleteList(data.searchResults.results) );
                 }
             } );
         }

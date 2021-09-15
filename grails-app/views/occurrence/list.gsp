@@ -43,6 +43,7 @@
             queryString: "${queryDisplay.encodeAsJavaScript()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
             bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
+            autocompleteUrl: "${grailsApplication.config.autocompleteUrl}",
             biocacheServiceUrl: "${biocacheServiceUrl}",
             collectoryUrl: "${grailsApplication.config.collectory.baseUrl}",
             alertsUrl: "${grailsApplication.config.alerts.baseUrl}",
@@ -94,10 +95,7 @@
 <asset:stylesheet src="listThirdParty.css"/>
 <asset:stylesheet src="ala/ala-charts.css"/>
 
-
-<g:if test="${grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean()}">
-    <asset:javascript src="bieAutocomplete.js"/>
-</g:if>
+<asset:javascript src="autocomplete.js"/>
 <asset:script type="text/javascript">
     <g:if test="${!grailsApplication.config.google.apikey}">
         google.load('maps','3.5',{ other_params: "sensor=false" });

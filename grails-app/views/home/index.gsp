@@ -33,6 +33,7 @@
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
             bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
+            autocompleteUrl: "${grailsApplication.config.autocompleteUrl}",
             autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson() ?: '{}'},
             contextPath: "${request.contextPath}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
@@ -66,9 +67,7 @@
     <asset:stylesheet src="print-search.css" media="print" />
     <asset:stylesheet src="bootstrapCombobox.css"/>
 
-    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
-        <asset:javascript src="bieAutocomplete.js"/>
-    </g:if>
+    <asset:javascript src="autocomplete.js"/>
 
     <asset:script type="text/javascript">
         $(document).ready(function() {
