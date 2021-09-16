@@ -916,6 +916,24 @@ class OccurrenceTagLib {
         out << queryString
     }
 
+    def linkViewOriginal = { attr, body ->
+        if (isValidUrl(attr.url)) {
+            out << g.link(attr, body)
+        } else {
+            out << ""
+        }
+    }
+
+    boolean isValidUrl(String URL) {
+        def url = null
+        try {
+            url = new java.net.URL(URL)
+        } catch(e) {
+            return false
+        }
+        return url?.getProtocol() == 'http' || url?.getProtocol() == 'https'
+    }
+
     def getQueryStringForRadiusRemove = { attr ->
         def paramsCopy = params.clone()
         paramsCopy.remove("lat")
