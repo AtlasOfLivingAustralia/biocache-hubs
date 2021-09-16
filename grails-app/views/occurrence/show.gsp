@@ -183,6 +183,7 @@
                         <span id="copyRecordIdToClipboard-parent" data-toggle="tooltip" data-trigger="manual" data-title="${uuid} copied!">
                             <button class="btn btn-default" id="copyRecordIdToClipboard" role="button" title="Copy this record's id to the clipboard"><g:message code="show.sidebar02.copyrecordid" default="Copy record id" /></button>
                         </span>
+                        <alatag:linkViewOriginal url="${record.raw.occurrence.occurrenceID}" class="btn btn-default" role="button" title="Click to view the original record" target="_blank"><g:message code="show.sidebar02.viewOriginal" default="View original record"/></alatag:linkViewOriginal>
                         <button href="#processedVsRawView" class="btn btn-default" id="showRawProcessed" role="button" data-toggle="modal"
                                 title="Table showing both original and processed record values">
                             <span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="glyphicon glyphicon-transfer"></i>
