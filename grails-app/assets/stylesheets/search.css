@@ -1097,3 +1097,62 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
     font-style: normal;
     font-weight: bold;
 }
+
+#dq-collapse-caret {
+    color: black;
+}
+
+#DQProfileDetails .filter-description {
+    word-break: break-word;
+}
+
+#DQProfileDetails .filter-value {
+    word-break: keep-all;
+}
+
+#DQProfileDetails .filter-value span{
+    white-space: nowrap;
+}
+
+#DQManageFilters .expand {
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    font-size: 14px
+}
+
+#DQManageFilters .expanded {
+    vertical-align: middle;
+    margin: 0;
+    font-style: italic;
+}
+
+.valign-middle {
+    vertical-align: middle;
+}
+
+.DQPrefSettingsLink {
+    float: right;
+}
+
+.DQPrefSettingsLink span {
+    color: black;
+}
+
+#excluded, #filter-value {
+    margin-bottom: 0
+}
+
+#view-excluded, #expandfilters {
+    text-decoration: none;
+    padding: 0;
+}
+
+#DQDetailsTable {
+    margin-top: 20px;
+}
+
+#fqdetail-heading-description {
+    font-style: italic;
+}
