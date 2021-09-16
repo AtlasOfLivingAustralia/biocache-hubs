@@ -128,6 +128,8 @@ tasks.withType(GroovyCompile) {
 bootJar.enabled = false
 
 assets {
+    minifyJs = true
+    minifyCss = true
     packagePlugin = true
 }
 

@@ -134,3 +134,5 @@ stateConservationListPath = [:] // to prevent NPE - set in ext config
 alwaysshow.imagetab = false
 
 facets.defaultSelected = "data_resource_uid,taxon_name,year"
+
+grails.plugins.twitterbootstrap.fixtaglib = true
