@@ -15,6 +15,7 @@ package au.org.ala.biocache.hubs
 
 import au.org.ala.dataquality.model.QualityCategory
 import au.org.ala.dataquality.model.QualityFilter
+import grails.config.Config
 import grails.testing.web.taglib.TagLibUnitTest
 import grails.util.Holders
 import spock.lang.Ignore
@@ -26,19 +27,14 @@ import spock.lang.Unroll
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
-@Ignore
 class OccurrenceTagLibSpec extends Specification implements TagLibUnitTest<OccurrenceTagLib> {
-
-    def setup() {
-        Holders.grailsApplication.config.dataResourceUuid.alaSightings = "dr364"
-        Holders.grailsApplication.config.dataResourceUuid.iNaturalist = "dr1411"
-        Holders.grailsApplication.config.dataResourceUuid.flickr = "dr360"
-        Holders.grailsApplication.config.dataquality.enabled = "true"
-    }
-
-    static doWithConfig(config) {
-        config.dataquality.enabled = "true"
-    }
+    @Override
+    Closure doWithConfig() {{ Config config ->
+        config.dataquality.enabled = true
+        config.dataResourceUuid.alaSightings = "dr364"
+        config.dataResourceUuid.iNaturalist = "dr1411"
+        config.dataResourceUuid.flickr = "dr360"
+    }}
 
     void "test sanitizeBodyText plain text"() {
         given:
