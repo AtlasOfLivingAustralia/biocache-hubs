@@ -11,7 +11,6 @@
 //= require linkifyjs/linkify-jquery.js
 //= require leaflet/leaflet.js
 //= require leaflet-plugins/layer/tile/Google.js
-//= require biocache-hubs.js
 //= require_self
  */
 /**
@@ -19,20 +18,10 @@
  */
 
 function updatei18n() {
-    console.log('alex, we are ok to update i18n now !!!!!!!!')
-    // do whatever UI re-render text things here
-    // console.log($('.jqueryupdate'))
-
-    $('.jqueryupdate').each(function( index ) {
-        // console.log( index + ": " + $( this ).text() );
-        console.log( index + " attr[key]: " + $( this ).attr('i18nkey') );
-        console.log('type = ' + (typeof $( this ).attr('i18nkey')))
-        var key = $( this ).attr('i18nkey')
+    $('.jqueryupdate').each(function() {
+        var key = $(this).attr('i18nkey')
         if (key !== undefined) {
-            console.log('key[' + key +'] -> ' + jQuery.i18n.prop(key))
-            $(this).text(jQuery.i18n.prop(key))
-        } else {
-            console.log('key == undefined, no update')
+            $(this).text(jQuery.i18n.prop(key));
         }
     });
 }
@@ -46,12 +35,10 @@ $(document).ready(function() {
             async: true,
             cache: true,
             language: BC_CONF.locale, // default is to use browser specified locale
-            // debug: true,
             callback: updatei18n
         });
     }
 
-    console.log('document is ready xhk205 to render UI *********************')
     $('#showUncheckedTests').on('click', function(e){
         $('.uncheckTestResult').toggle();
     });
@@ -474,7 +461,7 @@ function getMessage(userAssertionCode) {
  * Load and display the assertions for this record
  */
 function refreshUserAnnotations(){
-    console.log("refresh user annotation ========== ")
+
     $.get( OCC_REC.contextPath + "/assertions/" + OCC_REC.recordUuid, function(data) {
         if (data.assertionQueries.length == 0 && data.userAssertions.length == 0) {
             $('#userAnnotationsDiv').hide('slow');
@@ -489,14 +476,8 @@ function refreshUserAnnotations(){
 
         for(var i=0; i < data.assertionQueries.length; i++){
             var $clone = $('#userAnnotationTemplate').clone();
-            var assertionTypeDebug = data.assertionQueries[i].assertionType
-            var userDebug = data.assertionQueries[i].userName
-
-            console.log('userAnnotationTemplate = ' + userAnnotationTemplate)
-            console.log('userDebug = ' + userDebug)
-
-            $clone.find('.issue').text(assertionTypeDebug);
-            $clone.find('.user').text(userDebug);
+            $clone.find('.issue').text(data.assertionQueries[i].assertionType);
+            $clone.find('.user').text(data.assertionQueries[i].userName);
             if (data.assertionQueries[i].hasOwnProperty('comment')) {
                 $clone.find('.comment').text('Comment: ' + data.assertionQueries[i].comment);
             }
@@ -514,21 +495,13 @@ function refreshUserAnnotations(){
         var enableDelete = [];
 
         $.each(data.userAssertions, function( index, userAssertion ) {
-            console.log('userAssertion = ')
-            console.log(userAssertion)
-            if (userAssertion.name == null) {
-                // console.log('userAssertion.name == null')
-                userAssertion.name = 'geospatialIssue'
-            }
+
             var $clone = $('#userAnnotationTemplate').clone();
 
             // if the code == 50000, then we have verification - so don't display here
             if (userAssertion.code != 50000) {
                 $clone.prop('id', "userAnnotation_" + userAssertion.uuid);
-                console.log('userAssertion.name = ' + userAssertion.name)
-                var translated = jQuery.i18n.prop(userAssertion.name)
-                console.log('jQuery.i18n.prop[' + userAssertion.name + '] = ' + translated + '---------------------')
-                $clone.find('.issue').text(translated).attr('i18nkey', userAssertion.name);
+                $clone.find('.issue').text(jQuery.i18n.prop(userAssertion.name)).attr('i18nkey', userAssertion.name);
                 $clone.find('.user').text(userAssertion.userDisplayName);
                 if (userAssertion.hasOwnProperty('comment')) {
                     $clone.find('.comment').text('Comment: ' + userAssertion.comment);
