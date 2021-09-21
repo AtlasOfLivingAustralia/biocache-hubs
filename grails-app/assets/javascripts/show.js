@@ -17,8 +17,41 @@
 /**
  * JQuery on document ready callback
  */
-$(document).ready(function() {
 
+function updatei18n() {
+    console.log('alex, we are ok to update i18n now !!!!!!!!')
+    // do whatever UI re-render text things here
+    // console.log($('.jqueryupdate'))
+
+    $('.jqueryupdate').each(function( index ) {
+        // console.log( index + ": " + $( this ).text() );
+        console.log( index + " attr[key]: " + $( this ).attr('i18nkey') );
+        console.log('type = ' + (typeof $( this ).attr('i18nkey')))
+        var key = $( this ).attr('i18nkey')
+        if (key !== undefined) {
+            console.log('key[' + key +'] -> ' + jQuery.i18n.prop(key))
+            $(this).text(jQuery.i18n.prop(key))
+        } else {
+            console.log('key == undefined, no update')
+        }
+    });
+}
+
+$(document).ready(function() {
+    if (typeof BC_CONF != 'undefined' && BC_CONF.hasOwnProperty('contextPath')) {
+        jQuery.i18n.properties({
+            name: 'messages',
+            path: BC_CONF.contextPath + '/messages/i18n/',
+            mode: 'map',
+            async: true,
+            cache: true,
+            language: BC_CONF.locale, // default is to use browser specified locale
+            // debug: true,
+            callback: updatei18n
+        });
+    }
+
+    console.log('document is ready xhk205 to render UI *********************')
     $('#showUncheckedTests').on('click', function(e){
         $('.uncheckTestResult').toggle();
     });
@@ -441,7 +474,7 @@ function getMessage(userAssertionCode) {
  * Load and display the assertions for this record
  */
 function refreshUserAnnotations(){
-
+    console.log("refresh user annotation ========== ")
     $.get( OCC_REC.contextPath + "/assertions/" + OCC_REC.recordUuid, function(data) {
         if (data.assertionQueries.length == 0 && data.userAssertions.length == 0) {
             $('#userAnnotationsDiv').hide('slow');
@@ -456,8 +489,14 @@ function refreshUserAnnotations(){
 
         for(var i=0; i < data.assertionQueries.length; i++){
             var $clone = $('#userAnnotationTemplate').clone();
-            $clone.find('.issue').text(data.assertionQueries[i].assertionType);
-            $clone.find('.user').text(data.assertionQueries[i].userName);
+            var assertionTypeDebug = data.assertionQueries[i].assertionType
+            var userDebug = data.assertionQueries[i].userName
+
+            console.log('userAnnotationTemplate = ' + userAnnotationTemplate)
+            console.log('userDebug = ' + userDebug)
+
+            $clone.find('.issue').text(assertionTypeDebug);
+            $clone.find('.user').text(userDebug);
             if (data.assertionQueries[i].hasOwnProperty('comment')) {
                 $clone.find('.comment').text('Comment: ' + data.assertionQueries[i].comment);
             }
@@ -475,13 +514,21 @@ function refreshUserAnnotations(){
         var enableDelete = [];
 
         $.each(data.userAssertions, function( index, userAssertion ) {
-
+            console.log('userAssertion = ')
+            console.log(userAssertion)
+            if (userAssertion.name == null) {
+                // console.log('userAssertion.name == null')
+                userAssertion.name = 'geospatialIssue'
+            }
             var $clone = $('#userAnnotationTemplate').clone();
 
             // if the code == 50000, then we have verification - so don't display here
             if (userAssertion.code != 50000) {
                 $clone.prop('id', "userAnnotation_" + userAssertion.uuid);
-                $clone.find('.issue').text(jQuery.i18n.prop(userAssertion.name));
+                console.log('userAssertion.name = ' + userAssertion.name)
+                var translated = jQuery.i18n.prop(userAssertion.name)
+                console.log('jQuery.i18n.prop[' + userAssertion.name + '] = ' + translated + '---------------------')
+                $clone.find('.issue').text(translated).attr('i18nkey', userAssertion.name);
                 $clone.find('.user').text(userAssertion.userDisplayName);
                 if (userAssertion.hasOwnProperty('comment')) {
                     $clone.find('.comment').text('Comment: ' + userAssertion.comment);
@@ -533,8 +580,8 @@ function refreshUserAnnotations(){
                 }
                 if (userAssertion.relatedRecordReason) {
                     $clone.find('.related-record-reason').show();
-                    $clone.find('.related-record-reason-span').text(jQuery.i18n.prop('related.record.reason.' + userAssertion.relatedRecordReason));
-                    $clone.find('.related-record-reason-explanation').text(jQuery.i18n.prop('related.record.reason.explanation.' + userAssertion.relatedRecordReason)).show();
+                    $clone.find('.related-record-reason-span').text(jQuery.i18n.prop('related.record.reason.' + userAssertion.relatedRecordReason)).attr('i18nkey', 'related.record.reason.' + userAssertion.relatedRecordReason);
+                    $clone.find('.related-record-reason-explanation').text(jQuery.i18n.prop('related.record.reason.explanation.' + userAssertion.relatedRecordReason)).attr('i18nkey', 'related.record.reason.explanation.' + userAssertion.relatedRecordReason).show();
                 }
                 if (userAssertion.userRole != null) {
                     $clone.find('.userRole').text(', ' + userAssertion.userRole);
@@ -575,7 +622,7 @@ function refreshUserAnnotations(){
             var $clone = $('#userVerificationTemplate').clone();
             $clone.prop('id', "userVerificationAnnotation_" + sortedVerifiedAssertion[i].uuid);
             var qaStatusMessage = jQuery.i18n.prop("user_assertions." + sortedVerifiedAssertion[i].qaStatus);
-            $clone.find('.qaStatus').text(qaStatusMessage);
+            $clone.find('.qaStatus').text(qaStatusMessage).attr('i18nkey', "user_assertions." + sortedVerifiedAssertion[i].qaStatus);
             $clone.find('.comment').text(sortedVerifiedAssertion[i].comment);
             $clone.find('.userDisplayName').text(sortedVerifiedAssertion[i].userDisplayName);
             $clone.find('.created').text((moment(sortedVerifiedAssertion[i].created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));

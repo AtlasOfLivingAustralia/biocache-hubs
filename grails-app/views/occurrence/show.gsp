@@ -709,10 +709,10 @@
 
         <ul style="display:none;">
             <li id="userAnnotationTemplate" class="userAnnotationTemplate well well-sm">
-                <h4><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h4>
-                <p class="related-record-reason" style="display:none;"><g:message code="show.userannotationtemplate.relatedrecord.reason.label" default="Reason:"/> <span class="related-record-reason-span"></span></p>
+                <h4><span class="issue jqueryupdate"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h4>
+                <p class="related-record-reason" style="display:none;"><g:message code="show.userannotationtemplate.relatedrecord.reason.label" default="Reason:"/> <span class="related-record-reason-span jqueryupdate"></span></p>
                 <p class="related-record" style="display:none;">
-                    <p class="related-record-reason-explanation" style="display:none;"></p>
+                    <p class="related-record-reason-explanation jqueryupdate" style="display:none;"></p>
                     <p class="related-record-id" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.id.label" default="record ID"/>: <span class="related-record-id-span"></span></p>
                     <p class="related-record-name" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.name.label" default="scientific name"/>: <span class="related-record-name-span"></span></p>
                     <p class="related-record-state" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.state.label" default="state"/>: <span class="related-record-state-span"></span></p>
@@ -771,7 +771,7 @@
         <!-- template to add a row -->
         <table class="hide">
             <tr id="userVerificationTemplate" class="userVerificationTemplate">
-                <td class="qaStatus"></td>
+                <td class="qaStatus jqueryupdate"></td>
                 <td class="comment"></td>
                 <td class="userDisplayName"></td>
                 <td class="created"></td>
