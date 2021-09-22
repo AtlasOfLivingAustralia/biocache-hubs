@@ -18,7 +18,7 @@
  */
 
 function updatei18n() {
-    $('.jqueryupdate').each(function() {
+    $('.i8nupdate').each(function() {
         var key = $(this).attr('i18nkey')
         if (key !== undefined) {
             $(this).text(jQuery.i18n.prop(key));
