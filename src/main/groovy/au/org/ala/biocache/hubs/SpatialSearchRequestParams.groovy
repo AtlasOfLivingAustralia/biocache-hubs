@@ -3,6 +3,7 @@ package au.org.ala.biocache.hubs
 import grails.validation.Validateable
 import groovy.transform.AutoClone
 import groovy.transform.EqualsAndHashCode
+import org.grails.web.util.WebUtils
 
 /**
  * Created with IntelliJ IDEA.
@@ -70,5 +71,9 @@ class SpatialSearchRequestParams extends SearchRequestParams implements Validate
         if(wkt != null && wkt.length() >0)
             req.append("&wkt=").append(wkt);
         return req.toString();
+    }
+
+    public Map toParamMap() {
+        WebUtils.fromQueryString(toString())
     }
 }
