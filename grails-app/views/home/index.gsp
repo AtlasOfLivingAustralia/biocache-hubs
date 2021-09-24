@@ -9,7 +9,6 @@
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
 <g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocache.baseUrl}"/>
 <g:set var="serverName" value="${grailsApplication.config.serverName ?: grailsApplication.config.biocache.baseUrl}"/>
-<g:set var="searchQuery" value="${grailsApplication.config.skin.useAlaBie.toBoolean() ? 'taxa' : 'q'}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -327,11 +326,11 @@
 
             <div class="tab-content searchPage">
                 <div id="simpleSearch" class="tab-pane active">
-                    <form class="form-horizontal" name="simpleSearchForm" id="simpleSearchForm" action="${request.contextPath}/occurrences/search"
+                    <form class="form-horizontal" name="simpleSearchForm" id="simpleSearchForm" action="${request.contextPath}/simpleSearch"
                           method="GET">
                         <br/>
                         <div class="col-sm-9 input-group">
-                            <input type="text" class="form-control" name="${searchQuery}" id="taxa"/>
+                            <input type="text" class="form-control" name="q" id="taxa"/>
                             <span class="input-group-btn">
                                 <input class="form-control btn btn-primary" id="locationSearch"  type="submit"
                                        value="${g.message(code:"home.index.simsplesearch.button", default:"Search")}"/>

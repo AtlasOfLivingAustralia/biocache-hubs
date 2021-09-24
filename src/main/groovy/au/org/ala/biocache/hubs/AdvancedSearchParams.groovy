@@ -86,7 +86,7 @@ class AdvancedSearchParams implements Validateable {
     public String toString() {
         List queryItems = []
         // build up q from the simple fields first...
-        if (text) queryItems.add('text:' + text)
+        if (text) queryItems.add("text:" + quoteText(text))
         if (raw_taxon_name) queryItems.add("raw_name:" + quoteText(raw_taxon_name))
         if (species_group) queryItems.add("species_group:" + species_group)
         if (state) queryItems.add("state:" + quoteText(state))
