@@ -8,7 +8,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <g:set var="startPageTime" value="${System.currentTimeMillis()}"/>
 <g:set var="queryDisplay" value="${sr?.queryTitle ?: searchRequestParams?.displayString ?: ''}"/>
-<g:set var="searchQuery" value="${grailsApplication.config.skin?.useAlaBie?.toBoolean() ? 'taxa' : 'q'}"/>
 <g:set var="authService" bean="authService"></g:set>
 <!DOCTYPE html>
 <html>
@@ -114,7 +113,7 @@
         </div>
 
         <div id="searchBoxZ" class="text-right col-sm-7 col-md-7">
-            <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="form-horizontal">
+            <form action="${g.createLink(controller: 'home', action: 'simpleSearch')}" id="solrSearchForm" class="form-horizontal">
                 <div id="advancedSearchLink">
                     <a href="${g.createLink(uri: '/search')}#tab_advanceSearch" class="tooltips" title="<g:message code="list.advancedsearchlink.tooltip" default="Go to advanced search form"></g:message>">
                         <i class="fa fa-cogs"></i>
@@ -122,7 +121,7 @@
                     </a>
                 </div>
                 <div class="input-group pull-right col-sm-7 col-md-7">
-                    <input type="text" id="taxaQuery" name="${searchQuery}" class="form-control"
+                    <input type="text" id="taxaQuery" name="q" class="form-control"
                            value="${params.list(searchQuery).join(' OR ')}"/>
                     <span class="input-group-btn">
                         <input class="form-control btn btn-default" type="submit" id="solrSubmit" value="${g.message(code:"list.advancedsearchlink.button.label", default:"Quick search")}"/>
