@@ -248,8 +248,8 @@ $(document).ready(function() {
                         synListSize++;
                         synList1 += "<input type='checkbox' name='raw_taxon_guid' id='rawTaxon_" + index + "_" + j +
                             "' class='rawTaxonCheckBox' value='" + el1.label + "'/>&nbsp;" +
-                            "<a href='" + BC_CONF.contextPath + "/occurrences/search?q=raw_taxon_name:%22" + el1.label +
-                            "%22'>" + el1.label + "</a> (" + el1.count + ")<br/>";
+                            "<a href=\"" + BC_CONF.contextPath + "/occurrences/search?q=raw_taxon_name:%22" + encodeURIComponent(el1.label) +
+                            "%22\">" + el1.label + "</a> (" + el1.count + ")<br/>";
                     });
                 }
             });
