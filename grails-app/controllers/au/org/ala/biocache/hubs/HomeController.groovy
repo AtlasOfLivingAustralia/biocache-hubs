@@ -34,8 +34,9 @@ class HomeController {
         log.debug "Home controller simpleSearch page"
         if (requestParams.q != null && requestParams.q.trim().length() > 0) {
             requestParams.q = String.format("taxa:\"%s\"", requestParams.q)
+            params.q = requestParams.q
         }
-        redirect(controller: "occurrences", action:"search", params: requestParams.toParamMap())
+        redirect(controller: "occurrences", action:"search", params: params)
     }
 
     /**
