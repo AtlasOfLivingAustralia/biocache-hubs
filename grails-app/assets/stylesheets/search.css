@@ -1156,3 +1156,16 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
 #fqdetail-heading-description {
     font-style: italic;
 }
+
+#download-button-area {
+    padding-right: 5px;
+}
+
+a.copyLink {
+    border-color: black;
+    color: black
+}
+
+#copy-al4r {
+    border-color: black;
+}
