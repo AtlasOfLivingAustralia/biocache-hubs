@@ -86,7 +86,7 @@ class AdvancedSearchParams implements Validateable {
     public String toString() {
         List queryItems = []
         // build up q from the simple fields first...
-        if (text) queryItems.add(text)
+        if (text) queryItems.add("text:" + quoteText(text))
         if (raw_taxon_name) queryItems.add("raw_name:" + quoteText(raw_taxon_name))
         if (species_group) queryItems.add("species_group:" + species_group)
         if (state) queryItems.add("state:" + quoteText(state))
@@ -115,30 +115,19 @@ class AdvancedSearchParams implements Validateable {
         ArrayList<String> lsids = new ArrayList<String>()
         ArrayList<String> taxas = new ArrayList<String>()
 
-        // iterate over the taxa search inputs and if lsid is set use it otherwise use taxa input
         taxonText.each { tt ->
             if (tt) {
-                taxas.add(quoteText(tt));
+                taxas.add("\"" + tt.trim() + "\"")
             }
-        }
-
-        // if more than one taxa query, add braces so we get correct Boolean precedence
-        String[] braces = ["",""]
-        if (taxas.size() > 1) {
-            braces[0] = "("
-            braces[1] = ")"
         }
 
         if (taxas) {
             log.debug "taxas = ${taxas} || nameType = ${nameType}"
-
-            if (nameType == "taxa") {
-                // special case
-                taxa = StringUtils.join(taxas*.trim(), " OR " ).replaceAll('"','') // remove quotes which break the "taxa=foo bar" query type
-            } else {
-                // build up OR'ed taxa query with braces if more than one taxon
-                queryItems.add(braces[0] + nameType + ":" + StringUtils.join(taxas, " OR " + nameType + ":") + braces[1])
+            taxa = StringUtils.join(taxas.collect {"taxa:" + it}, " OR ")
+            if (taxas.size() > 1) { // if more than one taxa query, add braces so we get correct Boolean precedence
+                taxa = "(" + taxa + ")"
             }
+            queryItems.add(taxa)
         }
 
         // TODO: deprecate this code (?)
@@ -188,17 +177,15 @@ class AdvancedSearchParams implements Validateable {
         }
 
         String encodedQ = queryItems.join(" ${BOOL_OP} ").toString().trim()
-        String encodedTaxa = taxa.trim()
 
         try {
             // attempt to do query encoding
             encodedQ = URIUtil.encodeWithinQuery(encodedQ.replaceFirst("\\?", ""))
-            encodedTaxa = URIUtil.encodeWithinQuery(taxa.trim())
         } catch (URIException ex) {
             log.error("URIUtil error: " + ex.getMessage(), ex)
         }
 
-        String finalQuery = ((taxa) ? "taxa=" + encodedTaxa + "&" : "") + ((encodedQ) ? "q=" + encodedQ : "")
+        String finalQuery = ((encodedQ) ? "q=" + encodedQ : "")
         log.debug("query: " + finalQuery)
 
         return finalQuery
