@@ -293,7 +293,7 @@
                                 &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/>
                             </alatag:download>
                         </div>
-                        <a href="#CopyLink" data-toggle="modal" role="button" class="tooltips btn copyLink" style="border-color: black; color: black" title="${g.message(code:"list.copylinks.dlg.copybutton.title")}"><i class="fas fa-copy"></i>&nbsp;&nbsp;<g:message code="list.copylinks" default="API access"/></a>
+                        <a href="#CopyLink" data-toggle="modal" role="button" class="tooltips btn copyLink" title="${g.message(code:"list.copylinks.dlg.copybutton.title")}"><i class="fas fa-copy"></i>&nbsp;&nbsp;<g:message code="list.copylinks" default="API access"/></a>
                         <div id="CopyLink" class="modal fade" role="dialog" tabindex="-1">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
@@ -306,7 +306,7 @@
                                             <g:set var="jsonurl" value="${biocacheServiceUrl}/occurrences/search${searchString}"/>
                                             <input type="text" class="form-control" value=${jsonurl} id="al4rcode" readonly/>
                                             <span class="input-group-btn">
-                                                <button class="form-control btn" style="border-color: black;" id="copy-al4r">
+                                                <button class="form-control btn" id="copy-al4r">
                                                     <alatag:message code="list.copylinks.dlg.copybutton.text" default="{JSON}"/>
                                                 </button>
                                             </span>
