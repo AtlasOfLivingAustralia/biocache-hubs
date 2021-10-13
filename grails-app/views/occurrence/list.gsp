@@ -31,6 +31,7 @@
     // single global var for app conf settings
     <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
     <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
+    <g:set var="biocacheServiceUrl" value="${alatag.getBiocacheAjaxUrl()}"/>
     var BC_CONF = {
         contextPath: "${request.contextPath}",
             serverName: "<g:createLink absolute="true" uri="" />",
@@ -42,7 +43,7 @@
             queryString: "${queryDisplay.encodeAsJavaScript()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
             bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
-            biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
+            biocacheServiceUrl: "${biocacheServiceUrl}",
             collectoryUrl: "${grailsApplication.config.collectory.baseUrl}",
             alertsUrl: "${grailsApplication.config.alerts.baseUrl}",
             skin: "${grailsApplication.config.skin.layout}",
@@ -284,11 +285,35 @@
                     </div>
                 </g:if>
                 <g:if test="${grailsApplication.config.useDownloadPlugin?.toBoolean()}">
-                    <div id="downloads" class="btn btn-primary pull-right">
-                        <alatag:download searchResults="${sr}" searchRequestParams="${searchRequestParams}" class="tooltips newDownload" title="${g.message(code:"list.downloads.navigator.title", args:[g.formatNumber(number: sr.totalRecords, format: "#,###,###")])}">
-                            <i class="fa fa-download"></i>
-                            &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/>
-                        </alatag:download>
+                    <div id="download-button-area" class="pull-right" >
+                        <div id="downloads" class="btn btn-primary">
+                            <alatag:download searchResults="${sr}" searchRequestParams="${searchRequestParams}" class="tooltips newDownload" title="${g.message(code:"list.downloads.navigator.title", args:[g.formatNumber(number: sr.totalRecords, format: "#,###,###")])}">
+                                <i class="fa fa-download"></i>
+                                &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/>
+                            </alatag:download>
+                        </div>
+                        <a href="#CopyLink" data-toggle="modal" role="button" class="tooltips btn copyLink" title="${g.message(code:"list.copylinks.dlg.copybutton.title")}"><i class="fas fa-copy"></i>&nbsp;&nbsp;<g:message code="list.copylinks" default="API access"/></a>
+                        <div id="CopyLink" class="modal fade" role="dialog" tabindex="-1">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        <h3><g:message code="list.copylinks.dlg.title" default="Copy the JSON web service URL"/></h3>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-sm-12 input-group">
+                                            <g:set var="jsonurl" value="${biocacheServiceUrl}/occurrences/search${searchString}"/>
+                                            <input type="text" class="form-control" value=${jsonurl} id="al4rcode" readonly/>
+                                            <span class="input-group-btn">
+                                                <button class="form-control btn" id="copy-al4r">
+                                                    <alatag:message code="list.copylinks.dlg.copybutton.text" default="{JSON}"/>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </g:if>
                 <div id="resultsReturned">
