@@ -1204,7 +1204,7 @@ $(document).ready(function() {
     });
 
     // user preference settings and download link tooltips will be above the control
-    $("#usersettings, a.newDownload").qtip({
+    $("#usersettings, a.copyLink").qtip({
         style: {
             classes: 'ui-tooltip-rounded ui-tooltip-shadow'
         },

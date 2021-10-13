@@ -286,8 +286,14 @@
                     </div>
                 </g:if>
                 <g:if test="${grailsApplication.config.useDownloadPlugin?.toBoolean()}">
-                    <div class="pull-right">
-                        <a href="#CopyLink" data-toggle="modal" role="button" class="tooltips btn" style="border-color: black; color: black"><i class="fas fa-copy"></i>&nbsp;&nbsp;<g:message code="list.copylinks" default="API access"/></a>
+                    <div id="download-button-area" class="pull-right" >
+                        <div id="downloads" class="btn btn-primary">
+                            <alatag:download searchResults="${sr}" searchRequestParams="${searchRequestParams}" class="tooltips newDownload" title="${g.message(code:"list.downloads.navigator.title", args:[g.formatNumber(number: sr.totalRecords, format: "#,###,###")])}">
+                                <i class="fa fa-download"></i>
+                                &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/>
+                            </alatag:download>
+                        </div>
+                        <a href="#CopyLink" data-toggle="modal" role="button" class="tooltips btn copyLink" style="border-color: black; color: black" title="${g.message(code:"list.copylinks.dlg.copybutton.title")}"><i class="fas fa-copy"></i>&nbsp;&nbsp;<g:message code="list.copylinks" default="API access"/></a>
                         <div id="CopyLink" class="modal fade" role="dialog" tabindex="-1">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
@@ -297,7 +303,7 @@
                                     </div>
                                     <div class="modal-body">
                                         <div class="col-sm-12 input-group">
-                                            <g:set var="jsonurl" value="${biocacheServiceUrl}/occurrences/search?${searchString}"/>
+                                            <g:set var="jsonurl" value="${biocacheServiceUrl}/occurrences/search${searchString}"/>
                                             <input type="text" class="form-control" value=${jsonurl} id="al4rcode" readonly/>
                                             <span class="input-group-btn">
                                                 <button class="form-control btn" style="border-color: black;" id="copy-al4r">
@@ -308,12 +314,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div id="downloads" class="btn btn-primary">
-                            <alatag:download searchResults="${sr}" searchRequestParams="${searchRequestParams}" class="tooltips newDownload" title="${g.message(code:"list.downloads.navigator.title", args:[g.formatNumber(number: sr.totalRecords, format: "#,###,###")])}">
-                                <i class="fa fa-download"></i>
-                                &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/>
-                            </alatag:download>
                         </div>
                     </div>
                 </g:if>
