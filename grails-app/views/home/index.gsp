@@ -71,7 +71,7 @@
     <asset:stylesheet src="print-search.css" media="print" />
     <asset:stylesheet src="bootstrapCombobox.css"/>
 
-    <asset:javascript src="bieAutocomplete.js"/>
+    <asset:javascript src="autocomplete.js"/>
 
     <asset:script type="text/javascript">
         $(document).ready(function() {
