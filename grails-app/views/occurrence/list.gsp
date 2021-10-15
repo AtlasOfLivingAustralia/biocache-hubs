@@ -97,7 +97,7 @@
 <asset:stylesheet src="ala/ala-charts.css"/>
 
 
-<asset:javascript src="bieAutocomplete.js"/>
+<asset:javascript src="autocomplete.js"/>
 <asset:script type="text/javascript">
     <g:if test="${!grailsApplication.config.google.apikey}">
         google.load('maps','3.5',{ other_params: "sensor=false" });
