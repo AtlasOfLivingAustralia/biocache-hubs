@@ -21,10 +21,15 @@
  */
 jQuery(document).ready(function() {
     // Autocomplete
-    var bieBaseUrl = BC_CONF.bieWebServiceUrl;
-    var bieParams = { limit: 20 };
-    var autoHints = BC_CONF.autocompleteHints; // expects { fq: "kingdom:Plantae" }
-    $.extend( bieParams, autoHints ); // merge autoHints into bieParams
+    var autocompleteUrl = BC_CONF.autocompleteUrl;
+    var params = {};
+    if (BC_CONF.autocompleteUseBie) {
+        $.extend(params, {limit: 20});
+        var autoHints = BC_CONF.autocompleteHints; // expects { fq: "kingdom:Plantae" }
+        $.extend(params, autoHints); // merge autoHints into params
+    } else {
+        $.extend(params, {pageSize: 20});
+    }
 
     function getMatchingName(item) {
         if (item.scientificNameMatches && item.scientificNameMatches.length) {
@@ -34,7 +39,7 @@ jQuery(document).ready(function() {
         } else {
             return item.name;
         }
-    };
+    }
 
     function formatAutocompleteList(list) {
         var results = [];
@@ -46,17 +51,17 @@ jQuery(document).ready(function() {
         }
 
         return results;
-    };
+    }
 
     $.ui.autocomplete({
         source: function (request, response) {
-            bieParams.q = request.term;
+            params.q = request.term;
             $.ajax( {
-                url: bieBaseUrl + '/search/auto.json',
+                url: autocompleteUrl,
                 dataType: "json",
-                data: bieParams,
+                data: params,
                 success: function( data ) {
-                    response( formatAutocompleteList(data.autoCompleteList) );
+                    response( formatAutocompleteList(BC_CONF.autocompleteUseBie ? data.autoCompleteList : data.searchResults.results) );
                 }
             } );
         }

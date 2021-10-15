@@ -9,6 +9,7 @@
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
 <g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocache.baseUrl}"/>
 <g:set var="serverName" value="${grailsApplication.config.serverName ?: grailsApplication.config.biocache.baseUrl}"/>
+<g:set var="biocacheServiceUrl" value="${alatag.getBiocacheAjaxUrl()}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,7 +39,9 @@
             autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson() ?: '{}'},
             contextPath: "${request.contextPath}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
-            queryContext: "${grailsApplication.config.biocache.queryContext}"
+            queryContext: "${grailsApplication.config.biocache.queryContext}",
+            autocompleteUrl: "${grailsApplication.config.skin.useAlaBie?.toBoolean() ? (grailsApplication.config.bieService.baseUrl + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
+            autocompleteUseBie: ${grailsApplication.config.skin.useAlaBie?.toBoolean()}
         }
         /* Load Spring i18n messages into JS
          */
@@ -68,9 +71,7 @@
     <asset:stylesheet src="print-search.css" media="print" />
     <asset:stylesheet src="bootstrapCombobox.css"/>
 
-    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
-        <asset:javascript src="bieAutocomplete.js"/>
-    </g:if>
+    <asset:javascript src="bieAutocomplete.js"/>
 
     <asset:script type="text/javascript">
         $(document).ready(function() {
