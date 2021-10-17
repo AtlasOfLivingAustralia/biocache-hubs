@@ -73,7 +73,9 @@
             expandProfileDetails: ${grailsApplication.config.getProperty('dataquality.enabled', Boolean, false) ? expandProfileDetails : true},
             userId: "${userId}",
             prefKey: "${(grailsApplication.config.getProperty("dataquality.prefkey", String, "dqUserProfile"))}",
-            expandKey: "${(grailsApplication.config.getProperty("dataquality.expandKey", String, "dqDetailExpand"))}"
+            expandKey: "${(grailsApplication.config.getProperty("dataquality.expandKey", String, "dqDetailExpand"))}",
+            autocompleteUrl: "${grailsApplication.config.skin.useAlaBie?.toBoolean() ? (grailsApplication.config.bieService.baseUrl + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
+            autocompleteUseBie: ${grailsApplication.config.skin.useAlaBie?.toBoolean()}
         };
 </script>
 
@@ -95,9 +97,7 @@
 <asset:stylesheet src="ala/ala-charts.css"/>
 
 
-<g:if test="${grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean()}">
-    <asset:javascript src="bieAutocomplete.js"/>
-</g:if>
+<asset:javascript src="autocomplete.js"/>
 <asset:script type="text/javascript">
     <g:if test="${!grailsApplication.config.google.apikey}">
         google.load('maps','3.5',{ other_params: "sensor=false" });
