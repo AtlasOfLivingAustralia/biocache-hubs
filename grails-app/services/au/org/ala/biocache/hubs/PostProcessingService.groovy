@@ -310,7 +310,9 @@ class PostProcessingService {
 
         if (record.processed.occurrence.outlierForLayers) {
             record.processed.occurrence.outlierForLayers.each {
-                metdataForOutlierLayers.add(layersMetaData.get(it))
+                if (layersMetaData.containsKey(it)) {
+                    metdataForOutlierLayers.add(layersMetaData.get(it))
+                }
             }
         }
 
