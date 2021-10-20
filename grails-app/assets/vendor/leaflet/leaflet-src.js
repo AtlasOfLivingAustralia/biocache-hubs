@@ -8553,12 +8553,16 @@ jQuery.i18n.properties({
             for (i = 0; i < inputsLen; i++) {
                 input = inputs[i];
                 obj = this._layers[input.layerId];
+                if (!input.checked && this._map.hasLayer(obj.layer)) {
+                    this._map.removeLayer(obj.layer);
+                }
+            }
 
+            for (i = 0; i < inputsLen; i++) {
+                input = inputs[i];
+                obj = this._layers[input.layerId];
                 if (input.checked && !this._map.hasLayer(obj.layer)) {
                     this._map.addLayer(obj.layer);
-
-                } else if (!input.checked && this._map.hasLayer(obj.layer)) {
-                    this._map.removeLayer(obj.layer);
                 }
             }
 
