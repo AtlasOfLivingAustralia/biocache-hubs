@@ -27,7 +27,7 @@ class HomeController {
     def advancedSearch(AdvancedSearchParams requestParams) {
         log.debug "Home controller advancedSearch page"
         //flash.message = "Advanced search for: ${requestParams.toString()}"
-        redirect(controller: "occurrences", action:"search", params: requestParams.toParamMap())
+        redirect(controller: "occurrences", action: "search", params: requestParams.toParamMap())
     }
 
     def simpleSearch(SpatialSearchRequestParams requestParams) {
@@ -36,7 +36,7 @@ class HomeController {
             requestParams.q = String.format("taxa:\"%s\"", requestParams.q)
             params.q = requestParams.q
         }
-        redirect(controller: "occurrences", action:"search", params: params)
+        redirect(controller: "occurrences", action: "search", params: params)
     }
 
     /**
@@ -44,8 +44,7 @@ class HomeController {
      * Fields appearing should be specified in config var facets.cached and
      * also need to be set as fields on AdvancedSearchParams.class
      *
-     * @see au.org.ala.biocache.hubs.AdvancedSearchParams
-     *
+     * @see au.org.ala.biocache.hubs.AdvancedSearchParams*
      * @return
      */
     private Map addCommonModel() {

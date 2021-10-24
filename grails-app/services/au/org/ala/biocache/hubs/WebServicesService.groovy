@@ -50,7 +50,7 @@ class WebServicesService {
     Map cachedGroupedFacets = [:] // keep a copy in case method throws an exception and then blats the saved version
 
     @PostConstruct
-    def init(){
+    def init() {
         facetsCacheServiceBean = grailsApplication.mainContext.getBean('facetsCacheService')
     }
 
@@ -68,7 +68,7 @@ class WebServicesService {
     def JSONObject getRecord(String id, Boolean hasClubView) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrence/${id.encodeAsURL()}"
         if (hasClubView) {
-            url += "?apiKey=${grailsApplication.config.biocache.apiKey?:''}"
+            url += "?apiKey=${grailsApplication.config.biocache.apiKey ?: ''}"
         }
         getJsonElements(url)
     }
@@ -87,7 +87,7 @@ class WebServicesService {
         json.each { item ->
             if (!facetName) {
                 // do this once
-                facetName = item.fq?.tokenize(':')?.get(0)?.replaceFirst(/^\-/,'')
+                facetName = item.fq?.tokenize(':')?.get(0)?.replaceFirst(/^\-/, '')
                 try {
                     facetLabelsMap = facetsCacheServiceBean.getFacetNamesFor(facetName) // cached
                 } catch (IllegalArgumentException iae) {
@@ -158,7 +158,7 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    @Cacheable(value="longTermCache")
+    @Cacheable(value = "longTermCache")
     def Map getGroupedFacets() {
         def url = "${grailsApplication.config.biocache.baseUrl}/search/grouped/facets"
 
@@ -167,7 +167,7 @@ class WebServicesService {
             url = "${grailsApplication.config.biocache.groupedFacetsUrl}"
         }
 
-        Map groupedMap = [ "Custom" : []] // LinkedHashMap by default so ordering is maintained
+        Map groupedMap = ["Custom": []] // LinkedHashMap by default so ordering is maintained
 
         try {
             JSONArray groupedArray = getJsonElements(url)
@@ -187,12 +187,12 @@ class WebServicesService {
         groupedMap
     }
 
-    @CacheEvict(value='collectoryCache', allEntries=true)
+    @CacheEvict(value = 'collectoryCache', allEntries = true)
     def doClearCollectoryCache() {
         "collectoryCache cache cleared\n"
     }
 
-    @CacheEvict(value='longTermCache', allEntries=true)
+    @CacheEvict(value = 'longTermCache', allEntries = true)
     def doClearLongTermCache() {
         "longTermCache cache cleared\n"
     }
@@ -208,19 +208,19 @@ class WebServicesService {
      * @return Map postResponse
      */
     Map addAssertion(String recordUuid, String code, String comment, String userId, String userDisplayName,
-                         String userAssertionStatus, String assertionUuid, String relatedRecordId,
-                         String relatedRecordReason) {
-        Map postBody =  [
-                recordUuid: recordUuid,
-                code: code,
-                comment: comment,
+                     String userAssertionStatus, String assertionUuid, String relatedRecordId,
+                     String relatedRecordReason) {
+        Map postBody = [
+                recordUuid         : recordUuid,
+                code               : code,
+                comment            : comment,
                 userAssertionStatus: userAssertionStatus,
-                assertionUuid: assertionUuid,
-                relatedRecordId: relatedRecordId,
+                assertionUuid      : assertionUuid,
+                relatedRecordId    : relatedRecordId,
                 relatedRecordReason: relatedRecordReason,
-                userId: userId,
-                userDisplayName: userDisplayName,
-                apiKey: grailsApplication.config.biocache.apiKey
+                userId             : userId,
+                userDisplayName    : userDisplayName,
+                apiKey             : grailsApplication.config.biocache.apiKey
         ]
 
         postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/add", postBody)
@@ -234,10 +234,10 @@ class WebServicesService {
      * @return
      */
     def Map deleteAssertion(String recordUuid, String assertionUuid) {
-        Map postBody =  [
-                recordUuid: recordUuid,
+        Map postBody = [
+                recordUuid   : recordUuid,
                 assertionUuid: assertionUuid,
-                apiKey: grailsApplication.config.biocache.apiKey
+                apiKey       : grailsApplication.config.biocache.apiKey
         ]
 
         postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/delete", postBody)
@@ -250,13 +250,13 @@ class WebServicesService {
     }
 
     @Cacheable('collectoryCache')
-    def JSONArray getCollectionContact(String id){
+    def JSONArray getCollectionContact(String id) {
         def url = "${grailsApplication.config.collections.baseUrl}/ws/collection/${id.encodeAsURL()}/contact.json"
         getJsonElements(url)
     }
 
     @Cacheable('collectoryCache')
-    def JSONArray getDataresourceContact(String id){
+    def JSONArray getDataresourceContact(String id) {
         def url = "${grailsApplication.config.collections.baseUrl}/ws/dataResource/${id.encodeAsURL()}/contact.json"
         getJsonElements(url)
     }
@@ -309,7 +309,7 @@ class WebServicesService {
         List guids = []
 
         if (taxaQueries.size() == 1) {
-            String taxaQ = taxaQueries[0]?:'*:*' // empty taxa search returns all records
+            String taxaQ = taxaQueries[0] ?: '*:*' // empty taxa search returns all records
             taxaQueries.addAll(taxaQ.split(" OR ") as List)
             taxaQueries.remove(0) // remove first entry
         }
@@ -416,7 +416,7 @@ class WebServicesService {
             HttpClient httpClient = new HttpClient()
             HeadMethod headMethod = new HeadMethod(uri.toString())
             httpClient.executeMethod(headMethod)
-            String lengthString = headMethod.getResponseHeader("Content-Length")?.getValue()?:'0'
+            String lengthString = headMethod.getResponseHeader("Content-Length")?.getValue() ?: '0'
             imageFileSize = Long.parseLong(lengthString)
         } catch (Exception ex) {
             log.error "Error getting image url file size: ${ex}", ex
@@ -491,7 +491,7 @@ class WebServicesService {
         log.debug "POST (form encoded) to ${http.uri}"
         Map postResponse = [:]
 
-        http.request( Method.POST ) {
+        http.request(Method.POST) {
 
             if (apiKey != null) {
                 headers.'apiKey' = apiKey
@@ -543,14 +543,14 @@ class WebServicesService {
                 resp = "{fileId: \"${conn.getHeaderField("fileId")}\" }"
             }
             wr.close()
-            return JSON.parse(resp?:"{}")
+            return JSON.parse(resp ?: "{}")
         } catch (SocketTimeoutException e) {
             def error = "Timed out calling web service. URL= ${url}."
             throw new RestClientException(error) // exception will result in no caching as opposed to returning null
         } catch (Exception e) {
             def error = "Failed calling web service. ${e.getMessage()} URL= ${url}." +
-                        "statusCode: " +conn?.responseCode?:"" +
-                        "detail: " + conn?.errorStream?.text
+                    "statusCode: " + conn?.responseCode ?: "" +
+                    "detail: " + conn?.errorStream?.text
             throw new RestClientException(error) // exception will result in no caching as opposed to returning null
         }
     }
@@ -589,7 +589,7 @@ class WebServicesService {
 
     def getAllOccurrenceFields() {
         def url = "${grailsApplication.config.biocache.baseUrl}/index/fields"
-        return getJsonElements(url)?.collect {it.name}
+        return getJsonElements(url)?.collect { it.name }
     }
 
     @Cacheable('longTermCache')
@@ -620,7 +620,7 @@ class WebServicesService {
         Map dataQualityCodes = getAllCodes() // code -> detail
 
         // convert to name -> detail
-        return codes?.findAll{dataQualityCodes.containsKey(String.valueOf(it.code))}?.collectEntries{[(it.name): dataQualityCodes.get(String.valueOf(it.code))]}
+        return codes?.findAll { dataQualityCodes.containsKey(String.valueOf(it.code)) }?.collectEntries { [(it.name): dataQualityCodes.get(String.valueOf(it.code))] }
     }
 
     def getAllCodes() {
@@ -670,7 +670,7 @@ class WebServicesService {
     def getCountryNameMap() {
         def countryUrl = "${grailsApplication.config.userdetails.baseUrl}/ws/registration/countries.json"
         def countries = getJsonElements(countryUrl)
-        return countries?.findAll {it -> beAValidCountryOrState(it as JSONObject)}?.collectEntries { [(String)it.get("name"), (String)it.get("isoCode")] }
+        return countries?.findAll { it -> beAValidCountryOrState(it as JSONObject) }?.collectEntries { [(String) it.get("name"), (String) it.get("isoCode")] }
     }
 
 

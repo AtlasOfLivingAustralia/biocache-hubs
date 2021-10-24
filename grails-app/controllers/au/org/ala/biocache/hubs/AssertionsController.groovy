@@ -37,7 +37,7 @@ class AssertionsController {
         JSONArray qualityAssertions = webServicesService.getQueryAssertions(id)
         Boolean hasClubView = request.isUserInRole("${grailsApplication.config.clubRoleForHub}")
         String userAssertionStatus = webServicesService.getRecord(id, hasClubView)?.raw.userAssertionStatus
-        Map combined = [userAssertions: userAssertions?:[], assertionQueries: qualityAssertions?:[], userAssertionStatus: userAssertionStatus?:"" ]
+        Map combined = [userAssertions: userAssertions ?: [], assertionQueries: qualityAssertions ?: [], userAssertionStatus: userAssertionStatus ?: ""]
         render combined as JSON
     }
 
@@ -49,9 +49,9 @@ class AssertionsController {
     def addAssertion() {
         String recordUuid = params.recordUuid
         String code = params.code
-        String comment = params.comment?:''
-        String userAssertionStatus = params.userAssertionStatus?: ""
-        String assertionUuid = params.assertionUuid?: ""
+        String comment = params.comment ?: ''
+        String userAssertionStatus = params.userAssertionStatus ?: ""
+        String assertionUuid = params.assertionUuid ?: ""
         String relatedRecordId = params.relatedRecordId ?: ''
         String relatedRecordReason = params.relatedRecordReason ?: ''
         UserDetails userDetails = authService?.userDetails() // will return null if not available/not logged in
@@ -70,8 +70,8 @@ class AssertionsController {
             Map postResponse = webServicesService.addAssertion(recordUuid, code, comment, userDetails.userId, userDetails.displayName, userAssertionStatus, assertionUuid, relatedRecordId, relatedRecordReason)
 
             if (postResponse.statusCode == 201) {
-                log.info("Called REST service. Assertion should be added" )
-                render(status: postResponse.statusCode, text:'Assertion added')
+                log.info("Called REST service. Assertion should be added")
+                render(status: postResponse.statusCode, text: 'Assertion added')
             } else {
                 log.error "Unexpected error: ${postResponse.statusCode} (${postResponse.statusCode.class.name}) : ${postResponse.statusMsg}"
                 render(status: postResponse.statusCode, text: postResponse.statusMsg)
@@ -80,9 +80,9 @@ class AssertionsController {
             def errorMsg = (!userDetails) ?
                     "User details not found" :
                     "Required parameters not provided: ${(!recordUuid) ? 'recordUuid' : ''} ${(!code) ? 'code' : ''}"
-            log.warn("Unable to add assertions. ${errorMsg}." )
+            log.warn("Unable to add assertions. ${errorMsg}.")
 
-            render(status:400, text: errorMsg)
+            render(status: 400, text: errorMsg)
         }
     }
 
@@ -100,17 +100,17 @@ class AssertionsController {
             Map postResponse = webServicesService.deleteAssertion(recordUuid, assertionUuid)
 
             if (postResponse.statusCode == 200) {
-                log.info("Called REST service. Assertion should be deleted" )
-                render(status: postResponse.statusCode, text:'Assertion deleted')
+                log.info("Called REST service. Assertion should be deleted")
+                render(status: postResponse.statusCode, text: 'Assertion deleted')
             } else {
                 log.error "Unexpected error: ${postResponse.statusCode} (${postResponse.statusCode.class.name}) : ${postResponse.statusMsg}"
                 render(status: postResponse.statusCode, text: postResponse.statusMsg)
             }
         } else {
             def errorMsg = "Required parameters not provided: ${(!recordUuid) ? 'recordUuid' : ''} ${(!assertionUuid) ? 'assertionUuid' : ''}"
-            log.warn("Unable to add assertions. ${errorMsg}." )
+            log.warn("Unable to add assertions. ${errorMsg}.")
 
-            render(status:400, text: errorMsg)
+            render(status: 400, text: errorMsg)
         }
     }
 }
