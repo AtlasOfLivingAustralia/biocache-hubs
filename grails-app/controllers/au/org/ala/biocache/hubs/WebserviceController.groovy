@@ -28,7 +28,7 @@ class WebserviceController {
         String userId = authService?.getUserId()
         if (userId == null) {
             response.status = 404
-            render ([error: 'userId must be supplied to get alerts'] as JSON)
+            render([error: 'userId must be supplied to get alerts'] as JSON)
         } else {
             render webServicesService.getAlerts(userId) as JSON
         }
@@ -41,7 +41,7 @@ class WebserviceController {
         String userId = authService?.getUserId()
         if (userId == null) {
             response.status = 404
-            render ([error: 'userId must be supplied to add alert'] as JSON)
+            render([error: 'userId must be supplied to add alert'] as JSON)
         } else {
             render webServicesService.subscribeMyAnnotation(userId) as JSON
         }
@@ -54,7 +54,7 @@ class WebserviceController {
         String userId = authService?.getUserId()
         if (userId == null) {
             response.status = 404
-            render ([error: 'userId must be supplied to delete alert'] as JSON)
+            render([error: 'userId must be supplied to delete alert'] as JSON)
         } else {
             render webServicesService.unsubscribeMyAnnotation(userId) as JSON
         }
