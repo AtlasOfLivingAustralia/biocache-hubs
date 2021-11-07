@@ -121,8 +121,8 @@ class OccurrenceController {
             def wsTime = (System.currentTimeMillis() - wsStart)
 
             // If there's an error, treat it as an exception so error page can be shown
-            if (searchResults.status == 'ERROR') {
-                throw new Exception(searchResults.errorMessage)
+            if (searchResults.errorType) {
+                throw new Exception(searchResults.message)
             }
 
             //create a facet lookup map
@@ -209,7 +209,7 @@ class OccurrenceController {
                 if (!requestParams.disableAllQualityFilters) {
                     qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
                     groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
-                    qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description.join(' and ')] }
+                    qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description] }
                     interactionMap = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj) }
 
                     def messagePropertiesFile = time("message properties file") { webServicesService.getMessagesPropertiesFile() }
@@ -266,7 +266,7 @@ class OccurrenceController {
         log.debug "taxaQueries = ${taxaQueries} || q = ${requestParams.q}"
 
         if (grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean() &&
-                grailsApplication.config.bie.baseUrl && taxaQueries && taxaQueries[0]) {
+                grailsApplication.config.bieService.baseUrl && taxaQueries && taxaQueries[0]) {
             // check for list with empty string
             // taxa query - attempt GUID lookup
             List guidsForTaxa = webServicesService.getGuidsForTaxa(taxaQueries)
@@ -369,7 +369,9 @@ class OccurrenceController {
             JSONObject record = webServicesService.getRecord(id, hasClubView)
             log.debug "hasClubView = ${hasClubView} || ${grailsApplication.config.clubRoleForHub}"
 
-            if (record) {
+            // if backend can't find the record, a JSON error with a field 'message' will be returned
+            // TODO: backend can refine the response to put like errorType into returned JSON
+            if (record && record.size() > 1) {
                 JSONObject compareRecord = webServicesService.getCompareRecord(id)
                 JSONObject collectionInfo = null
                 JSONArray contacts = null
@@ -386,6 +388,8 @@ class OccurrenceController {
                         log.warn("Problem retrieving contact details for ${record.raw.attribution.dataResourceUid} - " + e.getMessage())
                     }
                 }
+
+                populateSound(record)
 
                 String userEmail = authService?.getEmail()
                 Boolean isCollectionAdmin = false
@@ -460,7 +464,9 @@ class OccurrenceController {
                         skin: grailsApplication.config.skin.layout
                 ])
             } else {
-                flash.message = "No record found with id: ${id}"
+                if (record?.message == 'Unrecognised UID') {
+                    flash.message = "No record found with id: ${id}"
+                }
                 render view:'../error'
             }
         } catch (Exception ex) {
@@ -470,6 +476,25 @@ class OccurrenceController {
         }
     }
 
+    /**
+     * Retrieve sound detail link and sound file metadata
+     */
+    private def populateSound(JSONObject record) {
+        if (record?.sounds) {
+            // record.sounds is a list of mediaDTO
+            for (JSONObject mediaDTO in record.sounds) {
+                String soundUrl = mediaDTO?.alternativeFormats?.'audio/mpeg'
+                if (soundUrl) {
+                    String[] parts = soundUrl.split("imageId=")
+                    if (parts.length >= 2) {
+                        log.debug("image id = " + parts[1])
+                        mediaDTO.alternativeFormats.'detailLink' = "${grailsApplication.config.images.baseUrl}/image/${parts[1].encodeAsURL()}"
+                        mediaDTO.metadata = webServicesService.getImageMetadata(parts[1])
+                    }
+                }
+            }
+        }
+    }
     /**
      * Go to the next occurrences of the search results
      * Use the Navigation DTO from session (if available)
@@ -724,35 +749,5 @@ class OccurrenceController {
         // rawCookie == null means the start of session so use default user settings
 
         return userPref.expand
-    }
-
-    def getAlerts() {
-        String userId = authService?.getUserId()
-        if (userId == null) {
-            response.status = 404
-            render ([error: 'userId must be supplied to get alerts'] as JSON)
-        } else {
-            render webServicesService.getAlerts(userId) as JSON
-        }
-    }
-
-    def subscribeMyAnnotation() {
-        String userId = authService?.getUserId()
-        if (userId == null) {
-            response.status = 404
-            render ([error: 'userId must be supplied to add alert'] as JSON)
-        } else {
-            render webServicesService.subscribeMyAnnotation(userId) as JSON
-        }
-    }
-
-    def unsubscribeMyAnnotation() {
-        String userId = authService?.getUserId()
-        if (userId == null) {
-            response.status = 404
-            render ([error: 'userId must be supplied to delete alert'] as JSON)
-        } else {
-            render webServicesService.unsubscribeMyAnnotation(userId) as JSON
-        }
     }
 }

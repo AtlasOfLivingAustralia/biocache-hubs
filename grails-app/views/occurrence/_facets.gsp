@@ -43,26 +43,29 @@
 
                     <h4><span class="FieldName">Categories</span></h4>
                     <div class="subnavlist nano" style="clear:left">
-                        <ul class="facets nano-content">
+                        <ul class="facets nano-content dq-categories">
                             <g:each var="qualityCategory" in="${qualityCategories}">
                                 <li>
                                     <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
                                     <g:if test="${qcDisabled}">
                                         <alatag:linkQualityCategory enable="${true}" expand="${true}" category="${qualityCategory}" class="tooltips" title="${g.message(code: 'dq.pop.in', default: 'Re-enable this data quality filter and remove its corresponding filter queries')}">
-                                            <span class="fa fa-square-o">&nbsp;</span>
+                                            <span class="fa fa-square-o">&nbsp;</span><span class="tooltips" title="${qualityCategory.description}">${qualityCategory.name}</span>&nbsp;<span class="exclude-count-facet" data-category="${qualityCategory.label}"></span>
                                         </alatag:linkQualityCategory>
                                     </g:if>
                                     <g:else>
                                         <alatag:linkQualityCategory enable="${false}" expand="${false}" category="${qualityCategory}">
-                                            <span class="fa fa-check-square-o">&nbsp;</span>
+                                            <span class="fa fa-check-square-o">&nbsp;</span><span class="tooltips" title="${qualityCategory.description}">${qualityCategory.name}</span>&nbsp;<span class="exclude-count-facet" data-category="${qualityCategory.label}"></span>
                                         </alatag:linkQualityCategory>
                                     </g:else>
-                                    <span style="color: #C44D34">
-                                        <span class="tooltips" title="${qualityCategory.description}">${qualityCategory.name}</span>&nbsp;
-                                        <a href="#DQCategoryDetails" class="DQCategoryDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>&nbsp;
-                                        <span class="facet-count">
+                                    &nbsp;
+                                    <span>
+                                        <a href="#DQCategoryDetails" class="DQCategoryDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${groovy.json.JsonOutput.toJson(qualityFilterDescriptionsByLabel[qualityCategory.label])}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-inverse-filter="${alatag.createInverseQualityCategoryLink(category: qualityCategory, inverseFilters: inverseFilters)}" data-filters="${groovy.json.JsonOutput.toJson(qualityCategory.qualityFilters.findAll{it.enabled}*.filter.flatten())}"  data-dqcategorydescription="${qualityCategory.description}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"/>"></i>
+                                            &nbsp;
+                                            <span class="facet-count">
                                             <i class="fa fa-circle-o-notch fa-spin exclude-loader"></i>
-                                            <span style="display: none;" class="exclude-count-facet" data-category="${qualityCategory.label}"></span></span>
+                                            </span>
+                                        </a>
+
                                     </span>
                                 </li>
                             </g:each>

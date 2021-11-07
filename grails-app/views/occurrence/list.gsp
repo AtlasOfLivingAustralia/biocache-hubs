@@ -336,10 +336,10 @@
                             <g:if test="${qualityProfiles.size() >= 1}">
                                 <span class="dropdown">
                                     <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to switch profiles">
-                                        ${searchRequestParams.disableAllQualityFilters ? 'Disabled' : activeProfile.name}
+                                        <span id="active-profile-name">${searchRequestParams.disableAllQualityFilters ? 'Disabled' : activeProfile.name}</span>
                                         <span class="caret"></span>
                                     </button>
-                                    <ul class="dropdown-menu" aria-labelledby="profile-dropdown">
+                                    <ul class="dropdown-menu" id="profiles-selection" aria-labelledby="profile-dropdown">
                                         <g:each in="${qualityProfiles}" var="profile">
                                             <li><g:link action="${actionName}" params="${params.clone().with { if (profile.isDefault) it.remove('qualityProfile') else it.qualityProfile = profile.shortName ; it.remove('disableAllQualityFilters'); it } }" title="Click to enable the ${profile.name} quality filters">${profile.name}<g:if test="${profile.isDefault}"> (Default)</g:if></g:link></li>
                                         </g:each>
@@ -378,7 +378,7 @@
                                                             <b>${category.name}</b><br>
                                                             ${category.description}
                                                         </div>
-                                                        <table class="table cat-table table-bordered table-condensed table-striped scrollTable" data-translation="${translatedFilterMap[category.label]}" data-filters="${category.qualityFilters.findAll{it.enabled}*.filter.join(' AND ')}">
+                                                        <table class="table cat-table table-bordered table-condensed table-striped scrollTable" data-translation="${translatedFilterMap[category.label]}" data-filters="${groovy.json.JsonOutput.toJson(category.qualityFilters.findAll{it.enabled}*.filter.flatten())}">
                                                             <tr>
                                                                 <th><alatag:message code="dq.profiledetail.filtertable.header.description" default="Filter description"/></th>
                                                                 <th><alatag:message code="dq.profiledetail.filtertable.header.value" default="Filter value"/></th>
@@ -431,8 +431,8 @@
                                                                             <input type="checkbox" name="filters" class="filters" data-category="${qualityCategory.label}" data-enabled="${!qcDisabled}" value="" style="vertical-align: middle; margin: 0">&nbsp;
                                                                             <button class='btn btn-link btn-sm expand' data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0; padding: 0; text-decoration: none; font-size: 14px"
                                                                                     title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>">
-                                                                            <g:message code="dq.selectmultiple.buttontext.expandfilters" default="Expand and edit filters"/></button>
-                                                                            <span class="expanded" data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0; font-style: italic; color:#c44d34"><g:message code="dq.selectmultiple.text.expanded" default="Expanded"/></span>
+                                                                            <a><g:message code="dq.selectmultiple.buttontext.expandfilters" default="Expand and edit filters"/></a></button>
+                                                                            <span class="expanded" data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0; font-style: italic;"><g:message code="dq.selectmultiple.text.expanded" default="Expanded"/></span>
                                                                         </td>
                                                                     </tr>
                                                                 </g:each>
@@ -453,7 +453,7 @@
                                 </div>
                                 <span style="vertical-align: middle;">
                                     <alatag:linkResetSearch filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}">
-                                        <i class="fas fa-undo fa-xs tooltips" title="<g:message code="quality.filters.resetsearch.tooltip" default="Reset filters"></g:message>"></i>
+                                        <i class="fa fa-undo fa-xs tooltips" title="<g:message code="quality.filters.resetsearch.tooltip" default="Reset filters"></g:message>"></i>
                                     </alatag:linkResetSearch>
                                 </span>&nbsp;
                             </g:if>
@@ -532,7 +532,7 @@
                                             <span>
                                                 <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteract.containsKey(qualityCategory.label) ? "<br><br>" + dqInteract[qualityCategory.label] : "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
 
-                                                <a href="#DQCategoryDetails" class="DQCategoryDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-dqcategorydescription="${qualityCategory.description}" data-categorylabel="${qualityCategory.label}" data-filters="${groovy.json.JsonOutput.toJson(qualityCategory.qualityFilters.findAll{it.enabled}*.filter.flatten())}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-inverse-filter="${alatag.createInverseQualityCategoryLink(category: qualityCategory, inverseFilters: inverseFilters)}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
+                                                <a href="#DQCategoryDetails" class="DQCategoryDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-dqcategorydescription="${qualityCategory.description}" data-categorylabel="${qualityCategory.label}" data-filters="${groovy.json.JsonOutput.toJson(qualityCategory.qualityFilters.findAll{it.enabled}*.filter.flatten())}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${groovy.json.JsonOutput.toJson(qualityFilterDescriptionsByLabel[qualityCategory.label])}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-inverse-filter="${alatag.createInverseQualityCategoryLink(category: qualityCategory, inverseFilters: inverseFilters)}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
                                                 <alatag:invertQualityCategory category="${qualityCategory}" inverseFilters="${inverseFilters}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
                                                     (<i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span style="display: none;" class="exclude-count-label" data-category="${qualityCategory.label}" data-enabled="${!searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}"></span>
                                                     <alatag:message code="quality.filters.excludeCount" default="records excluded" />)

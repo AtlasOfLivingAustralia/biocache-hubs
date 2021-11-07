@@ -158,9 +158,8 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    //@Cacheable(value="longTermCache", key = "#root.method.name")
+    @Cacheable(value="longTermCache")
     def Map getGroupedFacets() {
-        log.info "Getting grouped facets with key: #root.methodName"
         def url = "${grailsApplication.config.biocache.baseUrl}/search/grouped/facets"
 
         if (grailsApplication.config.biocache.groupedFacetsUrl) {
@@ -263,6 +262,12 @@ class WebServicesService {
     }
 
     @Cacheable('longTermCache')
+    def getImageMetadata(String imageId) {
+        def url = "${grailsApplication.config.images.baseUrl}/ws/image/${imageId.encodeAsURL()}.json"
+        getJsonElements(url)
+    }
+
+    @Cacheable('longTermCache')
     Map getLayersMetaData() {
         Map layersMetaMap = [:]
         def url = "${grailsApplication.config.layersservice.baseUrl}/layers"
@@ -315,9 +320,13 @@ class WebServicesService {
         JSONObject guidsJson = getJsonElements(url)
 
         taxaQueries.each { key ->
-            def match = guidsJson.get(key)[0]
-            def guid = (match?.acceptedIdentifier) ? match?.acceptedIdentifier : match?.identifier
-            guids.add(guid)
+            if (guidsJson) {
+                def match = guidsJson.get(key)[0]
+                def guid = (match?.acceptedIdentifier) ? match?.acceptedIdentifier : match?.identifier
+                guids.add(guid)
+            } else {
+                guids.add("")
+            }
         }
 
         return guids
@@ -420,7 +429,7 @@ class WebServicesService {
      * Perform HTTP GET on a JSON web service
      *
      * @param url
-     * @return
+     * @return the object we request or an JSON object containing error info in case of error
      */
     JSONElement getJsonElements(String url, String apiKey = null) {
         log.debug "(internal) getJson URL = " + url
@@ -431,7 +440,15 @@ class WebServicesService {
             if (apiKey != null) {
                 conn.setRequestProperty('apiKey', apiKey)
             }
-            return JSON.parse(conn.getInputStream(), "UTF-8")
+
+            InputStream stream = null;
+            if (conn instanceof HttpURLConnection) {
+                conn.getResponseCode() // this line required to trigger parsing of response
+                stream = conn.getErrorStream() ?: conn.getInputStream()
+            } else { // when read local files it's a FileURLConnection which doesn't have getErrorStream
+                stream = conn.getInputStream()
+            }
+            return JSON.parse(stream, "UTF-8")
         } catch (Exception e) {
             def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
             log.error error
@@ -643,6 +660,48 @@ class WebServicesService {
         dataQualityCodes
     }
 
+    /**
+     * Internal used method to map from full country name to its iso code.
+     * Mapping comes from userdetails.baseUrl/ws/registration/countries.json
+     *
+     * @return a list of String representing the names of states of that country
+     */
+    @Cacheable('longTermCache')
+    def getCountryNameMap() {
+        def countryUrl = "${grailsApplication.config.userdetails.baseUrl}/ws/registration/countries.json"
+        def countries = getJsonElements(countryUrl)
+        return countries?.findAll {it -> beAValidCountryOrState(it as JSONObject)}?.collectEntries { [(String)it.get("name"), (String)it.get("isoCode")] }
+    }
+
+
+    private static boolean beAValidCountryOrState(JSONObject obj) {
+        return obj.has("isoCode") && obj.has("name") && obj.get("isoCode") != "" && obj.get("name") != "N/A"
+    }
+
+    /**
+     * Method to get a list of states belong to provided country
+     *
+     * @param countryName
+     * @return a list of String representing the names of states of that country
+     */
+    @Cacheable('longTermCache')
+    List<String> getStates(String countryName) {
+        List<String> matchingStates = []
+        try {
+            Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
+            // if a known country name
+            if (countryNameMap?.containsKey(countryName)) {
+                def states = getJsonElements("${grailsApplication.config.userdetails.baseUrl}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
+                if (states) {
+                    // only return valid states
+                    matchingStates = states.findAll { it -> beAValidCountryOrState(it as JSONObject) }.collect { it -> (String) it.get("name") }
+                }
+            }
+        } catch (Exception e) {
+            log.error "getStates failed to get states of " + countryName + ", error = " + e.getMessage()
+        }
+        matchingStates
+    }
     /**
      * CellProcessor method as required by SuperCSV
      *
