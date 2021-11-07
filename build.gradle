@@ -70,6 +70,8 @@ dependencies {
     compile "org.grails:grails-plugin-interceptors"
     compile "org.grails.plugins:cache"
     compile "org.grails.plugins:async"
+    provided "org.grails:grails-plugin-services"
+    provided "org.grails:grails-plugin-domain-class"
     compile "org.grails.plugins:scaffolding"
     compile "org.grails.plugins:gsp"
     compileOnly "io.micronaut:micronaut-inject-groovy"
