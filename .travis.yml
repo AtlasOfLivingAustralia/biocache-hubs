@@ -1,0 +1,29 @@
+language: groovy
+jdk:
+- openjdk8
+sudo: false
+branches:
+  only:
+  - master
+  - data-quality
+  - hotfix
+  - EYA-enhancements
+  - develop
+  - feature/data-quality
+  - grails4
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+  - $HOME/.m2
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+after_success:
+  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry ./gradlew publish'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && sh .travis/trigger-travis.sh --pro --branch $TRAVIS_BRANCH AtlasOfLivingAustralia ala-hub $TRAVIS_ACCESS_TOKEN'
+env:
+  global:
+  - secure: fwa7jtwNL/MNa3+iI+r0jrGwnQcC8fYtgH9vbOT3x9MHo0b2K2CCTq+io+U2iDhFpDt1Tee49ZqL38aQV+/Q7oW9OddRCBhpPafLwvIeAeEAzYVfZzYj0M5QfomqhQfFqaeBlsDGWLmfqs+Qa56acG/5AXvy2bdIBkx8eobxKHw=
+  - secure: JICocWnUXHHv+yt1XM/8GcurEmaNwzAbnmAGylaVriCq98m31clDGms1OKoHU11g9Ux8uNSmydafvf+oEFzpm8LAyqrtDcPBqi8UXG+4AY3SctutdDGHE2Ue3ly8HlVkMY2e9wnA2bU/Wmq4VesyvPCIRp/IeGi+sE02F+3IYAQ=
