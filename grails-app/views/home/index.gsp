@@ -352,17 +352,37 @@
                           method="POST">
                         <div class="row">
                             <div class="col-sm-8">
-                                <div class="form-group">
+                                <div class="form-group-off">
                                     <label for="raw_names"><g:message code="home.index.taxaupload.des01"
                                                                       default="Enter a list of taxon names/scientific names, one name per line (common names not currently supported)."/></label>
                                     <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" class="form-control"><input type="file" class="form-control"></p>--%>
                                     <textarea name="queries" id="raw_names" class="form-control" rows="15" cols="60"></textarea>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            <div class="radio ">
+                                                <g:message code="home.index.taxaupload.batchRadioPrefix" default="Search on:"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-10">
+                                            <div class="radio ">
+                                                <label>
+                                                    <input type="radio" name="field" id="batchModeMatched" value="taxa" checked>
+                                                    <g:message code="home.index.taxaupload.batchMode.matched" default="the &quot;matched&quot; name (using the ALA taxonomy)"/>
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="radio" name="field" id="batchModeRaw" value="raw_scientificName" >
+                                                    <g:message code="home.index.taxaupload.batchMode.provided" default="the &quot;provided&quot; name (raw name taken from original dataset)"/>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <%--<input type="submit" name="action" value="Download" class="form-control">--%>
                                 <%--&nbsp;OR&nbsp;--%>
                                 <input type="hidden" name="redirectBase"
                                        value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
-                                <input type="hidden" name="field" value="raw_name" class="form-control"/>
                                 <input type="hidden" name="action" value="Search" />
                                 <input type="submit"
                                        value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
