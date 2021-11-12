@@ -51,6 +51,11 @@
             mode: 'map',
             language: BC_CONF.locale
         });
+
+        $(document).ready(function() {
+            // Init BS tooltip
+            $('[data-toggle="tooltip"]').tooltip({ html: true, placement: 'right', container: '#content' });
+        });
     </script>
 
 
@@ -363,18 +368,22 @@
                                                 <g:message code="home.index.taxaupload.batchRadioPrefix" default="Search on:"/>
                                             </div>
                                         </div>
+                                        <g:set var="matchedTaxonTooltip" value="${g.message(code:"advanced.taxon.tooltip.matched",default:"N/A")}"/>
+                                        <g:set var="suppliedTaxonTooltip" value="${g.message(code:"advanced.taxon.tooltip.supplied",default:"N/A")}"/>
                                         <div class="col-sm-10">
                                             <div class="radio ">
                                                 <label>
                                                     <input type="radio" name="field" id="batchModeMatched" value="taxa" checked>
-                                                    <g:message code="home.index.taxaupload.batchMode.matched" default="the &quot;matched&quot; name (using the ALA taxonomy)"/>
+                                                    <g:message code="home.index.taxaupload.batchMode.matched" default="Matched name"/>
                                                 </label>
+                                                <a href="#" data-toggle="tooltip" data-placement="right" title="${matchedTaxonTooltip}"><i class="glyphicon glyphicon-question-sign"></i></a>
                                             </div>
                                             <div class="radio">
                                                 <label>
                                                     <input type="radio" name="field" id="batchModeRaw" value="raw_scientificName" >
-                                                    <g:message code="home.index.taxaupload.batchMode.provided" default="the &quot;provided&quot; name (raw name taken from original dataset)"/>
+                                                    <g:message code="home.index.taxaupload.batchMode.provided" default="Supplied name"/>
                                                 </label>
+                                                <a href="#" data-toggle="tooltip" data-placement="right" title="${suppliedTaxonTooltip}"><i class="glyphicon glyphicon-question-sign"></i></a>
                                             </div>
                                         </div>
                                     </div>
