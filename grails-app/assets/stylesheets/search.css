@@ -1169,3 +1169,8 @@ a.copyLink {
 #copy-al4r {
     border-color: black;
 }
+
+#content .tooltip-inner {
+    word-break: break-word;
+    white-space: normal;
+}
