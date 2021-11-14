@@ -27,7 +27,8 @@ import org.grails.config.PropertySourcesConfig
  */
 class BiocacheHubsGrailsPlugin extends Plugin {
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = "3.2.11 > *"
+    def version = "3.4.0-SNAPSHOT"
+    def grailsVersion = "4.0.12 > *"
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
             "grails-app/views/error.gsp"

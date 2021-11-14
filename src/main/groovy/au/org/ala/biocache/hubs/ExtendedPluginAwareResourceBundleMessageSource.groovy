@@ -14,9 +14,12 @@
  */
 package au.org.ala.biocache.hubs
 
+import grails.core.GrailsApplication
+import grails.plugins.GrailsPluginManager
 import grails.util.CacheEntry
 import org.grails.spring.context.support.PluginAwareResourceBundleMessageSource
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.io.ResourceLoader
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
@@ -28,6 +31,14 @@ import java.util.concurrent.ConcurrentMap
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 class ExtendedPluginAwareResourceBundleMessageSource extends PluginAwareResourceBundleMessageSource {
+
+    ExtendedPluginAwareResourceBundleMessageSource (GrailsApplication application, GrailsPluginManager pluginManager) {
+       super(application, pluginManager)
+   }
+
+    void setResourceLoader(ResourceLoader resourceLoader) {
+        super.setResourceLoader(resourceLoader)
+    }
     private long pluginCacheMillis = Long.MIN_VALUE
 
     /**

@@ -17,19 +17,19 @@ package au.org.ala.biocache.hubs
 //
 // CAS properties - may be omitted for non-ALA deployments
 //
-//security.cas.appServerName = "http://dev.ala.org.au:8080"
-//security.cas.casServerName = 'https://auth.ala.org.au'
-//security.cas.uriFilterPattern = '/admin, /admin/.*'
-//security.cas.authenticateOnlyIfLoggedInPattern = "/occurrences/(?!.+userAssertions|facet.+).+,/explore/your-area"
-//security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
-//security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
-//security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
-//security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
-//security.cas.bypass = false // set to true for non-ALA deployment
-//security.cas.contextPath = "/generic-biocache-hub" //"/${appName}"
-//security.cas.debugWebXml = true
+security.cas.appServerName = "http://dev.ala.org.au:8080"
+security.cas.casServerName = 'https://auth.ala.org.au'
+security.cas.uriFilterPattern = '/admin, /admin/.*'
+security.cas.authenticateOnlyIfLoggedInPattern = "/occurrences/(?!.+userAssertions|facet.+).+,/explore/your-area"
+security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
+security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
+security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
+security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
+security.cas.bypass = false // set to true for non-ALA deployment
+security.cas.contextPath = "/generic-biocache-hub" //"/${appName}"
+security.cas.debugWebXml = true
 auth.admin_role = "ROLE_ADMIN"
-serverName = 'http://dev.ala.org.au:8080'
+//serverName = 'http://dev.ala.org.au:8080'
 
 // skin settings
 organisation.baseUrl = "https://www.ala.org.au"
@@ -134,3 +134,5 @@ stateConservationListPath = [:] // to prevent NPE - set in ext config
 alwaysshow.imagetab = false
 
 facets.defaultSelected = "data_resource_uid,taxon_name,year"
+
+grails.plugins.twitterbootstrap.fixtaglib = true

@@ -1,17 +1,13 @@
 package au.org.ala.biocache.hubs
 
 import grails.converters.JSON
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
 import groovy.json.JsonSlurper
 import org.grails.web.json.JSONObject
-import spock.lang.IgnoreRest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(PostProcessingService)
-class PostProcessingServiceSpec extends Specification {
+
+class PostProcessingServiceSpec extends Specification implements ServiceUnitTest<PostProcessingService> {
 
     def setup() {
         grailsApplication.config.facets = [

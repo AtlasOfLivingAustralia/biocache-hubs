@@ -1048,7 +1048,7 @@ class OccurrenceTagLib {
     }
 
     @Value('${dataquality.enabled}')
-    boolean dataQualityEnabled
+    Boolean dataQualityEnabled
 
     def ifDataQualityEnabled = { attrs, body ->
         if (dataQualityEnabled) {
