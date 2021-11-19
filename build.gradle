@@ -68,7 +68,7 @@ dependencies {
     compile "org.grails:grails-plugin-services"
     compile "org.grails:grails-plugin-url-mappings"
     compile "org.grails:grails-plugin-interceptors"
-    compile "org.grails.plugins:cache"
+    compile "org.grails.plugins:cache:5.0.0-ALA:ALA"
     compile "org.grails.plugins:async"
     provided "org.grails:grails-plugin-services"
     provided "org.grails:grails-plugin-domain-class"
@@ -99,7 +99,7 @@ dependencies {
     compile 'xml-apis:xml-apis:1.4.01'
 
     //plugins
-    compile 'org.grails.plugins:cache-ehcache:3.0.0.M1'
+    compile 'org.grails.plugins:cache-ehcache:3.0.0'
     compile 'org.grails.plugins:http-builder-helper:1.0.2.ALA'
     compile "org.grails.plugins:ala-admin-plugin:2.2"
     compile "org.grails.plugins:ala-auth:3.2.3"
