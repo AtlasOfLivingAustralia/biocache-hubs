@@ -393,7 +393,12 @@ class OccurrenceController {
 
                 String userEmail = authService?.getEmail()
                 Boolean isCollectionAdmin = false
-                Boolean userHasRoleAdmin = authService?.userInRole(CASRoles.ROLE_ADMIN)
+                Boolean userHasRoleAdmin = false
+
+                // Check (optionally comma-separated) list of authorise.roles - if we get `true` then stop checking
+                grailsApplication.config.getProperty('authorise.roles', String).tokenize(',').each {
+                    !userHasRoleAdmin ? userHasRoleAdmin = authService?.userInRole( it ) : null
+                }
 
                 if (userHasRoleAdmin) {
                     isCollectionAdmin = true
