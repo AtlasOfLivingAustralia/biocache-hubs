@@ -497,6 +497,10 @@ class WebServicesService {
                 headers.'apiKey' = apiKey
             }
 
+            if (apiKey != null) {
+                headers.'apiKey' = apiKey
+            }
+
             send ContentType.URLENC, postParams
 
             response.success = { resp ->
