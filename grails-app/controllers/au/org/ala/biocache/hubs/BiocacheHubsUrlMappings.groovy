@@ -27,9 +27,11 @@ class BiocacheHubsUrlMappings {
         "/occurrences/$id"(controller: 'occurrence', action: 'show')
         "/occurrence/$id"(controller: 'occurrence', action: 'show')
         "/assertions/$id"(controller: 'assertions', action: 'assertions')
+        "/api/getStates"(controller: 'webservice', action: 'getStates')
         "/explore/your-area"(controller: 'occurrence', action: 'exploreYourArea')
         "/search"(controller: 'home')
         "/advancedSearch"(controller: 'home', action: 'advancedSearch')
+        "/simpleSearch"(controller: 'home', action: 'simpleSearch')
         "/proxy/$path**" (controller: 'proxy'){
             action = [POST:'doPost']
         }

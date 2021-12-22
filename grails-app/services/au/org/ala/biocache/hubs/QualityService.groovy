@@ -20,8 +20,8 @@ import au.org.ala.dataquality.model.QualityCategory
 import au.org.ala.dataquality.model.QualityFilter
 import au.org.ala.dataquality.model.QualityProfile
 import com.google.common.base.Stopwatch
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
+import grails.plugin.cache.CacheEvict
+import grails.plugin.cache.Cacheable
 import org.springframework.beans.factory.annotation.Value
 import retrofit2.Call
 import retrofit2.HttpException
@@ -43,15 +43,10 @@ class QualityService {
     @Value('${dataquality.baseUrl}')
     def dataQualityBaseUrl
 
-    @Value('${dataquality.recordCountCacheSpec}')
-    String recordCountCacheSpec
-
     def grailsApplication
 
     QualityServiceRpcApi api
     DataProfilesApi dataProfilesApi
-
-    Cache<SpatialSearchRequestParams, Long> recordCountCache
 
     @PostConstruct
     def init() {
@@ -65,7 +60,6 @@ class QualityService {
             api = apiClient.createService(QualityServiceRpcApi)
             dataProfilesApi = apiClient.createService(DataProfilesApi)
         }
-        recordCountCache = CacheBuilder.from(recordCountCacheSpec).build { webServicesService.fullTextSearch(it)?.totalRecords }
     }
 
     Map<String, String> getEnabledFiltersByLabel(String profileName) {
@@ -146,7 +140,7 @@ class QualityService {
     boolean isProfileEnabled(String profileShortName) {
         if (dataQualityEnabled) {
             def enabledProfiles = findAllEnabledProfiles(true)
-            return enabledProfiles?.any { it.shortName == profileShortName}
+            return enabledProfiles?.any { it.shortName == profileShortName }
         } else {
             return false
         }
@@ -156,8 +150,14 @@ class QualityService {
         return profileName && isProfileEnabled(profileName)
     }
 
+    @CacheEvict(value = 'excludedCountCache', allEntries = true)
     def clearRecordCountCache() {
-        recordCountCache.invalidateAll()
+        "record count cache cleared\n"
+    }
+
+    @Cacheable(value = 'excludedCountCache', key = { requestParams.toString() })
+    def getExcludeCount(SpatialSearchRequestParams requestParams) {
+        return webServicesService.fullTextSearch(requestParams)?.totalRecords
     }
 
     private Long countRecordsExcludedByLabel(List<String> otherLabels, SpatialSearchRequestParams requestParams) {
@@ -172,7 +172,7 @@ class QualityService {
             it.disableQualityFilter = otherLabels
             it
         }
-        recordCountCache.get(srp)
+        grailsApplication.mainContext.getBean('qualityService').getExcludeCount(srp)
     }
 
     Long countTotalRecords(SpatialSearchRequestParams requestParams) {
@@ -189,7 +189,7 @@ class QualityService {
                 it.disableAllQualityFilters = true
                 it
             }
-            return recordCountCache.get(srp)
+            grailsApplication.mainContext.getBean('qualityService').getExcludeCount(srp)
         } else {
             return 0
         }
@@ -203,7 +203,7 @@ class QualityService {
             def labels = qualityCategories*.label as Set
             def response = qualityCategories.collectEntries {
                 def otherLabels = (labels - it.label) as List
-                [(it.label): totalRecords - countRecordsExcludedByLabel(otherLabels, requestParams) ]
+                [(it.label): totalRecords - countRecordsExcludedByLabel(otherLabels, requestParams)]
             }
             log.error("Quality Category facet counts took {}", sw)
             return response

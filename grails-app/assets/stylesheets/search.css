@@ -957,6 +957,7 @@ span.red {
     font-size: 14px;
     line-height: 2.0em;
     border: 1px #999 solid;
+    border-radius: 4px;
 }
 
 .activeFilters .btn {
@@ -965,6 +966,14 @@ span.red {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+@media (min-width: 768px) {
+    #DQDetailsModal.modal-dialog,
+    #DQProfileDetailsModal.modal-dialog {
+        width: 80vw;
+        max-width: 900px;
+    }
 }
 
 .dq-active-filter-item {
@@ -1084,6 +1093,84 @@ a.leaflet-control-zoom-fullscreen + a.leaflet-control-zoom-fullscreen {
 }
 
 #excluded .exclude-count-label {
-    color: #c44d34;
-    font-style: italic
+    color: inherit;
+    font-style: normal;
+    font-weight: bold;
+}
+
+#dq-collapse-caret {
+    color: black;
+}
+
+#DQProfileDetails .filter-description {
+    word-break: break-word;
+}
+
+#DQProfileDetails .filter-value {
+    word-break: keep-all;
+}
+
+#DQProfileDetails .filter-value span{
+    white-space: nowrap;
+}
+
+#DQManageFilters .expand {
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    font-size: 14px
+}
+
+#DQManageFilters .expanded {
+    vertical-align: middle;
+    margin: 0;
+    font-style: italic;
+}
+
+.valign-middle {
+    vertical-align: middle;
+}
+
+.DQPrefSettingsLink {
+    float: right;
+}
+
+.DQPrefSettingsLink span {
+    color: black;
+}
+
+#excluded, #filter-value {
+    margin-bottom: 0
+}
+
+#view-excluded, #expandfilters {
+    text-decoration: none;
+    padding: 0;
+}
+
+#DQDetailsTable {
+    margin-top: 20px;
+}
+
+#fqdetail-heading-description {
+    font-style: italic;
+}
+
+#download-button-area {
+    padding-right: 5px;
+}
+
+a.copyLink {
+    border-color: black;
+    color: black
+}
+
+#copy-al4r {
+    border-color: black;
+}
+
+#content .tooltip-inner {
+    word-break: break-word;
+    white-space: normal;
 }

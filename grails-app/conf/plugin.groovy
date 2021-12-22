@@ -90,7 +90,7 @@ test.var = "test"
 // used to link temporary data resources back to an originating sandbox.
 sandbox.uploadSource=''
 advancedTaxaField = "taxa" // used in advanced form for the 4 taxa query inputs
-
+alerts.myannotation.enabled = false
 clubRoleForHub = "ROLE_ADMIN"
 // whether map or list is the default tab to show - empty for list and "mapView" for map
 defaultListView = "" //  'mapView' or 'listView'

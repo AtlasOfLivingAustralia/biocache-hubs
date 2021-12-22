@@ -31,8 +31,8 @@ class AdminController {
 
     def clearAllCaches() {
         def message = doClearAllCaches()
-        flash.message = message.replaceAll("\n","<br/>")
-        redirect(action:'index')
+        flash.message = message.replaceAll("\n", "<br/>")
+        redirect(action: 'index')
     }
 
     private String doClearAllCaches() {
@@ -41,27 +41,33 @@ class AdminController {
         message += webServicesService.doClearLongTermCache()
         message += doClearFacetsCache()
         message += doClearPropertiesCache()
+        message += doClearRecordCountCache()
         message
     }
 
     def clearCollectoryCache() {
         flash.message = webServicesService.doClearCollectoryCache()
-        redirect(action:'index')
+        redirect(action: 'index')
     }
 
     def clearLongTermCache() {
         flash.message = webServicesService.doClearLongTermCache()
-        redirect(action:'index')
+        redirect(action: 'index')
     }
 
     def clearFacetsCache() {
         flash.message = doClearFacetsCache()
-        redirect(action:'index')
+        redirect(action: 'index')
     }
 
     def clearPropertiesCache() {
         flash.message = doClearPropertiesCache()
-        redirect(action:'index')
+        redirect(action: 'index')
+    }
+
+    def clearRecordCountCache() {
+        flash.message = doClearRecordCountCache()
+        redirect(action: 'index')
     }
 
     def doClearFacetsCache() {
@@ -74,10 +80,7 @@ class AdminController {
         "i18n messages cache cleared\n"
     }
 
-    def clearRecordCountCache() {
+    def doClearRecordCountCache() {
         qualityService.clearRecordCountCache()
-        flash.message = "record count cache cleared\n"
-        redirect(action: 'index')
     }
-
 }
