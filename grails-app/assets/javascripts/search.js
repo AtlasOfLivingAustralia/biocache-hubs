@@ -29,9 +29,14 @@ $(document).ready(function() {
         $('.exclude-loader').hide();
         for (var key in data) {
             var categoryEnabled = $('.exclude-count-label[data-category='+key+']').data('enabled')
-            data[key] = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : 0
+            data[key] = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : '0';
             $('.exclude-count-label[data-category='+key+']').text(data[key]).show();
-            $('.exclude-count-facet[data-category='+key+']').text("-("+data[key]+")").show();
+
+            if (data[key] === '0') {
+                $('.exclude-count-facet[data-category=' + key + ']').text('(' + data[key] + ')').show();
+            } else {
+                $('.exclude-count-facet[data-category=' + key + ']').text('(-' + data[key] + ')').show();
+            }
         }
         excludeCounts = data;
     });
@@ -165,7 +170,8 @@ $(document).ready(function() {
 
         //Check user has selected at least 1 facet
         if (selectedFacets.length > 0 && selectedFacets.length  <= BC_CONF.maxFacets) {
-            // save facets to the user_facets cookie
+            // save facets to the user_facets cookie as string
+            $.cookie.json = false;
             $.cookie("user_facets", selectedFacets, { expires: 7 });
             // reload page
             document.location.reload(true);
@@ -242,8 +248,8 @@ $(document).ready(function() {
                         synListSize++;
                         synList1 += "<input type='checkbox' name='raw_taxon_guid' id='rawTaxon_" + index + "_" + j +
                             "' class='rawTaxonCheckBox' value='" + el1.label + "'/>&nbsp;" +
-                            "<a href='" + BC_CONF.contextPath + "/occurrences/search?q=raw_taxon_name:%22" + el1.label +
-                            "%22'>" + el1.label + "</a> (" + el1.count + ")<br/>";
+                            "<a href=\"" + BC_CONF.contextPath + "/occurrences/search?q=raw_taxon_name:%22" + encodeURIComponent(el1.label) +
+                            "%22\">" + el1.label + "</a> (" + el1.count + ")<br/>";
                     });
                 }
             });
@@ -349,13 +355,19 @@ $(document).ready(function() {
         loadMoreFacets(facetName, displayName, null);
     });
 
+    $('#profiles-selection').click(function(e) {
+        e.preventDefault();
+        $('#active-profile-name').text(e.target.innerText)
+        window.location.href = e.target.href
+    })
+
     // When user clicks the 'view profile description' icon next to profiles selection drop-down
     $('.DQProfileDetailsLink').click(function() {
         $.each($(".cat-table"), function(idx, el) {
-            var filters = $(el).data('filters');
 
-            var filterlist = filters.split(' AND ');
+            var filterlist = $(el).data('filters');
             var keys = [];
+
             for (var i = 0; i < filterlist.length; i++) {
                 var val = parseFilter(filterlist[i]);
                 if (val.length > 0) {
@@ -416,8 +428,8 @@ $(document).ready(function() {
     // when use clicks <i/> to view details of a category
     $('.DQCategoryDetailsLink').click(function() {
         var link = this;
+        var filters = $(link).data("filters");
         var fq = $(link).data("fq");
-        var fqs = fq.split(' AND ')
 
         var description = $(link).data("description");
         var dqCategoryLabel = $(link).data('categorylabel')
@@ -430,10 +442,10 @@ $(document).ready(function() {
         $('#DQDetailsModal .modal-body #filter-value').html("<b>Filter applied: </b><i>fq=" + fq + "</i>");
         $("#view-excluded").attr('href', dqInverse);
 
-        if (excludeCounts[dqCategoryLabel]) {
+        if (excludeCounts[dqCategoryLabel] !== '0') {
             $("#excluded .exclude-count-label").text(excludeCounts[dqCategoryLabel]).removeData('category').removeAttr('category');
         } else {
-            $("#excluded .exclude-count-label").text('').data('category', dqCategoryLabel).attr('data-category', dqCategoryLabel);
+            $("#excluded .exclude-count-label").text(excludeCounts[dqCategoryLabel]).data('category', dqCategoryLabel).attr('data-category', dqCategoryLabel);
         }
 
         var pos = 0;
@@ -495,10 +507,9 @@ $(document).ready(function() {
                 }
             })
 
-            var descs = description.split(' and ')
             var valuesHtml = ""
 
-            $.each(fqs, function(idx, el) {
+            $.each(filters, function(idx, el) {
                 var vals = parseFilter(el);
                 if (vals.length > 0) {
                     var key = vals[0];
@@ -515,10 +526,11 @@ $(document).ready(function() {
                         wiki = replaceURL(map.get(key)[1], 'Link');
                     }
 
-                    // make sure no beak between '-' and key
-                    var els = el.split(':');
-                    el = '<span style="white-space: nowrap;">' + els[0] + '</span>:' + els[1];
-                    valuesHtml += '<tr><td style=\"word-break: break-word\">' + replaceURL(descs[idx]) + '</td><td style=\"word-break: normal\">' + el + '</td><td>' + wiki + '</td></tr>';
+                    valuesHtml += '<tr>'
+                    valuesHtml += '<td class="filter-description" style="word-break: break-word">' + replaceURL(description[idx]) + '</td>'
+                    valuesHtml += '<td class="filter-value" style="word-break: normal"><span style="white-space: nowrap;">' + el + '</span></td>'
+                    valuesHtml += '<td class="filter-wiki">' + wiki + '</td>'
+                    valuesHtml += '</tr>'
                 }
             })
 
@@ -632,6 +644,25 @@ $(document).ready(function() {
         //console.log('clicked ' + window.location.href );
         window.location.href = BC_CONF.serverName + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName;
     });
+
+    $('#copy-al4r').on('click', function() {
+        var input = document.querySelector('#al4rcode');
+        navigator.clipboard.writeText(input.value)
+            .then(() => {
+                $(this).qtip({
+                    content: jQuery.i18n.prop('list.copylinks.tooltip.copied'),
+                    show: true,
+                    hide: { when: { event: 'mouseout'} }
+                })})
+            .catch((error) => { alert(jQuery.i18n.prop('list.copylinks.alert.failed') + error) })
+    });
+
+    $('#copy-al4r').on('mouseleave', function() {
+        $(this).qtip({
+            content: jQuery.i18n.prop('list.copylinks.tooltip.copytoclipboard'),
+            show: { when: { event: 'mouseover'} }
+        })
+    })
 
     // when open the user preference dlg
     $('.DQPrefSettingsLink').click(function() {
@@ -1173,7 +1204,7 @@ $(document).ready(function() {
     });
 
     // user preference settings and download link tooltips will be above the control
-    $("#usersettings, a.newDownload").qtip({
+    $("#usersettings, a.copyLink").qtip({
         style: {
             classes: 'ui-tooltip-rounded ui-tooltip-shadow'
         },

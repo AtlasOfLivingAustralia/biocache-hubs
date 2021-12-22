@@ -47,7 +47,7 @@ class GeoIpService {
         // A File object pointing to your GeoIP2 or GeoLite2 database
         File fileDatabase = new File(filePath)
 
-        if(!fileDatabase.exists() || !fileDatabase.canRead()) {
+        if (!fileDatabase.exists() || !fileDatabase.canRead()) {
             log.warn("GeoIP Database file [${filePath}] does not exist or can't be read. GeoIpservice will be bypassed.")
             return
         }
@@ -70,7 +70,7 @@ class GeoIpService {
                                      'WL-Proxy-Client-IP',
                                      'rlnclientipaddr']
 
-    private InetAddress getIpAddress(HttpServletRequest  request) {
+    private InetAddress getIpAddress(HttpServletRequest request) {
         String unknown = 'unknown'
         String inetAddressStr = unknown
 
@@ -95,7 +95,7 @@ class GeoIpService {
     private String findExternalInetAddress(String inetAddressStr) {
 
 
-        if(inetAddressStr && inetAddressStr.contains(',')) {
+        if (inetAddressStr && inetAddressStr.contains(',')) {
             // Address is of the form ip1, ip2, ...
             // Let's take the first address only
             String[] ipAddressesStr = inetAddressStr.trim().split(/,\s*/)
@@ -104,7 +104,7 @@ class GeoIpService {
                 InetAddress inetAddress = InetAddress.getByName(it.trim());
 
                 !inetAddress.isAnyLocalAddress() && !inetAddress.isSiteLocalAddress() &&
-                !inetAddress.isLinkLocalAddress() && !inetAddress.isLoopbackAddress()
+                        !inetAddress.isLinkLocalAddress() && !inetAddress.isLoopbackAddress()
             }
             result
         } else {
@@ -117,8 +117,8 @@ class GeoIpService {
      * @param request the client request
      * @return the Location for the requesting client IP Address or null if the GeoIP database could not be found.
      */
-    Location getLocation(HttpServletRequest request ) {
-        if(reader) {
+    Location getLocation(HttpServletRequest request) {
+        if (reader) {
             try {
                 InetAddress ipAddress = getIpAddress(request)
                 CityResponse response = reader.city(ipAddress);

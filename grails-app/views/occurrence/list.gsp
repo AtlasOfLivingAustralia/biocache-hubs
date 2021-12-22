@@ -8,7 +8,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <g:set var="startPageTime" value="${System.currentTimeMillis()}"/>
 <g:set var="queryDisplay" value="${sr?.queryTitle ?: searchRequestParams?.displayString ?: ''}"/>
-<g:set var="searchQuery" value="${grailsApplication.config.skin?.useAlaBie?.toBoolean() ? 'taxa' : 'q'}"/>
 <g:set var="authService" bean="authService"></g:set>
 <!DOCTYPE html>
 <html>
@@ -32,6 +31,7 @@
     // single global var for app conf settings
     <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
     <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
+    <g:set var="biocacheServiceUrl" value="${alatag.getBiocacheAjaxUrl()}"/>
     var BC_CONF = {
         contextPath: "${request.contextPath}",
             serverName: "<g:createLink absolute="true" uri="" />",
@@ -43,7 +43,7 @@
             queryString: "${queryDisplay.encodeAsJavaScript()}",
             bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
             bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
-            biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
+            biocacheServiceUrl: "${biocacheServiceUrl}",
             collectoryUrl: "${grailsApplication.config.collectory.baseUrl}",
             alertsUrl: "${grailsApplication.config.alerts.baseUrl}",
             skin: "${grailsApplication.config.skin.layout}",
@@ -73,7 +73,9 @@
             expandProfileDetails: ${grailsApplication.config.getProperty('dataquality.enabled', Boolean, false) ? expandProfileDetails : true},
             userId: "${userId}",
             prefKey: "${(grailsApplication.config.getProperty("dataquality.prefkey", String, "dqUserProfile"))}",
-            expandKey: "${(grailsApplication.config.getProperty("dataquality.expandKey", String, "dqDetailExpand"))}"
+            expandKey: "${(grailsApplication.config.getProperty("dataquality.expandKey", String, "dqDetailExpand"))}",
+            autocompleteUrl: "${grailsApplication.config.skin.useAlaBie?.toBoolean() ? (grailsApplication.config.bieService.baseUrl + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
+            autocompleteUseBie: ${grailsApplication.config.skin.useAlaBie?.toBoolean()}
         };
 </script>
 
@@ -95,9 +97,7 @@
 <asset:stylesheet src="ala/ala-charts.css"/>
 
 
-<g:if test="${grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean()}">
-    <asset:javascript src="bieAutocomplete.js"/>
-</g:if>
+<asset:javascript src="autocomplete.js"/>
 <asset:script type="text/javascript">
     <g:if test="${!grailsApplication.config.google.apikey}">
         google.load('maps','3.5',{ other_params: "sensor=false" });
@@ -114,7 +114,7 @@
         </div>
 
         <div id="searchBoxZ" class="text-right col-sm-7 col-md-7">
-            <form action="${g.createLink(controller: 'occurrences', action: 'search')}" id="solrSearchForm" class="form-horizontal">
+            <form action="${g.createLink(controller: 'home', action: 'simpleSearch')}" id="solrSearchForm" class="form-horizontal">
                 <div id="advancedSearchLink">
                     <a href="${g.createLink(uri: '/search')}#tab_advanceSearch" class="tooltips" title="<g:message code="list.advancedsearchlink.tooltip" default="Go to advanced search form"></g:message>">
                         <i class="fa fa-cogs"></i>
@@ -122,7 +122,7 @@
                     </a>
                 </div>
                 <div class="input-group pull-right col-sm-7 col-md-7">
-                    <input type="text" id="taxaQuery" name="${searchQuery}" class="form-control"
+                    <input type="text" id="taxaQuery" name="q" class="form-control"
                            value="${params.list(searchQuery).join(' OR ')}"/>
                     <span class="input-group-btn">
                         <input class="form-control btn btn-default" type="submit" id="solrSubmit" value="${g.message(code:"list.advancedsearchlink.button.label", default:"Quick search")}"/>
@@ -285,11 +285,35 @@
                     </div>
                 </g:if>
                 <g:if test="${grailsApplication.config.useDownloadPlugin?.toBoolean()}">
-                    <div id="downloads" class="btn btn-primary pull-right">
-                        <alatag:download searchResults="${sr}" searchRequestParams="${searchRequestParams}" class="tooltips newDownload" title="${g.message(code:"list.downloads.navigator.title", args:[g.formatNumber(number: sr.totalRecords, format: "#,###,###")])}">
-                            <i class="fa fa-download"></i>
-                            &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/>
-                        </alatag:download>
+                    <div id="download-button-area" class="pull-right" >
+                        <div id="downloads" class="btn btn-primary">
+                            <alatag:download searchResults="${sr}" searchRequestParams="${searchRequestParams}" class="tooltips newDownload" title="${g.message(code:"list.downloads.navigator.title", args:[g.formatNumber(number: sr.totalRecords, format: "#,###,###")])}">
+                                <i class="fa fa-download"></i>
+                                &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/>
+                            </alatag:download>
+                        </div>
+                        <a href="#CopyLink" data-toggle="modal" role="button" class="tooltips btn copyLink" title="${g.message(code:"list.copylinks.dlg.copybutton.title")}"><i class="fa fa-files-o" aria-hidden="true"></i>&nbsp;&nbsp;<g:message code="list.copylinks" default="API"/></a>
+                        <div id="CopyLink" class="modal fade" role="dialog" tabindex="-1">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        <h3><g:message code="list.copylinks.dlg.title" default="Copy the JSON web service URL"/></h3>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-sm-12 input-group">
+                                            <g:set var="jsonurl" value="${biocacheServiceUrl}/occurrences/search${searchString}"/>
+                                            <input type="text" class="form-control" value=${jsonurl} id="al4rcode" readonly/>
+                                            <span class="input-group-btn">
+                                                <button class="form-control btn" id="copy-al4r">
+                                                    <alatag:message code="list.copylinks.dlg.copybutton.text" default="{JSON}"/>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </g:if>
                 <div id="resultsReturned">
@@ -310,14 +334,14 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title" style="text-align: center;"><alatag:message code="dq.warning.dataprofile.title" default="Results filtering with data profiles"></alatag:message></h4>
+                                            <h4 class="modal-title text-center"><alatag:message code="dq.warning.dataprofile.title" default="Results filtering with data profiles"></alatag:message></h4>
                                         </div>
                                         <div class="modal-body">
                                             <p>
                                                 <alatag:message code="dq.warning.dataprofile.content.line1" default="Search results are now filtered by default to exclude lower quality records according to the ALA General data profile. Data profiles may be disabled or other data profiles are available via the data profile drop down."></alatag:message>
                                             </p>
                                             <p>
-                                                Information on the data profiles and the filters used in each data profile is available via the <i class='fa fa-info-circle' style="color:#c44d34"></i> icons.
+                                                Information on the data profiles and the filters used in each data profile is available via the <a><i class='fa fa-info-circle'></i></a> icons.
                                             </p>
                                         </div>
                                         <div class="modal-footer">
@@ -331,15 +355,16 @@
                     </alatag:ifDataQualityEnabled>
                     <alatag:ifDataQualityEnabled>
                         <div class="activeFilters col-sm-12">
-                            <div>
-                            <a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse" class="dq-filters-collapse" style="vertical-align: middle;"><i class="fa fa-caret-right" style="width: 8px;color: black"></i>&nbsp;<b><alatag:message code="quality.filters.group.title" default="Data Profile"/></b>:</a>
+                            <div><span class="valign-middle">
+                                <a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse" class="dq-filters-collapse"><i id='dq-collapse-caret' class="fa fa-caret-right"></i>&nbsp;<b><alatag:message code="quality.filters.group.title" default="Data Profile"/></b>:</a>
+                            </span>
                             <g:if test="${qualityProfiles.size() >= 1}">
                                 <span class="dropdown">
                                     <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to switch profiles">
-                                        ${searchRequestParams.disableAllQualityFilters ? 'Disabled' : activeProfile.name}
+                                        <span id="active-profile-name">${searchRequestParams.disableAllQualityFilters ? 'Disabled' : activeProfile.name}</span>
                                         <span class="caret"></span>
                                     </button>
-                                    <ul class="dropdown-menu" aria-labelledby="profile-dropdown">
+                                    <ul class="dropdown-menu" id="profiles-selection" aria-labelledby="profile-dropdown">
                                         <g:each in="${qualityProfiles}" var="profile">
                                             <li><g:link action="${actionName}" params="${params.clone().with { if (profile.isDefault) it.remove('qualityProfile') else it.qualityProfile = profile.shortName ; it.remove('disableAllQualityFilters'); it } }" title="Click to enable the ${profile.name} quality filters">${profile.name}<g:if test="${profile.isDefault}"> (Default)</g:if></g:link></li>
                                         </g:each>
@@ -351,7 +376,7 @@
                                 <alatag:linkToggeleDQFilters class="btn btn-default btn-xs"/>
                             </g:else>
                             <g:if test="${!searchRequestParams.disableAllQualityFilters}">
-                                <span style="vertical-align: middle;">
+                                <span class="valign-middle">
                                     <a href="#DQProfileDetails" class="DQProfileDetailsLink" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.profileinfo.button.tooltip" default="Click to view the profile description"></g:message>"></i></a>
                                 </span>&nbsp;
                                 <div id="DQProfileDetails" class="modal fade" role="dialog" tabindex="-1">
@@ -378,7 +403,7 @@
                                                             <b>${category.name}</b><br>
                                                             ${category.description}
                                                         </div>
-                                                        <table class="table cat-table table-bordered table-condensed table-striped scrollTable" data-translation="${translatedFilterMap[category.label]}" data-filters="${category.qualityFilters.findAll{it.enabled}*.filter.join(' AND ')}">
+                                                        <table class="table cat-table table-bordered table-condensed table-striped scrollTable" data-translation="${translatedFilterMap[category.label]}" data-filters="${groovy.json.JsonOutput.toJson(category.qualityFilters.findAll{it.enabled}*.filter.flatten())}">
                                                             <tr>
                                                                 <th><alatag:message code="dq.profiledetail.filtertable.header.description" default="Filter description"/></th>
                                                                 <th><alatag:message code="dq.profiledetail.filtertable.header.value" default="Filter value"/></th>
@@ -387,8 +412,8 @@
                                                             <g:each var="filter" in="${category.qualityFilters}">
                                                                 <g:if test="${filter.enabled}">
                                                                     <tr>
-                                                                        <td class='filter-description' style="word-break: break-word;" data-val="${filter.description}"></td>
-                                                                        <td class='filter-value' style="word-break: keep-all"><span style="white-space: nowrap;">${filter.filter}</span></td>
+                                                                        <td class='filter-description' data-val="${filter.description}"></td>
+                                                                        <td class='filter-value'><span>${filter.filter}</span></td>
                                                                         <td class="filter-wiki"></td>
                                                                     </tr>
                                                                 </g:if>
@@ -429,10 +454,10 @@
                                                                         <td class="filternames" data-filters="${qualityCategory.qualityFilters.findAll { it.enabled }*.filter}" data-category="${qualityCategory.label}">${qualityCategory.name}</td>
                                                                         <td>
                                                                             <input type="checkbox" name="filters" class="filters" data-category="${qualityCategory.label}" data-enabled="${!qcDisabled}" value="" style="vertical-align: middle; margin: 0">&nbsp;
-                                                                            <button class='btn btn-link btn-sm expand' data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0; padding: 0; text-decoration: none; font-size: 14px"
+                                                                            <button class='btn btn-link btn-sm expand' data-category="${qualityCategory.label}"
                                                                                     title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>">
-                                                                            <g:message code="dq.selectmultiple.buttontext.expandfilters" default="Expand and edit filters"/></button>
-                                                                            <span class="expanded" data-category="${qualityCategory.label}" style="vertical-align: middle; margin: 0; font-style: italic; color:#c44d34"><g:message code="dq.selectmultiple.text.expanded" default="Expanded"/></span>
+                                                                            <a><g:message code="dq.selectmultiple.buttontext.expandfilters" default="Expand and edit filters"/></a></button>
+                                                                            <span class="expanded" data-category="${qualityCategory.label}" ><g:message code="dq.selectmultiple.text.expanded" default="Expanded"/></span>
                                                                         </td>
                                                                     </tr>
                                                                 </g:each>
@@ -451,17 +476,17 @@
                                         </div>
                                     </div>
                                 </div>
-                                <span style="vertical-align: middle;">
+                                <span class="valign-middle">
                                     <alatag:linkResetSearch filters="${qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten()}">
-                                        <i class="fas fa-undo fa-xs tooltips" title="<g:message code="quality.filters.resetsearch.tooltip" default="Reset filters"></g:message>"></i>
+                                        <i class="fa fa-undo fa-xs tooltips" title="<g:message code="quality.filters.resetsearch.tooltip" default="Reset filters"></g:message>"></i>
                                     </alatag:linkResetSearch>
                                 </span>&nbsp;
                             </g:if>
 
                             <g:if test="${!searchRequestParams.disableAllQualityFilters && qualityCategories.size() > 1}">
-                                <span style="vertical-align: middle;"><a href="#DQManageFilters" class="multipleFiltersLink tooltips" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="Select filters"/></a></span>
+                                <span class="valign-middle"><a href="#DQManageFilters" class="multipleFiltersLink tooltips" data-toggle="modal" role="button" title="<g:message code="dq.button.filterselection.tooltip"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;<alatag:message code="dq.button.filterselection.text" default="Select filters"/></a></span>
                             </g:if>
-                                <a href="#DQPrefSettings" class="DQPrefSettingsLink" data-toggle="modal" role="button" style="float: right; color: black"><span id='usersettings' title="<g:message code="dq.profilesettings.button.tooltip" default="Data profile settings"/>"><span><g:message code="dq.profilesettings.button.label" default="Settings"/>&nbsp;</span><i class="fa fa-cog"></i></span></a>
+                                <a href="#DQPrefSettings" class="DQPrefSettingsLink" data-toggle="modal" role="button"><span id='usersettings' title="<g:message code="dq.profilesettings.button.tooltip" default="Data profile settings"/>"><span><g:message code="dq.profilesettings.button.label" default="Settings"/>&nbsp;</span><i class="fa fa-cog"></i></span></a>
                                 <div id="DQPrefSettings" class="modal fade" role="dialog" tabindex="-1" data-defaultprofilename="${defaultProfileName}" data-userpref="${userPref}" data-userpref-json="${groovy.json.JsonOutput.toJson(userPref)}" data-profiles="${groovy.json.JsonOutput.toJson(qualityProfiles.collect {it.shortName})}" data-filters="${groovy.json.JsonOutput.toJson(qualityCategories.collect{it.qualityFilters.findAll{it.enabled}*.filter}.flatten())}">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
@@ -532,7 +557,7 @@
                                             <span>
                                                 <span class="tooltips cursor-pointer" title="${qualityCategory.description + (dqInteract.containsKey(qualityCategory.label) ? "<br><br>" + dqInteract[qualityCategory.label] : "")}" style="color:${DQColors[qualityCategory.label]}">${qualityCategory.name}</span>
 
-                                                <a href="#DQCategoryDetails" class="DQCategoryDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-dqcategorydescription="${qualityCategory.description}" data-categorylabel="${qualityCategory.label}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${qualityFilterDescriptionsByLabel[qualityCategory.label]}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-inverse-filter="${alatag.createInverseQualityCategoryLink(category: qualityCategory, inverseFilters: inverseFilters)}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
+                                                <a href="#DQCategoryDetails" class="DQCategoryDetailsLink" data-profilename="${activeProfile.name}" data-dqcategoryname="${qualityCategory.name}" data-dqcategorydescription="${qualityCategory.description}" data-categorylabel="${qualityCategory.label}" data-filters="${groovy.json.JsonOutput.toJson(qualityCategory.qualityFilters.findAll{it.enabled}*.filter.flatten())}" data-fq="${qualityFiltersByLabel[qualityCategory.label]}" data-description="${groovy.json.JsonOutput.toJson(qualityFilterDescriptionsByLabel[qualityCategory.label])}" data-translation="${translatedFilterMap[qualityCategory.label]}" data-disabled="${qcDisabled}" data-inverse-filter="${alatag.createInverseQualityCategoryLink(category: qualityCategory, inverseFilters: inverseFilters)}" data-toggle="modal" role="button"><i class="fa fa-info-circle tooltips" title="<g:message code="dq.categoryinfo.button.tooltip" default="Click for more information and actions"></g:message>"></i></a>
                                                 <alatag:invertQualityCategory category="${qualityCategory}" inverseFilters="${inverseFilters}" target="_blank" class="tooltips" title="${g.message(code: 'dq.inverse.button', default: 'Show excluded records')}">
                                                     (<i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span style="display: none;" class="exclude-count-label" data-category="${qualityCategory.label}" data-enabled="${!searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}"></span>
                                                     <alatag:message code="quality.filters.excludeCount" default="records excluded" />)
@@ -546,16 +571,16 @@
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                                     <h3 id="fqdetail-heading-name"></h3>
-                                                    <p id="fqdetail-heading-description" style="font-style: italic"></p>
+                                                    <p id="fqdetail-heading-description"></p>
                                                 </div>
 
                                                 <div class="modal-body" id="modal-body">
-                                                    <p id="excluded" style="margin-bottom: 0"><i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span class="exclude-count-label"></span> <g:message code="dq.excluded.count" default="records are excluded by this category"/></p>
-                                                    <a id="view-excluded" class="btn btn-link" href="#view-excluded" target="_blank" style="text-decoration: none; padding: 0"><g:message code="dq.view.excluded" default="View excluded records"/></a>
-                                                    <p id="filter-value" style="margin-bottom: 0"></p>
-                                                    <button id='expandfilters' class="btn btn-link tooltips" data-dismiss="modal" data-profile=${params.qualityProfile} title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>" style="text-decoration: none; padding: 0"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Expand and edit filters"/></button>
+                                                    <p id="excluded"><i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span class="exclude-count-label"></span> <g:message code="dq.excluded.count" default="records are excluded by this category"/></p>
+                                                    <a id="view-excluded" class="btn btn-link" href="#view-excluded" target="_blank"><g:message code="dq.view.excluded" default="View excluded records"/></a>
+                                                    <p id="filter-value"></p>
+                                                    <button id='expandfilters' class="btn btn-link tooltips" data-dismiss="modal" data-profile=${params.qualityProfile} title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Expand and edit filters"/></button>
 
-                                                    <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable" style="margin-top: 20px">
+                                                    <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable">
                                                         <thead class="fixedHeader">
                                                         <tr>
                                                             <th><alatag:message code="dq.categoryinfo.dlg.fieldtable.heading.name" default="Field name"/></th>
@@ -564,7 +589,7 @@
                                                         </tr>
 
                                                         <tr class="spinnerRow">
-                                                            <td colspan="3" style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
+                                                            <td colspan="3" class="text-center"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
                                                         </tr>
                                                         </thead>
 
@@ -581,7 +606,7 @@
                                                         </tr>
 
                                                         <tr class="spinnerRow">
-                                                            <td colspan="3" style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
+                                                            <td colspan="3" class="text-center"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
                                                         </tr>
                                                         </thead>
 

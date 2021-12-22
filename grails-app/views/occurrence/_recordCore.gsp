@@ -724,7 +724,7 @@
 <!-- Latitude -->
 <alatag:occurrenceTableRow annotate="true" section="geospatial" fieldCode="latitude" fieldName="Latitude">
     ${fieldsMap.put("decimalLatitude", true)}
-    <g:if test="${clubView && record.raw.location.decimalLatitude != record.processed.location.decimalLatitude}">
+    <g:if test="${clubView && record.sensitive && record.raw.location.decimalLatitude}">
         ${record.raw.location.decimalLatitude}
     </g:if>
     <g:elseif test="${record.raw.location.decimalLatitude && record.raw.location.decimalLatitude != record.processed.location.decimalLatitude}">
@@ -740,7 +740,7 @@
 <!-- Longitude -->
 <alatag:occurrenceTableRow annotate="true" section="geospatial" fieldCode="longitude" fieldName="Longitude">
     ${fieldsMap.put("decimalLongitude", true)}
-    <g:if test="${clubView && record.raw.location.decimalLongitude != record.processed.location.decimalLongitude}">
+    <g:if test="${clubView && record.sensitive && record.raw.location.decimalLongitude}">
         ${record.raw.location.decimalLongitude}
     </g:if>
     <g:elseif test="${record.raw.location.decimalLongitude && record.raw.location.decimalLongitude != record.processed.location.decimalLongitude}">

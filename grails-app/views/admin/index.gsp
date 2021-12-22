@@ -33,9 +33,10 @@
                 <b><g:message code="home.index.body.alert" default="Alert:"/></b> <alatag:stripApiKey message="${flash.message}"/>
             </div>
         </g:if>
-
-        <h2>Cache management</h2>
-        <div class="btn-group">
+        <div class="panel-heading">
+            <h3>Cache management</h3>
+        </div>
+        <div class="btn-group panel-body">
             <a href="${g.createLink(action:'clearAllCaches')}" class="btn btn-primary ">Clear all caches</a>
             <a href="${g.createLink(action:'clearCollectoryCache')}" class="btn btn-default">Clear collectory cache</a>
             <a href="${g.createLink(action:'clearFacetsCache')}" class="btn btn-default">Clear facets cache</a>
@@ -45,12 +46,11 @@
         </div>
 
         <alatag:ifDataQualityEnabled>
-            <h2>Data Quality Filters</h2>
-            <div class="message alert alert-info">
-                Add default filters for all queries run through this hub.
+            <div class="panel-heading">
+                <h3><g:message code="admin.dataquality.heading" default="Data Quality Filters"/></h3>
             </div>
-            <div class="btn-group">
-                <g:link class="btn btn-default" url="${grailsApplication.config.getProperty('dataquality.baseUrl')}">Filters</g:link>
+            <div class="panel-body">
+                <g:link url="${grailsApplication.config.getProperty('dataquality.baseUrl')}"><g:message code="admin.dataquality.link.text" default="Data Quality filters admin interface"/></g:link>
             </div>
         </alatag:ifDataQualityEnabled>
 
