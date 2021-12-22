@@ -1,4 +1,4 @@
-//= require jquery_i18n
+
 //= require leaflet/leaflet-src.js
 //= require leaflet-fullscreen.js
 //= require leaflet-plugins/layer/tile/Google.js

@@ -28,8 +28,6 @@
         <script src="https://maps.google.com/maps/api/js" type="text/javascript"></script>
     </g:else>
 
-    <asset:javascript src="jquery_i18n.js"/>
-
     <script type="text/javascript">
         // global var for GSP tags/vars to be passed into JS functions
         var BC_CONF = {
