@@ -248,8 +248,8 @@ $(document).ready(function() {
                         synListSize++;
                         synList1 += "<input type='checkbox' name='raw_taxon_guid' id='rawTaxon_" + index + "_" + j +
                             "' class='rawTaxonCheckBox' value='" + el1.label + "'/>&nbsp;" +
-                            "<a href='" + BC_CONF.contextPath + "/occurrences/search?q=raw_taxon_name:%22" + el1.label +
-                            "%22'>" + el1.label + "</a> (" + el1.count + ")<br/>";
+                            "<a href=\"" + BC_CONF.contextPath + "/occurrences/search?q=raw_taxon_name:%22" + encodeURIComponent(el1.label) +
+                            "%22\">" + el1.label + "</a> (" + el1.count + ")<br/>";
                     });
                 }
             });
@@ -644,6 +644,25 @@ $(document).ready(function() {
         //console.log('clicked ' + window.location.href );
         window.location.href = BC_CONF.serverName + "/occurrences/facets/download" + BC_CONF.facetDownloadQuery + '&facets=' + facetName;
     });
+
+    $('#copy-al4r').on('click', function() {
+        var input = document.querySelector('#al4rcode');
+        navigator.clipboard.writeText(input.value)
+            .then(() => {
+                $(this).qtip({
+                    content: jQuery.i18n.prop('list.copylinks.tooltip.copied'),
+                    show: true,
+                    hide: { when: { event: 'mouseout'} }
+                })})
+            .catch((error) => { alert(jQuery.i18n.prop('list.copylinks.alert.failed') + error) })
+    });
+
+    $('#copy-al4r').on('mouseleave', function() {
+        $(this).qtip({
+            content: jQuery.i18n.prop('list.copylinks.tooltip.copytoclipboard'),
+            show: { when: { event: 'mouseover'} }
+        })
+    })
 
     // when open the user preference dlg
     $('.DQPrefSettingsLink').click(function() {
@@ -1185,7 +1204,7 @@ $(document).ready(function() {
     });
 
     // user preference settings and download link tooltips will be above the control
-    $("#usersettings, a.newDownload").qtip({
+    $("#usersettings, a.copyLink").qtip({
         style: {
             classes: 'ui-tooltip-rounded ui-tooltip-shadow'
         },

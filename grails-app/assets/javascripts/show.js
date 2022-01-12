@@ -11,13 +11,33 @@
 //= require linkifyjs/linkify-jquery.js
 //= require leaflet/leaflet.js
 //= require leaflet-plugins/layer/tile/Google.js
-//= require biocache-hubs.js
 //= require_self
  */
 /**
  * JQuery on document ready callback
  */
+
+function updatei18n() {
+    $('.i8nupdate').each(function() {
+        var key = $(this).attr('i18nkey')
+        if (key !== undefined) {
+            $(this).text(jQuery.i18n.prop(key));
+        }
+    });
+}
+
 $(document).ready(function() {
+    if (typeof BC_CONF != 'undefined' && BC_CONF.hasOwnProperty('contextPath')) {
+        jQuery.i18n.properties({
+            name: 'messages',
+            path: BC_CONF.contextPath + '/messages/i18n/',
+            mode: 'map',
+            async: true,
+            cache: true,
+            language: BC_CONF.locale, // default is to use browser specified locale
+            callback: updatei18n
+        });
+    }
 
     $('#showUncheckedTests').on('click', function(e){
         $('.uncheckTestResult').toggle();
@@ -481,7 +501,7 @@ function refreshUserAnnotations(){
             // if the code == 50000, then we have verification - so don't display here
             if (userAssertion.code != 50000) {
                 $clone.prop('id', "userAnnotation_" + userAssertion.uuid);
-                $clone.find('.issue').text(jQuery.i18n.prop(userAssertion.name));
+                $clone.find('.issue').text(jQuery.i18n.prop(userAssertion.name)).attr('i18nkey', userAssertion.name);
                 $clone.find('.user').text(userAssertion.userDisplayName);
                 if (userAssertion.hasOwnProperty('comment')) {
                     $clone.find('.comment').text('Comment: ' + userAssertion.comment);
@@ -533,8 +553,8 @@ function refreshUserAnnotations(){
                 }
                 if (userAssertion.relatedRecordReason) {
                     $clone.find('.related-record-reason').show();
-                    $clone.find('.related-record-reason-span').text(jQuery.i18n.prop('related.record.reason.' + userAssertion.relatedRecordReason));
-                    $clone.find('.related-record-reason-explanation').text(jQuery.i18n.prop('related.record.reason.explanation.' + userAssertion.relatedRecordReason)).show();
+                    $clone.find('.related-record-reason-span').text(jQuery.i18n.prop('related.record.reason.' + userAssertion.relatedRecordReason)).attr('i18nkey', 'related.record.reason.' + userAssertion.relatedRecordReason);
+                    $clone.find('.related-record-reason-explanation').text(jQuery.i18n.prop('related.record.reason.explanation.' + userAssertion.relatedRecordReason)).attr('i18nkey', 'related.record.reason.explanation.' + userAssertion.relatedRecordReason).show();
                 }
                 if (userAssertion.userRole != null) {
                     $clone.find('.userRole').text(', ' + userAssertion.userRole);
@@ -575,7 +595,7 @@ function refreshUserAnnotations(){
             var $clone = $('#userVerificationTemplate').clone();
             $clone.prop('id', "userVerificationAnnotation_" + sortedVerifiedAssertion[i].uuid);
             var qaStatusMessage = jQuery.i18n.prop("user_assertions." + sortedVerifiedAssertion[i].qaStatus);
-            $clone.find('.qaStatus').text(qaStatusMessage);
+            $clone.find('.qaStatus').text(qaStatusMessage).attr('i18nkey', "user_assertions." + sortedVerifiedAssertion[i].qaStatus);
             $clone.find('.comment').text(sortedVerifiedAssertion[i].comment);
             $clone.find('.userDisplayName').text(sortedVerifiedAssertion[i].userDisplayName);
             $clone.find('.created').text((moment(sortedVerifiedAssertion[i].created, "YYYY-MM-DDTHH:mm:ssZ").format('YYYY-MM-DD HH:mm:ss')));

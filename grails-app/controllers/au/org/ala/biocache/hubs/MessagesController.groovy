@@ -38,14 +38,14 @@ class MessagesController {
             // messages.properties, messages_en.properties, messages_en_US.properties
             // String locale_suffix = id.replaceFirst(/messages_(.*)/,'$1')
             List locBits = id?.tokenize('_')
-            locale = new Locale(locBits[1], locBits[2]?:'')
+            locale = new Locale(locBits[1], locBits[2] ?: '')
         }
 
-        Map props = messageSourceCacheService.getMessagesMap(locale?:request.locale)
+        Map props = messageSourceCacheService.getMessagesMap(locale ?: request.locale)
         //log.debug "props = ${props}"
 
-        def messages = props.collect{ new String("${it.key}=${it.value}".getBytes("UTF-8"), "UTF-8") }
+        def messages = props.collect { new String("${it.key}=${it.value}".getBytes("UTF-8"), "UTF-8") }
 
-        render ( text: messages.sort().join("\n") )
+        render(text: messages.sort().join("\n"))
     }
 }

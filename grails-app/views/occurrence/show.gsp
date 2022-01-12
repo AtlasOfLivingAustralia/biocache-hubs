@@ -183,6 +183,7 @@
                         <span id="copyRecordIdToClipboard-parent" data-toggle="tooltip" data-trigger="manual" data-title="${uuid} copied!">
                             <button class="btn btn-default" id="copyRecordIdToClipboard" role="button" title="Copy this record's id to the clipboard"><g:message code="show.sidebar02.copyrecordid" default="Copy record id" /></button>
                         </span>
+                        <alatag:linkViewOriginal url="${record.raw.occurrence.occurrenceID}" class="btn btn-default" role="button" title="Click to view the original record" target="_blank"><g:message code="show.sidebar02.viewOriginal" default="View original record"/></alatag:linkViewOriginal>
                         <button href="#processedVsRawView" class="btn btn-default" id="showRawProcessed" role="button" data-toggle="modal"
                                 title="Table showing both original and processed record values">
                             <span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="glyphicon glyphicon-transfer"></i>
@@ -708,10 +709,10 @@
 
         <ul style="display:none;">
             <li id="userAnnotationTemplate" class="userAnnotationTemplate well well-sm">
-                <h4><span class="issue"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h4>
-                <p class="related-record-reason" style="display:none;"><g:message code="show.userannotationtemplate.relatedrecord.reason.label" default="Reason:"/> <span class="related-record-reason-span"></span></p>
+                <h4><span class="issue i8nupdate"></span> - <g:message code="show.userannotationtemplate.title" default="flagged by"/> <span class="user"></span><span class="userRole"></span><span class="userEntity"></span></h4>
+                <p class="related-record-reason" style="display:none;"><g:message code="show.userannotationtemplate.relatedrecord.reason.label" default="Reason:"/> <span class="related-record-reason-span i8nupdate"></span></p>
                 <p class="related-record" style="display:none;">
-                    <p class="related-record-reason-explanation" style="display:none;"></p>
+                    <p class="related-record-reason-explanation i8nupdate" style="display:none;"></p>
                     <p class="related-record-id" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.id.label" default="record ID"/>: <span class="related-record-id-span"></span></p>
                     <p class="related-record-name" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.name.label" default="scientific name"/>: <span class="related-record-name-span"></span></p>
                     <p class="related-record-state" style="display:none;">&nbsp;&nbsp;&nbsp;&nbsp;<g:message code="related.record.state.label" default="state"/>: <span class="related-record-state-span"></span></p>
@@ -770,7 +771,7 @@
         <!-- template to add a row -->
         <table class="hide">
             <tr id="userVerificationTemplate" class="userVerificationTemplate">
-                <td class="qaStatus"></td>
+                <td class="qaStatus i8nupdate"></td>
                 <td class="comment"></td>
                 <td class="userDisplayName"></td>
                 <td class="created"></td>

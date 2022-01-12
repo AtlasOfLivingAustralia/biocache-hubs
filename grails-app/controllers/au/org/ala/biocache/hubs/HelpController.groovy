@@ -7,6 +7,8 @@ class HelpController {
     }
 
     def help() {}
+
     def data() {}
+
     def termsOfUse() {}
 }

@@ -9,7 +9,7 @@
 <g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
 <g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocache.baseUrl}"/>
 <g:set var="serverName" value="${grailsApplication.config.serverName ?: grailsApplication.config.biocache.baseUrl}"/>
-<g:set var="searchQuery" value="${grailsApplication.config.skin.useAlaBie.toBoolean() ? 'taxa' : 'q'}"/>
+<g:set var="biocacheServiceUrl" value="${alatag.getBiocacheAjaxUrl()}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -39,7 +39,9 @@
             autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson() ?: '{}'},
             contextPath: "${request.contextPath}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
-            queryContext: "${grailsApplication.config.biocache.queryContext}"
+            queryContext: "${grailsApplication.config.biocache.queryContext}",
+            autocompleteUrl: "${grailsApplication.config.skin.useAlaBie?.toBoolean() ? (grailsApplication.config.bieService.baseUrl + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
+            autocompleteUseBie: ${grailsApplication.config.skin.useAlaBie?.toBoolean()}
         }
         /* Load Spring i18n messages into JS
          */
@@ -50,6 +52,11 @@
             path: BC_CONF.contextPath + '/messages/i18n/',
             mode: 'map',
             language: BC_CONF.locale
+        });
+
+        $(document).ready(function() {
+            // Init BS tooltip
+            $('[data-toggle="tooltip"]').tooltip({ html: true, placement: 'right', container: '#content' });
         });
     </script>
 
@@ -69,9 +76,7 @@
     <asset:stylesheet src="print-search.css" media="print" />
     <asset:stylesheet src="bootstrapCombobox.css"/>
 
-    <g:if test="${grailsApplication.config.skin.useAlaBie?.toBoolean()}">
-        <asset:javascript src="bieAutocomplete.js"/>
-    </g:if>
+    <asset:javascript src="autocomplete.js"/>
 
     <asset:script type="text/javascript">
         $(document).ready(function() {
@@ -327,11 +332,11 @@
 
             <div class="tab-content searchPage">
                 <div id="simpleSearch" class="tab-pane active">
-                    <form class="form-horizontal" name="simpleSearchForm" id="simpleSearchForm" action="${request.contextPath}/occurrences/search"
+                    <form class="form-horizontal" name="simpleSearchForm" id="simpleSearchForm" action="${request.contextPath}/simpleSearch"
                           method="GET">
                         <br/>
                         <div class="col-sm-9 input-group">
-                            <input type="text" class="form-control" name="${searchQuery}" id="taxa"/>
+                            <input type="text" class="form-control" name="q" id="taxa"/>
                             <span class="input-group-btn">
                                 <input class="form-control btn btn-primary" id="locationSearch"  type="submit"
                                        value="${g.message(code:"home.index.simsplesearch.button", default:"Search")}"/>
@@ -354,17 +359,41 @@
                           method="POST">
                         <div class="row">
                             <div class="col-sm-8">
-                                <div class="form-group">
+                                <div class="form-group-off">
                                     <label for="raw_names"><g:message code="home.index.taxaupload.des01"
                                                                       default="Enter a list of taxon names/scientific names, one name per line (common names not currently supported)."/></label>
                                     <%--<p><input type="hidden" name="MAX_FILE_SIZE" value="2048" class="form-control"><input type="file" class="form-control"></p>--%>
                                     <textarea name="queries" id="raw_names" class="form-control" rows="15" cols="60"></textarea>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            <div class="radio ">
+                                                <g:message code="home.index.taxaupload.batchRadioPrefix" default="Search on:"/>
+                                            </div>
+                                        </div>
+                                        <g:set var="matchedTaxonTooltip" value="${g.message(code:"advanced.taxon.tooltip.matched",default:"N/A")}"/>
+                                        <g:set var="suppliedTaxonTooltip" value="${g.message(code:"advanced.taxon.tooltip.supplied",default:"N/A")}"/>
+                                        <div class="col-sm-10">
+                                            <div class="radio ">
+                                                <label>
+                                                    <input type="radio" name="field" id="batchModeMatched" value="taxa" checked>
+                                                    <g:message code="home.index.taxaupload.batchMode.matched" default="Matched name"/>
+                                                </label>
+                                                <a href="#" data-toggle="tooltip" data-placement="right" title="${matchedTaxonTooltip}"><i class="glyphicon glyphicon-question-sign"></i></a>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="radio" name="field" id="batchModeRaw" value="raw_scientificName" >
+                                                    <g:message code="home.index.taxaupload.batchMode.provided" default="Supplied name"/>
+                                                </label>
+                                                <a href="#" data-toggle="tooltip" data-placement="right" title="${suppliedTaxonTooltip}"><i class="glyphicon glyphicon-question-sign"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <%--<input type="submit" name="action" value="Download" class="form-control">--%>
                                 <%--&nbsp;OR&nbsp;--%>
                                 <input type="hidden" name="redirectBase"
                                        value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
-                                <input type="hidden" name="field" value="raw_name" class="form-control"/>
                                 <input type="hidden" name="action" value="Search" />
                                 <input type="submit"
                                        value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
