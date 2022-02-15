@@ -422,6 +422,25 @@ $(document).ready(function() {
         }
     });
 
+    // Copied from list.js TODO: consolidate into common JS code
+    $('#copy-al4r').on('click', function() {
+        var input = document.querySelector('#al4rcode');
+        if (navigator.clipboard && window.isSecureContext) {
+            // navigator clipboard api method'
+            navigator.clipboard.writeText(input.value)
+                .then(() => {
+                    $(this).qtip({
+                        content: jQuery.i18n.prop('list.copylinks.tooltip.copied'),
+                        show: true,
+                        hide: { when: { event: 'mouseout'} }
+                    })})
+                .catch((error) => { alert(jQuery.i18n.prop('list.copylinks.alert.failed') + error) })
+        } else {
+            alert("Copying to clipboard requires a secure HTTPS connection. Value copied to clipboard is: " + input.value);
+        }
+
+    });
+
 }); // end JQuery document ready
 
 /**

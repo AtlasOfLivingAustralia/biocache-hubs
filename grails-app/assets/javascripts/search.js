@@ -647,14 +647,20 @@ $(document).ready(function() {
 
     $('#copy-al4r').on('click', function() {
         var input = document.querySelector('#al4rcode');
-        navigator.clipboard.writeText(input.value)
-            .then(() => {
-                $(this).qtip({
-                    content: jQuery.i18n.prop('list.copylinks.tooltip.copied'),
-                    show: true,
-                    hide: { when: { event: 'mouseout'} }
-                })})
-            .catch((error) => { alert(jQuery.i18n.prop('list.copylinks.alert.failed') + error) })
+        if (navigator.clipboard && window.isSecureContext) {
+            // navigator clipboard api method'
+            navigator.clipboard.writeText(input.value)
+                .then(() => {
+                    $(this).qtip({
+                        content: jQuery.i18n.prop('list.copylinks.tooltip.copied'),
+                        show: true,
+                        hide: { when: { event: 'mouseout'} }
+                    })})
+                .catch((error) => { alert(jQuery.i18n.prop('list.copylinks.alert.failed') + error) })
+        } else {
+            alert("Copying to clipboard requires a secure HTTPS connection. Value copied to clipboard is: " + input.value);
+        }
+
     });
 
     $('#copy-al4r').on('mouseleave', function() {
