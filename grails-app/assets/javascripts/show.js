@@ -369,7 +369,10 @@ $(document).ready(function() {
     }).click('click', function(e) { e.preventDefault(); });
 
     // add BS tooltip to elements with class "tooltips"
-    $(".tooltips").tooltip();
+    $(".tooltips").tooltip( {
+        trigger: "hover",
+        delay: { "show": 100, "hide": 1000 }
+    });
 
     $(".dataQualityHelpLink").popover({
         html : true,
@@ -428,15 +431,11 @@ $(document).ready(function() {
         if (navigator.clipboard && window.isSecureContext) {
             // navigator clipboard api method'
             navigator.clipboard.writeText(input.value)
-                .then(() => {
-                    $(this).qtip({
-                        content: jQuery.i18n.prop('list.copylinks.tooltip.copied'),
-                        show: true,
-                        hide: { when: { event: 'mouseout'} }
-                    })})
+
+                .then(() => { alert(jQuery.i18n.prop('list.copylinks.tooltip.copied')) })
                 .catch((error) => { alert(jQuery.i18n.prop('list.copylinks.alert.failed') + error) })
         } else {
-            alert("Copying to clipboard requires a secure HTTPS connection. Value copied to clipboard is: " + input.value);
+            alert("Copying to clipboard requires a secure HTTPS connection. Value: " + input.value);
         }
 
     });

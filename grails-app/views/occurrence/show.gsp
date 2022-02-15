@@ -190,7 +190,7 @@
                             <button class="btn btn-default" id="copyRecordIdToClipboard" role="button" title="Copy this record's id to the clipboard"><g:message code="show.sidebar02.copyrecordid" default="Copy record id" /></button>
                         </span>
                         <a href="#CopyLink" data-toggle="modal" role="button" class="tooltips btn btn-default copyLink"
-                           data-toggle="tooltip" data-placement="bottom" title="${g.message(code:"show.copylinks.dlg.copybutton.title")}"><i class="fa fa-file-code-o" aria-hidden="true"></i>&nbsp;&nbsp;
+                            data-placement="bottom" title="${g.message(code:"show.copylinks.dlg.copybutton.title")}"><i class="fa fa-file-code-o" aria-hidden="true"></i>&nbsp;&nbsp;
                             <g:message code="list.copylinks" default="API"/></a>
                         <div id="CopyLink" class="modal fade" role="dialog" tabindex="-1">
                             <div class="modal-dialog" role="document">
