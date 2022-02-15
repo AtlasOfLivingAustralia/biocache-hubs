@@ -22,6 +22,8 @@ import groovyx.net.http.Method
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils
+import org.grails.web.converters.exceptions.ConverterException
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
@@ -432,7 +434,7 @@ class WebServicesService {
      * @return the object we request or an JSON object containing error info in case of error
      */
     JSONElement getJsonElements(String url, String apiKey = null) {
-        log.debug "(internal) getJson URL = " + url
+        log.debug "(internal) getJson URL == " + url
         def conn = new URL(url).openConnection()
         try {
             conn.setConnectTimeout(10000)
@@ -442,16 +444,31 @@ class WebServicesService {
             }
 
             InputStream stream = null;
+            def responseCode = null
+
             if (conn instanceof HttpURLConnection) {
-                conn.getResponseCode() // this line required to trigger parsing of response
-                stream = conn.getErrorStream() ?: conn.getInputStream()
+                log.debug "Open HttpURLConnection"
+                responseCode = conn.getResponseCode() // this line required to trigger parsing of response
+
+                if (responseCode == 200) {
+                    stream = conn.getErrorStream() ?: conn.getInputStream()
+                } else {
+                    throw new IOException("Got a non-200 response from server (${responseCode}) for URL: ${url}", null)
+                }
             } else { // when read local files it's a FileURLConnection which doesn't have getErrorStream
+                log.debug "Open file connection"
                 stream = conn.getInputStream()
             }
-            return JSON.parse(stream, "UTF-8")
+
+            JSONElement jsonOut = JSON.parse(stream, "UTF-8")
+            return jsonOut
+        } catch (ConverterException ce) {
+            def error = "Failed to parse json from web service. ${ce.getClass()} ${ce.getMessage()}"
+            log.error error, ce
+            throw new RestClientException(error, ce)
         } catch (Exception e) {
-            def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
-            log.error error
+            def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}"
+            log.error error, e
             throw new RestClientException(error, e)
         }
     }
