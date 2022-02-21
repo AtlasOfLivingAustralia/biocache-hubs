@@ -53,10 +53,10 @@ class OccurrenceController {
         redirect action: "search"
     }
 
-    def dataResource(SpatialSearchRequestParams requestParams){
+    def dataResource(SpatialSearchRequestParams requestParams) {
         requestParams.q = "data_resource_uid:" + params.uid
         def model = list(requestParams)
-        render (view: 'list', model: model)
+        render(view: 'list', model: model)
     }
 
     /**
@@ -162,7 +162,7 @@ class OccurrenceController {
             }
 
             def hasImages = postProcessingService.resultsHaveImages(searchResults)
-            if(grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()){
+            if (grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()) {
                 hasImages = true
             }
 
@@ -179,24 +179,24 @@ class OccurrenceController {
             request.getSession().setAttribute(SESSION_NAVIGATION_DTO, navigationDTO);
 
             def resultData =
-                [
-                    sr: searchResults,
-                    searchRequestParams: requestParams,
-                    defaultFacets: defaultFacets,
-                    groupedFacets: groupedFacets,
-                    groupedFacetsMap: groupedFacetsMap,
-                    dynamicFacets: dynamicFacets,
-                    selectedDataResource: getSelectedResource(requestParams.q),
-                    hasImages: hasImages,
-                    showSpeciesImages: false,
-                    overlayList: postProcessingService.getListOfLayers(requestParams),
-                    sort: requestParams.sort,
-                    dir: requestParams.dir,
-                    userId: authService?.getUserId(),
-                    userEmail: authService?.getEmail(),
-                    processingTime: (System.currentTimeMillis() - start),
-                    wsTime: wsTime
-                ]
+                    [
+                            sr                  : searchResults,
+                            searchRequestParams : requestParams,
+                            defaultFacets       : defaultFacets,
+                            groupedFacets       : groupedFacets,
+                            groupedFacetsMap    : groupedFacetsMap,
+                            dynamicFacets       : dynamicFacets,
+                            selectedDataResource: getSelectedResource(requestParams.q),
+                            hasImages           : hasImages,
+                            showSpeciesImages   : false,
+                            overlayList         : postProcessingService.getListOfLayers(requestParams),
+                            sort                : requestParams.sort,
+                            dir                 : requestParams.dir,
+                            userId              : authService?.getUserId(),
+                            userEmail           : authService?.getEmail(),
+                            processingTime      : (System.currentTimeMillis() - start),
+                            wsTime              : wsTime
+                    ]
 
             if (dataQualityEnabled) {
                 def qualityCategories = time("quality categories") { qualityService.findAllEnabledCategories(requestParams.qualityProfile) }
@@ -209,7 +209,7 @@ class OccurrenceController {
                 if (!requestParams.disableAllQualityFilters) {
                     qualityFiltersByLabel = time("quality filters by label") { qualityService.getEnabledFiltersByLabel(requestParams.qualityProfile) }
                     groupedEnabledFilters = time("get grouped enabled filters") { qualityService.getGroupedEnabledFilters(requestParams.qualityProfile) }
-                    qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries {[(it.key) : it.value*.description] }
+                    qualityFilterDescriptionsByLabel = groupedEnabledFilters.collectEntries { [(it.key): it.value*.description] }
                     interactionMap = time("process user fq interactions") { postProcessingService.processUserFQInteraction(requestParams, searchResults?.activeFacetObj) }
 
                     def messagePropertiesFile = time("message properties file") { webServicesService.getMessagesPropertiesFile() }
@@ -241,13 +241,13 @@ class OccurrenceController {
             }
 
             def processingTime = (System.currentTimeMillis() - start)
-            log.info ("Timing - list processing time: {} ms", processingTime)
+            log.info("Timing - list processing time: {} ms", processingTime)
 
             resultData
         } catch (Exception ex) {
             log.warn "Error getting search results: $ex.message", ex
             flash.message = "${ex.message}"
-            render view:'../error'
+            render view: '../error'
         }
     }
 
@@ -333,7 +333,7 @@ class OccurrenceController {
 
     def taxa(String id) {
         log.debug "taxa search for ${id}"
-        redirect(action: "list", params: [q:"lsid:" + id])
+        redirect(action: "list", params: [q: "lsid:" + id])
     }
 
     /**
@@ -347,9 +347,9 @@ class OccurrenceController {
         redirect(action: "list", params: [q: qQuery])
     }
 
-    private def getSelectedResource(query){
-        if(query.contains("data_resource_uid:")){
-            query.replace("data_resource_uid:","")
+    private def getSelectedResource(query) {
+        if (query.contains("data_resource_uid:")) {
+            query.replace("data_resource_uid:", "")
         } else {
             ""
         }
@@ -381,10 +381,10 @@ class OccurrenceController {
                     contacts = webServicesService.getCollectionContact(record.processed.attribution.collectionUid)
                 }
 
-                if(record.raw.attribution.dataResourceUid && (contacts == null)){
+                if (record.raw.attribution.dataResourceUid && (contacts == null)) {
                     try {
                         contacts = webServicesService.getDataresourceContact(record.raw.attribution.dataResourceUid)
-                    } catch(Exception e){
+                    } catch (Exception e) {
                         log.warn("Problem retrieving contact details for ${record.raw.attribution.dataResourceUid} - " + e.getMessage())
                     }
                 }
@@ -393,10 +393,15 @@ class OccurrenceController {
 
                 String userEmail = authService?.getEmail()
                 Boolean isCollectionAdmin = false
-                Boolean userHasRoleAdmin = authService?.userInRole(CASRoles.ROLE_ADMIN)
+                Boolean userHasRoleAdmin = false
+
+                // Check (optionally comma-separated) list of authorise.roles - if we get `true` then stop checking
+                grailsApplication.config.getProperty('authorise.roles', String).tokenize(',').each {
+                    !userHasRoleAdmin ? userHasRoleAdmin = authService?.userInRole( it ) : null
+                }
 
                 if (userHasRoleAdmin) {
-                  isCollectionAdmin = true
+                    isCollectionAdmin = true
                 } else {
                     if (userEmail && contacts != null && contacts.size() > 0) {
                         for (int i = 0; i < contacts.size(); i++) {
@@ -435,44 +440,44 @@ class OccurrenceController {
 
                     // is last occurrence?
                     int indexInResults = searchOffset + indexInPage;
-                    isLastOccurrence = (indexInResults == (navigationDTO.getSearchRequestResultSize()-1));
+                    isLastOccurrence = (indexInResults == (navigationDTO.getSearchRequestResultSize() - 1));
                 }
 
                 render(view: 'show', model:
-                [
-                        record: record,
-                        uuid: id,
-                        searchOffset: searchOffset,
-                        displayNavigationButtons: displayNavigationButtons,
-                        isFirstOccurrence: isFirstOccurrence,
-                        isLastOccurrence: isLastOccurrence,
-                        compareRecord: compareRecord,
-                        groupedAssertions: groupedAssertions,
-                        collectionName: collectionInfo?.name,
-                        collectionLogo: collectionInfo?.institutionLogoUrl,
-                        collectionInstitution: collectionInfo?.institution,
-                        isCollectionAdmin: isCollectionAdmin,
-                        contacts: contacts,
-                        queryAssertions: null, // TODO implement this
-                        duplicateRecordDetails: webServicesService.getDuplicateRecordDetails(record),
-                        dataResourceCodes: facetsCacheService.getFacetNamesFor("data_resource_uid"), // TODO move string value to config file
-                        clubView: hasClubView,
-                        errorCodes: webServicesService.getErrorCodes(),
-                        metadataForOutlierLayers: postProcessingService.getMetadataForOutlierLayers(record, layersMetaData),
-                        environmentalSampleInfo: postProcessingService.getLayerSampleInfo(ENVIRO_LAYER, record, layersMetaData),
-                        contextualSampleInfo: postProcessingService.getLayerSampleInfo(CONTEXT_LAYER, record, layersMetaData),
-                        skin: grailsApplication.config.skin.layout
-                ])
+                        [
+                                record                  : record,
+                                uuid                    : id,
+                                searchOffset            : searchOffset,
+                                displayNavigationButtons: displayNavigationButtons,
+                                isFirstOccurrence       : isFirstOccurrence,
+                                isLastOccurrence        : isLastOccurrence,
+                                compareRecord           : compareRecord,
+                                groupedAssertions       : groupedAssertions,
+                                collectionName          : collectionInfo?.name,
+                                collectionLogo          : collectionInfo?.institutionLogoUrl,
+                                collectionInstitution   : collectionInfo?.institution,
+                                isCollectionAdmin       : isCollectionAdmin,
+                                contacts                : contacts,
+                                queryAssertions         : null, // TODO implement this
+                                duplicateRecordDetails  : webServicesService.getDuplicateRecordDetails(record),
+                                dataResourceCodes       : facetsCacheService.getFacetNamesFor("data_resource_uid"), // TODO move string value to config file
+                                clubView                : hasClubView,
+                                errorCodes              : webServicesService.getErrorCodes(),
+                                metadataForOutlierLayers: postProcessingService.getMetadataForOutlierLayers(record, layersMetaData),
+                                environmentalSampleInfo : postProcessingService.getLayerSampleInfo(ENVIRO_LAYER, record, layersMetaData),
+                                contextualSampleInfo    : postProcessingService.getLayerSampleInfo(CONTEXT_LAYER, record, layersMetaData),
+                                skin                    : grailsApplication.config.skin.layout
+                        ])
             } else {
                 if (record?.message == 'Unrecognised UID') {
                     flash.message = "No record found with id: ${id}"
                 }
-                render view:'../error'
+                render view: '../error'
             }
         } catch (Exception ex) {
             log.warn "Error getting record details: $ex.message", ex
             flash.message = "${ex.message}"
-            render view:'../error'
+            render view: '../error'
         }
     }
 
@@ -519,10 +524,9 @@ class OccurrenceController {
                 int newIndex = currentIndex + direction;
                 if (newIndex >= 0 && newIndex < navigationDTO.getCurrentPageUUIDs().size()) {
                     // New occurrence is in current page
-                    redirect (controller:'occurrence', action:'show', id:navigationDTO.getCurrentPageUUIDs().get(newIndex));
+                    redirect(controller: 'occurrence', action: 'show', id: navigationDTO.getCurrentPageUUIDs().get(newIndex));
                     return;
-                }
-                else {
+                } else {
                     // New occurrence is in another page
                     SpatialSearchRequestParams requestParams = navigationDTO.getSearchRequestParams();
                     if (requestParams && requestParams.offset && requestParams.pageSize) {
@@ -541,7 +545,7 @@ class OccurrenceController {
                             navigationDTO.setCurrentUUID(newUUID);
                             request.getSession().setAttribute(SESSION_NAVIGATION_DTO, navigationDTO);
                             // Redirect to the new occurrence
-                            redirect (controller:'occurrence', action:'show', id:newUUID);
+                            redirect(controller: 'occurrence', action: 'show', id: newUUID);
                             return;
                         }
                     }
@@ -550,7 +554,7 @@ class OccurrenceController {
         }
         // Redirect to the default list of occurrences in case of error
         // ex: if we call /next or /previous directly, without Navigation DTO in session
-        redirect (controller:'occurrence', action:'list');
+        redirect(controller: 'occurrence', action: 'list');
         return;
     }
 
@@ -567,17 +571,17 @@ class OccurrenceController {
             JSONObject compareRecord = webServicesService.getCompareRecord(id)
 
             if (record) {
-                [       record: record,
-                        uuid: id,
-                        compareRecord: compareRecord
+                [record       : record,
+                 uuid         : id,
+                 compareRecord: compareRecord
                 ]
             } else {
                 flash.message = "No record found for id: ${id}"
-                render view:'../error'
+                render view: '../error'
             }
         } catch (Exception ex) {
             flash.message = "${ex.message}"
-            render view:'../error'
+            render view: '../error'
         }
     }
 
@@ -609,11 +613,11 @@ class OccurrenceController {
         }
 
         [
-                latitude: lat,
-                longitude: lng,
-                radius: radius,
-                zoom: radiusToZoomLevelMap.get(radius?.toString()),
-                location: grailsApplication.config.exploreYourArea.location,
+                latitude      : lat,
+                longitude     : lng,
+                radius        : radius,
+                zoom          : radiusToZoomLevelMap.get(radius?.toString()),
+                location      : grailsApplication.config.exploreYourArea.location,
                 speciesPageUrl: grailsApplication.config.bie.baseUrl + "/species/"
         ]
     }
@@ -648,13 +652,13 @@ class OccurrenceController {
 
         if (fg.guids.isEmpty()) {
             flash.message = "Error: No species were found for the requested search (${requestParams.toString()})."
-            render view:'../error'
+            render view: '../error'
             return
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMMMM yyyy")
         //set the properties of the query
-        fg.title = "This document was generated on "+ sdf.format(new Date())
+        fg.title = "This document was generated on " + sdf.format(new Date())
         String serverName = grailsApplication.config.serverName ?: grailsApplication.config.security.cas.appServerName
         String contextPath = request.contextPath
         fg.link = serverName + contextPath + "/occurrences/search?" + request.getQueryString()
@@ -665,15 +669,15 @@ class OccurrenceController {
             //log.info "fgFileId = ${fgFileId}"
 
             if (fgPostObj.fileId) {
-                response.sendRedirect(grailsApplication.config.fieldguide.url + "/guide/"+fgPostObj.fileId)
+                response.sendRedirect(grailsApplication.config.fieldguide.url + "/guide/" + fgPostObj.fileId)
             } else {
                 flash.message = "No field guide found for requested taxa."
-                render view:'../error'
+                render view: '../error'
             }
         } catch (Exception ex) {
             flash.message = "Error generating field guide PDF. ${ex}"
             log.error ex.message, ex
-            render view:'../error'
+            render view: '../error'
         }
     }
 
@@ -692,9 +696,9 @@ class OccurrenceController {
         // getRecord can return either 1 record or a list of records
         // if a list returned, asking user to be more specific
         def record = webServicesService.getRecord(id, false)
-        if (record.occurrences) {
-            render ([error: 'id not unique'] as JSON)
-        } else if (record.keySet()) {
+        if (record?.occurrences) {
+            render([error: 'id not unique'] as JSON)
+        } else if (record?.keySet() && record?.processed) {
             def rslt = [:]
             rslt.scientificName = record?.processed?.classification?.scientificName ?: (record?.raw?.classification?.scientificName ?: '')
             rslt.stateProvince = record?.processed?.location?.stateProvince ?: (record?.raw?.location?.stateProvince ?: '')
@@ -706,18 +710,18 @@ class OccurrenceController {
             render status: SC_NOT_FOUND, text: ''
         }
     }
-    
+
     /**
      * JSON webservices for debugging/testing
      */
-    def searchJson (SpatialSearchRequestParams requestParams) {
+    def searchJson(SpatialSearchRequestParams requestParams) {
         render webServicesService.fullTextSearch(requestParams) as JSON
     }
 
     /**
      * JSON webservices for debugging/testing
      */
-    def showJson (String id) {
+    def showJson(String id) {
         def combined = [:]
         combined.record = webServicesService.getRecord(id)
         combined.compareRecord = webServicesService.getCompareRecord(id)

@@ -337,19 +337,20 @@
                                     </g:each>
                                 </select>
                             </p>
-                            <p id="related-record-p" style="display: none; margin-top:30px;">
+                            <div id="related-record-p" style="display: none; margin-top:30px;">
                                 <label for="relatedRecordId" style="vertical-align:top;"><g:message code="show.issueform.label03" default="Duplicate Record ID:"/><span style="color: red;">*</span></label>
                                 <input type="text" name="relatedRecordId" id="relatedRecordId" placeholder="Paste the duplicate record id here" style="width:380px;"/>
-                                <p class="help-block">
+                                <div class="help-block">
                                     <span style="display: none; color:red;" id="related-record-id-not-found">The record id can't be found.</span>
                                     <span style="display: none;" id="related-record-id-loading"><i class="fa fa-gear fa-spin"></i></span>
-                                    <span style="display: none;" id="related-record-id-found">
+                                    <div style="display: none;" id="related-record-id-found">
                                         <span style="display: none;" id="records_comparison_heading"><g:message code="record.compare_table.heading" default="You are indicating that"/>:</span>
                                         <table style="display: none;" id='records_comparison_table' class="table table-bordered table-condensed table-striped scrollTable">
                                             <tr>
                                                 <th width="35%"><g:message code="record.compare_table.source_record.heading" default="This record"/></th>
                                                 <th rowspan="6" id="col_duplicate_reason"></th>
-                                                <th width="35%"><g:message code="record.compare_table.target_record.heading" default="This record ID provided"/></th></tr>
+                                                <th width="35%"><g:message code="record.compare_table.target_record.heading" default="This record ID provided"/></th>
+                                            </tr>
                                             <tr>
                                                 <td>${record?.processed?.classification?.scientificName ?: record?.raw?.classification?.scientificName ?: ''}</td>
                                                 <td id="t_scientificName"></td>
@@ -371,11 +372,11 @@
                                                 <td id="t_eventDate"></td>
                                             </tr>
                                         </table>
-                                    </span>
-                                </p>
-                            </p>
+                                    </div>
+                                </div>
+                            </div>
                             <p id="related-record-reason-p" style="display: none; margin-top:30px;">
-                                <label for="relatedRecordId" style="vertical-align:top;"><g:message code="show.issueform.label04" default="Duplicate Reason:"/><span style="color: red;">*</span></label>
+                                <label for="relatedRecordReason" style="vertical-align:top;"><g:message code="show.issueform.label04" default="Duplicate Reason:"/><span style="color: red;">*</span></label>
                                 <select name="relatedRecordReason" id="relatedRecordReason" autocomplete="off">
                                     <option value=""><g:message code="related.record.reason.select" default="-- Select a reason --" /></option>
                                     <option value="sameoccurrence"><g:message code="related.record.reason.sameoccurrence" default="Duplicate occurrence"/></option>

@@ -21,15 +21,11 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory
 import org.apache.commons.fileupload.servlet.ServletFileUpload
 import org.apache.commons.httpclient.Header
 import org.apache.commons.httpclient.HttpClient
+import org.apache.commons.httpclient.HttpMethod
 import org.apache.commons.httpclient.NameValuePair
 import org.apache.commons.httpclient.methods.GetMethod
-import org.apache.commons.httpclient.HttpMethod
 import org.apache.commons.httpclient.methods.PostMethod
-import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource
-import org.apache.commons.httpclient.methods.multipart.FilePart
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
-import org.apache.commons.httpclient.methods.multipart.Part
-import org.apache.commons.httpclient.methods.multipart.StringPart
+import org.apache.commons.httpclient.methods.multipart.*
 
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
@@ -98,7 +94,7 @@ class ProxyController {
         // Forward the request headers
         setProxyRequestHeaders(request, postMethodProxyRequest);
         // Check if this is a mulitpart (file upload) POST
-        if(ServletFileUpload.isMultipartContent(request)) {
+        if (ServletFileUpload.isMultipartContent(request)) {
             this.handleMultipartPost(postMethodProxyRequest, request);
         } else {
             this.handleStandardPost(postMethodProxyRequest, request);
@@ -119,9 +115,9 @@ class ProxyController {
     private void setProxyRequestHeaders(HttpServletRequest httpServletRequest, HttpMethod httpMethodProxyRequest) {
         // Get an Enumeration of all of the header names sent by the client
         Enumeration enumerationOfHeaderNames = httpServletRequest.getHeaderNames();
-        while(enumerationOfHeaderNames.hasMoreElements()) {
+        while (enumerationOfHeaderNames.hasMoreElements()) {
             String stringHeaderName = (String) enumerationOfHeaderNames.nextElement();
-            if(stringHeaderName.equalsIgnoreCase(STRING_CONTENT_LENGTH_HEADER_NAME))
+            if (stringHeaderName.equalsIgnoreCase(STRING_CONTENT_LENGTH_HEADER_NAME))
                 continue;
             // As per the Java Servlet API 2.5 documentation:
             //		Some headers, such as Accept-Language can be sent by clients
@@ -129,12 +125,12 @@ class ProxyController {
             //		sending the header as a comma separated list.
             // Thus, we get an Enumeration of the header values sent by the client
             Enumeration enumerationOfHeaderValues = httpServletRequest.getHeaders(stringHeaderName);
-            while(enumerationOfHeaderValues.hasMoreElements()) {
+            while (enumerationOfHeaderValues.hasMoreElements()) {
                 String stringHeaderValue = (String) enumerationOfHeaderValues.nextElement();
                 // In case the proxy host is running multiple virtual servers,
                 // rewrite the Host header to ensure that we get content from
                 // the correct virtual server
-                if(stringHeaderName.equalsIgnoreCase(STRING_HOST_HEADER_NAME)){
+                if (stringHeaderName.equalsIgnoreCase(STRING_HOST_HEADER_NAME)) {
                     stringHeaderValue = getProxyHostAndPort();
                 }
                 Header header = new Header(stringHeaderName, stringHeaderValue);
@@ -169,7 +165,7 @@ class ProxyController {
             // Create a list to hold all of the parts
             List<Part> listParts = new ArrayList<Part>();
             // Iterate the multipart items list
-            for(FileItem fileItemCurrent : listFileItems) {
+            for (FileItem fileItemCurrent : listFileItems) {
                 // If the current item is a form field, then create a string part
                 if (fileItemCurrent.isFormField()) {
                     StringPart stringPart = new StringPart(
@@ -221,14 +217,14 @@ class ProxyController {
     @SuppressWarnings("unchecked")
     private void handleStandardPost(PostMethod postMethodProxyRequest, HttpServletRequest httpServletRequest) {
         // Get the client POST data as a Map
-        Map<String, String[]> mapPostParameters = (Map<String,String[]>) httpServletRequest.getParameterMap();
+        Map<String, String[]> mapPostParameters = (Map<String, String[]>) httpServletRequest.getParameterMap();
         // Create a List to hold the NameValuePairs to be passed to the PostMethod
         List<NameValuePair> listNameValuePairs = new ArrayList<NameValuePair>();
         // Iterate the parameter names
-        for(String stringParameterName : mapPostParameters.keySet()) {
+        for (String stringParameterName : mapPostParameters.keySet()) {
             // Iterate the values for each parameter name
             String[] stringArrayParameterValues = mapPostParameters.get(stringParameterName);
-            for(String stringParamterValue : stringArrayParameterValues) {
+            for (String stringParamterValue : stringArrayParameterValues) {
                 // Create a NameValuePair and store in list
                 NameValuePair nameValuePair = new NameValuePair(stringParameterName, stringParamterValue);
                 listNameValuePairs.add(nameValuePair);
@@ -261,24 +257,24 @@ class ProxyController {
         // Check if the proxy response is a redirect
         // The following code is adapted from org.tigris.noodle.filters.CheckForRedirect
         // Hooray for open source software
-        if(intProxyResponseCode >= HttpServletResponse.SC_MULTIPLE_CHOICES /* 300 */
+        if (intProxyResponseCode >= HttpServletResponse.SC_MULTIPLE_CHOICES /* 300 */
                 && intProxyResponseCode < HttpServletResponse.SC_NOT_MODIFIED /* 304 */) {
             String stringStatusCode = Integer.toString(intProxyResponseCode);
             String stringLocation = httpMethodProxyRequest.getResponseHeader(STRING_LOCATION_HEADER).getValue();
-            if(stringLocation == null) {
+            if (stringLocation == null) {
                 throw new ServletException("Recieved status code: " + stringStatusCode
-                        + " but no " +  STRING_LOCATION_HEADER + " header was found in the response");
+                        + " but no " + STRING_LOCATION_HEADER + " header was found in the response");
             }
             // Modify the redirect to go to this proxy servlet rather that the proxied host
             String stringMyHostName = httpServletRequest.getServerName();
-            if(httpServletRequest.getServerPort() != 80) {
+            if (httpServletRequest.getServerPort() != 80) {
                 stringMyHostName += ":" + httpServletRequest.getServerPort();
             }
             stringMyHostName += httpServletRequest.getContextPath();
-            httpServletResponse.sendRedirect(stringLocation.replace(getProxyHostAndPort() + (grailsApplication.config.proxy.proxyPath?:''), stringMyHostName));
+            httpServletResponse.sendRedirect(stringLocation.replace(getProxyHostAndPort() + (grailsApplication.config.proxy.proxyPath ?: ''), stringMyHostName));
             log.debug "SC_MULTIPLE_CHOICES && SC_NOT_MODIFIED"
             return;
-        } else if(intProxyResponseCode == HttpServletResponse.SC_NOT_MODIFIED) {
+        } else if (intProxyResponseCode == HttpServletResponse.SC_NOT_MODIFIED) {
             // 304 needs special handling.  See:
             // http://www.ics.uci.edu/pub/ietf/http/rfc1945.html#Code304
             // We get a 304 whenever passed an 'If-Modified-Since'
@@ -297,7 +293,7 @@ class ProxyController {
 
         // Pass response headers back to the client
         Header[] headerArrayResponse = httpMethodProxyRequest.getResponseHeaders();
-        for(Header header : headerArrayResponse) {
+        for (Header header : headerArrayResponse) {
             if (!header.getName().equals("Transfer-Encoding")) {
                 httpServletResponse.setHeader(header.getName(), header.getValue());
             }
@@ -308,7 +304,7 @@ class ProxyController {
         BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStreamProxyResponse);
         OutputStream outputStreamClientResponse = httpServletResponse.getOutputStream();
         int intNextByte;
-        while ( ( intNextByte = bufferedInputStream.read() ) != -1 ) {
+        while ((intNextByte = bufferedInputStream.read()) != -1) {
             outputStreamClientResponse.write(intNextByte);
         }
         outputStreamClientResponse.flush()
@@ -326,7 +322,7 @@ class ProxyController {
         // Handle the path given to the servlet
         stringProxyURL += pathInfo
         // Handle the query string by rebuilding from parameter map. This supports filters that alter parameters.
-        if(httpServletRequest.getParameterMap() != null && httpServletRequest.getParameterMap().size()) {
+        if (httpServletRequest.getParameterMap() != null && httpServletRequest.getParameterMap().size()) {
             StringBuilder sb = new StringBuilder()
 
             httpServletRequest.getParameterMap().each { k, v ->
