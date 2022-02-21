@@ -70,11 +70,6 @@ class AdminController {
         redirect(action: 'index')
     }
 
-    def clearRecordCountCache() {
-        flash.message = doClearRecordCountCache()
-        redirect(action: 'index')
-    }
-
     def doClearFacetsCache() {
         facetsCacheService.clearCache()
         "facetsCache cache cleared\n"
