@@ -431,6 +431,7 @@ $(document).ready(function() {
         if (navigator.clipboard && window.isSecureContext) {
             // navigator clipboard api method'
             navigator.clipboard.writeText(input.value)
+
                 .then(() => { alert(jQuery.i18n.prop('list.copylinks.tooltip.copied')) })
                 .catch((error) => { alert(jQuery.i18n.prop('list.copylinks.alert.failed') + error) })
         } else {
