@@ -292,7 +292,7 @@
                                 &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/>
                             </alatag:download>
                         </div>
-                        <a href="#CopyLink" data-toggle="modal" role="button" class="tooltips btn copyLink" title="${g.message(code:"list.copylinks.dlg.copybutton.title")}"><i class="fa fa-files-o" aria-hidden="true"></i>&nbsp;&nbsp;<g:message code="list.copylinks" default="API"/></a>
+                        <a href="#CopyLink" data-toggle="modal" role="button" class="tooltips btn copyLink" title="${g.message(code:"list.copylinks.dlg.copybutton.title")}"><i class="fa fa-file-code-o" aria-hidden="true"></i>&nbsp;&nbsp;<g:message code="list.copylinks" default="API"/></a>
                         <div id="CopyLink" class="modal fade" role="dialog" tabindex="-1">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
