@@ -341,7 +341,7 @@
                                                 <alatag:message code="dq.warning.dataprofile.content.line1" default="Search results are now filtered by default to exclude lower quality records according to the ALA General data profile. Data profiles may be disabled or other data profiles are available via the data profile drop down."></alatag:message>
                                             </p>
                                             <p>
-                                                Information on the data profiles and the filters used in each data profile is available via the <a><i class='fa fa-info-circle'></i></a> icons.
+                                                <alatag:message code="dq.warning.dataprofile.content.line2"></alatag:message>
                                             </p>
                                         </div>
                                         <div class="modal-footer">
@@ -361,7 +361,7 @@
                             <g:if test="${qualityProfiles.size() >= 1}">
                                 <span class="dropdown">
                                     <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to switch profiles">
-                                        <span id="active-profile-name">${searchRequestParams.disableAllQualityFilters ? 'Disabled' : activeProfile.name}</span>
+                                        <span id="active-profile-name">${searchRequestParams.disableAllQualityFilters ? g.message(code: 'dq.disabled', default: 'Disabled') : activeProfile.name}</span>
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" id="profiles-selection" aria-labelledby="profile-dropdown">
