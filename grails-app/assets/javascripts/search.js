@@ -234,7 +234,9 @@ $(document).ready(function() {
         $.getJSON(jsonUri, function(data) {
             // use HTML template, see http://stackoverflow.com/a/1091493/249327
             var speciesPageUri = BC_CONF.bieWebappUrl + "/species/" + lsid;
-            var speciesPageLink = "<a href='" + speciesPageUri + "' title='Species page' target='BIE'>view species page</a>";
+            var speciesPageLinkTitle = jQuery.i18n.prop("search.species.view.title");
+            var speciesPageLinkDesc = jQuery.i18n.prop("search.species.view.desc");
+            var speciesPageLink = "<a href='" + speciesPageUri + "' title='" + speciesPageLinkTitle + "' target='BIE'>" + speciesPageLinkDesc + "</a>";
             $clone.find('a.btn').text(nameString).attr("href", speciesPageUri);
             $clone.find('.nameString').text(nameString);
             $clone.find('.speciesPageLink').html(speciesPageLink);
