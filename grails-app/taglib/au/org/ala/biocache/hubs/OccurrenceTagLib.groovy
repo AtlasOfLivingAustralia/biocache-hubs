@@ -265,7 +265,7 @@ class OccurrenceTagLib {
         def facetResult = attrs.facetResult
         def queryParam = attrs.queryParam
         def mb = new MarkupBuilder(out)
-        def linkTitle = "${alatag.message(code:"alatag.filter.results.by")} ${attrs.fieldDisplayName ?: facetResult.fieldName}"
+        def linkTitle = "${alatag.message(code:"alatag.filter.results.by")} ${attrs.fieldDisplayName ? attrs.fieldDisplayName.uncapitalize(): facetResult.fieldName}"
 
         def addCounts = { count ->
             mb.span(class:"facetCount") {
