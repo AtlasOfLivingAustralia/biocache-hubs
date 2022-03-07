@@ -41,7 +41,7 @@
                 </div>
                 <div class="facetsGroup" id="group_data_quality" style="display:none;">
 
-                    <h4><span class="FieldName">Categories</span></h4>
+                    <h4><span class="FieldName"><alatag:message code="dq.selectmultiple.categorytable.header.categories" default="Categories" /></span></h4>
                     <div class="subnavlist nano" style="clear:left">
                         <ul class="facets nano-content dq-categories">
                             <g:each var="qualityCategory" in="${qualityCategories}">
