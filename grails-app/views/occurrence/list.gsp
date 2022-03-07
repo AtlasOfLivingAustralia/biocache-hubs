@@ -360,15 +360,15 @@
                             </span>
                             <g:if test="${qualityProfiles.size() >= 1}">
                                 <span class="dropdown">
-                                    <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to switch profiles">
+                                    <button id="profile-dropdown" type="button" class="btn btn-default btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="${message(code:"dq.click.to.switch.profiles")}">
                                         <span id="active-profile-name">${searchRequestParams.disableAllQualityFilters ? g.message(code: 'dq.disabled', default: 'Disabled') : activeProfile.name}</span>
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" id="profiles-selection" aria-labelledby="profile-dropdown">
                                         <g:each in="${qualityProfiles}" var="profile">
-                                            <li><g:link action="${actionName}" params="${params.clone().with { if (profile.isDefault) it.remove('qualityProfile') else it.qualityProfile = profile.shortName ; it.remove('disableAllQualityFilters'); it } }" title="Click to enable the ${profile.name} quality filters">${profile.name}<g:if test="${profile.isDefault}"> (Default)</g:if></g:link></li>
+                                            <li><g:link action="${actionName}" params="${params.clone().with { if (profile.isDefault) it.remove('qualityProfile') else it.qualityProfile = profile.shortName ; it.remove('disableAllQualityFilters'); it } }" title="${g.message(code: "dq.click.to.enable.the.profile.quality.filter", default: "Click to enable the {0} quality filters", args: [profile.name])} ">${profile.name}<g:if test="${profile.isDefault}"> (Default)</g:if></g:link></li>
                                         </g:each>
-                                        <li><g:link action="${actionName}" params="${params.clone().with { it.disableAllQualityFilters = true; it } }" title="Click to disable all data profiles"><alatag:message code="dq.buttontext.disableall" default="Disable data profiles"/></g:link></li>
+                                        <li><g:link action="${actionName}" params="${params.clone().with { it.disableAllQualityFilters = true; it } }" title="${message(code:"dq.click.to.disable.data.profiles")}"><alatag:message code="dq.buttontext.disableall" default="Disable data profiles"/></g:link></li>
                                     </ul>
                                 </span>
                             </g:if>
