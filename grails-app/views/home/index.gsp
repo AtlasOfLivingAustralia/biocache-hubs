@@ -10,6 +10,7 @@
 <g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocache.baseUrl}"/>
 <g:set var="serverName" value="${grailsApplication.config.serverName ?: grailsApplication.config.biocache.baseUrl}"/>
 <g:set var="biocacheServiceUrl" value="${alatag.getBiocacheAjaxUrl()}"/>
+<g:set var="shortName" value="${grailsApplication.config.skin.orgNameShort}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -368,13 +369,13 @@
                                                 <g:message code="home.index.taxaupload.batchRadioPrefix" default="Search on:"/>
                                             </div>
                                         </div>
-                                        <g:set var="matchedTaxonTooltip" value="${g.message(code:"advanced.taxon.tooltip.matched",default:"N/A")}"/>
+                                        <g:set var="matchedTaxonTooltip" value="${g.message(code:"advanced.taxon.tooltip.matched.param",default:"N/A", args:[shortName])}" />
                                         <g:set var="suppliedTaxonTooltip" value="${g.message(code:"advanced.taxon.tooltip.supplied",default:"N/A")}"/>
                                         <div class="col-sm-10">
                                             <div class="radio ">
                                                 <label>
                                                     <input type="radio" name="field" id="batchModeMatched" value="taxa" checked>
-                                                    <g:message code="home.index.taxaupload.batchMode.matched" default="Matched name"/>
+                                                    <g:message code="home.index.taxaupload.batchMode.matched.param" default="Matched name" args="${[shortName]}" />
                                                 </label>
                                                 <a href="#" data-toggle="tooltip" data-placement="right" title="${matchedTaxonTooltip}"><i class="glyphicon glyphicon-question-sign"></i></a>
                                             </div>
