@@ -218,9 +218,9 @@
         </div>
     </div>
 
-    <input type="submit" value=<g:message code="advancedsearch.button.submit" default="Search"/> class="btn btn-primary" />
+    <input type="submit" value="<g:message code="advancedsearch.button.submit" default="Search"/>" class="btn btn-primary" />
     &nbsp;&nbsp;
-    <input type="reset" value="Clear all" id="clearAll" class="btn btn-default" onclick="$('input#solrQuery').val(''); $('input.clear_taxon').click(); return true;"/>
+    <input type="reset" value="<g:message code="advancedsearch.button.clear.all" default="Clear all"/>" id="clearAll" class="btn btn-default" onclick="$('input#solrQuery').val(''); $('input.clear_taxon').click(); return true;"/>
 </form>
 <asset:script type="text/javascript">
     $(document).ready(function() {

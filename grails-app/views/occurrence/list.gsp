@@ -9,6 +9,7 @@
 <g:set var="startPageTime" value="${System.currentTimeMillis()}"/>
 <g:set var="queryDisplay" value="${sr?.queryTitle ?: searchRequestParams?.displayString ?: ''}"/>
 <g:set var="authService" bean="authService"></g:set>
+<g:set var="orgNameShort" value="${grailsApplication.config.skin.orgNameShort}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -338,7 +339,7 @@
                                         </div>
                                         <div class="modal-body">
                                             <p>
-                                                <alatag:message code="dq.warning.dataprofile.content.line1" default="Search results are now filtered by default to exclude lower quality records according to the ALA General data profile. Data profiles may be disabled or other data profiles are available via the data profile drop down."></alatag:message>
+                                                <g:message code="dq.warning.dataprofile.content.line1.param" args="${[orgNameShort]}" default="Search results are now filtered by default to exclude lower quality records according to the {0} General data profile. Data profiles may be disabled or other data profiles are available via the data profile drop down."></g:message>
                                             </p>
                                             <p>
                                                 <alatag:message code="dq.warning.dataprofile.content.line2"></alatag:message>
