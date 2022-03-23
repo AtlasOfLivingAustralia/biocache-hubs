@@ -9,6 +9,7 @@ branches:
   - hotfix
   - EYA-enhancements
   - develop
+  - /^epic\/.*\/develop$/
   - feature/data-quality
   - grails4
 before_cache:
