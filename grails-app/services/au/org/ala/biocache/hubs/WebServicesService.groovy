@@ -13,10 +13,12 @@
 
 package au.org.ala.biocache.hubs
 
-import grails.converters.JSON
 import grails.plugin.cache.CacheEvict
 import grails.plugin.cache.Cacheable
-import groovyx.net.http.ContentType
+
+import org.apache.http.entity.ContentType
+
+//import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 import org.apache.commons.httpclient.HttpClient
@@ -33,6 +35,7 @@ import org.supercsv.io.ICsvListReader
 import org.supercsv.prefs.CsvPreference
 
 import javax.annotation.PostConstruct
+import au.org.ala.ws.service.WebService
 
 /**
  * Service to perform web service DAO operations
@@ -42,7 +45,9 @@ class WebServicesService {
     public static final String ENVIRONMENTAL = "Environmental"
     public static final String CONTEXTUAL = "Contextual"
     def grailsApplication, facetsCacheServiceBean, authService
+
     QualityService qualityService
+    WebService webService
 
     @Value('${dataquality.enabled}')
     boolean dataQualityEnabled
@@ -432,28 +437,50 @@ class WebServicesService {
      * @return the object we request or an JSON object containing error info in case of error
      */
     JSONElement getJsonElements(String url, String apiKey = null) {
-        log.debug "(internal) getJson URL = " + url
-        def conn = new URL(url).openConnection()
-        try {
-            conn.setConnectTimeout(10000)
-            conn.setReadTimeout(50000)
-            if (apiKey != null) {
-                conn.setRequestProperty('apiKey', apiKey)
-            }
 
-            InputStream stream = null;
-            if (conn instanceof HttpURLConnection) {
-                conn.getResponseCode() // this line required to trigger parsing of response
-                stream = conn.getErrorStream() ?: conn.getInputStream()
-            } else { // when read local files it's a FileURLConnection which doesn't have getErrorStream
-                stream = conn.getInputStream()
-            }
-            return JSON.parse(stream, "UTF-8")
-        } catch (Exception e) {
-            def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
+        log.debug "(internal) getJson URL = " + url
+
+        Map result = webService.get(url)
+
+        if (result.error) {
+
+            def error = "Failed to get json from web service (${url}) status ${result.statusCode} : ${result.error}"
             log.error error
-            throw new RestClientException(error, e)
+            throw new RestClientException(error)
         }
+
+        if (result.resp instanceof Collection) {
+            return new JSONArray(result.resp)
+        }
+        if (result.resp instanceof Map) {
+            return new JSONObject(result.resp)
+        }
+
+        def error = "Failed to get json from web service (${url}) : ${result}"
+        log.error error
+        throw new RestClientException(error)
+
+//        def conn = new URL(url).openConnection()
+//        try {
+//            conn.setConnectTimeout(10000)
+//            conn.setReadTimeout(50000)
+//            if (apiKey != null) {
+//                conn.setRequestProperty('apiKey', apiKey)
+//            }
+//
+//            InputStream stream = null;
+//            if (conn instanceof HttpURLConnection) {
+//                conn.getResponseCode() // this line required to trigger parsing of response
+//                stream = conn.getErrorStream() ?: conn.getInputStream()
+//            } else { // when read local files it's a FileURLConnection which doesn't have getErrorStream
+//                stream = conn.getInputStream()
+//            }
+//            return JSON.parse(stream, "UTF-8")
+//        } catch (Exception e) {
+//            def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
+//            log.error error
+//            throw new RestClientException(error, e)
+//        }
     }
 
     /**
@@ -463,20 +490,39 @@ class WebServicesService {
      * @return
      */
     String getText(String url) {
-        log.debug "(internal text) getText URL = " + url
-        def conn = new URL(url).openConnection()
 
-        try {
-            conn.setConnectTimeout(10000)
-            conn.setReadTimeout(50000)
-            def text = conn.content.text
-            return text
-        } catch (Exception e) {
-            def error = "Failed to get text from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
+        log.debug "(internal text) getText URL = " + url
+
+        Map result = webService.get(url, [:], ContentType.TEXT_PLAIN)
+
+        if (result.error) {
+
+            def error = "Failed to get text from web service (${url}) status ${result.statusCode} : ${result}"
             log.error error
-            //return null
-            throw new RestClientException(error, e) // exception will result in no caching as opposed to returning null
+            throw new RestClientException(error)
         }
+
+        if (result.resp instanceof String) {
+            return result.resp
+        }
+
+        def error = "Failed to get text from web service (${url}) status ${result.statusCode} : ${result}"
+        log.error error
+        throw new RestClientException(error)
+
+//        def conn = new URL(url).openConnection()
+//
+//        try {
+//            conn.setConnectTimeout(10000)
+//            conn.setReadTimeout(50000)
+//            def text = conn.content.text
+//            return text
+//        } catch (Exception e) {
+//            def error = "Failed to get text from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
+//            log.error error
+//            //return null
+//            throw new RestClientException(error, e) // exception will result in no caching as opposed to returning null
+//        }
     }
 
     /**
@@ -487,6 +533,25 @@ class WebServicesService {
      * @return postResponse (Map with keys: statusCode (int) and statusMsg (String)
      */
     def Map postFormData(String uri, Map postParams, String apiKey = null) {
+
+        Map result = webService.post(uri, postParams, [:], ContentType.APPLICATION_FORM_URLENCODED)
+
+        Map postResponse = [:]
+
+        postResponse.statusCode = result.statusCode
+
+        if (result.error) {
+
+            postResponse.statusMsg = result.error
+
+        } else {
+
+            postResponse.statusMsg = ''
+        }
+
+        return postResponse
+
+        /*
         HTTPBuilder http = new HTTPBuilder(uri)
         log.debug "POST (form encoded) to ${http.uri}"
         Map postResponse = [:]
@@ -515,9 +580,39 @@ class WebServicesService {
         }
 
         postResponse
+         */
     }
 
-    def JSONElement postJsonElements(String url, String jsonBody) {
+    def JSONElement postJsonElements(String url, Map jsonBody) {
+
+        Map result = webService.post(url, [:], ContentType.APPLICATION_JSON, jsonBody)
+
+        if (result.error) {
+
+            def error = "Failed to get json from web service (${url}) status ${result.statusCode} : ${result.error}"
+            log.error error
+            throw new RestClientException(error)
+        }
+
+        if (!result.resp && result.statusCode == 201) {
+            // Field guide code...
+            log.debug "field guide catch"
+            return new JSONObject([ fileId: "${conn.getHeaderField("fileId")}" ])
+        }
+
+        if (result.resp instanceof Collection) {
+            return new JSONArray(result.resp)
+        }
+
+        if (result.resp instanceof Map) {
+            return new JSONObject(result.resp)
+        }
+
+        def error = "Failed to get json from web service (${url}) : ${result}"
+        log.error error
+        throw new RestClientException(error)
+
+/*
         HttpURLConnection conn = null
         def charEncoding = 'UTF-8'
         try {
@@ -553,6 +648,7 @@ class WebServicesService {
                     "detail: " + conn?.errorStream?.text
             throw new RestClientException(error) // exception will result in no caching as opposed to returning null
         }
+ */
     }
 
     /**
