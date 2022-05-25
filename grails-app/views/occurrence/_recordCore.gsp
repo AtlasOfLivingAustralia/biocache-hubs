@@ -318,6 +318,11 @@
 <div id="occurrenceEvent">
 <h3><g:message code="recordcore.occurenceevent.title" default="Event"/></h3>
 <table class="occurrenceTable table table-bordered table-striped table-condensed" id="eventTable">
+<!-- Field Number -->
+    <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="datasetName" fieldName="Dateset / Survey Name">
+        ${fieldsMap.put("datasetName", true)}
+        ${record.raw.occurrence.datasetName}
+    </alatag:occurrenceTableRow>
     <!-- Field Number -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="fieldNumber" fieldName="Field number">
         ${fieldsMap.put("fieldNumber", true)}
