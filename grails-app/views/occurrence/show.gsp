@@ -179,16 +179,44 @@
                 </div><!-- end div#SidebarBox -->
                 <div id="" class="col-md-8">
                     <div class="text-right">
-                        <input id="hidden-uuid" type="hidden" value="${uuid}">
-                        <span id="copyRecordIdToClipboard-parent" data-toggle="tooltip" data-trigger="manual" data-title="${uuid} copied!">
-                            <button class="btn btn-default" id="copyRecordIdToClipboard" role="button" title="Copy this record's id to the clipboard"><g:message code="show.sidebar02.copyrecordid" default="Copy record id" /></button>
-                        </span>
                         <alatag:linkViewOriginal url="${record.raw.occurrence.occurrenceID}" class="btn btn-default" role="button" title="Click to view the original record" target="_blank"><g:message code="show.sidebar02.viewOriginal" default="View original record"/></alatag:linkViewOriginal>
                         <button href="#processedVsRawView" class="btn btn-default" id="showRawProcessed" role="button" data-toggle="modal"
                                 title="Table showing both original and processed record values">
                             <span id="processedVsRawViewSpan" href="#processedVsRawView" title=""><i class="glyphicon glyphicon-transfer"></i>
                                 <g:message code="show.sidebar02.showrawprocessed.span" default="View original vs processed values"/></span>
                         </button>
+                        <input id="hidden-uuid" type="hidden" value="${uuid}">
+                        <span id="copyRecordIdToClipboard-parent" data-toggle="tooltip" data-trigger="manual" data-title="${uuid} copied!">
+                            <button class="btn btn-default" id="copyRecordIdToClipboard" role="button" title="Copy this record's id to the clipboard"><g:message code="show.sidebar02.copyrecordid" default="Copy record id" /></button>
+                        </span>
+                        <a href="#CopyLink" data-toggle="modal" role="button" class="tooltips btn btn-default copyLink"
+                            data-placement="bottom" title="${g.message(code:"show.copylinks.dlg.copybutton.title")}"><i class="fa fa-file-code-o" aria-hidden="true"></i>&nbsp;&nbsp;
+                            <g:message code="list.copylinks" default="API"/></a>
+                        <div id="CopyLink" class="modal fade" role="dialog" tabindex="-1">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header text-left">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        <h3><g:message code="list.copylinks.dlg.title" default="JSON web service API"/></h3>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div>&nbsp;</div>
+                                        <div>&nbsp;</div>
+                                        <div class="col-sm-12 input-group">
+                                            <g:set var="jsonurl" value="${alatag.getBiocacheAjaxUrl()}/occurrence/${uuid}"/>
+                                            <input type="text" class="form-control" value=${jsonurl} id="al4rcode" readonly/>
+                                            <span class="input-group-btn">
+                                                <button class="form-control btn btn-default tooltips" id="copy-al4r" data-toggle="tooltip" data-placement="bottom" title="${g.message(code:'list.copylinks.tooltip.copytoclipboard')}">
+                                                    <alatag:message code="list.copylinks.dlg.copybutton.text" default="Copy URL"/>
+                                                </button>
+                                            </span>
+                                        </div>
+                                        <div>&nbsp;</div>
+                                        <div>&nbsp;</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <g:render template="recordCore" />
                 </div><!-- end of div#content2 -->

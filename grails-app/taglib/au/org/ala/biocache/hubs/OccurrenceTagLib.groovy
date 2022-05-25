@@ -265,7 +265,7 @@ class OccurrenceTagLib {
         def facetResult = attrs.facetResult
         def queryParam = attrs.queryParam
         def mb = new MarkupBuilder(out)
-        def linkTitle = "${alatag.message(code:"alatag.filter.results.by")} ${attrs.fieldDisplayName ?: facetResult.fieldName}"
+        def linkTitle = "${alatag.message(code:"alatag.filter.results.by")} ${attrs.fieldDisplayName ? attrs.fieldDisplayName.uncapitalize(): facetResult.fieldName}"
 
         def addCounts = { count ->
             mb.span(class:"facetCount") {
@@ -299,7 +299,11 @@ class OccurrenceTagLib {
                                     mkp.yieldUnescaped("&nbsp;")
                                 }
                                 span(class: "facet-item") {
-                                    if (fieldResult.i18nCode) {
+                                    // If we have a translation, we use it, if not we try to use the label translation
+                                    // and if not, directly use the label. If the label is missing, use "unknown"
+                                    // In search.js this is done a bit differently:
+                                    // https://github.com/AtlasOfLivingAustralia/biocache-hubs/blob/00f263640edd802d10a071f5d09d146eaa24af34/grails-app/assets/javascripts/search.js#L1946
+                                    if (fieldResult.i18nCode && alatag.message(code: fieldResult.i18nCode) != fieldResult.i18nCode ) {
                                         mkp.yield(alatag.message(code: fieldResult.i18nCode, default: fieldResult.label))
                                     } else {
                                         mkp.yield(alatag.message(code: fieldResult.label ?: 'unknown', default: fieldResult.label))
@@ -497,7 +501,7 @@ class OccurrenceTagLib {
                     mb.tr() {
                         if (i == 0) {
                             td(class:"noStripe", rowspan:"${group.value.length()}") {
-                                b(group.key)
+                                b(g.message(code: "facet.group.${group.key}", default: "${group.key}"))
                             }
                         }
                         td(alatag.databaseFieldName(text: field.name))

@@ -123,7 +123,7 @@ class AdvancedSearchParams implements Validateable {
 
         if (taxas) {
             log.debug "taxas = ${taxas} || nameType = ${nameType}"
-            taxa = StringUtils.join(taxas.collect {"taxa:" + it}, " OR ")
+            taxa = StringUtils.join(taxas.collect {nameType + ":" + it}, " OR ")
             if (taxas.size() > 1) { // if more than one taxa query, add braces so we get correct Boolean precedence
                 taxa = "(" + taxa + ")"
             }
