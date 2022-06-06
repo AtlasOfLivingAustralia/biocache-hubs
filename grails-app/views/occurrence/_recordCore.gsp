@@ -318,17 +318,27 @@
 <div id="occurrenceEvent">
 <h3><g:message code="recordcore.occurenceevent.title" default="Event"/></h3>
 <table class="occurrenceTable table table-bordered table-striped table-condensed" id="eventTable">
-<!-- Field Number -->
+    <!-- dataset -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="datasetName" fieldName="Dateset / Survey Name">
-        ${fieldsMap.put("datasetName", true)}
-        ${record.raw.occurrence.datasetName}
+        ${fieldsMap.put("datasetID", true)}
+        ${record.raw.event.datasetID}
+    </alatag:occurrenceTableRow>
+    <!-- event ID -->
+    <alatag:occurrenceTableRow annotate="true" section="eventID" fieldCode="eventID" fieldName="Event ID">
+        ${fieldsMap.put("eventID", true)}
+        ${record.raw.event.eventID}
+    </alatag:occurrenceTableRow>
+    <alatag:occurrenceTableRow annotate="true" section="parentEventID" fieldCode="parentEventID" fieldName="Parent Event ID">
+        ${fieldsMap.put("parentEventID", true)}
+        ${record.raw.event.parentEventID}
     </alatag:occurrenceTableRow>
     <!-- Field Number -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="fieldNumber" fieldName="Field number">
         ${fieldsMap.put("fieldNumber", true)}
         ${record.raw.occurrence.fieldNumber}
     </alatag:occurrenceTableRow>
-    <!-- Field Number -->
+
+    <!-- identificationRemarks -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identificationRemarks" fieldNameIsMsgCode="true" fieldName="Identification remarks">
         ${fieldsMap.put("identificationRemarks", true)}
         ${record.raw.identification.identificationRemarks}
