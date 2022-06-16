@@ -444,7 +444,7 @@
                                 </div>
                                 <input type="hidden" name="redirectBase"
                                        value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
-                                <input type="hidden" name="field" value="event_id, parent_event_id, field_number, dataset_name" class="form-control">
+                                <input type="hidden" name="field" value="event_id, parent_event_id, field_number, text_datasetName" class="form-control">
                                 <input type="hidden" name="action" value="Search" />
                                 <input type="submit"
                                        value="${g.message(code:"button.search", default:"Search")}" class="btn btn-primary" />
@@ -520,7 +520,7 @@
                                 </div>
                                 <input type="hidden" name="redirectBase"
                                        value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
-                                <input type="hidden" name="field" value="dataset_name" class="form-control">
+                                <input type="hidden" name="field" value="text_datasetName" class="form-control">
                                 <input type="hidden" name="action" value="Search" />
                                 <input type="submit"
                                        value="${g.message(code:"button.search", default:"Search")}" class="btn btn-primary" />
