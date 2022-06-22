@@ -444,7 +444,7 @@
                                 </div>
                                 <input type="hidden" name="redirectBase"
                                        value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
-                                <input type="hidden" name="field" value="event_id, parent_event_id, field_number, text_datasetName" class="form-control">
+                                <input type="hidden" name="field" value="text_eventID, text_parentEventID, text_fieldNumber, text_datasetName" class="form-control">
                                 <input type="hidden" name="action" value="Search" />
                                 <input type="submit"
                                        value="${g.message(code:"button.search", default:"Search")}" class="btn btn-primary" />
@@ -463,7 +463,7 @@
                                 </div>
                                 <input type="hidden" name="redirectBase"
                                        value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
-                                <input type="hidden" name="field" value="event_id" class="form-control">
+                                <input type="hidden" name="field" value="text_eventID" class="form-control">
                                 <input type="hidden" name="action" value="Search" />
                                 <input type="submit"
                                        value="${g.message(code:"button.search", default:"Search")}" class="btn btn-primary" />
@@ -482,7 +482,7 @@
                                 </div>
                                 <input type="hidden" name="redirectBase"
                                        value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
-                                <input type="hidden" name="field" value="parent_event_id" class="form-control">
+                                <input type="hidden" name="field" value="text_parentEventID" class="form-control">
                                 <input type="hidden" name="action" value="Search" />
                                 <input type="submit"
                                        value="${g.message(code:"button.search", default:"Search")}" class="btn btn-primary" />
@@ -501,7 +501,7 @@
                                 </div>
                                 <input type="hidden" name="redirectBase"
                                        value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
-                                <input type="hidden" name="field" value="field_number" class="form-control">
+                                <input type="hidden" name="field" value="text_fieldNumber" class="form-control">
                                 <input type="hidden" name="action" value="Search" />
                                 <input type="submit"
                                        value="${g.message(code:"button.search", default:"Search")}" class="btn btn-primary" />
