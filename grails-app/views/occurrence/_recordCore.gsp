@@ -159,7 +159,9 @@
 <!-- Identifier Name -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identifiedBy" fieldName="Identified by">
     ${fieldsMap.put("identifiedBy", true)}
-    ${record.raw.identification.identifiedBy}
+    <g:each in="${record.raw.identification.identifiedBy}" var="identifiedBy">
+        ${identifiedBy}<br/>
+    </g:each>
 </alatag:occurrenceTableRow>
 <!-- Identified Date -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identifierDate"  fieldNameIsMsgCode="true" fieldName="Identified date">
@@ -179,8 +181,12 @@
 </g:set>
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="collectorName" fieldName="${collectorNameLabel}">
     <g:set var="recordedByField">
-        <g:if test="${record.raw.occurrence.recordedBy}"><g:message code="recordcore.recorededbyfield.01" default="recordedBy"/></g:if>
-        <g:elseif test="${record.raw.occurrence.userId}"><g:message code="recordcore.recorededbyfield.02" default="userId"/></g:elseif>
+        <g:if test="${record.raw.occurrence.recordedBy}">
+            <g:message code="recordcore.recorededbyfield.01" default="recordedBy"/>
+        </g:if>
+        <g:elseif test="${record.raw.occurrence.userId}">
+            <g:message code="recordcore.recorededbyfield.02" default="userId"/>
+        </g:elseif>
         <g:else>recordedBy</g:else>
     </g:set>
     <g:set var="recordedByField" value="${recordedByField.trim()}"/>
@@ -188,19 +194,27 @@
     <g:set var="rawRecordedBy" value="${record.raw.occurrence[recordedByField]}"/>
     <g:set var="proRecordedBy" value="${record.processed.occurrence[recordedByField]}"/>
     <g:if test="${record.processed.occurrence[recordedByField] && record.raw.occurrence[recordedByField] && record.processed.occurrence[recordedByField] == record.raw.occurrence[recordedByField]}">
-            ${proRecordedBy}
+        <g:each status="i" in="${proRecordedBy}" var="proRB">
+            ${i + 1}. ${proRB} &nbsp;
+        </g:each>
     </g:if>
     <g:elseif test="${record.processed.occurrence[recordedByField] && record.raw.occurrence[recordedByField]}">
-        ${proRecordedBy}
+        <g:each status="i" in="${proRecordedBy}" var="proRB">
+            ${i + 1}. ${proRB} &nbsp;
+        </g:each>
         <g:if test="${proRecordedBy != rawRecordedBy}">
             <br/><span class="originalValue"><g:message code="recordcore.span05" default="Supplied as"/> "${rawRecordedBy}"</span>
         </g:if>
     </g:elseif>
     <g:elseif test="${record.processed.occurrence[recordedByField]}">
-        ${proRecordedBy}
+        <g:each status="i" in="${proRecordedBy}" var="proRB">
+            ${i + 1}. ${proRB} &nbsp;
+        </g:each>
     </g:elseif>
     <g:elseif test="${record.raw.occurrence[recordedByField]}">
-        ${rawRecordedBy}
+        <g:each status="i" in="${rawRecordedBy}" var="rawRB">
+            ${i + 1}. ${rawRB} &nbsp;
+        </g:each>
     </g:elseif>
 </alatag:occurrenceTableRow>
 <!-- ALA user id -->
@@ -317,11 +331,14 @@
 </div>
 <div id="occurrenceEvent">
 <h3><g:message code="recordcore.occurenceevent.title" default="Event"/></h3>
+
 <table class="occurrenceTable table table-bordered table-striped table-condensed" id="eventTable">
     <!-- dataset -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="datasetName" fieldName="Dateset / Survey Name">
-        ${fieldsMap.put("datasetID", true)}
-        ${record.raw.event.datasetID}
+        ${fieldsMap.put("datasetName", true)}
+        <g:each in="${record.raw.event.datasetName}" var="datasetName">
+            ${datasetName}<br/>
+        </g:each>
     </alatag:occurrenceTableRow>
     <!-- event ID -->
     <alatag:occurrenceTableRow annotate="true" section="eventID" fieldCode="eventID" fieldName="Event ID">
@@ -394,6 +411,7 @@
 </alatag:occurrenceTableRow>
 <!-- Scientific name -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="scientificName" fieldName="Scientific name">
+    ${fieldsMap.put("taxonConceptID", true)}
     ${fieldsMap.put("taxonConceptID", true)}
     ${fieldsMap.put("scientificName", true)}
     <g:if test="${taxaLinks.baseUrl && record.processed.classification.taxonConceptID}">
