@@ -159,8 +159,8 @@
 <!-- Identifier Name -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identifiedBy" fieldName="Identified by">
     ${fieldsMap.put("identifiedBy", true)}
-    <g:each in="${record.raw.identification.identifiedBy}" var="identifiedBy">
-        ${identifiedBy}<br/>
+    <g:each status="i" in="${record.raw.identification.identifiedBy}" var="identifiedBy">
+        ${i + 1}. ${identifiedBy} &nbsp;
     </g:each>
 </alatag:occurrenceTableRow>
 <!-- Identified Date -->
@@ -336,8 +336,8 @@
     <!-- dataset -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="datasetName" fieldName="Dateset / Survey Name">
         ${fieldsMap.put("datasetName", true)}
-        <g:each in="${record.raw.event.datasetName}" var="datasetName">
-            ${datasetName}<br/>
+        <g:each status="i" in="${record.raw.event.datasetName}" var="datasetName">
+            ${i + 1}. ${datasetName} &nbsp;
         </g:each>
     </alatag:occurrenceTableRow>
     <!-- event ID -->
