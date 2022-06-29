@@ -324,6 +324,9 @@
                     <li><a id="t4" href="#catalogUpload" data-toggle="tab"><g:message code="home.index.navigator04"
                                                                                       default="Catalogue number search"/></a>
                     </li>
+                    <li><a id="t6" href="#eventSearch" data-toggle="tab"><g:message code="home.index.navigator06"
+                                                                                      default="Event search"/></a>
+                    </li>
                     <li><a id="t5" href="#spatialSearch" data-toggle="tab"><g:message code="home.index.navigator05"
                                                                                       default="Spatial search"/></a></li>
                 </ul>
@@ -419,6 +422,108 @@
                                 <input type="hidden" name="action" value="Search" />
                                 <input type="submit"
                                        value="${g.message(code:"home.index.catalogupload.button01", default:"Search")}" class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </form>
+                </div><!-- end #catalogUploadDiv div -->
+                <div id="eventSearch" class="tab-pane">
+                    <form name="eventSearchForm" id="eventSearchForm"
+                          action="${biocacheServiceUrl}/occurrences/batchSearch" method="POST">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="event_ids"><g:message code="home.index.eventsearch.general.des"
+                                                                      default="Search across event ID, parent event ID, field number and dataset / survey name."/>
+                                    </label>
+                                    <br/>
+                                    <label>
+                                        <g:message code="home.index.eventsearch.general.des01" default="Enter a list of terms (one per line)."/>
+                                    </label>
+
+                                    <textarea name="queries" id="event_keywords" class="form-control" rows="5" cols="60"></textarea>
+                                </div>
+                                <input type="hidden" name="redirectBase"
+                                       value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
+                                <input type="hidden" name="field" value="text_eventID, text_parentEventID, text_fieldNumber, text_datasetName" class="form-control">
+                                <input type="hidden" name="action" value="Search" />
+                                <input type="submit"
+                                       value="${g.message(code:"button.search", default:"Search")}" class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                    <form name="eventIDSearchForm" id="eventIDSearchForm"
+                          action="${biocacheServiceUrl}/occurrences/batchSearch" method="POST">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="event_ids"><g:message code="home.index.eventsearch.des01"
+                                                                              default="Enter a list of parent event IDs (one per line)."/></label>
+                                    <textarea name="queries" id="event_ids" class="form-control" rows="5" cols="60"></textarea>
+                                </div>
+                                <input type="hidden" name="redirectBase"
+                                       value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
+                                <input type="hidden" name="field" value="text_eventID" class="form-control">
+                                <input type="hidden" name="action" value="Search" />
+                                <input type="submit"
+                                       value="${g.message(code:"button.search", default:"Search")}" class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                    <form name="parentEventIDSearchForm" id="parentEventIDSearchForm"
+                          action="${biocacheServiceUrl}/occurrences/batchSearch" method="POST">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="event_ids"><g:message code="home.index.parenteventsearch.des01"
+                                                                      default="Enter a list of parent event IDs (one per line)."/></label>
+                                    <textarea name="queries" id="parent_event_ids" class="form-control" rows="5" cols="60"></textarea>
+                                </div>
+                                <input type="hidden" name="redirectBase"
+                                       value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
+                                <input type="hidden" name="field" value="text_parentEventID" class="form-control">
+                                <input type="hidden" name="action" value="Search" />
+                                <input type="submit"
+                                       value="${g.message(code:"button.search", default:"Search")}" class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                    <form name="fieldNumberSearchForm" id="fieldNumberSearchForm"
+                          action="${biocacheServiceUrl}/occurrences/batchSearch" method="POST">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="event_ids"><g:message code="home.index.fieldnumbersearch.des01"
+                                                                      default="Enter a list of field numbers (one per line)."/></label>
+                                    <textarea name="queries" id="field_numbers" class="form-control" rows="5" cols="60"></textarea>
+                                </div>
+                                <input type="hidden" name="redirectBase"
+                                       value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
+                                <input type="hidden" name="field" value="text_fieldNumber" class="form-control">
+                                <input type="hidden" name="action" value="Search" />
+                                <input type="submit"
+                                       value="${g.message(code:"button.search", default:"Search")}" class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                    <form name="datasetNameSearchForm" id="datasetNameSearchForm"
+                          action="${biocacheServiceUrl}/occurrences/batchSearch" method="POST">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="event_ids"><g:message code="home.index.datasetnamesearch.des01"
+                                                                      default="Enter a list of dataset / survey names (one per line)."/></label>
+                                    <textarea name="queries" id="dataset_name" class="form-control" rows="5" cols="60"></textarea>
+                                </div>
+                                <input type="hidden" name="redirectBase"
+                                       value="${serverName}${request.contextPath}/occurrences/search" class="form-control">
+                                <input type="hidden" name="field" value="text_datasetName" class="form-control">
+                                <input type="hidden" name="action" value="Search" />
+                                <input type="submit"
+                                       value="${g.message(code:"button.search", default:"Search")}" class="btn btn-primary" />
                             </div>
                         </div>
                     </form>

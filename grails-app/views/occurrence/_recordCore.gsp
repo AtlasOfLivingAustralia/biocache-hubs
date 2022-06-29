@@ -159,7 +159,9 @@
 <!-- Identifier Name -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identifiedBy" fieldName="Identified by">
     ${fieldsMap.put("identifiedBy", true)}
-    ${record.raw.identification.identifiedBy}
+    <g:each status="i" in="${record.raw.identification.identifiedBy}" var="identifiedBy">
+        ${i + 1}. ${identifiedBy} &nbsp;
+    </g:each>
 </alatag:occurrenceTableRow>
 <!-- Identified Date -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identifierDate"  fieldNameIsMsgCode="true" fieldName="Identified date">
@@ -179,8 +181,12 @@
 </g:set>
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="collectorName" fieldName="${collectorNameLabel}">
     <g:set var="recordedByField">
-        <g:if test="${record.raw.occurrence.recordedBy}"><g:message code="recordcore.recorededbyfield.01" default="recordedBy"/></g:if>
-        <g:elseif test="${record.raw.occurrence.userId}"><g:message code="recordcore.recorededbyfield.02" default="userId"/></g:elseif>
+        <g:if test="${record.raw.occurrence.recordedBy}">
+            <g:message code="recordcore.recorededbyfield.01" default="recordedBy"/>
+        </g:if>
+        <g:elseif test="${record.raw.occurrence.userId}">
+            <g:message code="recordcore.recorededbyfield.02" default="userId"/>
+        </g:elseif>
         <g:else>recordedBy</g:else>
     </g:set>
     <g:set var="recordedByField" value="${recordedByField.trim()}"/>
@@ -188,19 +194,27 @@
     <g:set var="rawRecordedBy" value="${record.raw.occurrence[recordedByField]}"/>
     <g:set var="proRecordedBy" value="${record.processed.occurrence[recordedByField]}"/>
     <g:if test="${record.processed.occurrence[recordedByField] && record.raw.occurrence[recordedByField] && record.processed.occurrence[recordedByField] == record.raw.occurrence[recordedByField]}">
-            ${proRecordedBy}
+        <g:each status="i" in="${proRecordedBy}" var="proRB">
+            ${i + 1}. ${proRB} &nbsp;
+        </g:each>
     </g:if>
     <g:elseif test="${record.processed.occurrence[recordedByField] && record.raw.occurrence[recordedByField]}">
-        ${proRecordedBy}
+        <g:each status="i" in="${proRecordedBy}" var="proRB">
+            ${i + 1}. ${proRB} &nbsp;
+        </g:each>
         <g:if test="${proRecordedBy != rawRecordedBy}">
             <br/><span class="originalValue"><g:message code="recordcore.span05" default="Supplied as"/> "${rawRecordedBy}"</span>
         </g:if>
     </g:elseif>
     <g:elseif test="${record.processed.occurrence[recordedByField]}">
-        ${proRecordedBy}
+        <g:each status="i" in="${proRecordedBy}" var="proRB">
+            ${i + 1}. ${proRB} &nbsp;
+        </g:each>
     </g:elseif>
     <g:elseif test="${record.raw.occurrence[recordedByField]}">
-        ${rawRecordedBy}
+        <g:each status="i" in="${rawRecordedBy}" var="rawRB">
+            ${i + 1}. ${rawRB} &nbsp;
+        </g:each>
     </g:elseif>
 </alatag:occurrenceTableRow>
 <!-- ALA user id -->
@@ -235,10 +249,16 @@
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="typeStatus" fieldName="Type status">
     ${fieldsMap.put("typeStatus", true)}
     <g:if test="${record.processed.identification.typeStatus}">
-        <span style="text-transform: capitalize;">${record.processed.identification.typeStatus}</span>
+        <span style="text-transform: capitalize;">
+            <g:each status="i" in="${record.processed.identification.typeStatus}" var="typeStatus">
+                ${i + 1}. ${typeStatus} &nbsp;
+            </g:each>
+        </span>
     </g:if>
     <g:else>
-        ${record.raw.identification.typeStatus}
+        <g:each status="i" in="${record.raw.identification.typeStatus}" var="typeStatus">
+            ${i + 1}. ${typeStatus} &nbsp;
+        </g:each>
     </g:else>
     <g:if test="${record.processed.identification.typeStatus && record.raw.identification.typeStatus && (record.processed.identification.typeStatus.toLowerCase() != record.raw.identification.typeStatus.toLowerCase())}">
         <br/><span class="originalValue"><g:message code="recordcore.st.01" default="Supplied as"/> "${record.raw.identification.typeStatus}"</span>
@@ -317,13 +337,31 @@
 </div>
 <div id="occurrenceEvent">
 <h3><g:message code="recordcore.occurenceevent.title" default="Event"/></h3>
+
 <table class="occurrenceTable table table-bordered table-striped table-condensed" id="eventTable">
+    <!-- dataset -->
+    <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="datasetName" fieldName="Dateset / Survey Name">
+        ${fieldsMap.put("datasetName", true)}
+        <g:each status="i" in="${record.raw.event.datasetName}" var="datasetName">
+            ${i + 1}. ${datasetName} &nbsp;
+        </g:each>
+    </alatag:occurrenceTableRow>
+    <!-- event ID -->
+    <alatag:occurrenceTableRow annotate="true" section="eventID" fieldCode="eventID" fieldName="Event ID">
+        ${fieldsMap.put("eventID", true)}
+        ${record.raw.event.eventID}
+    </alatag:occurrenceTableRow>
+    <alatag:occurrenceTableRow annotate="true" section="parentEventID" fieldCode="parentEventID" fieldName="Parent Event ID">
+        ${fieldsMap.put("parentEventID", true)}
+        ${record.raw.event.parentEventID}
+    </alatag:occurrenceTableRow>
     <!-- Field Number -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="fieldNumber" fieldName="Field number">
         ${fieldsMap.put("fieldNumber", true)}
         ${record.raw.occurrence.fieldNumber}
     </alatag:occurrenceTableRow>
-    <!-- Field Number -->
+
+    <!-- identificationRemarks -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identificationRemarks" fieldNameIsMsgCode="true" fieldName="Identification remarks">
         ${fieldsMap.put("identificationRemarks", true)}
         ${record.raw.identification.identificationRemarks}
