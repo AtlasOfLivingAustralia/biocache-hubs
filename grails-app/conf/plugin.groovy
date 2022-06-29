@@ -95,7 +95,7 @@ clubRoleForHub = "ROLE_ADMIN"
 // whether map or list is the default tab to show - empty for list and "mapView" for map
 defaultListView = "" //  'mapView' or 'listView'
 dataQualityChecksUrl = "https://docs.google.com/spreadsheet/pub?key=0AjNtzhUIIHeNdHJOYk1SYWE4dU1BMWZmb2hiTjlYQlE&single=true&gid=0&output=csv"
-dwc.exclude = "dataHubUid,dataProviderUid,institutionUid,year,month,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds,datasetName, fieldNumber"
+dwc.exclude = "dataHubUid,dataProviderUid,institutionUid,year,month,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds,datasetName,fieldNumber"
 
 exploreYourArea.lat = "-35.0"
 exploreYourArea.lng = "149.0"
