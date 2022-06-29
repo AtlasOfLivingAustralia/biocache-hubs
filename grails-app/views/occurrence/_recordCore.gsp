@@ -249,10 +249,16 @@
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="typeStatus" fieldName="Type status">
     ${fieldsMap.put("typeStatus", true)}
     <g:if test="${record.processed.identification.typeStatus}">
-        <span style="text-transform: capitalize;">${record.processed.identification.typeStatus}</span>
+        <span style="text-transform: capitalize;">
+            <g:each status="i" in="${record.processed.identification.typeStatus}" var="typeStatus">
+                ${i + 1}. ${typeStatus} &nbsp;
+            </g:each>
+        </span>
     </g:if>
     <g:else>
-        ${record.raw.identification.typeStatus}
+        <g:each status="i" in="${record.raw.identification.typeStatus}" var="typeStatus">
+            ${i + 1}. ${typeStatus} &nbsp;
+        </g:each>
     </g:else>
     <g:if test="${record.processed.identification.typeStatus && record.raw.identification.typeStatus && (record.processed.identification.typeStatus.toLowerCase() != record.raw.identification.typeStatus.toLowerCase())}">
         <br/><span class="originalValue"><g:message code="recordcore.st.01" default="Supplied as"/> "${record.raw.identification.typeStatus}"</span>
@@ -411,7 +417,6 @@
 </alatag:occurrenceTableRow>
 <!-- Scientific name -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="scientificName" fieldName="Scientific name">
-    ${fieldsMap.put("taxonConceptID", true)}
     ${fieldsMap.put("taxonConceptID", true)}
     ${fieldsMap.put("scientificName", true)}
     <g:if test="${taxaLinks.baseUrl && record.processed.classification.taxonConceptID}">
