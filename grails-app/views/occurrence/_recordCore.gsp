@@ -160,8 +160,12 @@
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identifiedBy" fieldName="Identified by">
     ${fieldsMap.put("identifiedBy", true)}
     <g:each status="i" in="${record.raw.identification.identifiedBy}" var="identifiedBy">
-        ${i + 1}. ${identifiedBy} &nbsp;
+        <g:if test="${record.raw.identification.identifiedBy.size() > 1}">
+            ${i + 1}.&nbsp;
+        </g:if>
+        ${identifiedBy} &nbsp;
     </g:each>
+
 </alatag:occurrenceTableRow>
 <!-- Identified Date -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identifierDate"  fieldNameIsMsgCode="true" fieldName="Identified date">
@@ -343,6 +347,25 @@
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="datasetName" fieldName="Dateset / Survey Name">
         ${fieldsMap.put("datasetName", true)}
         <g:each status="i" in="${record.raw.event.datasetName}" var="datasetName">
+            <g:if test="${record.raw.event.datasetName.size() > 1}">
+                ${i + 1}.&nbsp;
+            </g:if>
+            ${datasetName} &nbsp;
+        </g:each>
+    </alatag:occurrenceTableRow>
+    <!-- event ID -->
+    <alatag:occurrenceTableRow annotate="true" section="eventID" fieldCode="eventID" fieldName="Event ID">
+        ${fieldsMap.put("eventID", true)}
+        ${record.raw.event.eventID}
+    </alatag:occurrenceTableRow>
+    <alatag:occurrenceTableRow annotate="true" section="parentEventID" fieldCode="parentEventID" fieldName="Parent Event ID">
+        ${fieldsMap.put("parentEventID", true)}
+        ${record.raw.event.parentEventID}
+    </alatag:occurrenceTableRow>
+    <!-- dataset -->
+    <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="datasetName" fieldName="Dateset / Survey Name">
+        ${fieldsMap.put("datasetName", true)}
+        <g:each status="i" in="${record.raw.event.datasetName}" var="datasetName">
             ${i + 1}. ${datasetName} &nbsp;
         </g:each>
     </alatag:occurrenceTableRow>
@@ -399,10 +422,12 @@
             <br/><span class="originalValue"><g:message code="recordcore.occurrencedatelabel.12" default="Supplied date"/> "${record.raw.event.eventDate}"</span>
         </g:elseif>
     </alatag:occurrenceTableRow>
-<!-- Sampling Protocol -->
+    <!-- Sampling Protocol -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="samplingProtocol" fieldName="Sampling protocol">
         ${fieldsMap.put("samplingProtocol", true)}
-        ${record.raw.occurrence.samplingProtocol}
+        <g:each status="i" in="${record.raw.occurrence.samplingProtocol}" var="samplingProtocol">
+           ${samplingProtocol}<br/>
+        </g:each>
     </alatag:occurrenceTableRow>
     <alatag:formatExtraDwC compareRecord="${compareRecord}" fieldsMap="${fieldsMap}" group="Event" exclude="${dwcExcludeFields}"/>
 </table>
