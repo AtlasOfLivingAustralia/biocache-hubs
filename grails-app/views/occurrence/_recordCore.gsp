@@ -362,22 +362,6 @@
         ${fieldsMap.put("parentEventID", true)}
         ${record.raw.event.parentEventID}
     </alatag:occurrenceTableRow>
-    <!-- dataset -->
-    <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="datasetName" fieldName="Dateset / Survey Name">
-        ${fieldsMap.put("datasetName", true)}
-        <g:each status="i" in="${record.raw.event.datasetName}" var="datasetName">
-            ${i + 1}. ${datasetName} &nbsp;
-        </g:each>
-    </alatag:occurrenceTableRow>
-    <!-- event ID -->
-    <alatag:occurrenceTableRow annotate="true" section="eventID" fieldCode="eventID" fieldName="Event ID">
-        ${fieldsMap.put("eventID", true)}
-        ${record.raw.event.eventID}
-    </alatag:occurrenceTableRow>
-    <alatag:occurrenceTableRow annotate="true" section="parentEventID" fieldCode="parentEventID" fieldName="Parent Event ID">
-        ${fieldsMap.put("parentEventID", true)}
-        ${record.raw.event.parentEventID}
-    </alatag:occurrenceTableRow>
     <!-- Field Number -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="fieldNumber" fieldName="Field number">
         ${fieldsMap.put("fieldNumber", true)}
