@@ -216,9 +216,7 @@
         </g:each>
     </g:elseif>
     <g:elseif test="${record.raw.occurrence[recordedByField]}">
-        <g:each status="i" in="${rawRecordedBy}" var="rawRB">
-            ${i + 1}. ${rawRB} &nbsp;
-        </g:each>
+        ${rawRecordedBy}
     </g:elseif>
 </alatag:occurrenceTableRow>
 <!-- ALA user id -->
