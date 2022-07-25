@@ -202,9 +202,7 @@
             </g:if>
              ${proRB} &nbsp;
         </g:each>
-        <g:if test="${record.processed.occurrence[recordedByField][0] != record.raw.occurrence[recordedByField]}">
-            <br/><span class="originalValue"><g:message code="recordcore.span05" default="Supplied as"/> "${record.raw.occurrence[recordedByField]}"</span>
-        </g:if>
+        <br/><span class="originalValue"><g:message code="recordcore.span05" default="Supplied as"/> "${record.raw.occurrence[recordedByField]}"</span>
     </g:if>
     <g:elseif test="${record.raw.occurrence[recordedByField]}">
         ${record.raw.occurrence[recordedByField]}
@@ -250,9 +248,7 @@
                 ${typeStatus} &nbsp;
             </g:each>
         </span>
-        <g:if test="${record.processed.identification.typeStatus[0].toLowerCase() != record.raw.identification.typeStatus.toLowerCase()}">
-            <br/><span class="originalValue"><g:message code="recordcore.st.01" default="Supplied as"/> "${record.raw.identification.typeStatus}"</span>
-        </g:if>
+        <br/><span class="originalValue"><g:message code="recordcore.st.01" default="Supplied as"/> "${record.raw.identification.typeStatus}"</span>
     </g:if>
     <g:else>
         ${record.raw.identification.typeStatus}
@@ -401,7 +397,10 @@
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="samplingProtocol" fieldName="Sampling protocol">
         ${fieldsMap.put("samplingProtocol", true)}
         <g:each status="i" in="${record.raw.occurrence.samplingProtocol}" var="samplingProtocol">
-           ${samplingProtocol}<br/>
+            <g:if test="${record.raw.occurrence.samplingProtocol.size() > 1}">
+                ${i + 1}.&nbsp;&nbsp;
+            </g:if>
+           ${samplingProtocol} &nbsp;
         </g:each>
     </alatag:occurrenceTableRow>
     <alatag:formatExtraDwC compareRecord="${compareRecord}" fieldsMap="${fieldsMap}" group="Event" exclude="${dwcExcludeFields}"/>
