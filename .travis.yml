@@ -10,6 +10,7 @@ branches:
   - EYA-enhancements
   - develop
   - /^epic\/.*\/develop$/
+  - epic/grails4/oidc-auth
   - feature/data-quality
   - grails4
 before_cache:
