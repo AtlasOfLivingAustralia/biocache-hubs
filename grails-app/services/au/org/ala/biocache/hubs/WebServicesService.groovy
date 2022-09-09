@@ -18,9 +18,6 @@ import grails.plugin.cache.Cacheable
 
 import org.apache.http.entity.ContentType
 
-//import groovyx.net.http.ContentType
-import groovyx.net.http.HTTPBuilder
-import groovyx.net.http.Method
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.io.FileUtils
@@ -72,9 +69,6 @@ class WebServicesService {
 
     def JSONObject getRecord(String id, Boolean hasClubView) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrence/${id.encodeAsURL()}"
-        if (hasClubView) {
-            url += "?apiKey=${grailsApplication.config.biocache.apiKey ?: ''}"
-        }
         getJsonElements(url)
     }
 
@@ -119,17 +113,17 @@ class WebServicesService {
 
     def getAlerts(String userId) {
         def url = "${grailsApplication.config.alerts.baseUrl}" + "/api/alerts/user/" + userId
-        return getJsonElements(url, "${grailsApplication.config.alerts.apiKey}")
+        return getJsonElements(url)
     }
 
     def subscribeMyAnnotation(String userId) {
         String url = "${grailsApplication.config.alerts.baseUrl}" + "/api/alerts/user/" + userId + "/subscribeMyAnnotation"
-        postFormData(url, [:], grailsApplication.config.alerts.apiKey as String)
+        postFormData(url, [:])
     }
 
     def unsubscribeMyAnnotation(String userId) {
         String url = "${grailsApplication.config.alerts.baseUrl}" + "/api/alerts/user/" + userId + "/unsubscribeMyAnnotation"
-        postFormData(url, [:], grailsApplication.config.alerts.apiKey as String)
+        postFormData(url, [:])
     }
 
     def JSONObject getDuplicateRecordDetails(JSONObject record) {
@@ -436,10 +430,9 @@ class WebServicesService {
      * @param url
      * @return the object we request or an JSON object containing error info in case of error
      */
-    JSONElement getJsonElements(String url, String apiKey = null) {
+    JSONElement getJsonElements(String url) {
 
         log.debug "(internal) getJson URL = " + url
-
         Map result = webService.get(url)
 
         if (result.error) {
@@ -459,56 +452,34 @@ class WebServicesService {
         def error = "Failed to get json from web service (${url}) : ${result}"
         log.error error
         throw new RestClientException(error)
-
-//        def conn = new URL(url).openConnection()
-//        try {
-//            conn.setConnectTimeout(10000)
-//            conn.setReadTimeout(50000)
-//            if (apiKey != null) {
-//                conn.setRequestProperty('apiKey', apiKey)
-//            }
-//
-//            InputStream stream = null;
-//            if (conn instanceof HttpURLConnection) {
-//                conn.getResponseCode() // this line required to trigger parsing of response
-//                stream = conn.getErrorStream() ?: conn.getInputStream()
-//            } else { // when read local files it's a FileURLConnection which doesn't have getErrorStream
-//                stream = conn.getInputStream()
-//            }
-//            return JSON.parse(stream, "UTF-8")
-//        } catch (Exception e) {
-//            def error = "Failed to get json from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
-//            log.error error
-//            throw new RestClientException(error, e)
-//        }
     }
 
-    /**
-     * Perform HTTP GET on a text-based web service
-     *
-     * @param url
-     * @return
-     */
-    String getText(String url) {
+        /**
+         * Perform HTTP GET on a text-based web service
+         *
+         * @param url
+         * @return
+         */
+        String getText(String url) {
 
-        log.debug "(internal text) getText URL = " + url
+            log.debug "(internal text) getText URL = " + url
 
-        Map result = webService.get(url, [:], ContentType.TEXT_PLAIN)
+            Map result = webService.get(url, [:], ContentType.TEXT_PLAIN)
 
-        if (result.error) {
+            if (result.error) {
+
+                def error = "Failed to get text from web service (${url}) status ${result.statusCode} : ${result}"
+                log.error error
+                throw new RestClientException(error)
+            }
+
+            if (result.resp instanceof String) {
+                return result.resp
+            }
 
             def error = "Failed to get text from web service (${url}) status ${result.statusCode} : ${result}"
             log.error error
             throw new RestClientException(error)
-        }
-
-        if (result.resp instanceof String) {
-            return result.resp
-        }
-
-        def error = "Failed to get text from web service (${url}) status ${result.statusCode} : ${result}"
-        log.error error
-        throw new RestClientException(error)
 
 //        def conn = new URL(url).openConnection()
 //
@@ -523,312 +494,244 @@ class WebServicesService {
 //            //return null
 //            throw new RestClientException(error, e) // exception will result in no caching as opposed to returning null
 //        }
-    }
-
-    /**
-     * Perform a POST with URL encoded params as POST body
-     *
-     * @param uri
-     * @param postParams
-     * @return postResponse (Map with keys: statusCode (int) and statusMsg (String)
-     */
-    def Map postFormData(String uri, Map postParams, String apiKey = null) {
-
-        Map result = webService.post(uri, postParams, [:], ContentType.APPLICATION_FORM_URLENCODED)
-
-        Map postResponse = [:]
-
-        postResponse.statusCode = result.statusCode
-
-        if (result.error) {
-
-            postResponse.statusMsg = result.error
-
-        } else {
-
-            postResponse.statusMsg = ''
         }
 
-        return postResponse
-
-        /*
-        HTTPBuilder http = new HTTPBuilder(uri)
-        log.debug "POST (form encoded) to ${http.uri}"
-        Map postResponse = [:]
-
-        http.request(Method.POST) {
-
-            if (apiKey != null) {
-                headers.'apiKey' = apiKey
-            }
-
-            send ContentType.URLENC, postParams
-
-            response.success = { resp ->
-                log.debug "POST - response status: ${resp.statusLine}"
-                postResponse.statusCode = resp.statusLine.statusCode
-                postResponse.statusMsg = resp.statusLine.reasonPhrase
-                //assert resp.statusLine.statusCode == 201
-            }
-
-            response.failure = { resp ->
-                //def error = [error: "Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}"]
-                postResponse.statusCode = resp.statusLine.statusCode
-                postResponse.statusMsg = resp.statusLine.reasonPhrase
-                log.error "POST - Unexpected error: ${postResponse.statusCode} : ${postResponse.statusMsg}"
-            }
-        }
-
-        postResponse
+        /**
+         * Perform a POST with URL encoded params as POST body
+         *
+         * @param uri
+         * @param postParams
+         * @return postResponse (Map with keys: statusCode (int) and statusMsg (String)
          */
-    }
+        def Map postFormData(String uri, Map postParams) {
 
-    def JSONElement postJsonElements(String url, Map jsonBody) {
+            Map result = webService.post(uri, postParams, [:], ContentType.APPLICATION_FORM_URLENCODED)
 
-        Map result = webService.post(url, [:], ContentType.APPLICATION_JSON, jsonBody)
+            Map postResponse = [:]
 
-        if (result.error) {
+            postResponse.statusCode = result.statusCode
 
-            def error = "Failed to get json from web service (${url}) status ${result.statusCode} : ${result.error}"
+            if (result.error) {
+
+                postResponse.statusMsg = result.error
+
+            } else {
+
+                postResponse.statusMsg = ''
+            }
+
+            return postResponse
+        }
+
+        def JSONElement postJsonElements(String url, Map jsonBody) {
+
+            Map result = webService.post(url, [:], ContentType.APPLICATION_JSON, jsonBody)
+
+            if (result.error) {
+
+                def error = "Failed to get json from web service (${url}) status ${result.statusCode} : ${result.error}"
+                log.error error
+                throw new RestClientException(error)
+            }
+
+            if (!result.resp && result.statusCode == 201) {
+                // Field guide code...
+                log.debug "field guide catch"
+                return new JSONObject([fileId: "${conn.getHeaderField("fileId")}"])
+            }
+
+            if (result.resp instanceof Collection) {
+                return new JSONArray(result.resp)
+            }
+
+            if (result.resp instanceof Map) {
+                return new JSONObject(result.resp)
+            }
+
+            def error = "Failed to get json from web service (${url}) : ${result}"
             log.error error
             throw new RestClientException(error)
         }
 
-        if (!result.resp && result.statusCode == 201) {
-            // Field guide code...
-            log.debug "field guide catch"
-            return new JSONObject([ fileId: "${conn.getHeaderField("fileId")}" ])
+        /**
+         * Standard deep copy implementation
+         *
+         * Taken from http://stackoverflow.com/a/13155429/249327
+         *
+         * @param orig
+         * @return
+         */
+        private def deepCopy(orig) {
+            def bos = new ByteArrayOutputStream()
+            def oos = new ObjectOutputStream(bos)
+            oos.writeObject(orig); oos.flush()
+            def bin = new ByteArrayInputStream(bos.toByteArray())
+            def ois = new ObjectInputStream(bin)
+            return ois.readObject()
         }
 
-        if (result.resp instanceof Collection) {
-            return new JSONArray(result.resp)
+        JSONElement facetSearch(SearchRequestParams requestParams) {
+            requestParams.pageSize = 0
+            def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
+            def result = getJsonElements(url)
+
+
+            return result
         }
 
-        if (result.resp instanceof Map) {
-            return new JSONObject(result.resp)
+        String facetCSVDownload(SearchRequestParams requestParams) {
+            def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/facets/download?${requestParams.getEncodedParams()}&count=true&lookup=true"
+            def result = getText(url)
+            return result
         }
 
-        def error = "Failed to get json from web service (${url}) : ${result}"
-        log.error error
-        throw new RestClientException(error)
-
-/*
-        HttpURLConnection conn = null
-        def charEncoding = 'UTF-8'
-        try {
-            conn = new URL(url).openConnection()
-            conn.setDoOutput(true)
-            conn.setRequestProperty("Content-Type", "application/json;charset=${charEncoding}");
-//            conn.setRequestProperty("Authorization", grailsApplication.config.api_key);
-//            def user = userService.getUser()
-//            if (user) {
-//                conn.setRequestProperty(grailsApplication.config.app.http.header.userId, user.userId) // used by ecodata
-//                conn.setRequestProperty("Cookie", "ALA-Auth="+java.net.URLEncoder.encode(user.userName, charEncoding)) // used by specieslist
-//            }
-            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream(), charEncoding)
-            wr.write(jsonBody)
-            wr.flush()
-            def resp = conn.inputStream.text
-            log.debug "fileid = ${conn.getHeaderField("fileId")}"
-            //log.debug "resp = ${resp}"
-            //log.debug "code = ${conn.getResponseCode()}"
-            if (!resp && conn.getResponseCode() == 201) {
-                // Field guide code...
-                log.debug "field guide catch"
-                resp = "{fileId: \"${conn.getHeaderField("fileId")}\" }"
-            }
-            wr.close()
-            return JSON.parse(resp ?: "{}")
-        } catch (SocketTimeoutException e) {
-            def error = "Timed out calling web service. URL= ${url}."
-            throw new RestClientException(error) // exception will result in no caching as opposed to returning null
-        } catch (Exception e) {
-            def error = "Failed calling web service. ${e.getMessage()} URL= ${url}." +
-                    "statusCode: " + conn?.responseCode ?: "" +
-                    "detail: " + conn?.errorStream?.text
-            throw new RestClientException(error) // exception will result in no caching as opposed to returning null
+        def getAllOccurrenceFields() {
+            def url = "${grailsApplication.config.biocache.baseUrl}/index/fields"
+            return getJsonElements(url)?.collect { it.name }
         }
- */
-    }
 
-    /**
-     * Standard deep copy implementation
-     *
-     * Taken from http://stackoverflow.com/a/13155429/249327
-     *
-     * @param orig
-     * @return
-     */
-    private def deepCopy(orig) {
-        def bos = new ByteArrayOutputStream()
-        def oos = new ObjectOutputStream(bos)
-        oos.writeObject(orig); oos.flush()
-        def bin = new ByteArrayInputStream(bos.toByteArray())
-        def ois = new ObjectInputStream(bin)
-        return ois.readObject()
-    }
+        @Cacheable('longTermCache')
+        def getMessagesPropertiesFile() {
+            def url = "${grailsApplication.config.biocache.baseUrl}/facets/i18n"
 
-    JSONElement facetSearch(SearchRequestParams requestParams) {
-        requestParams.pageSize = 0
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
-        def result = getJsonElements(url)
-
-
-        return result
-    }
-
-    String facetCSVDownload(SearchRequestParams requestParams) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/facets/download?${requestParams.getEncodedParams()}&count=true&lookup=true"
-        def result = getText(url)
-        return result
-    }
-
-    def getAllOccurrenceFields() {
-        def url = "${grailsApplication.config.biocache.baseUrl}/index/fields"
-        return getJsonElements(url)?.collect { it.name }
-    }
-
-    @Cacheable('longTermCache')
-    def getMessagesPropertiesFile() {
-        def url = "${grailsApplication.config.biocache.baseUrl}/facets/i18n"
-
-        def map = [:]
-        def lineContent
-        // split text to get lines
-        def lines = getText(url).split("\\r?\\n")
-        lines?.each {
-            // if not comment
-            if (!it.startsWith('#')) {
-                lineContent = it.split('=')
-                if (lineContent.length == 2) {
-                    map[lineContent[0]] = lineContent[1]
+            def map = [:]
+            def lineContent
+            // split text to get lines
+            def lines = getText(url).split("\\r?\\n")
+            lines?.each {
+                // if not comment
+                if (!it.startsWith('#')) {
+                    lineContent = it.split('=')
+                    if (lineContent.length == 2) {
+                        map[lineContent[0]] = lineContent[1]
+                    }
                 }
             }
+            return map
         }
-        return map
-    }
 
-    @Cacheable('longTermCache')
-    def getAssertionCodeMap() {
-        def url = "${grailsApplication.config.biocache.baseUrl}/assertions/codes" // code --> name
-        def codes = getJsonElements(url)
+        @Cacheable('longTermCache')
+        def getAssertionCodeMap() {
+            def url = "${grailsApplication.config.biocache.baseUrl}/assertions/codes" // code --> name
+            def codes = getJsonElements(url)
 
-        Map dataQualityCodes = getAllCodes() // code -> detail
+            Map dataQualityCodes = getAllCodes() // code -> detail
 
-        // convert to name -> detail
-        return codes?.findAll { dataQualityCodes.containsKey(String.valueOf(it.code)) }?.collectEntries { [(it.name): dataQualityCodes.get(String.valueOf(it.code))] }
-    }
+            // convert to name -> detail
+            return codes?.findAll { dataQualityCodes.containsKey(String.valueOf(it.code)) }?.collectEntries { [(it.name): dataQualityCodes.get(String.valueOf(it.code))] }
+        }
 
-    def getAllCodes() {
-        Map dataQualityCodes = [:]
+        def getAllCodes() {
+            Map dataQualityCodes = [:]
 
-        String dataQualityCsv = grailsApplication.mainContext.getBean('webServicesService').getDataQualityCsv() // cached
+            String dataQualityCsv = grailsApplication.mainContext.getBean('webServicesService').getDataQualityCsv()
+            // cached
 
-        ICsvListReader listReader = null
+            ICsvListReader listReader = null
 
-        try {
-            listReader = new CsvListReader(new StringReader(dataQualityCsv), CsvPreference.STANDARD_PREFERENCE)
-            listReader.getHeader(true) // skip the header (can't be used with CsvListReader)
-            final CellProcessor[] processors = getProcessors()
+            try {
+                listReader = new CsvListReader(new StringReader(dataQualityCsv), CsvPreference.STANDARD_PREFERENCE)
+                listReader.getHeader(true) // skip the header (can't be used with CsvListReader)
+                final CellProcessor[] processors = getProcessors()
 
-            List<Object> dataQualityList
-            while ((dataQualityList = listReader.read(processors)) != null) {
-                //log.debug("row: " + StringUtils.join(dataQualityList, "|"));
-                Map<String, String> dataQualityEls = new HashMap<String, String>();
-                if (dataQualityList.get(1) != null) {
-                    dataQualityEls.put("name", (String) dataQualityList.get(1));
+                List<Object> dataQualityList
+                while ((dataQualityList = listReader.read(processors)) != null) {
+                    //log.debug("row: " + StringUtils.join(dataQualityList, "|"));
+                    Map<String, String> dataQualityEls = new HashMap<String, String>();
+                    if (dataQualityList.get(1) != null) {
+                        dataQualityEls.put("name", (String) dataQualityList.get(1));
+                    }
+                    if (dataQualityList.get(3) != null) {
+                        dataQualityEls.put("description", (String) dataQualityList.get(3));
+                    }
+                    if (dataQualityList.get(4) != null) {
+                        dataQualityEls.put("wiki", (String) dataQualityList.get(4));
+                    }
+                    if (dataQualityList.get(0) != null) {
+                        dataQualityCodes.put((String) dataQualityList.get(0), dataQualityEls);
+                    }
                 }
-                if (dataQualityList.get(3) != null) {
-                    dataQualityEls.put("description", (String) dataQualityList.get(3));
-                }
-                if (dataQualityList.get(4) != null) {
-                    dataQualityEls.put("wiki", (String) dataQualityList.get(4));
-                }
-                if (dataQualityList.get(0) != null) {
-                    dataQualityCodes.put((String) dataQualityList.get(0), dataQualityEls);
+            } finally {
+                if (listReader != null) {
+                    listReader.close();
                 }
             }
-        } finally {
-            if (listReader != null) {
-                listReader.close();
-            }
+            dataQualityCodes
         }
-        dataQualityCodes
-    }
 
-    /**
-     * Internal used method to map from full country name to its iso code.
-     * Mapping comes from userdetails.baseUrl/ws/registration/countries.json
-     *
-     * @return a list of String representing the names of states of that country
-     */
-    @Cacheable('longTermCache')
-    def getCountryNameMap() {
-        def countryUrl = "${grailsApplication.config.userdetails.baseUrl}/ws/registration/countries.json"
-        def countries = getJsonElements(countryUrl)
-        return countries?.findAll { it -> beAValidCountryOrState(it as JSONObject) }?.collectEntries { [(String) it.get("name"), (String) it.get("isoCode")] }
-    }
+        /**
+         * Internal used method to map from full country name to its iso code.
+         * Mapping comes from userdetails.baseUrl/ws/registration/countries.json
+         *
+         * @return a list of String representing the names of states of that country
+         */
+        @Cacheable('longTermCache')
+        def getCountryNameMap() {
+            def countryUrl = "${grailsApplication.config.userdetails.baseUrl}/ws/registration/countries.json"
+            def countries = getJsonElements(countryUrl)
+            return countries?.findAll { it -> beAValidCountryOrState(it as JSONObject) }?.collectEntries { [(String) it.get("name"), (String) it.get("isoCode")] }
+        }
 
 
-    private static boolean beAValidCountryOrState(JSONObject obj) {
-        return obj.has("isoCode") && obj.has("name") && obj.get("isoCode") != "" && obj.get("name") != "N/A"
-    }
+        private static boolean beAValidCountryOrState(JSONObject obj) {
+            return obj.has("isoCode") && obj.has("name") && obj.get("isoCode") != "" && obj.get("name") != "N/A"
+        }
 
-    /**
-     * Method to get a list of states belong to provided country
-     *
-     * @param countryName
-     * @return a list of String representing the names of states of that country
-     */
-    @Cacheable('longTermCache')
-    List<String> getStates(String countryName) {
-        List<String> matchingStates = []
-        try {
-            Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
-            // if a known country name
-            if (countryNameMap?.containsKey(countryName)) {
-                def states = getJsonElements("${grailsApplication.config.userdetails.baseUrl}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
-                if (states) {
-                    // only return valid states
-                    matchingStates = states.findAll { it -> beAValidCountryOrState(it as JSONObject) }.collect { it -> (String) it.get("name") }
+        /**
+         * Method to get a list of states belong to provided country
+         *
+         * @param countryName
+         * @return a list of String representing the names of states of that country
+         */
+        @Cacheable('longTermCache')
+        List<String> getStates(String countryName) {
+            List<String> matchingStates = []
+            try {
+                Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
+                // if a known country name
+                if (countryNameMap?.containsKey(countryName)) {
+                    def states = getJsonElements("${grailsApplication.config.userdetails.baseUrl}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
+                    if (states) {
+                        // only return valid states
+                        matchingStates = states.findAll { it -> beAValidCountryOrState(it as JSONObject) }.collect { it -> (String) it.get("name") }
+                    }
                 }
+            } catch (Exception e) {
+                log.error "getStates failed to get states of " + countryName + ", error = " + e.getMessage()
             }
-        } catch (Exception e) {
-            log.error "getStates failed to get states of " + countryName + ", error = " + e.getMessage()
+            matchingStates
         }
-        matchingStates
-    }
-    /**
-     * CellProcessor method as required by SuperCSV
-     *
-     * @return
-     */
-    private static CellProcessor[] getProcessors() {
-        final CellProcessor[] processors = [
-                null, // col 1
-                null, // col 2
-                null, // col 3
-                null, // col 4
-                null, // col 5
-                null, // col 6
-                null, // col 7
-                null, // col 8
-                null, // col 9
-                null, // col 10
-                null, // col 11
-                null, // col 12
-                null, // col 13
-                null, // col 14
-                null, // col 15
-        ]
+        /**
+         * CellProcessor method as required by SuperCSV
+         *
+         * @return
+         */
+        private static CellProcessor[] getProcessors() {
+            final CellProcessor[] processors = [
+                    null, // col 1
+                    null, // col 2
+                    null, // col 3
+                    null, // col 4
+                    null, // col 5
+                    null, // col 6
+                    null, // col 7
+                    null, // col 8
+                    null, // col 9
+                    null, // col 10
+                    null, // col 11
+                    null, // col 12
+                    null, // col 13
+                    null, // col 14
+                    null, // col 15
+            ]
 
-        return processors
-    }
+            return processors
+        }
 
-    def populateProfile(requestParams) {
-        // force set the profile if none provided
-        if (dataQualityEnabled && !qualityService.isProfileValid(requestParams.qualityProfile) && !requestParams.disableAllQualityFilters) {
-            requestParams.qualityProfile = qualityService.activeProfile()?.shortName
+        def populateProfile(requestParams) {
+            // force set the profile if none provided
+            if (dataQualityEnabled && !qualityService.isProfileValid(requestParams.qualityProfile) && !requestParams.disableAllQualityFilters) {
+                requestParams.qualityProfile = qualityService.activeProfile()?.shortName
+            }
         }
     }
-}
