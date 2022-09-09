@@ -460,11 +460,11 @@ class WebServicesService {
          * @param url
          * @return
          */
-        String getText(String url) {
+        String getText(String url, Boolean wsAuth = false) {
 
             log.debug "(internal text) getText URL = " + url
 
-            Map result = webService.get(url, [:], ContentType.TEXT_PLAIN)
+            Map result = webService.get(url, [:], ContentType.TEXT_PLAIN, wsAuth, wsAuth)
 
             if (result.error) {
 
@@ -505,7 +505,7 @@ class WebServicesService {
          */
         def Map postFormData(String uri, Map postParams,  Boolean wsAuth = false) {
 
-            Map result = webService.post(uri, postParams, [:], ContentType.APPLICATION_FORM_URLENCODED, wsAuth)
+            Map result = webService.post(uri, postParams, [:], ContentType.APPLICATION_FORM_URLENCODED, wsAuth, wsAuth)
 
             Map postResponse = [:]
 
@@ -523,9 +523,9 @@ class WebServicesService {
             return postResponse
         }
 
-        def JSONElement postJsonElements(String url, Map jsonBody) {
+        def JSONElement postJsonElements(String url, Map jsonBody, Boolean wsAuth = false) {
 
-            Map result = webService.post(url, [:], ContentType.APPLICATION_JSON, jsonBody)
+            Map result = webService.post(url, [:], ContentType.APPLICATION_JSON, jsonBody, wsAuth, wsAuth)
 
             if (result.error) {
 
