@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <asset:stylesheet src="map.css"/>
+<g:set var="shortName" value="${grailsApplication.config.skin.orgNameShort}"/>
 <div style="margin-bottom: 10px">
     <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
         <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
@@ -7,11 +8,11 @@
         <g:set var='spatialEnableQualityWarning' value="${grailsApplication.config.getProperty('spatial.enableQualityWarning', Boolean, false)}" />
         <g:if test="${!spatialEnableQualityWarning || searchRequestParams.disableAllQualityFilters || qualityFiltersByLabel.isEmpty()}">
             <a id="spatialPortalLink" class="btn btn-default btn-sm tooltips"
-               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="<g:message code="map.spatialportal.btn.title"/>">
+               href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="<g:message code="map.spatialportal.btn.title.param" args="${[shortName]}"/>">
                 <i class="fa fa-map-marker"></i>&nbsp;&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
         </g:if>
         <g:else>
-            <a href="#gotoSpatial" role="button" data-toggle="modal" class="btn btn-default btn-sm tooltips" title="<g:message code="map.spatialportal.btn.title"/>">
+            <a href="#gotoSpatial" role="button" data-toggle="modal" class="btn btn-default btn-sm tooltips" title="<g:message code="map.spatialportal.btn.title.param" args="${[shortName]}"/>">
                 <i class="fa fa-map-marker"></i>&nbsp;&nbsp;<g:message code="map.spatialportal.btn.label" default="View in spatial portal"/></a>
         </g:else>
     </g:if>
@@ -751,7 +752,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message code="map.spatialportal.redirect.btn.cancel.label" default="Cancel"/></button>
-                <a class="btn btn-primary" href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="<g:message code="map.spatialportal.btn.title"/>"><g:message code="map.spatialportal.redirect.btn.ok.label" default="Go to Spatial Portal"/></a>
+                <a class="btn btn-primary" href="${grailsApplication.config.spatial.baseUrl}${spatialPortalLink}${spatialPortalUrlParams}" title="<g:message code="map.spatialportal.btn.title.param" args="${[shortName]}"/>"><g:message code="map.spatialportal.redirect.btn.ok.label" default="Go to Spatial Portal"/></a>
             </div>
         </div>
     </div>

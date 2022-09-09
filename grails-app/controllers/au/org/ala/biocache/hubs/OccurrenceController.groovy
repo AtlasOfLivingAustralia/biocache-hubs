@@ -395,7 +395,7 @@ class OccurrenceController {
                 Boolean userHasRoleAdmin = false
 
                 // Check (optionally comma-separated) list of authorise.roles - if we get `true` then stop checking
-                grailsApplication.config.getProperty('authorise.roles', String).tokenize(',').each {
+                grailsApplication.config.getProperty('authorise.roles', String, "").tokenize(',').each {
                     !userHasRoleAdmin ? userHasRoleAdmin = authService?.userInRole( it ) : null
                 }
 

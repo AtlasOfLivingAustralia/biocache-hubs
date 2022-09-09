@@ -1,4 +1,4 @@
-# biocache-hubs [![Build Status](https://travis-ci.com/AtlasOfLivingAustralia/biocache-hubs.svg?branch=develop)](https://travis-ci.com/AtlasOfLivingAustralia/biocache-hubs) 
+# biocache-hubs [![Build Status](https://app.travis-ci.com/AtlasOfLivingAustralia/biocache-hubs.svg?branch=develop)](https://app.travis-ci.com/github/AtlasOfLivingAustralia/biocache-hubs) 
 
 **biocache-hubs** is a Grails plugin that provides the core functionality for the _Atlas of Living Australia_ (ALA) [Occurrence search portal](https://biocache.ala.org.au/search) (Biocache) front-end.
 

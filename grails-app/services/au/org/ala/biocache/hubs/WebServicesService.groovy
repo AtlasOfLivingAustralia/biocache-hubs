@@ -21,6 +21,8 @@ import org.apache.http.entity.ContentType
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils
+import org.grails.web.converters.exceptions.ConverterException
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject

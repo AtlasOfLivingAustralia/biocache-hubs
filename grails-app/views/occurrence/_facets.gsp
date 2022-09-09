@@ -41,7 +41,7 @@
                 </div>
                 <div class="facetsGroup" id="group_data_quality" style="display:none;">
 
-                    <h4><span class="FieldName">Categories</span></h4>
+                    <h4><span class="FieldName"><alatag:message code="dq.selectmultiple.categorytable.header.categories" default="Categories" /></span></h4>
                     <div class="subnavlist nano" style="clear:left">
                         <ul class="facets nano-content dq-categories">
                             <g:each var="qualityCategory" in="${qualityCategories}">
@@ -93,7 +93,7 @@
                         <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
                         <h4><span class="FieldName">${fieldDisplayName?:facetResult.fieldName}</span></h4>
                         <div class="subnavlist nano" style="clear:left">
-                            <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}"/>
+                            <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}" fieldDisplayName="${fieldDisplayName}"/>
                         </div>
                         %{--<div class="fadeout"></div>--}%
                         <g:if test="${facetResult.fieldResult.length() > 1}">

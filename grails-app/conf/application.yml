@@ -1,4 +1,7 @@
 ---
+dwc:
+    exclude: 'dataHubUid,dataProviderUid,institutionUid,year,month,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds,datasetName, fieldNumber, samplingProtocol'
+
 grails:
     profile: web-plugin
     codegen:

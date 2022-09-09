@@ -369,7 +369,10 @@ $(document).ready(function() {
     }).click('click', function(e) { e.preventDefault(); });
 
     // add BS tooltip to elements with class "tooltips"
-    $(".tooltips").tooltip();
+    $(".tooltips").tooltip( {
+        trigger: "hover",
+        delay: { "show": 100, "hide": 1000 }
+    });
 
     $(".dataQualityHelpLink").popover({
         html : true,
@@ -420,6 +423,21 @@ $(document).ready(function() {
             var parentId = $(el).parent().attr('id').replace('Table','');
             $('a[href="#' + parentId + '"]').hide();
         }
+    });
+
+    // Copied from list.js TODO: consolidate into common JS code
+    $('#copy-al4r').on('click', function() {
+        var input = document.querySelector('#al4rcode');
+        if (navigator.clipboard && window.isSecureContext) {
+            // navigator clipboard api method'
+            navigator.clipboard.writeText(input.value)
+
+                .then(() => { alert(jQuery.i18n.prop('list.copylinks.tooltip.copied')) })
+                .catch((error) => { alert(jQuery.i18n.prop('list.copylinks.alert.failed') + error) })
+        } else {
+            alert("Copying to clipboard requires a secure HTTPS connection. Value: " + input.value);
+        }
+
     });
 
 }); // end JQuery document ready
