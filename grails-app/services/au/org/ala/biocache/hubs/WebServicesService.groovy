@@ -71,7 +71,7 @@ class WebServicesService {
 
     def JSONObject getRecord(String id, Boolean hasClubView) {
         def url = "${grailsApplication.config.biocache.baseUrl}/occurrence/${id.encodeAsURL()}"
-        getJsonElements(url)
+        getJsonElements(url, hasClubView)
     }
 
     def JSONObject getCompareRecord(String id) {
@@ -115,17 +115,17 @@ class WebServicesService {
 
     def getAlerts(String userId) {
         def url = "${grailsApplication.config.alerts.baseUrl}" + "/api/alerts/user/" + userId
-        return getJsonElements(url)
+        return getJsonElements(url, true)
     }
 
     def subscribeMyAnnotation(String userId) {
         String url = "${grailsApplication.config.alerts.baseUrl}" + "/api/alerts/user/" + userId + "/subscribeMyAnnotation"
-        postFormData(url, [:])
+        postFormData(url, [:], true)
     }
 
     def unsubscribeMyAnnotation(String userId) {
         String url = "${grailsApplication.config.alerts.baseUrl}" + "/api/alerts/user/" + userId + "/unsubscribeMyAnnotation"
-        postFormData(url, [:])
+        postFormData(url, [:], true)
     }
 
     def JSONObject getDuplicateRecordDetails(JSONObject record) {
@@ -220,11 +220,10 @@ class WebServicesService {
                 relatedRecordId    : relatedRecordId,
                 relatedRecordReason: relatedRecordReason,
                 userId             : userId,
-                userDisplayName    : userDisplayName,
-                apiKey             : grailsApplication.config.biocache.apiKey
+                userDisplayName    : userDisplayName
         ]
 
-        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/add", postBody)
+        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/add", postBody, true)
     }
 
     /**
@@ -237,11 +236,10 @@ class WebServicesService {
     def Map deleteAssertion(String recordUuid, String assertionUuid) {
         Map postBody = [
                 recordUuid   : recordUuid,
-                assertionUuid: assertionUuid,
-                apiKey       : grailsApplication.config.biocache.apiKey
+                assertionUuid: assertionUuid
         ]
 
-        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/delete", postBody)
+        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/delete", postBody, true)
     }
 
     @Cacheable('collectoryCache')
@@ -432,10 +430,10 @@ class WebServicesService {
      * @param url
      * @return the object we request or an JSON object containing error info in case of error
      */
-    JSONElement getJsonElements(String url) {
+    JSONElement getJsonElements(String url, Boolean wsAuth = false) {
 
         log.debug "(internal) getJson URL = " + url
-        Map result = webService.get(url)
+        Map result = webService.get(url, [:], ContentType.APPLICATION_JSON, wsAuth, wsAuth)
 
         if (result.error) {
 
@@ -505,9 +503,9 @@ class WebServicesService {
          * @param postParams
          * @return postResponse (Map with keys: statusCode (int) and statusMsg (String)
          */
-        def Map postFormData(String uri, Map postParams) {
+        def Map postFormData(String uri, Map postParams,  Boolean wsAuth = false) {
 
-            Map result = webService.post(uri, postParams, [:], ContentType.APPLICATION_FORM_URLENCODED)
+            Map result = webService.post(uri, postParams, [:], ContentType.APPLICATION_FORM_URLENCODED, wsAuth)
 
             Map postResponse = [:]
 
