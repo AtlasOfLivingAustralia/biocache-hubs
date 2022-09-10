@@ -38,6 +38,9 @@ import au.org.ala.ws.service.WebService
 
 /**
  * Service to perform web service DAO operations
+ *
+ * Note: Most external API endpoints called by this application are not protected i.e. they do not need Api Key or JWT authentication. As such, the default authentication behaviour of methods getJsonElements, postJsonElements, postFormData and getText has been to `false`.
+ * This behaviour is over-rideable with appropriate params. This has been done to limit changes to existing code calling the above-mentioned methods.
  */
 class WebServicesService {
 
@@ -425,15 +428,16 @@ class WebServicesService {
     }
 
     /**
-     * Perform HTTP GET on a JSON web service
      *
      * @param url
+     * @param wsAuth true to include the service's API Key in the request headers (uses property 'service.apiKey').  If using JWTs, instead sends a JWT Bearer tokens Default = false
+     * @param includeUser true to include the userId and email in the request headers and the ALA-Auth cookie.  If using JWTs sends the current user's access token, if false only sends a ClientCredentials grant token for this apps client id Default = false.
      * @return the object we request or an JSON object containing error info in case of error
      */
-    JSONElement getJsonElements(String url, Boolean wsAuth = false) {
+    JSONElement getJsonElements(String url, Boolean wsAuth = false, Boolean includeUser = false) {
 
         log.debug "(internal) getJson URL = " + url
-        Map result = webService.get(url, [:], ContentType.APPLICATION_JSON, wsAuth, wsAuth)
+        Map result = webService.get(url, [:], ContentType.APPLICATION_JSON, wsAuth, includeUser)
 
         if (result.error) {
 
@@ -454,17 +458,17 @@ class WebServicesService {
         throw new RestClientException(error)
     }
 
-        /**
-         * Perform HTTP GET on a text-based web service
-         *
-         * @param url
-         * @return
-         */
-        String getText(String url, Boolean wsAuth = false) {
+    /**
+     * @param url
+     * @param wsAuth true to include the service's API Key in the request headers (uses property 'service.apiKey').  If using JWTs, instead sends a JWT Bearer tokens Default = false
+     * @param includeUser true to include the userId and email in the request headers and the ALA-Auth cookie.  If using JWTs sends the current user's access token, if false only sends a ClientCredentials grant token for this apps client id Default = false.
+     * @return the object we request or an JSON object containing error info in case of error
+     */
+        String getText(String url, Boolean wsAuth = false, Boolean includeUser = false) {
 
             log.debug "(internal text) getText URL = " + url
 
-            Map result = webService.get(url, [:], ContentType.TEXT_PLAIN, wsAuth, wsAuth)
+            Map result = webService.get(url, [:], ContentType.TEXT_PLAIN, wsAuth, includeUser)
 
             if (result.error) {
 
@@ -480,32 +484,18 @@ class WebServicesService {
             def error = "Failed to get text from web service (${url}) status ${result.statusCode} : ${result}"
             log.error error
             throw new RestClientException(error)
-
-//        def conn = new URL(url).openConnection()
-//
-//        try {
-//            conn.setConnectTimeout(10000)
-//            conn.setReadTimeout(50000)
-//            def text = conn.content.text
-//            return text
-//        } catch (Exception e) {
-//            def error = "Failed to get text from web service (${url}). ${e.getClass()} ${e.getMessage()}, ${e}"
-//            log.error error
-//            //return null
-//            throw new RestClientException(error, e) // exception will result in no caching as opposed to returning null
-//        }
         }
 
         /**
-         * Perform a POST with URL encoded params as POST body
-         *
          * @param uri
          * @param postParams
+         * @param wsAuth true to include the service's API Key in the request headers (uses property 'service.apiKey').  If using JWTs, instead sends a JWT Bearer tokens Default = false
+         * @param includeUser true to include the userId and email in the request headers and the ALA-Auth cookie.  If using JWTs sends the current user's access token, if false only sends a ClientCredentials grant token for this apps client id Default = false.
          * @return postResponse (Map with keys: statusCode (int) and statusMsg (String)
          */
-        def Map postFormData(String uri, Map postParams,  Boolean wsAuth = false) {
+        def Map postFormData(String uri, Map postParams,  Boolean wsAuth = false, Boolean includeUser = false  ) {
 
-            Map result = webService.post(uri, postParams, [:], ContentType.APPLICATION_FORM_URLENCODED, wsAuth, wsAuth)
+            Map result = webService.post(uri, postParams, [:], ContentType.APPLICATION_FORM_URLENCODED, wsAuth, includeUser)
 
             Map postResponse = [:]
 
@@ -523,9 +513,17 @@ class WebServicesService {
             return postResponse
         }
 
-        def JSONElement postJsonElements(String url, Map jsonBody, Boolean wsAuth = false) {
+    /**
+     *
+     * @param url
+     * @param jsonBody
+     * @param wsAuth true to include the service's API Key in the request headers (uses property 'service.apiKey').  If using JWTs, instead sends a JWT Bearer tokens Default = false
+     * @param includeUser true to include the userId and email in the request headers and the ALA-Auth cookie.  If using JWTs sends the current user's access token, if false only sends a ClientCredentials grant token for this apps client id Default = false.
+     * @return
+     */
+        JSONElement postJsonElements(String url, Map jsonBody, Boolean wsAuth = false, Boolean includeUser = false) {
 
-            Map result = webService.post(url, [:], ContentType.APPLICATION_JSON, jsonBody, wsAuth, wsAuth)
+            Map result = webService.post(url, jsonBody, [:], ContentType.APPLICATION_JSON, wsAuth, includeUser)
 
             if (result.error) {
 
