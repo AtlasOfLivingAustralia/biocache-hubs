@@ -26,21 +26,19 @@ spring:
                 - grails-app/i18n/**
                 - grails-app/conf/**
 
-#security:
-#    cas:
-#        casServerName: 'https://auth.ala.org.au'
-#        uriFilterPattern: '/alaAdmin,/alaAdmin.*'
-#        uriExclusionFilterPattern: '/portal/q.*,/portal/messages.*,/portal/sessionCache.*,/static.*,/assets.*'
-#        authenticateOnlyIfLoggedInPattern: '/portal.*,/,/portal/config.*,/portal/i18n.*,/hub/[a-zA-Z0-9]+'
-#        loginUrl: 'https://auth.ala.org.au/cas/login'
-#        logoutUrl: 'https://auth.ala.org.au/cas/logout'
-#        gateway: false
-#        casServerUrlPrefix: 'https://auth.ala.org.au/cas'
-#        bypass: false # set to true for non-ALA deployment
-#        disableCAS: false
-#        roleAttribute: authority
-#        ignoreCase: true
-#        authCookieName: ALA-Auth
+
+security:
+    cas:
+        enabled: false # default is true, undefined behaviour if this omitted
+    oidc:
+        enabled: true # default is false
+        discoveryUri: 'https://auth-test.ala.org.au/cas/oidc/.well-known'
+        clientId: 'change me'
+        secret: 'change me'
+        scope: 'openid,profile,email,ala,roles'
+
+webservice:
+    jwt: true
 
 environments:
     development:
