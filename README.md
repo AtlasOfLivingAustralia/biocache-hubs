@@ -6,8 +6,11 @@ This application/plugin provides a web UI for a back-end service called [**bioca
 
 An example Grails application that uses this plugin, is the [**generic-hub**](https://github.com/AtlasOfLivingAustralia/generic-hub) app. There are other implementations listed in the [ALA Github repository](https://github.com/AtlasOfLivingAustralia?query=-hub) (all implementations have a suffix '-hub').
 
+## Updates
+5.x support OIDC authentication
+
 ## Versions
-The grails4 branch contains the 1.5.x series of the plugin compatible with Grails 4.0.12.
+5.x  is based on Grails 4.0.12 and Java 11
 
 The grails2 branch contains the 1.5.x series of the plugin compatible with Grails 2.x.
 
@@ -23,10 +26,6 @@ E.g. to change the header and footer, create a copy of the file `grails-app/view
 To load and view you own occurrence record data, you'll need to install and run [**biocache-store**](https://github.com/AtlasOfLivingAustralia/biocache-store) and [**biocache-service**](https://github.com/AtlasOfLivingAustralia/biocache-service) and then configure your app to use your local **biocache-service** by adding/editing the line: `biocache.baseUrl = "http://hostname.acme.org/biocache-service/"`.
 
 A full list of the configuration settings (and their default values) are found in `src/main/groovy/au/org/ala/biocache/hubs/defaultConfig.groovy`.
-
-## Grails 4
-
-Starting with verison 4.x
 
 ## Grails 3
 

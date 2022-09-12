@@ -13,6 +13,7 @@
 
 package au.org.ala.biocache.hubs
 
+import grails.converters.JSON
 import grails.plugin.cache.CacheEvict
 import grails.plugin.cache.Cacheable
 
@@ -437,20 +438,27 @@ class WebServicesService {
     JSONElement getJsonElements(String url, Boolean wsAuth = false, Boolean includeUser = false) {
 
         log.debug "(internal) getJson URL = " + url
-        Map result = webService.get(url, [:], ContentType.APPLICATION_JSON, wsAuth, includeUser)
+        def conn = new URL(url).openConnection()
+        if (conn instanceof HttpURLConnection) {
+            Map result = webService.get(url, [:], ContentType.APPLICATION_JSON, wsAuth, includeUser)
 
-        if (result.error) {
+            if (result.error) {
 
-            def error = "Failed to get json from web service (${url}) status ${result.statusCode} : ${result.error}"
-            log.error error
-            throw new RestClientException(error)
-        }
+                def error = "Failed to get json from web service (${url}) status ${result.statusCode} : ${result.error}"
+                log.error error
+                throw new RestClientException(error)
+            }
 
-        if (result.resp instanceof Collection) {
-            return new JSONArray(result.resp)
-        }
-        if (result.resp instanceof Map) {
-            return new JSONObject(result.resp)
+            if (result.resp instanceof Collection) {
+                return new JSONArray(result.resp)
+            }
+            if (result.resp instanceof Map) {
+                return new JSONObject(result.resp)
+            }
+        } else {
+            InputStream stream = conn.getInputStream()
+            JSONElement jsonOut = JSON.parse(stream, "UTF-8")
+            return jsonOut
         }
 
         def error = "Failed to get json from web service (${url}) : ${result}"
