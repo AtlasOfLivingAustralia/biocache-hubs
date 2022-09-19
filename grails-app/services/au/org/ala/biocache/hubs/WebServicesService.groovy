@@ -74,12 +74,12 @@ class WebServicesService {
     }
 
     def JSONObject getRecord(String id, Boolean hasClubView) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrence/${id.encodeAsURL()}"
-        getJsonElements(url, hasClubView)
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/${id.encodeAsURL()}"
+        getJsonElements(url, hasClubView, hasClubView)
     }
 
     def JSONObject getCompareRecord(String id) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrence/compare?uuid=${id.encodeAsURL()}"
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/compare?uuid=${id.encodeAsURL()}"
         getJsonElements(url)
     }
 
