@@ -79,7 +79,7 @@ class WebServicesService {
     }
 
     def JSONObject getCompareRecord(String id) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/compare?uuid=${id.encodeAsURL()}"
+        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/compare/${id.encodeAsURL()}"
         getJsonElements(url)
     }
 
