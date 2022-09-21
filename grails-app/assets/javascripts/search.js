@@ -1713,7 +1713,7 @@ function loadSpeciesInTab(start, sortField, group) {
 
     if (!init) {
         // populate the groups dropdown
-        var groupsUrl = BC_CONF.biocacheServiceUrl + "/explore/groups.json" + BC_CONF.searchString + "&facets=species_group";
+        var groupsUrl = BC_CONF.biocacheServiceUrl + "/explore/groups" + BC_CONF.searchString + "&facets=species_group";
         $.getJSON(groupsUrl, function(data) {
             if (data.length > 0) {
                 $("#speciesGroup").empty();

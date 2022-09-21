@@ -804,7 +804,7 @@ function processSpeciesJsonData(data, appendResults) {
  * Perform normal spatial search for species groups and species counts
  */
 function loadGroups() {
-    var url = MAP_VAR.biocacheServiceUrl +"/explore/groups.json";
+    var url = MAP_VAR.biocacheServiceUrl +"/explore/groups";
     var params = {
         //"group": $(this).attr('title'),
         lat: $('#latitude').val(),
