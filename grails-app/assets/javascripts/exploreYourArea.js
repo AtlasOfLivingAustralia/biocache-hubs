@@ -625,7 +625,7 @@ function groupClicked(el) {
     //console.log("groupClicked() calling loadRecordsLayer()");
     if (MAP_VAR.map) loadRecordsLayer();
     // AJAX...
-    var uri = MAP_VAR.biocacheServiceUrl + "/explore/group/"+speciesGroup+".json";
+    var uri = MAP_VAR.biocacheServiceUrl + "/explore/group/"+speciesGroup;
     var sortField = "count"
     var params = {
         lat: $('#latitude').val(),
@@ -766,7 +766,7 @@ function processSpeciesJsonData(data, appendResults) {
             }
             $("div#rightList").data("sort", sortOrder); // save it to the DOM
             // AJAX...
-            var uri = MAP_VAR.biocacheServiceUrl + "/explore/group/"+speciesGroup+".json";
+            var uri = MAP_VAR.biocacheServiceUrl + "/explore/group/"+speciesGroup;
             //var params = "&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&group="+speciesGroup;
             var params = {
                 lat: $('#latitude').val(),
