@@ -227,7 +227,7 @@ class WebServicesService {
                 userDisplayName    : userDisplayName
         ]
 
-        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/add", postBody, true)
+        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/add", postBody, true, true)
     }
 
     /**
@@ -243,7 +243,7 @@ class WebServicesService {
                 assertionUuid: assertionUuid
         ]
 
-        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/delete", postBody, true)
+        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/delete", postBody, true, true)
     }
 
     @Cacheable('collectoryCache')
