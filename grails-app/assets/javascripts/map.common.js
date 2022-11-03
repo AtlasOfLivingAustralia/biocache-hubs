@@ -127,7 +127,7 @@ function generatePopup(layer, latlng) {
 
 function getSpeciesCountInArea(params) {
     speciesCount = -1;
-    $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrence/facets.json" + params + "&facets=taxon_name",
+    $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrences/facets.json" + params + "&facets=taxon_name",
         function( data ) {
             if (data && data.length > 0 && data[0].count !== undefined) {
                 var speciesCount = data[0].count;

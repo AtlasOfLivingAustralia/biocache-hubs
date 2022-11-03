@@ -16,7 +16,6 @@
 package au.org.ala.biocache.hubs
 
 import au.org.ala.dataquality.model.QualityProfile
-import au.org.ala.web.CASRoles
 import com.maxmind.geoip2.record.Location
 import grails.converters.JSON
 import groovy.json.JsonSlurper
@@ -665,7 +664,7 @@ class OccurrenceController {
         //log.info "FG json = " + fg.getJson()
 
         try {
-            JSONElement fgPostObj = webServicesService.postJsonElements(grailsApplication.config.fieldguide.url + "/generate", fg.getJson())
+            JSONElement fgPostObj = webServicesService.postJsonElements(grailsApplication.config.fieldguide.url + "/generate", fg.getMap())
             //log.info "fgFileId = ${fgFileId}"
 
             if (fgPostObj.fileId) {

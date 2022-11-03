@@ -1,6 +1,6 @@
 language: groovy
 jdk:
-- openjdk8
+- openjdk11
 sudo: false
 branches:
   only:
@@ -9,7 +9,10 @@ branches:
   - hotfix
   - EYA-enhancements
   - develop
+  - /^epic\/.*\/develop$/
+  - epic/grails4/oidc-auth
   - feature/data-quality
+  - grails4
   - 552_records_page_error
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -25,5 +28,6 @@ after_success:
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && sh .travis/trigger-travis.sh --pro --branch $TRAVIS_BRANCH AtlasOfLivingAustralia ala-hub $TRAVIS_ACCESS_TOKEN'
 env:
   global:
+  - JAVA_TOOL_OPTIONS=-Dhttps.protocols=TLSv1.2
   - secure: fwa7jtwNL/MNa3+iI+r0jrGwnQcC8fYtgH9vbOT3x9MHo0b2K2CCTq+io+U2iDhFpDt1Tee49ZqL38aQV+/Q7oW9OddRCBhpPafLwvIeAeEAzYVfZzYj0M5QfomqhQfFqaeBlsDGWLmfqs+Qa56acG/5AXvy2bdIBkx8eobxKHw=
   - secure: JICocWnUXHHv+yt1XM/8GcurEmaNwzAbnmAGylaVriCq98m31clDGms1OKoHU11g9Ux8uNSmydafvf+oEFzpm8LAyqrtDcPBqi8UXG+4AY3SctutdDGHE2Ue3ly8HlVkMY2e9wnA2bU/Wmq4VesyvPCIRp/IeGi+sE02F+3IYAQ=

@@ -26,18 +26,23 @@ class FieldGuideDTO {
     def title = ""
     def link = ""
 
-    def String getJson() {
-        def json = [
-                    guids: guids,
-                    title: title,
-                    link: link
-                ]
-        def jsonObj = json as JSON
+    String getJson() {
+
+        def jsonObj = getMap() as JSON
         return jsonObj.toString()
     }
 
+    Map<String, Object> getMap() {
+
+        return [
+                guids: guids,
+                title: title,
+                link: link
+        ]
+    }
+
     @Override
-    public String toString() {
+    String toString() {
         return "FieldGuideDTO{" +
                 "guids=" + guids +
                 ", title=" + title +
