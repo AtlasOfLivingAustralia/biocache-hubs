@@ -576,7 +576,7 @@ var facetChartGroup = {
 
         // make request
         $.ajax({
-            url: urlConcat(url, "/occurrences/search.json?pageSize=0&flimit=200&q=") + options.query + facets + "&fsort=index",
+            url: urlConcat(url, "/occurrences/search?pageSize=0&flimit=200&q=") + options.query + facets + "&fsort=index",
             //dataType: 'jsonp',
             error: function() {
                 cleanUp(); // TODO:
@@ -648,7 +648,7 @@ var loadAndDrawFacetCharts = function (options) {
 
     // make request
     $.ajax({
-        url: urlConcat(url, "/occurrences/search.json?pageSize=0&q=") + options.query + "&facets=" + facets + "&fsort=index",
+        url: urlConcat(url, "/occurrences/search?pageSize=0&q=") + options.query + "&facets=" + facets + "&fsort=index",
         //dataType: 'jsonp',
         error: function() {
             cleanUp(); // TODO:
@@ -753,7 +753,7 @@ function loadFacetCharts(chartOptions) {
 
     var query = chartOptions.query ? chartOptions.query : buildQueryString(chartOptions.instanceUid);
     $.ajax({
-        url: urlConcat(biocacheServicesUrl, "/occurrences/search.json?pageSize=0&q=") + query + "&fsort=index",
+        url: urlConcat(biocacheServicesUrl, "/occurrences/search?pageSize=0&q=") + query + "&fsort=index",
         //dataType: 'jsonp',
         error: function() {
             cleanUp();
@@ -1058,7 +1058,7 @@ var taxonomyChart = {
             this.threshold = chartOptions.threshold;
         }
 
-        var url = urlConcat(biocacheServicesUrl, "/breakdown.json?q=") + this.query;
+        var url = urlConcat(biocacheServicesUrl, "/breakdown?q=") + this.query;
 
         // add url params to set state
         if (this.rank) {
@@ -1300,7 +1300,7 @@ function initTaxonTree(treeOptions) {
                 ajax: {
                     url: function(node) {
                         var rank = $(node).attr("rank");
-                        var u = urlConcat(biocacheServicesUrl, "/breakdown.json?q=") + query + "&rank=";
+                        var u = urlConcat(biocacheServicesUrl, "/breakdown?q=") + query + "&rank=";
                         if (rank == 'kingdoms') {
                             u += 'kingdom';  // starting node
                         }

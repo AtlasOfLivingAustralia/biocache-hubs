@@ -220,7 +220,7 @@ $(document).ready(function() {
         var maxFacets = 20;
         var index = i; // keep a copy
         var queryContextParam = (BC_CONF.queryContext) ? "&qc=" + BC_CONF.queryContext : "";
-        var jsonUri = BC_CONF.biocacheServiceUrl + "/occurrences/search.json?q=lsid:" + lsid + "&" + BC_CONF.facetQueries +
+        var jsonUri = BC_CONF.biocacheServiceUrl + "/occurrences/search?q=lsid:" + lsid + "&" + BC_CONF.facetQueries +
             "&facets=raw_taxon_name&pageSize=0&flimit=" + maxFacets + queryContextParam;
 
         var $clone = $('#resultsReturned #template').clone();
@@ -1622,7 +1622,7 @@ function loadImagesInTab() {
 function loadImages(start) {
 
         start = (start) ? start : 0;
-        var imagesJsonUri = BC_CONF.biocacheServiceUrl + "/occurrences/search.json" + BC_CONF.searchString +
+        var imagesJsonUri = BC_CONF.biocacheServiceUrl + "/occurrences/search" + BC_CONF.searchString +
             "&fq=multimedia:Image&facet=false&pageSize=20&start=" + start + "&sort=identification_qualifier_s&dir=asc";
         $.getJSON(imagesJsonUri, function (data) {
             //console.log("data",data);

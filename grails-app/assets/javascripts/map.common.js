@@ -127,7 +127,7 @@ function generatePopup(layer, latlng) {
 
 function getSpeciesCountInArea(params) {
     speciesCount = -1;
-    $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrences/facets.json" + params + "&facets=taxon_name",
+    $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrences/facets" + params + "&facets=taxon_name",
         function( data ) {
             if (data && data.length > 0 && data[0].count !== undefined) {
                 var speciesCount = data[0].count;
@@ -140,7 +140,7 @@ function getSpeciesCountInArea(params) {
 
 function getOccurrenceCountInArea(params) {
     occurrenceCount = -1;
-    $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrences/search.json" + params + "&pageSize=0&facet=off",
+    $.getJSON(BC_CONF.biocacheServiceUrl + "/occurrences/search" + params + "&pageSize=0&facet=off",
         function( data ) {
             if (data && data.totalRecords !== undefined) {
                 var occurrenceCount = data.totalRecords;
