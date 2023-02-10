@@ -735,7 +735,7 @@ class OccurrenceTagLib {
                     span(class:'occurrenceNames', occurrence.raw_scientificName)
                 }
 
-                if (occurrence.vernacularName || occurrence.raw_vernacularName) {
+                if (grailsApplication.config.getProperty('vernacularName.show', Boolean, true) && occurrence.vernacularName || occurrence.raw_vernacularName) {
                     mkp.yieldUnescaped("&nbsp;|&nbsp;")
                     span(class:'occurrenceNames', occurrence.vernacularName?:occurrence.raw_vernacularName)
                 }
