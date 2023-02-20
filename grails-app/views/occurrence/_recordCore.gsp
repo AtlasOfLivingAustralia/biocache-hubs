@@ -2,6 +2,7 @@
 %{--<% Map fieldsMap = new HashMap(); pageContext.setAttribute("fieldsMap", fieldsMap); %>--}%
 <%-- g:set target="${fieldsMap}" property="aKey" value="value for a key" /--%>
 <g:set var="fieldsMap" value="${[:]}"/>
+<g:set var="showVernacularName" value="${grailsApplication.config.getProperty('vernacularName.show', Boolean, true)}"/>
 <div id="occurrenceDataset">
 <g:render template="sandboxUploadSourceLinks" model="[dataResourceUid: record?.raw?.attribution?.dataResourceUid]" />
 <h3><g:message code="recordcore.occurencedataset.title" default="Dataset"/></h3>
@@ -473,6 +474,7 @@
         <br/><span class="originalValue"><g:message code="recordcore.tr02" default="Supplied as"/> "${record.raw.classification.taxonRank}"</span>
     </g:if>
 </alatag:occurrenceTableRow>
+<g:if test="${showVernacularName}">
 <!-- Common name -->
 <alatag:occurrenceTableRow annotate="false" section="taxonomy" fieldCode="commonName" fieldName="Common name">
     ${fieldsMap.put("vernacularName", true)}
@@ -486,6 +488,7 @@
         <br/><span class="originalValue"><g:message code="recordcore.cn.01" default="Supplied common name"/> "${record.raw.classification.vernacularName}"</span>
     </g:if>
 </alatag:occurrenceTableRow>
+</g:if>
 <!-- Kingdom -->
 <alatag:occurrenceTableRow annotate="true" section="taxonomy" fieldCode="kingdom" fieldName="Kingdom">
     ${fieldsMap.put("kingdom", true)}

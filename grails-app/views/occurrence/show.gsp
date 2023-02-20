@@ -23,6 +23,7 @@
 <g:set var="userDisplayName" value="${alatag.loggedInUserDisplayname()}"/>
 <g:set var="userId" value="${alatag.loggedInUserId()}"/>
 <g:set var="isUnderCas" value="${(grailsApplication.config.security.cas.casServerName) ? true : false}"/>
+<g:set var="showVernacularName" value="${grailsApplication.config.getProperty('vernacularName.show', Boolean, true)}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -160,10 +161,10 @@
                                 <i>${record.raw.classification.genus} ${record.raw.classification.specificEpithet}</i>
                                 ${record.raw.classification.scientificNameAuthorship}
                             </g:else>
-                            <g:if test="${record.processed.classification.vernacularName}">
+                            <g:if test="${showVernacularName && record.processed.classification.vernacularName}">
                                 | ${record.processed.classification.vernacularName}
                             </g:if>
-                            <g:elseif test="${record.raw.classification.vernacularName}">
+                            <g:elseif test="${showVernacularName && record.raw.classification.vernacularName}">
                                 | ${record.raw.classification.vernacularName}
                             </g:elseif>
                             <g:if test="${record.processed.event?.eventDate || record.raw.event?.eventDate}">
