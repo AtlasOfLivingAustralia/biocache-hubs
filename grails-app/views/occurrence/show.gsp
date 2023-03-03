@@ -8,35 +8,35 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="org.apache.commons.lang.StringUtils" contentType="text/html;charset=UTF-8" %>
 <g:set var="recordId" value="${alatag.getRecordId(record: record, skin: skin)}"/>
-<g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseUrl}"/>
-<g:set var="collectionsWebappContext" value="${grailsApplication.config.collections.baseUrl}"/>
-<g:set var="useAla" value="${grailsApplication.config.skin.useAlaBie?.toBoolean() ? 'true' : 'false'}"/>
-<g:set var="taxaLinks" value="${grailsApplication.config.skin.taxaLinks}"/>
-<g:set var="dwcExcludeFields" value="${grailsApplication.config.dwc.exclude}"/>
-<g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
+<g:set var="bieWebappContext" value="${grailsApplication.config.getProperty('bie.baseUrl')}"/>
+<g:set var="collectionsWebappContext" value="${grailsApplication.config.getProperty('collections.baseUrl')}"/>
+<g:set var="useAla" value="${grailsApplication.config.getProperty('skin.useAlaBie', Boolean, false)}"/>
+<g:set var="taxaLinks" value="${grailsApplication.config.getProperty('skin.taxaLinks')}"/>
+<g:set var="dwcExcludeFields" value="${grailsApplication.config.getProperty('dwc.exclude')}"/>
+<g:set var="hubDisplayName" value="${grailsApplication.config.getProperty('skin.orgNameLong')}"/>
 <g:set var="biocacheService" value="${alatag.getBiocacheAjaxUrl()}"/>
-<g:set var="spatialPortalUrl" value="${grailsApplication.config.spatial.baseUrl}"/>
-<g:set var="serverName" value="${grailsApplication.config.serverName}"/>
+<g:set var="spatialPortalUrl" value="${grailsApplication.config.getProperty('spatial.baseUrl')}"/>
+<g:set var="serverName" value="${grailsApplication.config.getProperty('serverName')}"/>
 <g:set var="scientificName" value="${alatag.getScientificName(record: record)}"/>
-<g:set var="sensitiveDatasetRaw" value="${grailsApplication.config.sensitiveDataset?.list?:''}"/>
+<g:set var="sensitiveDatasetRaw" value="${grailsApplication.config.getProperty('sensitiveDataset.list', String, '')}"/>
 <g:set var="sensitiveDatasets" value="${sensitiveDatasetRaw?.split(',')}"/>
 <g:set var="userDisplayName" value="${alatag.loggedInUserDisplayname()}"/>
 <g:set var="userId" value="${alatag.loggedInUserId()}"/>
-<g:set var="isUnderCas" value="${(grailsApplication.config.security.cas.casServerName) ? true : false}"/>
+<g:set var="isUnderCas" value="${grailsApplication.config.getProperty('security.cas.casServerName', Boolean, false)}"/>
 <g:set var="showVernacularName" value="${grailsApplication.config.getProperty('vernacularName.show', Boolean, true)}"/>
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
-    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('skin.layout')}"/>
     <meta name="section" content="search"/>
     <meta name="breadcrumbParent" content="${request.contextPath ?: '/'},${message(code: "search.heading.list")}"/>
     <meta name="breadcrumb" content="${message(code: "show.title")}: ${recordId} (${scientificName})"/>
     <title><g:message code="show.title" default="Record"/>: ${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
 
 
-    <g:if test="${grailsApplication.config.google.apikey}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
+    <g:if test="${grailsApplication.config.getProperty('google.apikey')}">
+        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}" type="text/javascript"></script>
     </g:if>
     <g:else>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -57,10 +57,10 @@
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             sensitiveDatasets: {
                 <g:each var="sds" in="${sensitiveDatasets}"
-                   status="s">'${sds}': '${grailsApplication.config.sensitiveDatasets[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
+                   status="s">'${sds}': '${grailsApplication.config.getProperty('sensitiveDatasets', Map)[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
                 </g:each>
             },
-            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean},
+            hasGoogleKey: ${grailsApplication.config.getProperty('google.apikey') as Boolean},
             myAnnotationEnabled: ${(grailsApplication.config.getProperty("alerts.myannotation.enabled", Boolean, false))}
         }
 
@@ -407,7 +407,7 @@
                                 <ul>
                                     <g:each in="${metadataForOutlierLayers}" var="layerMetadata">
                                         <li>
-                                            <a href="${grailsApplication.config.layersservice.baseUrl}/layers/view/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
+                                            <a href="${grailsApplication.config.getProperty('layersservice.baseUrl')}/layers/view/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
                                             <g:message code="show.outlierinformation.each.label01" default="Notes"/>: ${layerMetadata.notes}<br/>
                                             <g:message code="show.outlierinformation.each.label02" default="Scale"/>: ${layerMetadata.scale}
                                         </li>
@@ -449,7 +449,7 @@
                                     facetChartOptions.chartsDiv = "charts";
                                     facetChartOptions[facetName] = {chartType: 'scatter'};
                                     facetChartOptions.biocacheServicesUrl = "${alatag.getBiocacheAjaxUrl()}";
-                                    facetChartOptions.displayRecordsUrl = "${grailsApplication.config.grails.serverURL}";
+                                    facetChartOptions.displayRecordsUrl = "${grailsApplication.config.getProperty('grails.serverURL')}";
 
                                     //additional config
                                     facetChartOptions.cumulative = cumulative;
@@ -638,7 +638,7 @@
                                         <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != contextualSampleInfo.get(vs - 1).classification1 && vs != contextualSampleInfo.size() - 1))}">
                                             <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
                                         </g:if>
-                                        <g:set var="fn"><a href='${grailsApplication.config.layersservice.baseUrl}/layers/view/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
+                                        <g:set var="fn"><a href='${grailsApplication.config.getProperty('layersservice.baseUrl')}/layers/view/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
                                         <alatag:occurrenceTableRow
                                                 annotate="false"
                                                 section="contextual"
@@ -658,7 +658,7 @@
                                         <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != environmentalSampleInfo.get(vs - 1).classification1 && vs != environmentalSampleInfo.size() - 1))}">
                                             <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
                                         </g:if>
-                                        <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='More information about this layer'>${sample.layerDisplayName}</a></g:set>
+                                        <g:set var="fn"><a href='${grailsApplication.config.getProperty('layersservice.url')}/layers/view/more/${sample.layerName}' title='More information about this layer'>${sample.layerDisplayName}</a></g:set>
                                         <alatag:occurrenceTableRow
                                                 annotate="false"
                                                 section="contextual"

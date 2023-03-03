@@ -9,21 +9,21 @@
 <g:set var="startPageTime" value="${System.currentTimeMillis()}"/>
 <g:set var="queryDisplay" value="${sr?.queryTitle ?: searchRequestParams?.displayString ?: ''}"/>
 <g:set var="authService" bean="authService"></g:set>
-<g:set var="orgNameShort" value="${grailsApplication.config.skin.orgNameShort}"/>
+<g:set var="orgNameShort" value="${grailsApplication.config.getProperty('skin.orgNameShort')}"/>
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
-<meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+<meta name="layout" content="${grailsApplication.config.getProperty('skin.layout')}"/>
 <meta name="section" content="search"/>
 <meta name="breadcrumbParent" content="${request.contextPath ?: '/'},${message(code: "search.heading.list")}"/>
 <meta name="breadcrumb" content="${message(code: "list.search.results")}"/>
 <title><g:message code="list.title"
                   default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message
-        code="search.heading.list" default="Search results"/> | ${grailsApplication.config.skin.orgNameLong}</title>
+        code="search.heading.list" default="Search results"/> | ${grailsApplication.config.getProperty('skin.orgNameLong')}</title>
 
-<g:if test="${grailsApplication.config.google.apikey}">
-    <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}"
+<g:if test="${grailsApplication.config.getProperty('google.apikey')}">
+    <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}"
             type="text/javascript"></script>
 </g:if>
 
@@ -40,24 +40,24 @@
             searchRequestParams: "${searchRequestParams.encodeAsURL()}",
             facetQueries: "${fqParams.encodeAsURL()}",
             facetDownloadQuery: "${searchString}",
-            maxFacets: "${grailsApplication.config.facets?.max ?: '4'}",
+            maxFacets: "${grailsApplication.config.getProperty('facets.max', String, '4')}",
             queryString: "${queryDisplay.encodeAsJavaScript()}",
-            bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
-            bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
+            bieWebappUrl: "${grailsApplication.config.getProperty('bie.baseUrl')}",
+            bieWebServiceUrl: "${grailsApplication.config.getProperty('bieService.baseUrl')}",
             biocacheServiceUrl: "${biocacheServiceUrl}",
-            collectoryUrl: "${grailsApplication.config.collectory.baseUrl}",
-            alertsUrl: "${grailsApplication.config.alerts.baseUrl}",
-            skin: "${grailsApplication.config.skin.layout}",
-            defaultListView: "${grailsApplication.config.defaultListView}",
-            resourceName: "${grailsApplication.config.skin.orgNameLong}",
-            facetLimit: "${grailsApplication.config.facets.limit ?: 50}",
-            queryContext: "${grailsApplication.config.biocache.queryContext}",
+            collectoryUrl: "${grailsApplication.config.getProperty('collectory.baseUrl')}",
+            alertsUrl: "${grailsApplication.config.getProperty('alerts.baseUrl')}",
+            skin: "${grailsApplication.config.getProperty('skin.layout')}",
+            defaultListView: "${grailsApplication.config.getProperty('defaultListView')}",
+            resourceName: "${grailsApplication.config.getProperty('skin.orgNameLong')}",
+            facetLimit: "${grailsApplication.config.getProperty('facets.limit', Integer, 50)}",
+            queryContext: "${grailsApplication.config.getProperty('biocache.queryContext')}",
             selectedDataResource: "${selectedDataResource}",
-            autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson() ?: '{}'},
-            zoomOutsideScopedRegion: Boolean("${grailsApplication.config.map.zoomOutsideScopedRegion}"),
+            autocompleteHints: ${grailsApplication.config.getProperty('bie.autocompleteHints', Map)?.encodeAsJson() ?: '{}'},
+            zoomOutsideScopedRegion: Boolean("${grailsApplication.config.getProperty('map.zoomOutsideScopedRegion')}"),
             hasMultimedia: ${hasImages ?: 'false'}, // will be either true or false
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
-            imageServiceBaseUrl:"${grailsApplication.config.images.baseUrl}",
+            imageServiceBaseUrl:"${grailsApplication.config.getProperty('images.baseUrl')}",
             likeUrl: "${createLink(controller: 'imageClient', action: 'likeImage')}",
             dislikeUrl: "${createLink(controller: 'imageClient', action: 'dislikeImage')}",
             userRatingUrl: "${createLink(controller: 'imageClient', action: 'userRating')}",
@@ -75,8 +75,8 @@
             userId: "${userId}",
             prefKey: "${(grailsApplication.config.getProperty("dataquality.prefkey", String, "dqUserProfile"))}",
             expandKey: "${(grailsApplication.config.getProperty("dataquality.expandKey", String, "dqDetailExpand"))}",
-            autocompleteUrl: "${grailsApplication.config.skin.useAlaBie?.toBoolean() ? (grailsApplication.config.bieService.baseUrl + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
-            autocompleteUseBie: ${grailsApplication.config.skin.useAlaBie?.toBoolean()}
+            autocompleteUrl: "${grailsApplication.config.getProperty('skin.useAlaBie', Boolean) ? (grailsApplication.config.getProperty('bieService.baseUrl') + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
+            autocompleteUseBie: ${grailsApplication.config.skin.getProperty('useAlaBie', Boolean)}
         };
 </script>
 
@@ -100,7 +100,7 @@
 
 <asset:javascript src="autocomplete.js"/>
 <asset:script type="text/javascript">
-    <g:if test="${!grailsApplication.config.google.apikey}">
+    <g:if test="${!grailsApplication.config.getProperty('google.apikey')}">
         google.load('maps','3.5',{ other_params: "sensor=false" });
     </g:if>
 </asset:script>
@@ -146,7 +146,7 @@
             <h4><alatag:stripApiKey message="${flash.message}"/></h4>
 
             <p>Please contact <a
-                    href="mailto:${grailsApplication.config.supportEmail ?: 'support@ala.org.au'}?subject=biocache error"
+                    href="mailto:${grailsApplication.config.getProperty('supportEmail', String, 'support@ala.org.au')}?subject=biocache error"
                     style="text-decoration: underline;">support</a> if this error continues</p>
         </div>
     </g:if>
@@ -158,7 +158,7 @@
                 <b>${alatag.stripApiKey(message: errorMessage)}</b>
             </div>
             Please contact <a
-                href="mailto:${grailsApplication.config.supportEmail ?: 'support@ala.org.au'}?subject=biocache error">support</a> if this error continues
+                href="mailto:${grailsApplication.config.getProperty('supportEmail', String, 'support@ala.org.au')}?subject=biocache error">support</a> if this error continues
         </div>
     </g:if>
     <g:elseif test="${!sr || (sr.totalRecords == 0 && !recordsExcluded)}">
@@ -208,7 +208,7 @@
                 </p>
             </g:else>
         </div>
-        <g:if test="${grailsApplication.config.alerts.baseUrl}">
+        <g:if test="${grailsApplication.config.getProperty('alerts.baseUrl')}">
             <div id="alertsNorecords" class="btn btn-default btn-sm">
                 <a href="#alert" role="button" data-toggle="modal" class="tooltips"
                    title="<g:message code="list.alerts.navigator.title.norecords"/>"><i
@@ -285,7 +285,7 @@
                         <alatag:stripApiKey message="${flash.message}"/>
                     </div>
                 </g:if>
-                <g:if test="${grailsApplication.config.useDownloadPlugin?.toBoolean()}">
+                <g:if test="${grailsApplication.config.getProperty('useDownloadPlugin', Boolean)}">
                     <div id="download-button-area" class="pull-right" >
                         <div id="downloads" class="btn btn-primary">
                             <alatag:download searchResults="${sr}" searchRequestParams="${searchRequestParams}" class="tooltips newDownload" title="${g.message(code:"list.downloads.navigator.title", args:[g.formatNumber(number: sr.totalRecords, format: "#,###,###")])}">
@@ -346,7 +346,7 @@
                                             </p>
                                         </div>
                                         <div class="modal-footer">
-                                            <a href="${grailsApplication.config.dataquality.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
+                                            <a href="${grailsApplication.config.getProperty('dataquality.learnmore_link')}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
                                             <button id="hide-dq-warning" type="button" class="btn btn-primary pull-right" data-dismiss="modal"><alatag:message code="dq.warning.dataprofile.buttonright.text" default="Got it"></alatag:message></button>
                                         </div>
                                     </div>
@@ -424,7 +424,7 @@
                                                 </g:each>
                                             </div>
                                             <div class="modal-footer">
-                                                <a href="${grailsApplication.config.dataquality.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
+                                                <a href="${grailsApplication.config.getProperty('dataquality.learnmore_link')}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
                                                 <button class="btn btn-default" data-dismiss="modal" ><alatag:message code="dq.categoryinfo.dlg.closebutton.text" default="Close"/></button>
                                             </div>
                                         </div>
@@ -616,7 +616,7 @@
                                                     </table>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <a href="${grailsApplication.config.dataquality.learnmore_link}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
+                                                    <a href="${grailsApplication.config.getProperty('dataquality.learnmore_link')}" target="_blank" type="button" class="btn btn-link pull-left"><alatag:message code="dq.warning.dataprofile.buttonleft.text" default="Learn More"></alatag:message></a>
                                                     <button class="btn btn-default" data-dismiss="modal" ><alatag:message code="dq.categoryinfo.dlg.closebutton.text" default="Close"/></button>
                                                 </div>
                                             </div>
@@ -705,7 +705,7 @@
             </div>
             <g:set var="postFacets" value="${System.currentTimeMillis()}"/>
             <div id="content2" class="col-sm-9 col-md-9">
-                <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
+                <g:if test="${!grailsApplication.config.getProperty('useDownloadPlugin', Boolean)}">
                     <g:render template="download"/>
                     <div style="display:none"></div>
                 </g:if>
@@ -720,7 +720,7 @@
                         <plugin:isAvailable name="alaChartsPlugin">
                             <li><a id="t3" href="#chartsView" data-toggle="tab"><g:message code="list.link.t3"
                                                                                            default="Charts"/></a></li>
-                            <g:if test="${grailsApplication.config.userCharts && grailsApplication.config.userCharts.toBoolean()}">
+                            <g:if test="${grailsApplication.config.getProperty('userCharts') && grailsApplication.config.getProperty('userCharts', Boolean)}">
                                 <li><a id="t6" href="#userChartsView" data-toggle="tab"><g:message code="list.link.t6"
                                                                                                    default="Custom Charts"/></a>
                                 </li>
@@ -743,7 +743,7 @@
                     <div class="tab-pane solrResults active" id="recordsView">
                         <div id="searchControls" class="row">
                             <div class="col-sm-4 col-md-4">
-                                <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
+                                <g:if test="${!grailsApplication.config.getProperty('useDownloadPlugin', Boolean)}">
                                     <div id="downloads" class="btn btn-default btn-sm">
                                         <a href="#downloadModal"
                                            role="button"
@@ -754,7 +754,7 @@
                                                 code="list.downloads.navigator" default="Downloads"/></a>
                                     </div>
                                 </g:if>
-                                <g:if test="${grailsApplication.config.alerts.baseUrl}">
+                                <g:if test="${grailsApplication.config.getProperty('alerts.baseUrl')}">
                                     <div id="alerts" class="btn btn-default btn-sm ">
                                         <a href="#alert" role="button" data-toggle="modal" class="tooltips"
                                            title="<g:message code="list.alerts.navigator.title"/>"><i
@@ -837,7 +837,7 @@
                                           searchString      : searchString,
                                           queryDisplayString: queryDisplay,
                                           facets            : sr.facetResults,
-                                          defaultColourBy   : grailsApplication.config.map.defaultFacetMapColourBy
+                                          defaultColourBy   : grailsApplication.config.getProperty('map.defaultFacetMapColourBy')
                                   ]"/>
                         <div id='envLegend'></div>
                     </div><!-- end #mapwrapper -->
@@ -846,7 +846,7 @@
                             <g:render template="charts"
                                       model="[searchString: searchString]"/>
                         </div><!-- end #chartsWrapper -->
-                        <g:if test="${grailsApplication.config.userCharts && grailsApplication.config.userCharts?.toBoolean()}">
+                        <g:if test="${grailsApplication.config.userCharts && grailsApplication.config.getProperty('userCharts', Boolean)}">
                             <div id="userChartsView" class="tab-pane">
                                 <g:render template="userCharts"
                                           model="[searchString: searchString]"/>
@@ -928,7 +928,7 @@
         </div>
     </g:else>
 
-    <g:if test="${grailsApplication.config.alerts.baseUrl}">
+    <g:if test="${grailsApplication.config.getProperty('alerts.baseUrl')}">
         <div id="alert" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="alertLabel"
              aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -956,7 +956,7 @@
                                     code="list.alert.navigator02" default="Get email alerts for new annotations"/></a>
                         </div>
                         <p>&nbsp;</p>
-                        <p><a href="${grailsApplication.config.alerts.baseUrl}/notification/myAlerts"><g:message
+                        <p><a href="${grailsApplication.config.getProperty('alerts.baseUrl')}/notification/myAlerts"><g:message
                                 code="list.alert.navigator03" default="View your current alerts"/></a></p>
                     </div>
                     <div class="modal-footer">

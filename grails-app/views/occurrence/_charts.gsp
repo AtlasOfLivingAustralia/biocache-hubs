@@ -5,7 +5,7 @@
             biocacheServiceUrl="${alatag.getBiocacheAjaxUrl()}"
             biocacheWebappUrl="${g.createLink(absolute:true, uri:'')}"
             q="${searchString.replace('?q=','')}"
-            qc="${grailsApplication.config.biocache.queryContext ?: ''}"
+            qc="${grailsApplication.config.getProperty('biocache.queryContext', String, '')}"
             fq=""
             autoLoad="false"
     />

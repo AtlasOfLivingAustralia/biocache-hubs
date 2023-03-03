@@ -160,9 +160,9 @@
             <asset:script type="text/javascript">
                 $(document).ready(function() {
                     // Leaflet map
-                    var defaultBaseLayer = L.tileLayer("${grailsApplication.config.map.minimal.url}", {
-                        attribution: "${raw(grailsApplication.config.map.minimal.attr)}",
-                        subdomains: "${grailsApplication.config.map.minimal.subdomains}"
+                    var defaultBaseLayer = L.tileLayer("${grailsApplication.config.getProperty('map.minimal.url')}", {
+                        attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
+                        subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}"
                     });
 
                     var baseLayers = {
@@ -221,8 +221,8 @@
             <div id="occurrenceImages" style="margin-top:5px;">
                 <g:each in="${record.images}" var="image">
                     <div style="margin-bottom:10px;">
-                        <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
-                            <a href="${grailsApplication.config.images.viewerUrl}${image.filePath}" target="_blank">
+                        <g:if test="${grailsApplication.config.getProperty('skin.useAlaImageService', Boolean)}">
+                            <a href="${grailsApplication.config.getProperty('images.viewerUrl')}${image.filePath}" target="_blank">
                                 <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;" alt="Click to view this image in a large viewer"/>
                             </a>
                         </g:if>
@@ -253,8 +253,8 @@
                         <g:if test="${record.raw.miscProperties?.DESCRIPTION}">
                                 <cite><b><g:message code="show.sidebar03.caption" default="Caption"/>:</b> <alatag:sanitizeContent>${raw(record.raw.miscProperties.DESCRIPTION)}</alatag:sanitizeContent></cite><br/>
                         </g:if>
-                        <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
-                            <a href="${grailsApplication.config.images.metadataUrl}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
+                        <g:if test="${grailsApplication.config.getProperty('skin.useAlaImageService', Boolean)}">
+                            <a href="${grailsApplication.config.getProperty('images.metadataUrl')}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
                         </g:if>
                         <g:else>
                             <a href="${image.alternativeFormats.imageUrl}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator02" default="Original image"/></a>
@@ -292,7 +292,7 @@
                         <cite><b><g:message code="show.sidebar03.sound.license" default="License"/>:</b> ${sound?.metadata?.license}</cite><br/>
                     </g:if>
 
-                    <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean() && sound?.alternativeFormats?.detailLink}">
+                    <g:if test="${grailsApplication.config.getProperty('skin.useAlaImageService', Boolean) && sound?.alternativeFormats?.detailLink}">
                         <a href="${sound?.alternativeFormats?.detailLink}" target="_blank"><g:message code="show.sidebardiv.occurrencesounds.navigator01" default="View sound details"/></a><br/>
                     </g:if>
                     <br/>
@@ -389,7 +389,7 @@
                                 <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
                             </p>
 
-                            <g:if test="${grailsApplication.config.alerts.myannotation.enabled.toBoolean()}">
+                            <g:if test="${grailsApplication.config.getProperty('alerts.myannotation.enabled', Boolean)}">
                                 <p style="margin-top:30px;">
                                     <label style="width:100%" id="notifyChange"><input type="checkbox" id="notifyChangeCheckbox" name="notifyChange" value="">&nbsp;<g:message code="show.issueform.notifyme" default="Notify me when records I have annotated are updated"/></label>
                                 </p>

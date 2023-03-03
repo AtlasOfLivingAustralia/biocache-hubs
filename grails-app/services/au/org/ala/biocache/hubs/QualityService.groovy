@@ -54,7 +54,7 @@ class QualityService {
             def apiClient = new ApiClient()
             apiClient.adapterBuilder.baseUrl(dataQualityBaseUrl)
             apiClient.okBuilder.addInterceptor { chain ->
-                def request = chain.request().newBuilder().addHeader('User-Agent', "${grailsApplication.config.info.app.name}/${grailsApplication.config.info.app.version}").build()
+                def request = chain.request().newBuilder().addHeader('User-Agent', "${grailsApplication.config.getProperty('info.app.name')}/${grailsApplication.config.getProperty('info.app.version')}").build()
                 chain.proceed(request)
             }
             api = apiClient.createService(QualityServiceRpcApi)

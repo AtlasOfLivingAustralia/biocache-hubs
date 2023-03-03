@@ -6,23 +6,23 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page import="org.springframework.web.servlet.support.RequestContextUtils; au.org.ala.biocache.hubs.FacetsName; org.apache.commons.lang.StringUtils; grails.util.Environment" contentType="text/html;charset=UTF-8" %>
-<g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
-<g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocache.baseUrl}"/>
-<g:set var="serverName" value="${grailsApplication.config.serverName ?: grailsApplication.config.biocache.baseUrl}"/>
+<g:set var="hubDisplayName" value="${grailsApplication.config.getProperty('skin.orgNameLong')}"/>
+<g:set var="biocacheServiceUrl" value="${grailsApplication.config.getProperty('biocache.baseUrl')}"/>
+<g:set var="serverName" value="${grailsApplication.config.getProperty('serverName') ?: grailsApplication.config.getProperty('biocache.baseUrl')}"/>
 <g:set var="biocacheServiceUrl" value="${alatag.getBiocacheAjaxUrl()}"/>
-<g:set var="shortName" value="${grailsApplication.config.skin.orgNameShort}"/>
+<g:set var="shortName" value="${grailsApplication.config.getProperty('skin.orgNameShort')}"/>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('skin.layout')}"/>
     <meta name="section" content="search"/>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
     <meta name="breadcrumb" content="${message(code: "search.heading.list")}"/>
     <meta name="hideBreadcrumb" content=""/>
     <title><g:message code="home.index.title" default="Search for records"/> | ${hubDisplayName}</title>
 
-    <g:if test="${grailsApplication.config.google.apikey}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}"
+    <g:if test="${grailsApplication.config.getProperty('google.apikey')}">
+        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}"
                 type="text/javascript"></script>
     </g:if>
     <g:else>
@@ -35,14 +35,14 @@
         // global var for GSP tags/vars to be passed into JS functions
         var BC_CONF = {
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
-            bieWebappUrl: "${grailsApplication.config.bie.baseUrl}",
-            bieWebServiceUrl: "${grailsApplication.config.bieService.baseUrl}",
-            autocompleteHints: ${grailsApplication.config.bie?.autocompleteHints?.encodeAsJson() ?: '{}'},
+            bieWebappUrl: "${grailsApplication.config.getProperty('bie.baseUrl')}",
+            bieWebServiceUrl: "${grailsApplication.config.getProperty('bieService.baseUrl')}",
+            autocompleteHints: ${grailsApplication.config.getProperty('bie.autocompleteHints', Map)?.encodeAsJson() ?: '{}'},
             contextPath: "${request.contextPath}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
-            queryContext: "${grailsApplication.config.biocache.queryContext}",
-            autocompleteUrl: "${grailsApplication.config.skin.useAlaBie?.toBoolean() ? (grailsApplication.config.bieService.baseUrl + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
-            autocompleteUseBie: ${grailsApplication.config.skin.useAlaBie?.toBoolean()}
+            queryContext: "${grailsApplication.config.getProperty('biocache.queryContext')}",
+            autocompleteUrl: "${grailsApplication.config.getProperty('skin.useAlaBie', Boolean) ? (grailsApplication.config.getProperty('bieService.baseUrl') + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
+            autocompleteUseBie: ${grailsApplication.config.getProperty('skin.useAlaBie', Boolean, false)}
         }
         /* Load Spring i18n messages into JS
          */
@@ -148,10 +148,10 @@
         };
 
         var defaultBaseLayer = L.tileLayer("${grailsApplication.config.map.minimal.url}", {
-            attribution: "${raw(grailsApplication.config.map.minimal.attr)}",
-            subdomains: "${grailsApplication.config.map.minimal.subdomains}",
-            mapid: "${grailsApplication.config.map.mapbox?.id ?: ''}",
-            token: "${grailsApplication.config.map.mapbox?.token ?: ''}"
+            attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
+            subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains', String, '')}",
+            mapid: "${grailsApplication.config.getProperty('map.mapbox.id', String, '')}",
+            token: "${grailsApplication.config.getProperty('map.mapbox.token', String, '')}"
         });
 
         // Global var to store map config
@@ -161,16 +161,16 @@
             query : "${searchString}",
             queryDisplayString : "${queryDisplayString}",
             //center: [-30.0,133.6],
-            defaultLatitude : "${grailsApplication.config.map.defaultLatitude ?: '-25.4'}",
-            defaultLongitude : "${grailsApplication.config.map.defaultLongitude ?: '133.6'}",
-            defaultZoom : "${grailsApplication.config.map.defaultZoom ?: '4'}",
+            defaultLatitude : "${grailsApplication.config.getProperty('map.defaultLatitude', String, '-25.4')}",
+            defaultLongitude : "${grailsApplication.config.getProperty('map.defaultLongitude', String, '133.6')}",
+            defaultZoom : "${grailsApplication.config.getProperty('map.defaultZoom', String, '4')}",
             overlays : {
-        <g:if test="${grailsApplication.config.map.overlay.url}">
-            "${grailsApplication.config.map.overlay.name ?: 'overlay'}" : L.tileLayer.wms("${grailsApplication.config.map.overlay.url}", {
+        <g:if test="${grailsApplication.config.getProperty('map.overlay.url')}">
+            "${grailsApplication.config.getProperty('map.overlay.name', String, 'overlay')}" : L.tileLayer.wms("${grailsApplication.config.getProperty('map.overlay.url')}", {
                         layers: 'ALA:ucstodas',
                         format: 'image/png',
                         transparent: true,
-                        attribution: "${grailsApplication.config.map.overlay.name ?: 'overlay'}"
+                        attribution: "${grailsApplication.config.getProperty('map.overlay.name', String, 'overlay')}"
                     })
         </g:if>
         },
@@ -184,7 +184,7 @@
         layerControl : null,
         //currentLayers : [],
         //additionalFqs : '',
-        //zoomOutsideScopedRegion: ${(grailsApplication.config.map.zoomOutsideScopedRegion == false || grailsApplication.config.map.zoomOutsideScopedRegion == "false") ? false : true}
+        //zoomOutsideScopedRegion: ${(grailsApplication.config.getProperty('map.zoomOutsideScopedRegion', Boolean) == false || grailsApplication.config.getProperty('map.zoomOutsideScopedRegion') == "false") ? false : true}
         };
 
         function initialiseMap() {
@@ -552,10 +552,10 @@
                                         <div class="panel-body">
                                             <p><g:message code="search.map.importText"/></p>
 
-                                            <g:if test="${grailsApplication.config.skin.useAlaSpatialPortal?.toBoolean()}">
+                                            <g:if test="${grailsApplication.config.getProperty('skin.useAlaSpatialPortal', Boolean)}">
                                                 <p><g:message
                                                         code="search.map.importText.spatialportal"
-                                                        args="${[ grailsApplication.config.spatial.baseUrl ]}"/>
+                                                        args="${[ grailsApplication.config.getProperty('spatial.baseUrl') ]}"/>
                                                 </p>
                                             </g:if>
 

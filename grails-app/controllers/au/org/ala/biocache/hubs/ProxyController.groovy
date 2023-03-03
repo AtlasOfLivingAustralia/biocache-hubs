@@ -271,7 +271,7 @@ class ProxyController {
                 stringMyHostName += ":" + httpServletRequest.getServerPort();
             }
             stringMyHostName += httpServletRequest.getContextPath();
-            httpServletResponse.sendRedirect(stringLocation.replace(getProxyHostAndPort() + (grailsApplication.config.proxy.proxyPath ?: ''), stringMyHostName));
+            httpServletResponse.sendRedirect(stringLocation.replace(getProxyHostAndPort() + grailsApplication.config.getProperty('proxy.proxyPath', String, ''), stringMyHostName));
             log.debug "SC_MULTIPLE_CHOICES && SC_NOT_MODIFIED"
             return;
         } else if (intProxyResponseCode == HttpServletResponse.SC_NOT_MODIFIED) {
@@ -312,7 +312,7 @@ class ProxyController {
 
     private String getProxyURL(HttpServletRequest httpServletRequest, String pathInfo) {
         // Set the protocol to HTTP
-        String stringProxyURL = grailsApplication.config.biocache.baseUrl
+        String stringProxyURL = grailsApplication.config.getProperty('biocache.baseUrl')
 //        String stringProxyURL = (grailsApplication.config.proxy.proxyScheme?:'http://') + getProxyHostAndPort()
 //        String proxyPath = grailsApplication.config.proxy.proxyPath
 //        // Check if we are proxying to a path other that the document root
@@ -343,7 +343,7 @@ class ProxyController {
     }
 
     private String getProxyHostAndPort() {
-        String biocacheServiceUrl = grailsApplication.config.biocache.baseUrl
+        String biocacheServiceUrl = grailsApplication.config.getProperty('biocache.baseUrl')
         def hostAndPort = (biocacheServiceUrl =~ /:\/\/(.*?)\//)[0][1]
 //        def proxyPort = grailsApplication.config.proxy.proxyPort?:80
 //        String hostAndPort = "${grailsApplication.config.proxy.proxyHost}"

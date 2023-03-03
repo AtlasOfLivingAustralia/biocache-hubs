@@ -59,7 +59,7 @@ class UserService {
     Map getUserPref(String userId, HttpServletRequest request) {
         def pref = [:]
         if (dataQualityEnabled) {
-            def prefKey = "${grailsApplication.config.dataquality.prefkey}"
+            def prefKey = grailsApplication.config.getProperty('dataquality.prefkey', String, '')
             if (userId != null) { // retrieve data from userdetails
                 pref = userDataService.get(userId, prefKey)
             } else { // use cookie

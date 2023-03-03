@@ -42,7 +42,7 @@ class GeoIpService {
     void init() {
         //
         // Path to "GeoIP2-City.mmdb"
-        String filePath = grailsApplication.config.geopip.database.path
+        String filePath = grailsApplication.config.getProperty('geopip.database.path')
 
         // A File object pointing to your GeoIP2 or GeoLite2 database
         File fileDatabase = new File(filePath)
