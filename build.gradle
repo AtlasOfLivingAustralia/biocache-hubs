@@ -19,13 +19,6 @@ apply plugin:"war"
 apply plugin:"org.grails.grails-web"
 apply plugin:"org.grails.grails-gsp"
 apply plugin:"com.bertramlabs.asset-pipeline"
-
-
-//apply plugin:"eclipse"
-//apply plugin:"idea"
-//apply plugin:"org.grails.grails-plugin"
-//apply plugin:"asset-pipeline"
-//apply plugin:"org.grails.grails-gsp"
 apply plugin:"maven-publish"
 
 //sourceCompatibility = 1.8
@@ -43,10 +36,6 @@ configurations {
         extendsFrom developmentOnly
     }
 }
-
-//springBoot {
-//    mainClassName = 'biocache.hubs.Application'
-//}
 
 // Set to true it needed only for development
 boolean inplace = false
@@ -115,15 +104,8 @@ dependencies {
     implementation 'commons-fileupload:commons-fileupload:1.4'
 }
 
-bootRun {
-    jvmArgs(
-        '-Dspring.output.ansi.enabled=always',
-        '-noverify',
-        '-XX:TieredStopAtLevel=1',
-        '-Xmx1024m')
-    sourceResources sourceSets.main
-    String springProfilesActive = 'spring.profiles.active'
-    systemProperty springProfilesActive, System.getProperty(springProfilesActive)
+springBoot {
+    mainClass = 'biocache.hubs.Application'
 }
 
 tasks.withType(GroovyCompile) {
