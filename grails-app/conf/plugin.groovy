@@ -56,7 +56,7 @@ bieService.baseUrl = "https://bie-ws.ala.org.au/ws"
 collectory.baseUrl = "https://collections.ala.org.au"
 logger.baseUrl = "https://logger.ala.org.au/service"
 biocache.apiKey = "not-your-api-key-to-use"
-biocache.baseUrl = "https://biocache-ws.ala.org.au/ws"
+biocache.baseUrl = "https://api.ala.org.au/occurrences"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
 biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
