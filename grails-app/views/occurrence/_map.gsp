@@ -2,7 +2,7 @@
 <asset:stylesheet src="map.css"/>
 <g:set var="shortName" value="${grailsApplication.config.getProperty('skin.orgNameShort')}"/>
 <div style="margin-bottom: 10px">
-    <g:if test="${grailsApplication.config.skin.getProperty('useAlaSpatialPortal', Boolean, false)}">
+    <g:if test="${grailsApplication.config.getProperty('skin.useAlaSpatialPortal', Boolean, false)}">
         <g:set var='spatialPortalLink' value="${sr.urlParameters}"/>
         <g:set var='spatialPortalUrlParams' value="${grailsApplication.config.getProperty('spatial.params')}"/>
         <g:set var='spatialEnableQualityWarning' value="${grailsApplication.config.getProperty('spatial.enableQualityWarning', Boolean, false)}" />

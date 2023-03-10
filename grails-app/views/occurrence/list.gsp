@@ -76,7 +76,7 @@
             prefKey: "${(grailsApplication.config.getProperty("dataquality.prefkey", String, "dqUserProfile"))}",
             expandKey: "${(grailsApplication.config.getProperty("dataquality.expandKey", String, "dqDetailExpand"))}",
             autocompleteUrl: "${grailsApplication.config.getProperty('skin.useAlaBie', Boolean) ? (grailsApplication.config.getProperty('bieService.baseUrl') + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
-            autocompleteUseBie: ${grailsApplication.config.skin.getProperty('useAlaBie', Boolean)}
+            autocompleteUseBie: ${grailsApplication.config.getProperty('skin.useAlaBie', Boolean)}
         };
 </script>
 
@@ -743,7 +743,7 @@
                     <div class="tab-pane solrResults active" id="recordsView">
                         <div id="searchControls" class="row">
                             <div class="col-sm-4 col-md-4">
-                                <g:if test="${!grailsApplication.config.getProperty('useDownloadPlugin', Boolean)}">
+                                <g:if test="${!grailsApplication.config.getProperty('useDownloadPlugin', Boolean, false)}">
                                     <div id="downloads" class="btn btn-default btn-sm">
                                         <a href="#downloadModal"
                                            role="button"
