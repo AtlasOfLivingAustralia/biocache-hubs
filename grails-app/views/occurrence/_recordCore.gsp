@@ -344,12 +344,36 @@
     <!-- event ID -->
     <alatag:occurrenceTableRow annotate="true" section="eventID" fieldCode="eventID" fieldName="Event ID">
         ${fieldsMap.put("eventID", true)}
-        ${record.raw.event.eventID}
+        <g:if test="${eventHierarchy}">
+            <a href="${grailsApplication.config.events.eventUrl}${record.raw.event.eventID}">
+            ${record.raw.event.eventID}
+            </a>
+        </g:if>
+        <g:else>
+            ${record.raw.event.eventID}
+        </g:else>
     </alatag:occurrenceTableRow>
     <alatag:occurrenceTableRow annotate="true" section="parentEventID" fieldCode="parentEventID" fieldName="Parent Event ID">
         ${fieldsMap.put("parentEventID", true)}
-        ${record.raw.event.parentEventID}
+        <g:if test="${eventHierarchy}">
+            <a href="${grailsApplication.config.events.eventUrl}${record.raw.event.parentEventID}">
+                ${record.raw.event.parentEventID}
+            </a>
+        </g:if>
+        <g:else>
+            ${record.raw.event.parentEventID}
+        </g:else>
     </alatag:occurrenceTableRow>
+    <!-- event hierarchy -->
+    <g:if test="${eventHierarchy}">
+        <alatag:occurrenceTableRow annotate="true" section="eventHierarchy" fieldCode="eventHierarchy" fieldName="Event hierarchy">
+            ${fieldsMap.put("eventHierarchy", true)}
+            <g:if test="${eventHierarchy}">
+                ${eventHierarchy.join(' / ')}
+            </g:if>
+        </alatag:occurrenceTableRow>
+    </g:if>
+
     <!-- Field Number -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="fieldNumber" fieldName="Field number">
         ${fieldsMap.put("fieldNumber", true)}
@@ -552,7 +576,7 @@
         </a>
     </g:if>
     <g:if test="${record.processed.classification.classs && record.raw.classification.classs && (record.processed.classification.classs.toLowerCase() != record.raw.classification.classs.toLowerCase())}">
-        <br/><span classs="originalValue"><g:message code="recordcore.class.01" default="Supplied as"/> "${record.raw.classification.classs}"</span>
+        <br/><span class="originalValue"><g:message code="recordcore.class.01" default="Supplied as"/> "${record.raw.classification.classs}"</span>
     </g:if>
 </alatag:occurrenceTableRow>
 <!-- Order -->

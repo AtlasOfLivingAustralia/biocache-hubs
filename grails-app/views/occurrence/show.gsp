@@ -303,6 +303,33 @@
                         <ul id="userAnnotationsList"></ul>
                     </div>
 
+                    <g:if test="${referencedPublications}">
+                    <div id="referencedPublications" class="additionalData">
+                        <h3>Referenced in publications</h3>
+                        <g:each in="${referencedPublications}" var="publication">
+                            <div class="well well-sm">
+                                <h4>Publication: <g:link url="${collectionsWebappContext}/public/show/${publication.annotation['dataResourceUid']}"> ${publication.name}</g:link></h4>
+                                <p class="samp"><span class="badge">DOI</span> ${publication['@id']}</p>
+                                <p>${publication.description}</p>
+                                <h5 style="margin-top:25px;">Version of the data used in the publication</h5>
+                                <table class="table">
+                                    <g:if test="${publication.annotation['scientificName']}"><tr><td>Scientific name</td><td>${publication.annotation['scientificName']}</td></tr></g:if>
+                                    <g:if test="${publication.annotation['decimalLatitude']}"><tr><td>Decimal latitude</td><td>${publication.annotation['decimalLatitude']}</td></tr></g:if>
+                                    <g:if test="${publication.annotation['decimalLongitude']}"><tr><td>Decimal longitude</td><td>${publication.annotation['decimalLongitude']}</td></tr></g:if>
+                                    <g:if test="${publication.annotation['year']}"><tr><td>Year</td><td>${publication.annotation['year']}</td></tr></g:if>
+                                    <g:if test="${publication.annotation['month']}"><tr><td>Month</td><td>${publication.annotation['month']}</td></tr></g:if>
+                                    <g:if test="${publication.annotation['occurrenceRemarks']}"><tr><td>Occurrence remarks</td><td>${publication.annotation['occurrenceRemarks']}</td></tr></g:if>
+                                </table>
+                               <g:if test="${publication.annotation['dataResourceUid']}">
+                                <p class="samp pull right">
+                                    <g:link controller="occurrence" action="search" params="${['q': 'annotationsUid:' + publication.annotation['dataResourceUid']]}">View all data referenced by this publication</g:link>
+                                </p>
+                               </g:if>
+                            </div>
+                        </g:each>
+                    </div>
+                    </g:if>
+
                     <div id="dataQuality" class="additionalData"><a name="dataQualityReport"></a>
                         <h3><g:message code="show.dataquality.title" default="Data quality tests"/></h3>
                         <div id="dataQualityModal" class="modal hide fade" tabindex="-1" role="dialog">

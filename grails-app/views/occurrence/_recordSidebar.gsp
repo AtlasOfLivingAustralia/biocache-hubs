@@ -35,6 +35,9 @@
             ${record.systemAssertions.unchecked?.size()?:0} <i class="fa fa-ban tooltips" style="color:gray;" title="<g:message code="assertions.unchecked" default="unchecked"/>"></i>)
             </a></li>
         </g:if>
+        <g:if test="${record.referencedPublications}">
+            <li><a href="#referencedPublications"><g:message code="show.referencedPublications.title" default="Referenced in publications"/> (${record.referencedPublications.size()})</a></li>
+        </g:if>
         <g:if test="${record.processed.occurrence.outlierForLayers}">
             <li><a href="#outlierInformation"><g:message code="show.outlierinformation.title" default="Outlier information"/></a></li>
         </g:if>
@@ -215,6 +218,26 @@
             <div id="occurrenceMap" class="google-maps"></div>
         </div>
     </g:if>
+
+    <g:if test="${eventHierarchy}">
+        <div id="eventDetailsSideBar" class="well well-sm" style="margin-top: 20px;">
+            <h4><g:message code="record.eventdetails.label"/></h4>
+            <p>
+                <g:message code="record.eventdetails.desc1"/>
+                <div>
+                    <alatag:renderTree hierarchy="${eventHierarchy}"/>
+                </div>
+                <g:message code="record.eventdetails.desc2"/>
+                <br/>
+                <a class="btn-small btn btn-default"
+                   style="margin-top:10px;"
+                   href="${grailsApplication.config.events.eventUrl}${record.raw.event.eventID}">
+                    <g:message code="record.eventdetails.link"/>
+                </a>
+            </p>
+        </div>
+    </g:if>
+
     <g:if test="${record.images}">
         <div class="sidebar">
             <h3 id="images"><g:message code="show.sidebar03.title" default="Images"/></h3>

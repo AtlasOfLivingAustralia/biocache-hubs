@@ -222,10 +222,12 @@
             <!-- facet column -->
             <div class="col-md-3 col-sm-3">
                 <!-- Trigger the modal with a button -->
+                <div style="margin-bottom: 10px;">
                 <a class="btn tooltips btn-default btn-sm" data-toggle="modal" data-target="#facetConfigDialog" href="#"
                    title="<g:message code="search.filter.customise.title"/>">
                     <i class="fa fa-cog"></i>&nbsp;&nbsp;<g:message code="search.filter.customise"/>
                 </a>
+                </div>
 
                 <!-- Modal -->
                 <div id="facetConfigDialog" class="modal fade" role="dialog" aria-labelledby="customiseFacetsLabel">
@@ -275,6 +277,9 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Facet list -->
+                <g:render template="facets"></g:render>
             </div><!-- /.col-md-3 -->
             <!-- Results column -->
             <div class="col-sm-9 col-md-9">
@@ -355,7 +360,7 @@
                         </g:if>
                     </alatag:ifDataQualityEnabled>
                     <alatag:ifDataQualityEnabled>
-                        <div class="activeFilters col-sm-12">
+                        <div class="activeFilters col-sm-12" style="margin-top:6px; margin-bottom:5px;">
                             <div><span class="valign-middle">
                                 <a role="button" data-toggle="collapse" href="#dq-filters-collapse" aria-expanded="true" aria-controls="dq-filters-collapse" class="dq-filters-collapse"><i id='dq-collapse-caret' class="fa fa-caret-right"></i>&nbsp;<b><alatag:message code="quality.filters.group.title" default="Data Profile"/></b>:</a>
                             </span>
@@ -629,7 +634,7 @@
                     </alatag:ifDataQualityEnabled>
                     %{--<g:set var="hasFq" value="${false}"/>--}%
                     <g:if test="${sr.activeFacetObj?.values()?.any() || params.wkt || params.radius}">
-                        <div class="activeFilters col-sm-12">
+                        <div class="activeFilters col-sm-12" style="margin-bottom: 10px;">
                             <b><alatag:message code="search.filters.heading" default="User selected filters"/></b>:&nbsp;
                             <g:each var="items" in="${sr.activeFacetObj}">
                                 <g:if test="${items.key}">
@@ -696,16 +701,7 @@
                         </div>
                     </div>
                 </div>
-            </div><!-- /.col-md-9 -->
-        </div><!-- /#searchInfoRow -->
-        <!--  Second row - facet column and results column -->
-        <div class="row" id="content">
-            <div class="col-sm-3 col-md-3">
-                <g:render template="facets"></g:render>
-            </div>
-            <g:set var="postFacets" value="${System.currentTimeMillis()}"/>
-            <div id="content2" class="col-sm-9 col-md-9">
-                <g:if test="${!grailsApplication.config.getProperty('useDownloadPlugin', Boolean)}">
+                <g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
                     <g:render template="download"/>
                     <div style="display:none"></div>
                 </g:if>
@@ -822,13 +818,15 @@
                                     code="list.recordsview.benchmarks.02" default="ms"/><br/>
                             </div>
                         </g:if>
-                        <div id="searchNavBar" class="pagination">
+                        <div class="content">
+                            <div id="searchNavBar" class="pagination">
                             <g:paginate total="${sr.totalRecords}" max="${sr.pageSize}" offset="${sr.startIndex}"
                                         next="${message(code: "show.nextbtn.navigator", default:"Next")}"
                                         prev="${message(code: "show.previousbtn.navigator", default:"Previous")}"
                                         omitLast="true"
                                         params="${params.clone().with { it.remove('max'); it.remove('offset'); it } }"
                             />
+                        </div>
                         </div>
                     </div><!--end solrResults-->
                     <div id="mapView" class="tab-pane">
