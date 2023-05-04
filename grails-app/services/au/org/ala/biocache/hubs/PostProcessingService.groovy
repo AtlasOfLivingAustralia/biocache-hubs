@@ -142,10 +142,10 @@ class PostProcessingService {
     def LinkedHashMap getAllFacets(List defaultFacets) {
         LinkedHashMap<String, Boolean> facetsMap = new LinkedHashMap<String, Boolean>()
         List orderedFacets = []
-        List facetsToInclude = grailsApplication.config.facets?.include?.split(',') ?: []
-        List facetsToExclude = grailsApplication.config.facets?.exclude?.split(',') ?: []
-        List facetsToHide = grailsApplication.config.facets?.hide?.split(',') ?: []
-        List customOrder = grailsApplication.config.facets?.customOrder?.split(',') ?: []
+        List facetsToInclude = grailsApplication.config.getProperty('facets.include', List, [])
+        List facetsToExclude = grailsApplication.config.getProperty('facets.exclude', List, [])
+        List facetsToHide = grailsApplication.config.getProperty('facets.hide', List, [])
+        List customOrder = grailsApplication.config.getProperty('facets.customOrder', List, [])
         List allFacets = new ArrayList(defaultFacets)
         allFacets.addAll(facetsToInclude)
 
@@ -422,7 +422,7 @@ class PostProcessingService {
         //log.debug "record = ${record as JSON}"
         String stateProvince = ""
         String stateKey = ""
-        Map statesListsPaths = grailsApplication.config.stateConservationListPath ?: [:]
+        Map statesListsPaths = grailsApplication.config.getProperty('stateConservationListPath', Map, [:])
         // conservation list is state based, so first we need to know the state
         modifiedRecord.get("Location")?.each {
             if (it.name == "stateProvince") {
@@ -437,7 +437,7 @@ class PostProcessingService {
                 List statusValues = statusValue.tokenize(",").unique( false ) // remove duplicate values
                 statusValue = (statusValues.size() == 2) ? statusValues[1] : statusValues.join(", ") // only show 'sourceStatus' if 2 values are present
 
-                String specieslistUrl = "${grailsApplication.config.speciesList.baseURL}${statesListsPaths[stateKey]}"
+                String specieslistUrl = "${grailsApplication.config.getProperty('speciesList.baseURL')}${statesListsPaths[stateKey]}"
                 it.processed = "<a href=\"${specieslistUrl}\" target=\"_lists\">${stateProvince}: ${statusValue}</a>"
             }
         }

@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title><g:if env="development">Grails Runtime Exception</g:if><g:else>Error</g:else></title>
-        <meta name="layout" content="${grailsApplication.config.skin.name}"/>
+        <meta name="layout" content="${grailsApplication.config.getProperty('skin.name')}"/>
 		<g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
 	</head>
 	<body>

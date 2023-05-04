@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>Build Info</title>
-    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('skin.layout')}"/>
     <style type="text/css">
     h1 {
         color: #48802c;

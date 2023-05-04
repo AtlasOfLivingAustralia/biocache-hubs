@@ -2,7 +2,7 @@
 <g:render template="/layouts/global"/>
 <form class="form-horizontal" name="advancedSearchForm" id="advancedSearchForm" action="${request.contextPath}/advancedSearch" method="POST">
     <input type="text" id="solrQuery" name="q" style="position:absolute;left:-9999px;" value="${params.q}"/>
-    <input type="hidden" name="nameType" value="${grailsApplication.config.advancedTaxaField?:'matched_name_children'}"/>
+    <input type="hidden" name="nameType" value="${grailsApplication.config.getProperty('advancedTaxaField', String, 'matched_name_children')}"/>
 
     <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.title01" default="Find records that have"/></h4>
     <div class="form-group">

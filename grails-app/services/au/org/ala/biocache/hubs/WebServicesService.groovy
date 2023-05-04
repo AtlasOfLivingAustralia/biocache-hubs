@@ -64,7 +64,7 @@ class WebServicesService {
 
     JSONObject fullTextSearch(SpatialSearchRequestParams requestParams) {
         populateProfile(requestParams)
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
+        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/occurrences/search?${requestParams.getEncodedParams()}"
         def result = getJsonElements(url)
         return result
     }
@@ -74,17 +74,17 @@ class WebServicesService {
     }
 
     def JSONObject getRecord(String id, Boolean hasClubView) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/${id.encodeAsURL()}"
+        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/occurrences/${id.encodeAsURL()}"
         getJsonElements(url, hasClubView, hasClubView)
     }
 
     def JSONObject getCompareRecord(String id) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/compare/${id.encodeAsURL()}"
+        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/occurrences/compare/${id.encodeAsURL()}"
         getJsonElements(url)
     }
 
     def JSONArray getMapLegend(String queryString) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/mapping/legend?${queryString}"
+        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/mapping/legend?${queryString}"
         JSONArray json = getJsonElements(url)
         def facetName
         Map facetLabelsMap = [:]
@@ -108,27 +108,27 @@ class WebServicesService {
     }
 
     def JSONArray getUserAssertions(String id) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/${id.encodeAsURL()}/assertions"
+        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/occurrences/${id.encodeAsURL()}/assertions"
         getJsonElements(url)
     }
 
     def JSONArray getQueryAssertions(String id) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/${id.encodeAsURL()}/assertionQueries"
+        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/occurrences/${id.encodeAsURL()}/assertionQueries"
         getJsonElements(url)
     }
 
     def getAlerts(String userId) {
-        def url = "${grailsApplication.config.alerts.baseUrl}" + "/api/alerts/user/" + userId
+        def url = "${grailsApplication.config.getProperty('alerts.baseUrl')}" + "/api/alerts/user/" + userId
         return getJsonElements(url, true)
     }
 
     def subscribeMyAnnotation(String userId) {
-        String url = "${grailsApplication.config.alerts.baseUrl}" + "/api/alerts/user/" + userId + "/subscribeMyAnnotation"
+        String url = "${grailsApplication.config.getProperty('alerts.baseUrl')}" + "/api/alerts/user/" + userId + "/subscribeMyAnnotation"
         postFormData(url, [:], true)
     }
 
     def unsubscribeMyAnnotation(String userId) {
-        String url = "${grailsApplication.config.alerts.baseUrl}" + "/api/alerts/user/" + userId + "/unsubscribeMyAnnotation"
+        String url = "${grailsApplication.config.getProperty('alerts.baseUrl')}" + "/api/alerts/user/" + userId + "/unsubscribeMyAnnotation"
         postFormData(url, [:], true)
     }
 
@@ -146,30 +146,30 @@ class WebServicesService {
                 uuid = record.processed.occurrence.associatedOccurrences
             }
 
-            def url = "${grailsApplication.config.biocache.baseUrl}/duplicates/${uuid.encodeAsURL()}"
+            def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/duplicates/${uuid.encodeAsURL()}"
             getJsonElements(url)
         }
     }
 
     @Cacheable('longTermCache')
     def JSONArray getDefaultFacets() {
-        def url = "${grailsApplication.config.biocache.baseUrl}/search/facets"
+        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/search/facets"
         getJsonElements(url)
     }
 
     @Cacheable('longTermCache')
     def JSONArray getErrorCodes() {
-        def url = "${grailsApplication.config.biocache.baseUrl}/assertions/user/codes"
+        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/assertions/user/codes"
         getJsonElements(url)
     }
 
     @Cacheable(value = "longTermCache")
     def Map getGroupedFacets() {
-        def url = "${grailsApplication.config.biocache.baseUrl}/search/grouped/facets"
+        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/search/grouped/facets"
 
-        if (grailsApplication.config.biocache.groupedFacetsUrl) {
+        if (grailsApplication.config.getProperty('biocache.groupedFacetsUrl')) {
             // some hubs use a custom JSON url
-            url = "${grailsApplication.config.biocache.groupedFacetsUrl}"
+            url = "${grailsApplication.config.getProperty('biocache.groupedFacetsUrl')}"
         }
 
         Map groupedMap = ["Custom": []] // LinkedHashMap by default so ordering is maintained
@@ -227,7 +227,7 @@ class WebServicesService {
                 userDisplayName    : userDisplayName
         ]
 
-        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/add", postBody, true, true)
+        postFormData(grailsApplication.config.getProperty('biocache.baseUrl') + "/occurrences/assertions/add", postBody, true, true)
     }
 
     /**
@@ -261,32 +261,32 @@ class WebServicesService {
 
     @Cacheable('collectoryCache')
     def JSONObject getCollectionInfo(String id) {
-        def url = "${grailsApplication.config.collections.baseUrl}/lookup/summary/${id.encodeAsURL()}"
+        def url = "${grailsApplication.config.getProperty('collections.baseUrl')}/lookup/summary/${id.encodeAsURL()}"
         getJsonElements(url)
     }
 
     @Cacheable('collectoryCache')
     def JSONArray getCollectionContact(String id) {
-        def url = "${grailsApplication.config.collections.baseUrl}/ws/collection/${id.encodeAsURL()}/contact.json"
+        def url = "${grailsApplication.config.getProperty('collections.baseUrl')}/ws/collection/${id.encodeAsURL()}/contact.json"
         getJsonElements(url)
     }
 
     @Cacheable('collectoryCache')
     def JSONArray getDataresourceContact(String id) {
-        def url = "${grailsApplication.config.collections.baseUrl}/ws/dataResource/${id.encodeAsURL()}/contact.json"
+        def url = "${grailsApplication.config.getProperty('collections.baseUrl')}/ws/dataResource/${id.encodeAsURL()}/contact.json"
         getJsonElements(url)
     }
 
     @Cacheable('longTermCache')
     def getImageMetadata(String imageId) {
-        def url = "${grailsApplication.config.images.baseUrl}/ws/image/${imageId.encodeAsURL()}.json"
+        def url = "${grailsApplication.config.getProperty('images.baseUrl')}/ws/image/${imageId.encodeAsURL()}.json"
         getJsonElements(url)
     }
 
     @Cacheable('longTermCache')
     Map getLayersMetaData() {
         Map layersMetaMap = [:]
-        def url = "${grailsApplication.config.layersservice.baseUrl}/layers"
+        def url = "${grailsApplication.config.getProperty('layersservice.baseUrl')}/layers"
 
         try {
             def jsonArray = getJsonElements(url)
@@ -332,7 +332,7 @@ class WebServicesService {
 
         List encodedQueries = taxaQueries.collect { it.encodeAsURL() } // URL encode params
 
-        def url = grailsApplication.config.bieService.baseUrl + "/guid/batch?q=" + encodedQueries.join("&q=")
+        def url = grailsApplication.config.getProperty('bieService.baseUrl') + "/guid/batch?q=" + encodedQueries.join("&q=")
         JSONObject guidsJson = getJsonElements(url)
 
         taxaQueries.each { key ->
@@ -355,20 +355,20 @@ class WebServicesService {
      */
     @Cacheable('longTermCache')
     def String getDataQualityCsv() {
-        String url = grailsApplication.config.dataQualityChecksUrl ?: "https://docs.google.com/spreadsheet/pub?key=0AjNtzhUIIHeNdHJOYk1SYWE4dU1BMWZmb2hiTjlYQlE&single=true&gid=0&output=csv"
+        String url = grailsApplication.config.getProperty('dataQualityChecksUrl', String, 'https://docs.google.com/spreadsheet/pub?key=0AjNtzhUIIHeNdHJOYk1SYWE4dU1BMWZmb2hiTjlYQlE&single=true&gid=0&output=csv')
         getText(url)
     }
 
     @Cacheable('longTermCache')
     def JSONArray getLoggerReasons() {
-        def url = "${grailsApplication.config.logger.baseUrl}/logger/reasons"
+        def url = "${grailsApplication.config.getProperty('logger.baseUrl')}/logger/reasons"
         def jsonObj = getJsonElements(url)
         jsonObj.findAll { !it.deprecated } // skip deprecated reason codes
     }
 
     @Cacheable('longTermCache')
     def JSONArray getLoggerSources() {
-        def url = "${grailsApplication.config.logger.baseUrl}/logger/sources"
+        def url = "${grailsApplication.config.getProperty('logger.baseUrl')}/logger/sources"
         try {
             getJsonElements(url)
         } catch (Exception ex) {
@@ -405,7 +405,7 @@ class WebServicesService {
      * @return
      */
     List getDynamicFacets(String query) {
-        def url = "${grailsApplication.config.biocache.baseUrl}/upload/dynamicFacets?q=${query}"
+        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/upload/dynamicFacets?q=${query}"
         JSONArray facets = getJsonElements(url)
         def dfs = []
         facets.each {
@@ -591,7 +591,7 @@ class WebServicesService {
 
         JSONElement facetSearch(SearchRequestParams requestParams) {
             requestParams.pageSize = 0
-            def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/search?${requestParams.getEncodedParams()}"
+            def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/occurrences/search?${requestParams.getEncodedParams()}"
             def result = getJsonElements(url)
 
 
@@ -599,19 +599,19 @@ class WebServicesService {
         }
 
         String facetCSVDownload(SearchRequestParams requestParams) {
-            def url = "${grailsApplication.config.biocache.baseUrl}/occurrences/facets/download?${requestParams.getEncodedParams()}&count=true&lookup=true"
+            def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/occurrences/facets/download?${requestParams.getEncodedParams()}&count=true&lookup=true"
             def result = getText(url)
             return result
         }
 
         def getAllOccurrenceFields() {
-            def url = "${grailsApplication.config.biocache.baseUrl}/index/fields"
+            def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/index/fields"
             return getJsonElements(url)?.collect { it.name }
         }
 
         @Cacheable('longTermCache')
         def getMessagesPropertiesFile() {
-            def url = "${grailsApplication.config.biocache.baseUrl}/facets/i18n"
+            def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/facets/i18n"
 
             def map = [:]
             def lineContent
@@ -631,7 +631,7 @@ class WebServicesService {
 
         @Cacheable('longTermCache')
         def getAssertionCodeMap() {
-            def url = "${grailsApplication.config.biocache.baseUrl}/assertions/codes" // code --> name
+            def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/assertions/codes" // code --> name
             def codes = getJsonElements(url)
 
             Map dataQualityCodes = getAllCodes() // code -> detail
@@ -686,7 +686,7 @@ class WebServicesService {
          */
         @Cacheable('longTermCache')
         def getCountryNameMap() {
-            def countryUrl = "${grailsApplication.config.userdetails.baseUrl}/ws/registration/countries.json"
+            def countryUrl = "${grailsApplication.config.getProperty('userdetails.baseUrl')}/ws/registration/countries.json"
             def countries = getJsonElements(countryUrl)
             return countries?.findAll { it -> beAValidCountryOrState(it as JSONObject) }?.collectEntries { [(String) it.get("name"), (String) it.get("isoCode")] }
         }
@@ -709,7 +709,7 @@ class WebServicesService {
                 Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
                 // if a known country name
                 if (countryNameMap?.containsKey(countryName)) {
-                    def states = getJsonElements("${grailsApplication.config.userdetails.baseUrl}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
+                    def states = getJsonElements("${grailsApplication.config.getProperty('userdetails.baseUrl')}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
                     if (states) {
                         // only return valid states
                         matchingStates = states.findAll { it -> beAValidCountryOrState(it as JSONObject) }.collect { it -> (String) it.get("name") }

@@ -19,19 +19,19 @@
   Time: 4:39 PM
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<g:set var="biocacheServiceUrl" value="${grailsApplication.config.biocache.baseUrl}"/>
-<g:set var="queryContext" value="${grailsApplication.config.biocache.queryContext}"/>
+<g:set var="biocacheServiceUrl" value="${grailsApplication.config.getProperty('biocache.baseUrl')}"/>
+<g:set var="queryContext" value="${grailsApplication.config.getProperty('biocache.queryContext')}"/>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('skin.layout')}"/>
     <meta name="section" content="yourArea"/>
-    <meta name="breadcrumbParent" content="${grailsApplication.config.skin.exploreUrl},${message(code:"eya.parent.title")}"/>
+    <meta name="breadcrumbParent" content="${grailsApplication.config.getProperty('skin.exploreUrl')},${message(code:"eya.parent.title")}"/>
     <meta name="breadcrumb" content="Explore your area"/>
-    <title><g:message code="eya.title01" default="Explore Your Area"/> | ${grailsApplication.config.skin.orgNameLong} </title>
+    <title><g:message code="eya.title01" default="Explore Your Area"/> | ${grailsApplication.config.getProperty('skin.orgNameLong')} </title>
 
-    <g:if test="${grailsApplication.config.google.apikey}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
+    <g:if test="${grailsApplication.config.getProperty('google.apikey')}">
+        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}" type="text/javascript"></script>
     </g:if>
     <g:else>
         <script src="https://maps.google.com/maps/api/js"></script>
@@ -54,12 +54,12 @@
             radius: Number(${radius}),
             speciesPageUrl: "${speciesPageUrl}",
             queryContext: "${queryContext}",
-            mapMinimalUrl: "${grailsApplication.config.map.minimal.url}",
-            mapMinimalAttribution: "${raw(grailsApplication.config.map.minimal.attr)}",
-            mapMinimalSubdomains: "${grailsApplication.config.map.minimal.subdomains}",
+            mapMinimalUrl: "${grailsApplication.config.getProperty('map.minimal.url')}",
+            mapMinimalAttribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
+            mapMinimalSubdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
-            geocodeRegion: "${grailsApplication.config.geocode.region}",
-            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean},
+            geocodeRegion: "${grailsApplication.config.getProperty('geocode.region')}",
+            hasGoogleKey: ${grailsApplication.config.getProperty('google.apikey') as Boolean},
             removeFqs: '',
             mapIconUrlPath: "${assetPath(src:'/leaflet/images')}"
         }
@@ -70,11 +70,11 @@
 </head>
 <body class="nav-locations explore-your-area">
 <div id="header" class="heading-bar">
-    <g:if test="${grailsApplication.config.skin.layout == 'ala'}">
+    <g:if test="${grailsApplication.config.getProperty('skin.layout') == 'ala'}">
         <div id="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="${grailsApplication.config.organisation.baseUrl}"><g:message code="eya.breadcrumb.navigator01" default="Home"/></a> <span class=" icon icon-arrow-right"></span></li>
-                <li><a href="${grailsApplication.config.organisation.baseUrl}/species-by-location/"><g:message code="eya.breadcrumb.navigator02" default="Locations"/></a> <span class=" icon icon-arrow-right"></span></li>
+                <li><a href="${grailsApplication.config.getProperty('organisation.baseUrl')}"><g:message code="eya.breadcrumb.navigator01" default="Home"/></a> <span class=" icon icon-arrow-right"></span></li>
+                <li><a href="${grailsApplication.config.getProperty('organisation.baseUrl')}/species-by-location/"><g:message code="eya.breadcrumb.navigator02" default="Locations"/></a> <span class=" icon icon-arrow-right"></span></li>
                 <li class="active"><g:message code="eya.breadcrumb.navigator03" default="Your Area"/></li>
             </ol>
         </div>
@@ -120,7 +120,7 @@
                         <span id="recordsGroupText"><g:message code="eya.searchform.a.viewallrecords.02" default="all"/></span>  <g:message code="eya.searchform.a.viewallrecords.03" default="records"/></a>
                 </span>
                 <span class="pad">
-                    <g:if test="${grailsApplication.config.useDownloadPlugin?.toBoolean()}">
+                    <g:if test="${grailsApplication.config.getProperty('useDownloadPlugin', Boolean)}">
                         <a href="#" id="downloadData" class="btn btn-sm btn-default tooltips" title="Download records, check lists or field guides">
                             <i class="glyphicon glyphicon-download-alt"></i>&nbsp;&nbsp;
                             <g:message code="list.downloads.navigator" default="Download"/></a>
@@ -196,7 +196,7 @@
 <g:render template="mapPopup"/>
 <g:render template="download"/>
 
-<g:if test="${!grailsApplication.config.useDownloadPlugin?.toBoolean()}">
+<g:if test="${!grailsApplication.config.getProperty('useDownloadPlugin', Boolean)}">
     <g:render template="download"/>
 </g:if>
 </body>

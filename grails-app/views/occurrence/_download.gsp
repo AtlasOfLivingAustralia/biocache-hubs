@@ -5,7 +5,7 @@
 --%>
 <!-- download modal form - used for old style downloads -->
 <g:set var="biocacheServiceUrl" value="${alatag.getBiocacheAjaxUrl()}"/>
-<g:set var="orgNameLong" value="${grailsApplication.config.skin.orgNameLong}"/>
+<g:set var="orgNameLong" value="${grailsApplication.config.getProperty('skin.orgNameLong')}"/>
 
 <div id="downloadModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="downloadModalLabel">
     <div class="modal-dialog" role="document">
@@ -72,7 +72,7 @@
 
                     <input type="hidden" name="url" id="downloadChecklistUrl" value="${biocacheServiceUrl}/occurrences/facets/download"/>
                     <input type="hidden" name="url" id="downloadFieldGuideUrl" value="${request.contextPath}/occurrences/fieldguide/download"/>
-                    <input type="hidden" name="extra" id="extraFields" value="${grailsApplication.config.biocache.downloads.extra}"/>
+                    <input type="hidden" name="extra" id="extraFields" value="${grailsApplication.config.getProperty('biocache.downloads.extra')}"/>
                     <input type="hidden" name="sourceTypeId" id="sourceTypeId" value="${alatag.getSourceId()}"/>
                 </div>
                 <div class="modal-footer">
