@@ -11,7 +11,7 @@
 <g:set var="bieWebappContext" value="${grailsApplication.config.getProperty('bie.baseUrl')}"/>
 <g:set var="collectionsWebappContext" value="${grailsApplication.config.getProperty('collections.baseUrl')}"/>
 <g:set var="useAla" value="${grailsApplication.config.getProperty('skin.useAlaBie', Boolean, false)}"/>
-<g:set var="taxaLinks" value="${grailsApplication.config.getProperty('skin.taxaLinks')}"/>
+<g:set var="taxaLinks" value="${grailsApplication.config.getProperty('skin.taxaLinks', Map, [:])}"/>
 <g:set var="dwcExcludeFields" value="${grailsApplication.config.getProperty('dwc.exclude')}"/>
 <g:set var="hubDisplayName" value="${grailsApplication.config.getProperty('skin.orgNameLong')}"/>
 <g:set var="biocacheService" value="${alatag.getBiocacheAjaxUrl()}"/>
@@ -57,7 +57,7 @@
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             sensitiveDatasets: {
                 <g:each var="sds" in="${sensitiveDatasets}"
-                   status="s">'${sds}': '${grailsApplication.config.getProperty('sensitiveDatasets', Map)[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
+                   status="s">'${sds}': '${grailsApplication.config.getProperty('sensitiveDatasets', Map, [:])[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
                 </g:each>
             },
             hasGoogleKey: ${grailsApplication.config.getProperty('google.apikey') as Boolean},
