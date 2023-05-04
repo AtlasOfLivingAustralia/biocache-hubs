@@ -12,7 +12,7 @@ branches:
   - /^epic\/.*\/develop$/
   - epic/grails4/oidc-auth
   - feature/data-quality
-  - grails4
+  - bug/issue-780-specis-count-loading
   - 552_records_page_error
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
