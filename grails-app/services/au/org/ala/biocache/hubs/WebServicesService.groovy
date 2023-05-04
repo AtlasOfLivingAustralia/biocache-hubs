@@ -112,10 +112,10 @@ class WebServicesService {
         getJsonElements(url)
     }
 
-    def JSONArray getQueryAssertions(String id) {
-        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/occurrences/${id.encodeAsURL()}/assertionQueries"
-        getJsonElements(url)
-    }
+//    def JSONArray getQueryAssertions(String id) {
+//        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/occurrences/${id.encodeAsURL()}/assertionQueries"
+//        getJsonElements(url)
+//    }
 
     def getAlerts(String userId) {
         def url = "${grailsApplication.config.getProperty('alerts.baseUrl')}" + "/api/alerts/user/" + userId
@@ -151,11 +151,11 @@ class WebServicesService {
         }
     }
 
-    @Cacheable('longTermCache')
-    def JSONArray getDefaultFacets() {
-        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/search/facets"
-        getJsonElements(url)
-    }
+//    @Cacheable('longTermCache')
+//    def JSONArray getDefaultFacets() {
+//        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/search/facets"
+//        getJsonElements(url)
+//    }
 
     @Cacheable('longTermCache')
     def JSONArray getErrorCodes() {
@@ -391,17 +391,17 @@ class WebServicesService {
      * @param query
      * @return
      */
-    List getDynamicFacets(String query) {
-        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/upload/dynamicFacets?q=${query}"
-        JSONArray facets = getJsonElements(url)
-        def dfs = []
-        facets.each {
-            if (it.name && it.displayName) {
-                dfs.add([name: it.name, displayName: it.displayName])
-            } // reduce to List of Maps
-        }
-        dfs
-    }
+//    List getDynamicFacets(String query) {
+//        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/upload/dynamicFacets?q=${query}"
+//        JSONArray facets = getJsonElements(url)
+//        def dfs = []
+//        facets.each {
+//            if (it.name && it.displayName) {
+//                dfs.add([name: it.name, displayName: it.displayName])
+//            } // reduce to List of Maps
+//        }
+//        dfs
+//    }
 
     /**
      * Use HTTP HEAD to determine the file size of a URL (image)
