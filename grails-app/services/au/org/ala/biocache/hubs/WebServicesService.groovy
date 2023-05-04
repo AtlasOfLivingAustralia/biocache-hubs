@@ -237,13 +237,26 @@ class WebServicesService {
      * @param assertionUuid
      * @return
      */
-    def Map deleteAssertion(String recordUuid, String assertionUuid) {
-        Map postBody = [
-                recordUuid   : recordUuid,
-                assertionUuid: assertionUuid
-        ]
+    Map deleteAssertion(String recordUuid, String assertionUuid) {
 
-        postFormData(grailsApplication.config.biocache.baseUrl + "/occurrences/assertions/delete", postBody, true, true)
+        String url = grailsApplication.config.getProperty('biocache.baseUrl') + "/occurrences/${recordUuid}/assertions/${assertionUuid}"
+
+        Map result = webService.delete(url, [:], ContentType.APPLICATION_JSON, true, true)
+
+        Map postResponse = [:]
+
+        postResponse.statusCode = result.statusCode
+
+        if (result.error) {
+
+            postResponse.statusMsg = result.error
+
+        } else {
+
+            postResponse.statusMsg = ''
+        }
+
+        return postResponse
     }
 
     @Cacheable('collectoryCache')
