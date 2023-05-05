@@ -61,7 +61,7 @@ class PostProcessingService {
      * @param currentUserId
      * @return
      */
-    def List getGroupedAssertions(JSONArray userAssertions, JSONArray queryAssertions, String currentUserId) {
+    def List getGroupedAssertions(JSONArray userAssertions, String currentUserId) {
         Map grouped = [:]
 
         // Closure to call for both user and query assertions
@@ -96,9 +96,9 @@ class PostProcessingService {
             withEachAssertion(it)
         }
 
-        queryAssertions.each {
-            withEachAssertion(it)
-        }
+//        queryAssertions.each {
+//            withEachAssertion(it)
+//        }
 
         List groupedValues = []
         groupedValues.addAll(grouped.values())

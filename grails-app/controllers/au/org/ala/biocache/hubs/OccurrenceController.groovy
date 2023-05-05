@@ -101,17 +101,17 @@ class OccurrenceController {
                 }
             }
 
-            List dynamicFacets = []
+//            List dynamicFacets = []
 
             String[] requestedFacets = userFacets ?: filteredFacets
 
-            if (grailsApplication.config.getProperty('facets.includeDynamicFacets', Boolean, false)) {
-                // Sandbox only...
-                time("sandbox only facets") {
-                    dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
-                    requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
-                }
-            }
+//            if (grailsApplication.config.getProperty('facets.includeDynamicFacets', Boolean, false)) {
+//                // Sandbox only...
+//                time("sandbox only facets") {
+//                    dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
+//                    requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
+//                }
+//            }
 
             requestParams.facets = requestedFacets
 
@@ -128,7 +128,7 @@ class OccurrenceController {
             Map groupedFacetsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
 
             //grouped facets
-            Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)
+            Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, [])
 
             //remove qc from active facet map
             if (params?.qc) {
@@ -184,7 +184,7 @@ class OccurrenceController {
                             defaultFacets       : defaultFacets,
                             groupedFacets       : groupedFacets,
                             groupedFacetsMap    : groupedFacetsMap,
-                            dynamicFacets       : dynamicFacets,
+                            dynamicFacets       : [],
                             selectedDataResource: getSelectedResource(requestParams.q),
                             hasImages           : hasImages,
                             showSpeciesImages   : false,
@@ -413,7 +413,6 @@ class OccurrenceController {
 
                 List groupedAssertions = postProcessingService.getGroupedAssertions(
                         webServicesService.getUserAssertions(id),
-                        webServicesService.getQueryAssertions(id),
                         userId)
 
                 Map layersMetaData = webServicesService.getLayersMetaData()
