@@ -70,7 +70,7 @@ dependencies {
     compileOnly "io.micronaut:micronaut-inject-groovy"
     console "org.grails:grails-console"
     profile "org.grails.profiles:web-plugin"
-    runtimeOnly "com.bertramlabs.plugins:asset-pipeline-grails:3.0.10"
+    runtimeOnly "com.bertramlabs.plugins:asset-pipeline-grails:3.4.7"
     testImplementation "org.mockito:mockito-core"
     testImplementation "org.grails:grails-web-testing-support"
 
@@ -78,7 +78,7 @@ dependencies {
     implementation 'org.ehcache:ehcache:3.1.0'
     testImplementation group: 'xml-apis', name: 'xml-apis', version: '1.4.01'
 
-    implementation 'org.grails.plugins:external-config:2.0.0'
+    implementation 'dk.glasius:external-config:3.1.1'
     //jars
     implementation "org.apache.httpcomponents:httpclient:4.5.6"
     implementation 'com.maxmind.geoip2:geoip2:2.9.0'
@@ -95,12 +95,12 @@ dependencies {
     implementation 'org.grails.plugins:cache-ehcache:3.0.0'
     implementation 'org.grails.plugins:http-builder-helper:1.0.2.ALA'
     implementation "org.grails.plugins:ala-admin-plugin:2.3.0"
-    implementation "org.grails.plugins:ala-auth:5.2.0-SNAPSHOT"
-    implementation "org.grails.plugins:ala-ws-plugin:3.2.0-SNAPSHOT"
+    implementation "org.grails.plugins:ala-auth:$alaSecurityLibsVersion"
+    implementation "org.grails.plugins:ala-ws-plugin:$alaSecurityLibsVersion"
     implementation "au.org.ala.plugins.grails:images-client-plugin:1.5-SNAPSHOT"
-    implementation "au.org.ala.plugins.grails:ala-charts-plugin:2.2"
+    implementation "au.org.ala.plugins.grails:ala-charts-plugin:2.3.0"
 
-    implementation "au.org.ala:userdetails-service-client:1.5.0"
+    implementation "au.org.ala:userdetails-service-client:$alaSecurityLibsVersion"
     implementation 'commons-fileupload:commons-fileupload:1.4'
 }
 
@@ -128,30 +128,20 @@ publishing {
     repositories {
         maven {
             name 'Nexus'
-            url "https://nexus.ala.org.au/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases' }"
+            url "https://nexus.ala.org.au/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases'}"
             credentials {
                 username = System.getenv('TRAVIS_DEPLOY_USERNAME')
                 password = System.getenv('TRAVIS_DEPLOY_PASSWORD')
             }
         }
     }
-
     publications {
-        mavenJar(org.gradle.api.publish.maven.MavenPublication) {
-            pom.withXml {
-                def pomNode = asNode()
-                pomNode.dependencyManagement.replaceNode {}
-
-                // simply remove dependencies without a version
-                // version-less dependencies are handled with dependencyManagement
-                // see https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/8 for more complete solutions
-                pomNode.dependencies.dependency.findAll {
-                    it.version.text().isEmpty()
-                }.each {
-                    it.replaceNode {}
-                }
-            }
-            from components.java
+        mavenJar(MavenPublication) {
+            artifact bootWar
         }
     }
+}
+
+bootWar {
+    launchScript()
 }
