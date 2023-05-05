@@ -60,7 +60,7 @@
                    status="s">'${sds}': '${grailsApplication.config.getProperty('sensitiveDatasets', Map, [:])[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
                 </g:each>
             },
-            hasGoogleKey: ${grailsApplication.config.getProperty('google.apikey') as Boolean},
+            hasGoogleKey: ${grailsApplication.config.getProperty('google.apikey', Boolean, false)},
             myAnnotationEnabled: ${(grailsApplication.config.getProperty("alerts.myannotation.enabled", Boolean, false))}
         }
 
