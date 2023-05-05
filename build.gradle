@@ -128,7 +128,7 @@ publishing {
     repositories {
         maven {
             name 'Nexus'
-            url "https://nexus.ala.org.au/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases'}"
+            url "https://nexus.ala.org.au/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases' }"
             credentials {
                 username = System.getenv('TRAVIS_DEPLOY_USERNAME')
                 password = System.getenv('TRAVIS_DEPLOY_PASSWORD')
@@ -136,12 +136,8 @@ publishing {
         }
     }
     publications {
-        mavenJar(MavenPublication) {
-            artifact bootWar
+        mavenJava(MavenPublication) {
+            from components.java
         }
     }
-}
-
-bootWar {
-    launchScript()
 }
