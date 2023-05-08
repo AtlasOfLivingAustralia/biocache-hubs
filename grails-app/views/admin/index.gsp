@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.getProperty('skin.name')}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('skin.layout')}"/>
     <title>Admin Functions | ${grailsApplication.config.getProperty('skin.orgNameLong')}</title>
     <asset:javascript src="jquery.js" />
     <asset:stylesheet src="admin.css" />
