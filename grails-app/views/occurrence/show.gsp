@@ -22,7 +22,7 @@
 <g:set var="sensitiveDatasets" value="${sensitiveDatasetRaw?.split(',')}"/>
 <g:set var="userDisplayName" value="${alatag.loggedInUserDisplayname()}"/>
 <g:set var="userId" value="${alatag.loggedInUserId()}"/>
-<g:set var="isUnderCas" value="${grailsApplication.config.getProperty('security.cas.casServerName', Boolean, false)}"/>
+<g:set var="isUnderCas" value="${grailsApplication.config.getProperty('security.cas.casServerName')}"/>
 <g:set var="showVernacularName" value="${grailsApplication.config.getProperty('vernacularName.show', Boolean, true)}"/>
 <!DOCTYPE html>
 <html>
