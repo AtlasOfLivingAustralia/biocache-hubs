@@ -53,7 +53,6 @@
             recordUuid: "${record.raw.rowKey}",
             taxonRank: "${record.processed.classification.taxonRank}",
             taxonConceptID: "${record.processed.classification.taxonConceptID}",
-            isUnderCas: ${isUnderCas},
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             sensitiveDatasets: {
                 <g:each var="sds" in="${sensitiveDatasets}"
