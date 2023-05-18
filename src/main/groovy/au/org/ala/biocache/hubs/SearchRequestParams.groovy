@@ -43,7 +43,7 @@ class SearchRequestParams implements Validateable{
     String order // grails version of dir
     String displayString
     /**  The query context to be used for the search.  This will be used to generate extra query filters based on the search technology */
-    String qc = Holders.config.biocache.queryContext?:""
+    String qc = Holders.config.getProperty('biocache.queryContext', String, '')
     /** To disable facets */
     Boolean facet = true
 
