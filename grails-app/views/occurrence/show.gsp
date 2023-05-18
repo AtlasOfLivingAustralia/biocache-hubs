@@ -22,7 +22,7 @@
 <g:set var="sensitiveDatasets" value="${sensitiveDatasetRaw?.split(',')}"/>
 <g:set var="userDisplayName" value="${alatag.loggedInUserDisplayname()}"/>
 <g:set var="userId" value="${alatag.loggedInUserId()}"/>
-<g:set var="isUnderCas" value="${grailsApplication.config.getProperty('security.cas.casServerName')}"/>
+<g:set var="isUnderAuth" value="${grailsApplication.config.getProperty('security.cas.enabled', Boolean, false) || grailsApplication.config.getProperty('security.oidc.enabled', Boolean, false)}"/>
 <g:set var="showVernacularName" value="${grailsApplication.config.getProperty('vernacularName.show', Boolean, true)}"/>
 <!DOCTYPE html>
 <html>
@@ -53,7 +53,6 @@
             recordUuid: "${record.raw.rowKey}",
             taxonRank: "${record.processed.classification.taxonRank}",
             taxonConceptID: "${record.processed.classification.taxonConceptID}",
-            isUnderCas: ${isUnderCas},
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             sensitiveDatasets: {
                 <g:each var="sds" in="${sensitiveDatasets}"

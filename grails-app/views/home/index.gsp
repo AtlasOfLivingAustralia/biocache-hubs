@@ -147,7 +147,7 @@
             }
         };
 
-        var defaultBaseLayer = L.tileLayer("${grailsApplication.config.map.minimal.url}", {
+        var defaultBaseLayer = L.tileLayer("${grailsApplication.config.getProperty('map.minimal.url')}", {
             attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
             subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains', String, '')}",
             mapid: "${grailsApplication.config.getProperty('map.mapbox.id', String, '')}",
