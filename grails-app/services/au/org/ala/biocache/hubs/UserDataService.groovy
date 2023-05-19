@@ -29,7 +29,7 @@ class UserDataService {
 
         if (userId && grailsApplication.config.userdetails.baseUrl) {
             try {
-                def resp = webService.get(grailsApplication.config.userdetails.baseUrl + '/property/getProperty' +
+                def resp = webService.get(grailsApplication.config.getProperty('userdetails.baseUrl') + '/property/getProperty' +
                         "?alaId=${userId}&name=${URLEncoder.encode(NAME_PREFIX + type, "UTF-8")}")
 
                 if (resp?.resp && resp?.resp[0]?.value && resp?.resp[0]?.value) {
@@ -46,8 +46,8 @@ class UserDataService {
 
     // return value indicates if set succeeds
     boolean set(userId, type, data) {
-        if (userId && grailsApplication.config.userdetails.baseUrl) {
-            def response = webService.post(grailsApplication.config.userdetails.baseUrl + '/property/saveProperty', null,
+        if (userId && grailsApplication.config.getProperty('userdetails.baseUrl')) {
+            def response = webService.post(grailsApplication.config.getProperty('userdetails.baseUrl') + '/property/saveProperty', null,
                     [alaId: userId, name: NAME_PREFIX + type, value: (data as JSON).toString()])
 
             return response?.statusCode == 200

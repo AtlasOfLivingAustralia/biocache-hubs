@@ -754,7 +754,7 @@ class OccurrenceTagLib {
                 }
 
                 // display dynamic fields
-                if(grailsApplication.config.table.displayDynamicProperties?.toString()?.toBoolean()) {
+                if(grailsApplication.config.getProperty('table.displayDynamicProperties', Boolean, false)) {
                     span(class: 'dynamicValues') {
                         def count = 0
                         occurrence.miscStringProperties.each { key, value ->
@@ -862,7 +862,7 @@ class OccurrenceTagLib {
      * Get the appropriate sourceId for the current hub
      */
     def getSourceId = { attrs ->
-        def skin = grailsApplication.config.skin.layout?.toString()?.toUpperCase()
+        def skin = grailsApplication.config.getProperty('skin.layout')?.toUpperCase()
         def sources = webServicesService.getLoggerSources()
         sources.each {
             if (it.name == skin) {
@@ -896,8 +896,8 @@ class OccurrenceTagLib {
      * biocache.ajax.useProxy config var to see whether or not to use the proxy
      */
     def getBiocacheAjaxUrl = { attrs ->
-        String url = grailsApplication.config.biocache.baseUrl
-        Boolean useProxy = grailsApplication.config.biocache.ajax.useProxy?.toString()?.toBoolean() // will convert String 'true' to boolean true
+        String url = grailsApplication.config.getProperty('biocache.baseUrl')
+        Boolean useProxy = grailsApplication.config.getProperty('biocache.ajax.useProxy', Boolean) // will convert String 'true' to boolean true
         log.debug "useProxy = ${useProxy}"
 
         if (useProxy) {

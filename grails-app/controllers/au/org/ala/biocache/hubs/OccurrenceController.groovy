@@ -87,7 +87,7 @@ class OccurrenceController {
                 filteredFacets = postProcessingService.getFilteredFacets(defaultFacets)
             }
 
-            final facetsDefaultSelectedConfig = grailsApplication.config.facets.defaultSelected
+            final facetsDefaultSelectedConfig = grailsApplication.config.getProperty('facets.defaultSelected')
             if (!userFacets && facetsDefaultSelectedConfig) {
                 userFacets = facetsDefaultSelectedConfig.trim().split(",")
                 log.debug "facetsDefaultSelectedConfig = ${facetsDefaultSelectedConfig}"
@@ -101,17 +101,17 @@ class OccurrenceController {
                 }
             }
 
-            List dynamicFacets = []
+//            List dynamicFacets = []
 
             String[] requestedFacets = userFacets ?: filteredFacets
 
-            if (grailsApplication.config.facets.includeDynamicFacets?.toString()?.toBoolean()) {
-                // Sandbox only...
-                time("sandbox only facets") {
-                    dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
-                    requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
-                }
-            }
+//            if (grailsApplication.config.getProperty('facets.includeDynamicFacets', Boolean, false)) {
+//                // Sandbox only...
+//                time("sandbox only facets") {
+//                    dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
+//                    requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
+//                }
+//            }
 
             requestParams.facets = requestedFacets
 
@@ -128,7 +128,7 @@ class OccurrenceController {
             Map groupedFacetsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
 
             //grouped facets
-            Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, dynamicFacets)
+            Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, [])
 
             //remove qc from active facet map
             if (params?.qc) {
@@ -161,7 +161,7 @@ class OccurrenceController {
             }
 
             def hasImages = postProcessingService.resultsHaveImages(searchResults)
-            if (grailsApplication.config.alwaysshow.imagetab?.toString()?.toBoolean()) {
+            if (grailsApplication.config.getProperty('alwaysshow.imagetab', Boolean, false)) {
                 hasImages = true
             }
 
@@ -184,7 +184,7 @@ class OccurrenceController {
                             defaultFacets       : defaultFacets,
                             groupedFacets       : groupedFacets,
                             groupedFacetsMap    : groupedFacetsMap,
-                            dynamicFacets       : dynamicFacets,
+                            dynamicFacets       : [],
                             selectedDataResource: getSelectedResource(requestParams.q),
                             hasImages           : hasImages,
                             showSpeciesImages   : false,
@@ -261,11 +261,11 @@ class OccurrenceController {
 
 
         List taxaQueries = (ArrayList<String>) params.list("taxa") // will be list for even one instance
-        log.debug "skin.useAlaBie = ${grailsApplication.config.skin.useAlaBie}"
+        log.debug "skin.useAlaBie = ${grailsApplication.config.getProperty('skin.useAlaBie')}"
         log.debug "taxaQueries = ${taxaQueries} || q = ${requestParams.q}"
 
-        if (grailsApplication.config.skin.useAlaBie?.toString()?.toBoolean() &&
-                grailsApplication.config.bieService.baseUrl && taxaQueries && taxaQueries[0]) {
+        if (grailsApplication.config.getProperty('skin.useAlaBie', Boolean, false) &&
+                grailsApplication.config.getProperty('bieService.baseUrl') && taxaQueries && taxaQueries[0]) {
             // check for list with empty string
             // taxa query - attempt GUID lookup
             List guidsForTaxa = webServicesService.getGuidsForTaxa(taxaQueries)
@@ -364,9 +364,9 @@ class OccurrenceController {
 
         try {
             String userId = authService?.getUserId()
-            Boolean hasClubView = request.isUserInRole("${grailsApplication.config.clubRoleForHub}")
+            Boolean hasClubView = request.isUserInRole("${grailsApplication.config.getProperty('clubRoleForHub')}")
             JSONObject record = webServicesService.getRecord(id, hasClubView)
-            log.debug "hasClubView = ${hasClubView} || ${grailsApplication.config.clubRoleForHub}"
+            log.debug "hasClubView = ${hasClubView} || ${grailsApplication.config.getProperty('clubRoleForHub')}"
 
             // if backend can't find the record, a JSON error with a field 'message' will be returned
             // TODO: backend can refine the response to put like errorType into returned JSON
@@ -413,7 +413,6 @@ class OccurrenceController {
 
                 List groupedAssertions = postProcessingService.getGroupedAssertions(
                         webServicesService.getUserAssertions(id),
-                        webServicesService.getQueryAssertions(id),
                         userId)
 
                 Map layersMetaData = webServicesService.getLayersMetaData()
@@ -465,7 +464,7 @@ class OccurrenceController {
                                 metadataForOutlierLayers: postProcessingService.getMetadataForOutlierLayers(record, layersMetaData),
                                 environmentalSampleInfo : postProcessingService.getLayerSampleInfo(ENVIRO_LAYER, record, layersMetaData),
                                 contextualSampleInfo    : postProcessingService.getLayerSampleInfo(CONTEXT_LAYER, record, layersMetaData),
-                                skin                    : grailsApplication.config.skin.layout
+                                skin                    : grailsApplication.config.getProperty('skin.layout')
                         ])
             } else {
                 if (record?.message == 'Unrecognised UID') {
@@ -492,7 +491,7 @@ class OccurrenceController {
                     String[] parts = soundUrl.split("imageId=")
                     if (parts.length >= 2) {
                         log.debug("image id = " + parts[1])
-                        mediaDTO.alternativeFormats.'detailLink' = "${grailsApplication.config.images.baseUrl}/image/${parts[1].encodeAsURL()}"
+                        mediaDTO.alternativeFormats.'detailLink' = "${grailsApplication.config.getProperty('images.baseUrl')}/image/${parts[1].encodeAsURL()}"
                         mediaDTO.metadata = webServicesService.getImageMetadata(parts[1])
                     }
                 }
@@ -592,7 +591,7 @@ class OccurrenceController {
      */
     def exploreYourArea() {
         def radius = params.radius?:5
-        Map radiusToZoomLevelMap = grailsApplication.config.exploreYourArea.zoomLevels // zoom levels for the various radius sizes
+        Map radiusToZoomLevelMap = grailsApplication.config.getProperty('exploreYourArea.zoomLevels', Map) // zoom levels for the various radius sizes
 
         def lat = params.latitude
         def lng = params.longitude
@@ -606,8 +605,8 @@ class OccurrenceController {
                 lat = location.latitude
                 lng = location.longitude
             } else {
-                lat = grailsApplication.config.exploreYourArea.lat
-                lng = grailsApplication.config.exploreYourArea.lng
+                lat = grailsApplication.config.getProperty('exploreYourArea.lat')
+                lng = grailsApplication.config.getProperty('exploreYourArea.lng')
             }
         }
 
@@ -616,8 +615,8 @@ class OccurrenceController {
                 longitude     : lng,
                 radius        : radius,
                 zoom          : radiusToZoomLevelMap.get(radius?.toString()),
-                location      : grailsApplication.config.exploreYourArea.location,
-                speciesPageUrl: grailsApplication.config.bie.baseUrl + "/species/"
+                location      : grailsApplication.config.getProperty('exploreYourArea.location'),
+                speciesPageUrl: grailsApplication.config.getProperty('bie.baseUrl') + "/species/"
         ]
     }
 
@@ -658,17 +657,17 @@ class OccurrenceController {
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMMMM yyyy")
         //set the properties of the query
         fg.title = "This document was generated on " + sdf.format(new Date())
-        String serverName = grailsApplication.config.serverName ?: grailsApplication.config.security.cas.appServerName
+        String serverName = grailsApplication.config.getProperty('serverName') ?: grailsApplication.config.getProperty('security.cas.appServerName')
         String contextPath = request.contextPath
         fg.link = serverName + contextPath + "/occurrences/search?" + request.getQueryString()
         //log.info "FG json = " + fg.getJson()
 
         try {
-            JSONElement fgPostObj = webServicesService.postJsonElements(grailsApplication.config.fieldguide.url + "/generate", fg.getMap())
+            JSONElement fgPostObj = webServicesService.postJsonElements(grailsApplication.config.getProperty('fieldguide.url') + "/generate", fg.getMap())
             //log.info "fgFileId = ${fgFileId}"
 
             if (fgPostObj.fileId) {
-                response.sendRedirect(grailsApplication.config.fieldguide.url + "/guide/" + fgPostObj.fileId)
+                response.sendRedirect(grailsApplication.config.getProperty('fieldguide.url') + "/guide/" + fgPostObj.fileId)
             } else {
                 flash.message = "No field guide found for requested taxa."
                 render view: '../error'
@@ -736,7 +735,7 @@ class OccurrenceController {
 
     // profile details expand/collapse will be kept for whole session
     private def getProfileDetailExpandState(userPref, HttpServletRequest request) {
-        def expandKey = "${grailsApplication.config.dataquality.expandKey}"
+        def expandKey = "${grailsApplication.config.getProperty('dataquality.expandKey')}"
         def rawCookie = PostProcessingService.getCookieValue(request.getCookies(), expandKey, null)
 
         // if already have expand/collapse settings, use it to overwrite user preference
