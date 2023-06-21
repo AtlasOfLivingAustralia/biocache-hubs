@@ -171,3 +171,9 @@ mapdownloads {
 //        }
     }
 }
+
+events {
+    enabled = true
+    graphql = "https://api.test.ala.org.au/event/graphql"
+    eventUrl = "https://events.test.ala.org.au/?view=EVENTS&eventHierarchy="
+}

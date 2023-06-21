@@ -87,6 +87,22 @@ class OccurrenceTagLib {
         output
     }
 
+    def renderTree = { attrs ->
+        renderNode(attrs.hierarchy, out)
+    }
+
+    def renderNode(hierarchy, out){
+        def nodeLabel = hierarchy[0]
+        def nodeClass = hierarchy.size() == 1 ? 'selected' :' '
+        out << """<ul class='tree'>
+                    <li><span class="${nodeClass}">${nodeLabel}</span>
+               """
+        if (hierarchy.size() > 1) {
+            renderNode(hierarchy.subList(1, hierarchy.size()), out)
+        }
+        out << "</li></ul>"
+    }
+
     /**
      * Format scientific name for HTML display
      *

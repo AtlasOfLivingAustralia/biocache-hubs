@@ -36,7 +36,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
  */
 @Slf4j
 class OccurrenceController {
-    def webServicesService, facetsCacheService, postProcessingService, authService, qualityService, userService
+    def webServicesService, facetsCacheService, postProcessingService, authService, qualityService, userService, doiService, eventsService
 
     def SESSION_NAVIGATION_DTO = "SESSION_NAVIGATION_DTO"
 
@@ -457,6 +457,8 @@ class OccurrenceController {
                                 isCollectionAdmin       : isCollectionAdmin,
                                 contacts                : contacts,
                                 queryAssertions         : null, // TODO implement this
+                                referencedPublications  : doiService.getDoiInfo(record),
+                                eventHierarchy          : eventsService.getEventHierarchy(record),
                                 duplicateRecordDetails  : webServicesService.getDuplicateRecordDetails(record),
                                 dataResourceCodes       : facetsCacheService.getFacetNamesFor("data_resource_uid"), // TODO move string value to config file
                                 clubView                : hasClubView,

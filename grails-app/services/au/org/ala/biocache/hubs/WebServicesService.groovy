@@ -16,7 +16,7 @@ package au.org.ala.biocache.hubs
 import grails.converters.JSON
 import grails.plugin.cache.CacheEvict
 import grails.plugin.cache.Cacheable
-
+import groovyx.net.http.HTTPBuilder
 import org.apache.http.entity.ContentType
 
 import org.apache.commons.httpclient.HttpClient
@@ -36,6 +36,8 @@ import org.supercsv.prefs.CsvPreference
 
 import javax.annotation.PostConstruct
 import au.org.ala.ws.service.WebService
+
+import static groovyx.net.http.Method.GET
 
 /**
  * Service to perform web service DAO operations
@@ -257,6 +259,34 @@ class WebServicesService {
         }
 
         return postResponse
+    }
+
+    @Cacheable('doiCache')
+    def JSONObject getDoiInfo(String url) {
+        //  curl -LH "Accept: application/vnd.schemaorg.ld+json" https://doi.org/10.25919/tm4m-5a46
+        HTTPBuilder http = new HTTPBuilder(url, ContentType.create("application/json"))
+        Map result = [:]
+        http.request(GET, ContentType.create("application/json")) { request ->
+            headers.put("Accept", "application/vnd.schemaorg.ld+json")
+            response.success = { resp, data ->
+                result.statusCode = resp.status
+                if (data instanceof InputStreamReader) {
+                    result.resp = data.text
+                } else if (data instanceof List) {
+                    // ensure an empty list is not converted to an empty object
+                    result.resp = data
+                } else {
+                    result.resp = data ?: [:]
+                }
+            }
+            response.failure = { resp ->
+                log.error("Request failed with response: ${resp?.entity?.content?.text}")
+                result.statusCode = resp.status
+                result.error = "Failed calling web service - service returned HTTP ${resp.status}"
+            }
+        }
+
+        return new JSONObject(result.resp)
     }
 
     @Cacheable('collectoryCache')
