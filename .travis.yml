@@ -10,10 +10,10 @@ branches:
   - EYA-enhancements
   - develop
   - /^epic\/.*\/develop$/
-  - epic/grails4/oidc-auth
-  - feature/data-quality
-  - bug/issue-780-specis-count-loading
-  - 552_records_page_error
+  - /^release\/.*$/
+  - /^hotfix\/.*$/
+  - /^feature\/.*$/
+  - /^bug\/.*$/
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
