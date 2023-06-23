@@ -203,7 +203,7 @@
                                         <div>&nbsp;</div>
                                         <div>&nbsp;</div>
                                         <div class="col-sm-12 input-group">
-                                            <g:set var="jsonurl" value="${alatag.getBiocacheAjaxUrl()}/occurrence/${uuid}"/>
+                                            <g:set var="jsonurl" value="${alatag.getBiocacheAjaxUrl()}/occurrences/${uuid}"/>
                                             <input type="text" class="form-control" value=${jsonurl} id="al4rcode" readonly/>
                                             <span class="input-group-btn">
                                                 <button class="form-control btn btn-default tooltips" id="copy-al4r" data-toggle="tooltip" data-placement="bottom" title="${g.message(code:'list.copylinks.tooltip.copytoclipboard')}">
