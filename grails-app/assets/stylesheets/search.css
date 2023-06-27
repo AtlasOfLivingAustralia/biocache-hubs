@@ -841,12 +841,35 @@ img.optionsIcon {
     margin: 0 auto;
 }
 
+ul.facets {
+    padding-left:0;
+    margin-left:0;
+    list-style:none;
+}
+
+ul.facets li {
+    padding-left:5px;
+    margin-left: 0;
+}
+
+ul#refinedFacets {
+    padding-top:3px;
+    padding-left:0;
+    margin-left:0;
+    list-style:none;
+}
+
+ul#refinedFacets li {
+    padding-left:5px;
+    margin-left: 0;
+}
+
 .facetsGroup {
-    margin-left: 2px;
+    margin-left: 3px;
     margin-bottom: 10px;
 }
 
-.facetsGroup  h4 {
+.facetsGroup h4 {
     margin-top: 0;
 }
 
@@ -1174,3 +1197,4 @@ a.copyLink {
     word-break: break-word;
     white-space: normal;
 }
+

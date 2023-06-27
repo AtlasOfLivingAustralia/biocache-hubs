@@ -8,34 +8,35 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="org.apache.commons.lang.StringUtils" contentType="text/html;charset=UTF-8" %>
 <g:set var="recordId" value="${alatag.getRecordId(record: record, skin: skin)}"/>
-<g:set var="bieWebappContext" value="${grailsApplication.config.bie.baseUrl}"/>
-<g:set var="collectionsWebappContext" value="${grailsApplication.config.collections.baseUrl}"/>
-<g:set var="useAla" value="${grailsApplication.config.skin.useAlaBie?.toBoolean() ? 'true' : 'false'}"/>
-<g:set var="taxaLinks" value="${grailsApplication.config.skin.taxaLinks}"/>
-<g:set var="dwcExcludeFields" value="${grailsApplication.config.dwc.exclude}"/>
-<g:set var="hubDisplayName" value="${grailsApplication.config.skin.orgNameLong}"/>
+<g:set var="bieWebappContext" value="${grailsApplication.config.getProperty('bie.baseUrl')}"/>
+<g:set var="collectionsWebappContext" value="${grailsApplication.config.getProperty('collections.baseUrl')}"/>
+<g:set var="useAla" value="${grailsApplication.config.getProperty('skin.useAlaBie', Boolean, false)}"/>
+<g:set var="taxaLinks" value="${grailsApplication.config.getProperty('skin.taxaLinks', Map, [:])}"/>
+<g:set var="dwcExcludeFields" value="${grailsApplication.config.getProperty('dwc.exclude')}"/>
+<g:set var="hubDisplayName" value="${grailsApplication.config.getProperty('skin.orgNameLong')}"/>
 <g:set var="biocacheService" value="${alatag.getBiocacheAjaxUrl()}"/>
-<g:set var="spatialPortalUrl" value="${grailsApplication.config.spatial.baseUrl}"/>
-<g:set var="serverName" value="${grailsApplication.config.serverName}"/>
+<g:set var="spatialPortalUrl" value="${grailsApplication.config.getProperty('spatial.baseUrl')}"/>
+<g:set var="serverName" value="${grailsApplication.config.getProperty('serverName')}"/>
 <g:set var="scientificName" value="${alatag.getScientificName(record: record)}"/>
-<g:set var="sensitiveDatasetRaw" value="${grailsApplication.config.sensitiveDataset?.list?:''}"/>
+<g:set var="sensitiveDatasetRaw" value="${grailsApplication.config.getProperty('sensitiveDataset.list', String, '')}"/>
 <g:set var="sensitiveDatasets" value="${sensitiveDatasetRaw?.split(',')}"/>
 <g:set var="userDisplayName" value="${alatag.loggedInUserDisplayname()}"/>
 <g:set var="userId" value="${alatag.loggedInUserId()}"/>
-<g:set var="isUnderCas" value="${(grailsApplication.config.security.cas.casServerName) ? true : false}"/>
+<g:set var="isUnderAuth" value="${grailsApplication.config.getProperty('security.cas.enabled', Boolean, false) || grailsApplication.config.getProperty('security.oidc.enabled', Boolean, false)}"/>
+<g:set var="showVernacularName" value="${grailsApplication.config.getProperty('vernacularName.show', Boolean, true)}"/>
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="svn.revision" content="${meta(name: 'svn.revision')}"/>
-    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('skin.layout')}"/>
     <meta name="section" content="search"/>
     <meta name="breadcrumbParent" content="${request.contextPath ?: '/'},${message(code: "search.heading.list")}"/>
     <meta name="breadcrumb" content="${message(code: "show.title")}: ${recordId} (${scientificName})"/>
     <title><g:message code="show.title" default="Record"/>: ${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
 
 
-    <g:if test="${grailsApplication.config.google.apikey}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}" type="text/javascript"></script>
+    <g:if test="${grailsApplication.config.getProperty('google.apikey')}">
+        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}" type="text/javascript"></script>
     </g:if>
     <g:else>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -52,14 +53,13 @@
             recordUuid: "${record.raw.rowKey}",
             taxonRank: "${record.processed.classification.taxonRank}",
             taxonConceptID: "${record.processed.classification.taxonConceptID}",
-            isUnderCas: ${isUnderCas},
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             sensitiveDatasets: {
                 <g:each var="sds" in="${sensitiveDatasets}"
-                   status="s">'${sds}': '${grailsApplication.config.sensitiveDatasets[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
+                   status="s">'${sds}': '${grailsApplication.config.getProperty('sensitiveDatasets', Map, [:])[sds]}'${s < (sensitiveDatasets.size() - 1) ? ',' : ''}
                 </g:each>
             },
-            hasGoogleKey: ${grailsApplication.config.google.apikey as Boolean},
+            hasGoogleKey: ${grailsApplication.config.getProperty('google.apikey', Boolean, false)},
             myAnnotationEnabled: ${(grailsApplication.config.getProperty("alerts.myannotation.enabled", Boolean, false))}
         }
 
@@ -160,10 +160,10 @@
                                 <i>${record.raw.classification.genus} ${record.raw.classification.specificEpithet}</i>
                                 ${record.raw.classification.scientificNameAuthorship}
                             </g:else>
-                            <g:if test="${record.processed.classification.vernacularName}">
+                            <g:if test="${showVernacularName && record.processed.classification.vernacularName}">
                                 | ${record.processed.classification.vernacularName}
                             </g:if>
-                            <g:elseif test="${record.raw.classification.vernacularName}">
+                            <g:elseif test="${showVernacularName && record.raw.classification.vernacularName}">
                                 | ${record.raw.classification.vernacularName}
                             </g:elseif>
                             <g:if test="${record.processed.event?.eventDate || record.raw.event?.eventDate}">
@@ -203,7 +203,7 @@
                                         <div>&nbsp;</div>
                                         <div>&nbsp;</div>
                                         <div class="col-sm-12 input-group">
-                                            <g:set var="jsonurl" value="${alatag.getBiocacheAjaxUrl()}/occurrence/${uuid}"/>
+                                            <g:set var="jsonurl" value="${alatag.getBiocacheAjaxUrl()}/occurrences/${uuid}"/>
                                             <input type="text" class="form-control" value=${jsonurl} id="al4rcode" readonly/>
                                             <span class="input-group-btn">
                                                 <button class="form-control btn btn-default tooltips" id="copy-al4r" data-toggle="tooltip" data-placement="bottom" title="${g.message(code:'list.copylinks.tooltip.copytoclipboard')}">
@@ -302,6 +302,33 @@
                         <h3><g:message code="show.userannotationsdiv.title" default="User flagged issues"/><a id="userAnnotations">&nbsp;</a></h3>
                         <ul id="userAnnotationsList"></ul>
                     </div>
+
+                    <g:if test="${referencedPublications}">
+                    <div id="referencedPublications" class="additionalData">
+                        <h3>Referenced in publications</h3>
+                        <g:each in="${referencedPublications}" var="publication">
+                            <div class="well well-sm">
+                                <h4>Publication: <g:link url="${collectionsWebappContext}/public/show/${publication.annotation['dataResourceUid']}"> ${publication.name}</g:link></h4>
+                                <p class="samp"><span class="badge">DOI</span> ${publication['@id']}</p>
+                                <p>${publication.description}</p>
+                                <h5 style="margin-top:25px;">Version of the data used in the publication</h5>
+                                <table class="table">
+                                    <g:if test="${publication.annotation['scientificName']}"><tr><td>Scientific name</td><td>${publication.annotation['scientificName']}</td></tr></g:if>
+                                    <g:if test="${publication.annotation['decimalLatitude']}"><tr><td>Decimal latitude</td><td>${publication.annotation['decimalLatitude']}</td></tr></g:if>
+                                    <g:if test="${publication.annotation['decimalLongitude']}"><tr><td>Decimal longitude</td><td>${publication.annotation['decimalLongitude']}</td></tr></g:if>
+                                    <g:if test="${publication.annotation['year']}"><tr><td>Year</td><td>${publication.annotation['year']}</td></tr></g:if>
+                                    <g:if test="${publication.annotation['month']}"><tr><td>Month</td><td>${publication.annotation['month']}</td></tr></g:if>
+                                    <g:if test="${publication.annotation['occurrenceRemarks']}"><tr><td>Occurrence remarks</td><td>${publication.annotation['occurrenceRemarks']}</td></tr></g:if>
+                                </table>
+                               <g:if test="${publication.annotation['dataResourceUid']}">
+                                <p class="samp pull right">
+                                    <g:link controller="occurrence" action="search" params="${['q': 'annotationsUid:' + publication.annotation['dataResourceUid']]}">View all data referenced by this publication</g:link>
+                                </p>
+                               </g:if>
+                            </div>
+                        </g:each>
+                    </div>
+                    </g:if>
 
                     <div id="dataQuality" class="additionalData"><a name="dataQualityReport"></a>
                         <h3><g:message code="show.dataquality.title" default="Data quality tests"/></h3>
@@ -406,7 +433,7 @@
                                 <ul>
                                     <g:each in="${metadataForOutlierLayers}" var="layerMetadata">
                                         <li>
-                                            <a href="${grailsApplication.config.layersservice.baseUrl}/layers/view/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
+                                            <a href="${grailsApplication.config.getProperty('layersservice.baseUrl')}/layers/view/more/${layerMetadata.name}">${layerMetadata.displayname} - ${layerMetadata.source}</a><br/>
                                             <g:message code="show.outlierinformation.each.label01" default="Notes"/>: ${layerMetadata.notes}<br/>
                                             <g:message code="show.outlierinformation.each.label02" default="Scale"/>: ${layerMetadata.scale}
                                         </li>
@@ -448,7 +475,7 @@
                                     facetChartOptions.chartsDiv = "charts";
                                     facetChartOptions[facetName] = {chartType: 'scatter'};
                                     facetChartOptions.biocacheServicesUrl = "${alatag.getBiocacheAjaxUrl()}";
-                                    facetChartOptions.displayRecordsUrl = "${grailsApplication.config.grails.serverURL}";
+                                    facetChartOptions.displayRecordsUrl = "${grailsApplication.config.getProperty('grails.serverURL')}";
 
                                     //additional config
                                     facetChartOptions.cumulative = cumulative;
@@ -637,7 +664,7 @@
                                         <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != contextualSampleInfo.get(vs - 1).classification1 && vs != contextualSampleInfo.size() - 1))}">
                                             <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
                                         </g:if>
-                                        <g:set var="fn"><a href='${grailsApplication.config.layersservice.baseUrl}/layers/view/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
+                                        <g:set var="fn"><a href='${grailsApplication.config.getProperty('layersservice.baseUrl')}/layers/view/more/${sample.layerName}' title='more information about this layer'>${sample.layerDisplayName}</a></g:set>
                                         <alatag:occurrenceTableRow
                                                 annotate="false"
                                                 section="contextual"
@@ -657,7 +684,7 @@
                                         <g:if test="${sample.classification1 && (vs == 0 || (sample.classification1 != environmentalSampleInfo.get(vs - 1).classification1 && vs != environmentalSampleInfo.size() - 1))}">
                                             <tr class="sectionName"><td colspan="2">${sample.classification1}</td></tr>
                                         </g:if>
-                                        <g:set var="fn"><a href='${grailsApplication.config.layersservice.url}/layers/view/more/${sample.layerName}' title='More information about this layer'>${sample.layerDisplayName}</a></g:set>
+                                        <g:set var="fn"><a href='${grailsApplication.config.getProperty('layersservice.url')}/layers/view/more/${sample.layerName}' title='More information about this layer'>${sample.layerDisplayName}</a></g:set>
                                         <alatag:occurrenceTableRow
                                                 annotate="false"
                                                 section="contextual"

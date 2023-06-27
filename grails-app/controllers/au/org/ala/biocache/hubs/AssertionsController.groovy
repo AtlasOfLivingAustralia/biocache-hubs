@@ -34,10 +34,9 @@ class AssertionsController {
      */
     def assertions(String id) {
         JSONArray userAssertions = webServicesService.getUserAssertions(id)
-        JSONArray qualityAssertions = webServicesService.getQueryAssertions(id)
-        Boolean hasClubView = request.isUserInRole("${grailsApplication.config.clubRoleForHub}")
+        Boolean hasClubView = request.isUserInRole("${grailsApplication.config.getProperty('clubRoleForHub')}")
         String userAssertionStatus = webServicesService.getRecord(id, hasClubView)?.raw.userAssertionStatus
-        Map combined = [userAssertions: userAssertions ?: [], assertionQueries: qualityAssertions ?: [], userAssertionStatus: userAssertionStatus ?: ""]
+        Map combined = [userAssertions: userAssertions ?: [], assertionQueries: [], userAssertionStatus: userAssertionStatus ?: ""]
         render combined as JSON
     }
 

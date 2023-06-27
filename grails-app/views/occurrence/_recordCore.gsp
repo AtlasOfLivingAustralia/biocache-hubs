@@ -2,6 +2,7 @@
 %{--<% Map fieldsMap = new HashMap(); pageContext.setAttribute("fieldsMap", fieldsMap); %>--}%
 <%-- g:set target="${fieldsMap}" property="aKey" value="value for a key" /--%>
 <g:set var="fieldsMap" value="${[:]}"/>
+<g:set var="showVernacularName" value="${grailsApplication.config.getProperty('vernacularName.show', Boolean, true)}"/>
 <div id="occurrenceDataset">
 <g:render template="sandboxUploadSourceLinks" model="[dataResourceUid: record?.raw?.attribution?.dataResourceUid]" />
 <h3><g:message code="recordcore.occurencedataset.title" default="Dataset"/></h3>
@@ -343,12 +344,36 @@
     <!-- event ID -->
     <alatag:occurrenceTableRow annotate="true" section="eventID" fieldCode="eventID" fieldName="Event ID">
         ${fieldsMap.put("eventID", true)}
-        ${record.raw.event.eventID}
+        <g:if test="${eventHierarchy}">
+            <a href="${grailsApplication.config.events.eventUrl}${record.raw.event.eventID}">
+            ${record.raw.event.eventID}
+            </a>
+        </g:if>
+        <g:else>
+            ${record.raw.event.eventID}
+        </g:else>
     </alatag:occurrenceTableRow>
     <alatag:occurrenceTableRow annotate="true" section="parentEventID" fieldCode="parentEventID" fieldName="Parent Event ID">
         ${fieldsMap.put("parentEventID", true)}
-        ${record.raw.event.parentEventID}
+        <g:if test="${eventHierarchy}">
+            <a href="${grailsApplication.config.events.eventUrl}${record.raw.event.parentEventID}">
+                ${record.raw.event.parentEventID}
+            </a>
+        </g:if>
+        <g:else>
+            ${record.raw.event.parentEventID}
+        </g:else>
     </alatag:occurrenceTableRow>
+    <!-- event hierarchy -->
+    <g:if test="${eventHierarchy}">
+        <alatag:occurrenceTableRow annotate="true" section="eventHierarchy" fieldCode="eventHierarchy" fieldName="Event hierarchy">
+            ${fieldsMap.put("eventHierarchy", true)}
+            <g:if test="${eventHierarchy}">
+                ${eventHierarchy.join(' / ')}
+            </g:if>
+        </alatag:occurrenceTableRow>
+    </g:if>
+
     <!-- Field Number -->
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="fieldNumber" fieldName="Field number">
         ${fieldsMap.put("fieldNumber", true)}
@@ -473,6 +498,7 @@
         <br/><span class="originalValue"><g:message code="recordcore.tr02" default="Supplied as"/> "${record.raw.classification.taxonRank}"</span>
     </g:if>
 </alatag:occurrenceTableRow>
+<g:if test="${showVernacularName}">
 <!-- Common name -->
 <alatag:occurrenceTableRow annotate="false" section="taxonomy" fieldCode="commonName" fieldName="Common name">
     ${fieldsMap.put("vernacularName", true)}
@@ -486,6 +512,7 @@
         <br/><span class="originalValue"><g:message code="recordcore.cn.01" default="Supplied common name"/> "${record.raw.classification.vernacularName}"</span>
     </g:if>
 </alatag:occurrenceTableRow>
+</g:if>
 <!-- Kingdom -->
 <alatag:occurrenceTableRow annotate="true" section="taxonomy" fieldCode="kingdom" fieldName="Kingdom">
     ${fieldsMap.put("kingdom", true)}
@@ -549,7 +576,7 @@
         </a>
     </g:if>
     <g:if test="${record.processed.classification.classs && record.raw.classification.classs && (record.processed.classification.classs.toLowerCase() != record.raw.classification.classs.toLowerCase())}">
-        <br/><span classs="originalValue"><g:message code="recordcore.class.01" default="Supplied as"/> "${record.raw.classification.classs}"</span>
+        <br/><span class="originalValue"><g:message code="recordcore.class.01" default="Supplied as"/> "${record.raw.classification.classs}"</span>
     </g:if>
 </alatag:occurrenceTableRow>
 <!-- Order -->
