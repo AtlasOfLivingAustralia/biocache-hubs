@@ -817,7 +817,8 @@ class OccurrenceTagLib {
             }
 
             Map messagesMap = messageSourceCacheService.getMessagesMap(RequestContextUtils.getLocale(request)) // g.message too slow so we use a Map instead
-            def message = messagesMap.get(code)
+            Map biocacheMessagesMap = webServicesService.getMessagesPropertiesFile()
+            def message = messagesMap.get(code) ?: biocacheMessagesMap.get(code)
             output = message ?: defaultMessage
         }
 
