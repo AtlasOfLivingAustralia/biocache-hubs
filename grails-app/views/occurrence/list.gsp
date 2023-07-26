@@ -526,6 +526,20 @@
                                                                 </select>
                                                             </div>
                                                         </div>
+                                                        <g:each in="${qualityProfiles}" var="profile">
+                                                            <div id="items_${profile.shortName}"
+                                                                 <g:if test="${defaultProfileName != profile.shortName}">
+                                                                     style="display:none;"
+                                                                 </g:if>
+                                                                 class="profile_items">
+                                                                <g:each in="${profile.categories}" var="category">
+                                                                    <div class="form-group row">
+                                                                        <label class="col-sm-6 col-form-label">${category.name}</label>
+                                                                        <input class="col-sm-1" type="checkbox" name="items_${profile.shortName}" value="${category.label}" checked="checked" />
+                                                                    </div>
+                                                                </g:each>
+                                                            </div>
+                                                        </g:each>
                                                     </form>
                                                 </div>
                                             </div>

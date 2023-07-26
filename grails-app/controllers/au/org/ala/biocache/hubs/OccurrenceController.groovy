@@ -307,6 +307,10 @@ class OccurrenceController {
                         profileToUseFullName = systemDefaultProfile.name
                     }
 
+                    if (userPref.disabledItems) {
+                        requestParams.disableQualityFilter.addAll(userPref.disabledItems)
+                    }
+
                     // profile not null then it's disabled or not-exist
                     if (requestParams.qualityProfile) {
                         // to display full name of the profile being used
