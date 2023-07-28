@@ -21,8 +21,6 @@ class UserDataService {
     def grailsApplication
     def webService
 
-    final static String NAME_PREFIX = grails.util.Metadata.current.'app.name' + '.hub_charts.'
-
     def get(userId, type) {
 
         def data = [:]
@@ -30,14 +28,14 @@ class UserDataService {
         if (userId && grailsApplication.config.userdetails.baseUrl) {
             try {
                 def resp = webService.get(grailsApplication.config.getProperty('userdetails.baseUrl') + '/property/getProperty' +
-                        "?alaId=${userId}&name=${URLEncoder.encode(NAME_PREFIX + type, "UTF-8")}")
+                        "?alaId=${userId}&name=${URLEncoder.encode(grailsApplication.config.getProperty('info.app.name') +'.'+ type, "UTF-8")}")
 
                 if (resp?.resp && resp?.resp[0]?.value && resp?.resp[0]?.value) {
                     data = JSON.parse(resp?.resp[0]?.value)
                 }
             } catch (err) {
                 //fail with only a log entry
-                log.error("failed to get user property ${userId}:${NAME_PREFIX + type} ${err.getMessage()}", err)
+                log.error("failed to get user property ${userId}:${grailsApplication.config.getProperty('info.app.name') +'.'+ type} ${err.getMessage()}", err)
             }
         }
 
@@ -48,7 +46,7 @@ class UserDataService {
     boolean set(userId, type, data) {
         if (userId && grailsApplication.config.getProperty('userdetails.baseUrl')) {
             def response = webService.post(grailsApplication.config.getProperty('userdetails.baseUrl') + '/property/saveProperty', null,
-                    [alaId: userId, name: NAME_PREFIX + type, value: (data as JSON).toString()])
+                    [alaId: userId, name: grailsApplication.config.getProperty('info.app.name') +'.'+ type, value: (data as JSON).toString()])
 
             return response?.statusCode == 200
         }
