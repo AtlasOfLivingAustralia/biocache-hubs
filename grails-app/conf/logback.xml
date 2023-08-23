@@ -11,6 +11,8 @@
         </encoder>
     </appender>
 
+    <logger name="org.grails.config.NavigableMap" level="ERROR"/>
+
     <root level="error">
         <appender-ref ref="STDOUT" />
     </root>

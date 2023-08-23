@@ -414,7 +414,7 @@
 
                             <g:if test="${grailsApplication.config.getProperty('alerts.myannotation.enabled', Boolean)}">
                                 <p style="margin-top:30px;">
-                                    <label style="width:100%" id="notifyChange"><input type="checkbox" id="notifyChangeCheckbox" name="notifyChange" value="">&nbsp;<g:message code="show.issueform.notifyme" default="Notify me when records I have annotated are updated"/></label>
+                                    <label style="width:100%" id="notifyChange"><input type="checkbox" id="notifyChangeCheckbox" name="notifyChange" value="" checked>&nbsp;<g:message code="show.issueform.notifyme" default="Notify me when records I have annotated are updated"/></label>
                                 </p>
                             </g:if>
 
