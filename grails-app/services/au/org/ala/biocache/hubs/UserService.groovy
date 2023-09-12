@@ -78,6 +78,7 @@ class UserService {
             pref.disableAll = pref?.containsKey('disableAll') ? pref.disableAll : disableAllFiltersByDefault
             pref.dataProfile = pref?.containsKey('dataProfile') ? pref.dataProfile : null
             pref.expand = pref?.containsKey('expand') ? pref.expand : expandFiltersByDefault
+            pref.disabledItems = pref?.containsKey('disabledItems') ? pref.disabledItems : null
         }
         pref
     }

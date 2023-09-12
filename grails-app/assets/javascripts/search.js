@@ -1,4 +1,4 @@
-/* 
+/*
  *  Copyright (C) 2011 Atlas of Living Australia
  *  All Rights Reserved.
  *
@@ -672,6 +672,12 @@ $(document).ready(function() {
         })
     })
 
+    $('#prefer_profile').change(function() {
+        var profile = $('#prefer_profile').val()
+        $(".profile_items").hide()
+        $('#items_' + profile).show()
+    })
+
     // when open the user preference dlg
     $('.DQPrefSettingsLink').click(function() {
         var prefSettings = $('#DQPrefSettings');
@@ -721,6 +727,15 @@ $(document).ready(function() {
             userPref.disableAll = false;
             userPref.dataProfile = prefProfile;
         }
+
+        // set items
+        userPref.disabledItems = []
+        $('input[name="items_' + prefProfile + '"]').each(function () {
+            if (this.checked == '' && this.type == 'checkbox') {
+                console.log(this.value)
+                userPref.disabledItems.push(this.value)
+            }
+        })
 
         // set expand
         userPref.expand = $('#profile_expand').val() === 'expanded';
@@ -806,6 +821,12 @@ $(document).ready(function() {
             url = prependURL(url,"disableAllQualityFilters=true", true);
         } else {
             url = prependURL(url, "qualityProfile=" + encodeURIComponent(userPref.dataProfile).replace(/%20/g, "+").replace(/[()]/g, escape), true);
+
+            if (userPref.disabledItems) {
+                $.each(userPref.disabledItems, function () {
+                    url = prependURL(url,"disableQualityFilter=" + this, true);
+                })
+            }
         }
 
         window.location.href = url;
@@ -1471,13 +1492,13 @@ function reloadWithParam(paramName, paramValue) {
     if (paramName != null && paramValue) {
         paramList.push(paramName + "=" + paramValue);
     }
-    
+
     if (lat && lon && rad) {
         paramList.push("lat=" + lat);
         paramList.push("lon=" + lon);
         paramList.push("radius=" + rad);
     }
-    
+
     if (taxa) {
         paramList.push("taxa=" + taxa);
     }
@@ -1647,7 +1668,7 @@ function loadImages(start) {
                     link.attr('data-occurrenceuid', el.uuid);
                     link.attr('data-image-id', el.image);
                     link.attr('data-scientific-name', sciNameRawOrMatched);
-                    
+
                     $ImgConTmpl.find('img').attr('src', el.smallImageUrl);
                     // brief metadata
                     var briefHtml = sciNameRawOrMatched;
@@ -1666,11 +1687,11 @@ function loadImages(start) {
                         detailHtml += br + el.dataResourceName;
                     }
                     $ImgConTmpl.find('.detail').html(detailHtml);
-    
+
                     // write to DOM
                     $("#imagesGrid").append($ImgConTmpl.html());
                 });
-    
+
                 if (count + start < data.totalRecords) {
                     //console.log("load more", count, start, count + start, data.totalRecords);
                     $('#imagesGrid').data('count', count + start);
@@ -1679,7 +1700,7 @@ function loadImages(start) {
                 } else {
                     $("#loadMoreImages").hide();
                 }
-    
+
             } else {
                 $('#imagesGrid').html('<p>' + jQuery.i18n.prop('list.noimages.available') + '</p>');
             }
@@ -1797,7 +1818,7 @@ function loadSpeciesInTab(start, sortField, group) {
 /**
  * iBox Jquery plugin for Google Images hover effect.
  * Origina by roxon http://stackoverflow.com/users/383904/roxon
- * Posted to stack overflow: 
+ * Posted to stack overflow:
  *   http://stackoverflow.com/questions/7411393/pop-images-like-google-images/7412302#7412302
  */
 (function($) {
@@ -1856,7 +1877,7 @@ function loadSpeciesInTab(start, sortField, group) {
                     e.preventDefault();
                     window.location.href = link;
                 });
-                
+
                 ibox.css({
                     top: elY + 'px',
                     left: elX + 'px',
@@ -1867,7 +1888,7 @@ function loadSpeciesInTab(start, sortField, group) {
                     //$(this).animate({top: '-='+(resize/2), left:'-='+wh},200).children('img').animate({height:'+='+resize},200);
                     $(this).children('img').animate({height:'+='+resize},200);
                 });
-                
+
             });
 
             ibox.mouseleave(function() {
@@ -1980,7 +2001,7 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                     var fqParam = (el.fq) ? encodeURIComponent(el.fq) : facetName + ":" + ((encodeFq) ? encodeURIComponent(fqEsc) : fqEsc) ;
                     //var link = BC_CONF.searchString.replace("'", "&apos;") + "&fq=" + fqParam;
 
-                    //NC: 2013-01-16 I changed the link so that the search string is uri encoded so that " characters do not cause issues 
+                    //NC: 2013-01-16 I changed the link so that the search string is uri encoded so that " characters do not cause issues
                     //Problematic URL http://biocache.ala.org.au/occurrences/search?q=lsid:urn:lsid:biodiversity.org.au:afd.taxon:b76f8dcf-fabd-4e48-939c-fd3cafc1887a&fq=geospatial_kosher:true&fq=state:%22Australian%20Capital%20Territory%22
                     var link = BC_CONF.searchString + "&fq=" + fqParam;
                     //console.log(link)
