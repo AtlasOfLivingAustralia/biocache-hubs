@@ -113,7 +113,7 @@ $(document).ready(function() {
     } else if ( $.url().param('lat') &&  $.url().param('lon') && $.url().param('radius')) {
         // triggered if user has clicked "return to search results" from download confirmation page
         // URL with have params: lat, lon, radius & fq
-        // e.g. q=*:*&lat=-35.2509&lon=149.1638&radius=1&fq=geospatial_kosher:true&fq=species_group:Insects
+        // e.g. q=*:*&lat=-35.2509&lon=149.1638&radius=1&fq=spatiallyValid:true&fq=species_group:Insects
         var lat = $.url().param('lat');
         var lon = $.url().param('lon');
         var radiusInMetres = $.url().param('radius') * 1000; // assume radius is in km (SOLR radius param)
@@ -157,7 +157,7 @@ $(document).ready(function() {
     $('#viewAllRecords').on("click", function(e) {
         e.preventDefault();
         //var params = "q=taxon_name:*|"+$('#latitude').val()+"|"+$('#longitude').val()+"|"+$('#radius').val();
-        var params = "q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=geospatial_kosher:true";
+        var params = "q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=spatiallyValid:true";
         if (speciesGroup != "ALL_SPECIES") {
             params += "&fq=species_group:" + speciesGroup;
         }
@@ -169,7 +169,7 @@ $(document).ready(function() {
     $('#downloadData').on("click", function(e) {
         e.preventDefault();
         //var params = "q=taxon_name:*|"+$('#latitude').val()+"|"+$('#longitude').val()+"|"+$('#radius').val();
-        var params = "?q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=geospatial_kosher:true";
+        var params = "?q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=spatiallyValid:true";
         if (speciesGroup != "ALL_SPECIES") {
             params += "&fq=species_group:" + speciesGroup;
         }
@@ -443,7 +443,7 @@ function loadRecordsLayer(retry) {
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
         radius: $('#radius').val(),
-        fq: [ "geospatial_kosher:true",
+        fq: [ "spatiallyValid:true",
               speciesGroupParam
         ],
         qc: MAP_VAR.queryContext
@@ -631,7 +631,7 @@ function groupClicked(el) {
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
         radius: $('#radius').val(),
-        fq: "geospatial_kosher:true",
+        fq: "spatiallyValid:true",
         qc: MAP_VAR.queryContext,
         sort: sortField,
         pageSize: 50
@@ -772,7 +772,7 @@ function processSpeciesJsonData(data, appendResults) {
                 lat: $('#latitude').val(),
                 lon: $('#longitude').val(),
                 radius: $('#radius').val(),
-                fq: "geospatial_kosher:true",
+                fq: "spatiallyValid:true",
                 start: start,
                 common: commonName,
                 sort: sortParam,
@@ -810,7 +810,7 @@ function loadGroups() {
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
         radius: $('#radius').val(),
-        fq: "geospatial_kosher:true",
+        fq: "spatiallyValid:true",
         facets: "species_group",
         qc: MAP_VAR.queryContext
     }

@@ -2002,7 +2002,7 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets)
                     //var link = BC_CONF.searchString.replace("'", "&apos;") + "&fq=" + fqParam;
 
                     //NC: 2013-01-16 I changed the link so that the search string is uri encoded so that " characters do not cause issues
-                    //Problematic URL http://biocache.ala.org.au/occurrences/search?q=lsid:urn:lsid:biodiversity.org.au:afd.taxon:b76f8dcf-fabd-4e48-939c-fd3cafc1887a&fq=geospatial_kosher:true&fq=state:%22Australian%20Capital%20Territory%22
+                    //Problematic URL http://biocache.ala.org.au/occurrences/search?q=lsid:urn:lsid:biodiversity.org.au:afd.taxon:b76f8dcf-fabd-4e48-939c-fd3cafc1887a&fq=spatiallyValid:true&fq=state:%22Australian%20Capital%20Territory%22
                     var link = BC_CONF.searchString + "&fq=" + fqParam;
                     //console.log(link)
                     var rowType = (i % 2 == 0) ? "normalRow" : "alternateRow";
