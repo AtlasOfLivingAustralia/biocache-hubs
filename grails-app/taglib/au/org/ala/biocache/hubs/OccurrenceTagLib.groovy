@@ -672,12 +672,14 @@ class OccurrenceTagLib {
         def exclude = attrs.exclude?:''
         def output = ""
 
+        def excludeList = exclude.toString().toLowerCase().split(",")
+
         compareRecord.get(group).each { cr ->
             def key = cr.name
             def label = message(code:key, default:"") ?: camelCaseToHuman(text: key) ?: StringUtils.capitalize(key)
 
             // only output fields not already included (by checking fieldsMap Map) && not in excluded list
-            if (!fieldsMap.containsKey(key) && !StringUtils.containsIgnoreCase(exclude, key)) {
+            if (!fieldsMap.containsKey(key) && !excludeList.contains(key.toLowerCase())) {
                 //def mb = new MarkupBuilder(out)
                 def tagBody
 
