@@ -714,7 +714,8 @@ function processSpeciesJsonData(data, appendResults) {
     }
 
     // Register clicks for the list of species links so that map changes
-    $('#rightList tbody tr').click(function(e) {
+    $('#rightList tbody tr').unbind('click.specieslink')
+    $('#rightList tbody tr').bind('click.specieslink', function(e) {
         e.preventDefault(); // ignore the href text - used for data
         //var thisTaxon = $(this).find('a.taxonBrowse2').attr('href'); // absolute URI in IE!
         var thisTaxonA = $(this).find('a.taxonBrowse2').attr('href').split('/');
@@ -742,7 +743,8 @@ function processSpeciesJsonData(data, appendResults) {
     });
 
     // Register onClick for "load more species" link & sort headers
-    $('#loadMoreSpecies a, thead.fixedHeader a').click(function(e) {
+    $('#loadMoreSpecies a, thead.fixedHeader a').unbind('click.sort')
+    $('#loadMoreSpecies a, thead.fixedHeader a').bind('click.sort', function(e) {
             e.preventDefault(); // ignore the href text - used for data
             var thisTaxon = $('#taxa-level-0 tr.activeRow').find('a.taxonBrowse').attr('id');
             //rank = $('#taxa-level-0 tr.activeRow').find('a.taxonBrowse').attr('id');
@@ -756,8 +758,9 @@ function processSpeciesJsonData(data, appendResults) {
                 commonName = true;
                 sortParam = "index";
                 //$("a#commonSort").insertBefore("a#speciesSort");
-            } else if (sortOrder == "index") {
+            } else if (sortOrder == "taxa") {
                 //$("a#speciesSort").insertBefore("a#commonSort");
+                sortParam = "index";
             }
             var append = true;
             if (start == 0) {
@@ -781,7 +784,7 @@ function processSpeciesJsonData(data, appendResults) {
             };
             //console.log("explore params", params, append);
             //$('#taxaDiv').html('[loading...]');
-            $('#loadMoreSpecies').detach(); // delete it
+            $('#loadMoreSpecies').remove();
             $.getJSON(uri, params, function(data) {
                 // process JSON data from request
                 processSpeciesJsonData(data, append);
