@@ -865,10 +865,10 @@
                         <label for="baseMap" class="col-md-5 control-label"><g:message code="map.downloadmap.field09.label" default="Base layer"/></label>
                         <div class="col-md-6">
                             <select name="baseMap" id="baseMap" class="form-control">
-                                <g:each in="${grailsApplication.config.mapdownloads.baseMaps}" var="baseMap">
+                                <g:each in="${grailsApplication.config.getProperty('mapdownloads.baseMaps', Map, [])}" var="baseMap">
                                     <option value="basemap.${baseMap.value.name}"><g:message code="${baseMap.value.i18nCode}" default="${baseMap.value.displayName}"/></option>
                                 </g:each>
-                                <g:each in="${grailsApplication.config.mapdownloads.baseLayers}" var="baseLayer">
+                                <g:each in="${grailsApplication.config.getProperty('mapdownloads.baseLayers', Map, [])}" var="baseLayer">
                                     <option value="baselayer.${baseLayer.value.name}"><g:message code="${baseLayer.value.i18nCode}" default="${baseLayer.value.displayName}"/></option>
                                 </g:each>
                             </select>
