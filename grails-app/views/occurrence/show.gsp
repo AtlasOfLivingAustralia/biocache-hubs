@@ -67,7 +67,7 @@
 
         // Google charts
         if(!OCC_REC.hasGoogleKey) {
-            google.load('maps', '3.3', {other_params: "sensor=false"});
+            google.load('maps', '3.5');
         }
         //google.load("visualization", "1", {packages:["corechart"]});
         google.charts.load('current', {'packages':['bar', 'corechart', 'table']});

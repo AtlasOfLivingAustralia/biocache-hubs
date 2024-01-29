@@ -15,22 +15,6 @@
 
 /*  Common map (Leaflet) functions */
 
-/**
- * Load Spring i18n messages into JS
- */
-if (!(jQuery.i18n.properties && jQuery.i18n.properties.path) && typeof BC_CONF != 'undefined' && BC_CONF.hasOwnProperty('contextPath')) {
-    //console.log("loading Query.i18n");
-    jQuery.i18n.properties({
-        name: 'messages',
-        path: BC_CONF.contextPath + '/messages/i18n/',
-        mode: 'map',
-        async: true,
-        cache: true,
-        language: BC_CONF.locale // default is to use browser specified locale
-        //callback: function(){} //alert( "facet.conservationStatus = " + jQuery.i18n.prop('facet.conservationStatus')); }
-    });
-}
-
 // used to generate unique handler name for user drawn areas.
 var areaCounter = 0;
 

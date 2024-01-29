@@ -16,6 +16,7 @@
 
 /*
  * // require jquery
+//= require jquery_i18n.js
 //= require purl.js
 //= require leaflet/leaflet.js
 //= require leaflet-plugins/layer/tile/Google.js
@@ -24,7 +25,6 @@
 //= require leaflet-plugins/EasyButton/easy-button.js
 //= require magellan.js
 //= require jquery.qtip.min.js
-//= require biocache-hubs.js
 //= require map.common.js
 //= require_self
  */
@@ -48,6 +48,16 @@ var radiusForZoom = {
  * Document onLoad event using JQuery
  */
 $(document).ready(function() {
+    if (typeof BC_CONF != 'undefined' && BC_CONF.hasOwnProperty('contextPath')) {
+        jQuery.i18n.properties({
+            name: 'messages',
+            path: BC_CONF.contextPath + '/messages/i18n/',
+            mode: 'map',
+            async: true,
+            cache: true,
+            language: BC_CONF.locale // default is to use browser specified locale
+        });
+    }
 
     // initialise Google Geocoder
     geocoder = new google.maps.Geocoder();
