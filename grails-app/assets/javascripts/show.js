@@ -2,7 +2,6 @@
  * // require jquery
 //= require jquery_i18n
 //= require audiojs/audio.js
-//= require jquery.i18n.properties.js
 //= require charts2.js
 //= require wms2.js
 //= require amplify.js
@@ -34,8 +33,7 @@ $(document).ready(function() {
             mode: 'map',
             async: true,
             cache: true,
-            language: BC_CONF.locale, // default is to use browser specified locale
-            callback: updatei18n
+            language: BC_CONF.locale // default is to use browser specified locale
         });
     }
 

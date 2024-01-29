@@ -18,6 +18,16 @@
 
 // Jquery Document.onLoad equivalent
 $(document).ready(function() {
+    if (typeof BC_CONF != 'undefined' && BC_CONF.hasOwnProperty('contextPath')) {
+        jQuery.i18n.properties({
+            name: 'messages',
+            path: BC_CONF.contextPath + '/messages/i18n/',
+            mode: 'map',
+            async: true,
+            cache: true,
+            language: BC_CONF.locale // default is to use browser specified locale
+        });
+    }
 
     // jQuery.i18n.properties was removed, as it already loaded on the seach page via 'biocache-hubs.js' file
     // which requires jQuery.i18n.properties to be loaded earlier for leaflet plugin. NdR Nov 2018.

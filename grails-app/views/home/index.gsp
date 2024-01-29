@@ -81,6 +81,17 @@
 
     <asset:script type="text/javascript">
         $(document).ready(function() {
+            if (typeof BC_CONF != 'undefined' && BC_CONF.hasOwnProperty('contextPath')) {
+                jQuery.i18n.properties({
+                    name: 'messages',
+                    path: BC_CONF.contextPath + '/messages/i18n/',
+                    mode: 'map',
+                    async: true,
+                    cache: true,
+                    language: BC_CONF.locale // default is to use browser specified locale
+                });
+            }
+
             var mapInit = false;
             $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
                 // console.log("this", $(this).attr('id'));

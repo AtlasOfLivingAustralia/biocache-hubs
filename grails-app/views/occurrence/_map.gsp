@@ -99,14 +99,6 @@
     <a href="#"><g:message code="map.recordpopup" default="View records at this point"/></a>
 </div>
 
-<g:if test="${grailsApplication.config.getProperty('google.apikey')}">
-    <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}"
-            type="text/javascript"></script>
-</g:if>
-<g:else>
-    <script src="https://maps.google.com/maps/api/js" type="text/javascript"></script>
-</g:else>
-
 <asset:script type="text/javascript">
     //var mbAttr = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, imagery &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
 	//var mbUrl = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png';
