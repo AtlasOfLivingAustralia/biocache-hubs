@@ -5,15 +5,8 @@ sudo: false
 branches:
   only:
   - master
-  - data-quality
-  - hotfix
-  - EYA-enhancements
   - develop
-  - /^epic\/.*\/develop$/
-  - /^release\/.*$/
-  - /^hotfix\/.*$/
-  - /^feature\/.*$/
-  - /^bug\/.*$/
+  - grails6
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
