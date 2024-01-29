@@ -213,7 +213,7 @@
 <g:if test="${record.raw.occurrence.userId}">
     <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="userId" fieldNameIsMsgCode="true" fieldName="User ID">
         <!-- ${fieldsMap.put("userId", true)} -->
-        <alatag:getLinkForUserId userName="${record.alaUserName}" userId="${record.raw.occurrence.userId}" dataResourceUid="${record.raw.attribution.dataResourceUid}" occurrenceId="${record.raw.occurrence.occurrenceID}"/>
+        <alatag:getLinkForUserId userName="${record.alaUserName ?: record.raw.occurrence.recordedBy}" userId="${record.raw.occurrence.userId}" dataResourceUid="${record.raw.attribution.dataResourceUid}" occurrenceId="${record.raw.occurrence.occurrenceID}"/>
     </alatag:occurrenceTableRow>
 </g:if>
 <!-- Record Number -->
