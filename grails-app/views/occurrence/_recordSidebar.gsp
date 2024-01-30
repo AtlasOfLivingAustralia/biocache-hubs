@@ -340,7 +340,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="loginOrFlagLabel"><g:message code="show.loginorflag.title" default="Flag an issue"/></h3>
+                <h3 id="loginOrFlagLabel"><g:message code="show.loginorflag.title" default="Flag an issue"/>
+                    <a href="${grailsApplication.config.getProperty('help.flagIssueUrl')}" target="_blank" style="font-size: 14px;margin-left: 10px;">
+                        <i class="glyphicon glyphicon-question-sign"></i>
+                    </a>
+                </h3>
             </div>
             <div class="modal-body">
                 <g:if test="${!userId}">
