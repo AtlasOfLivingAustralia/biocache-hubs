@@ -37,6 +37,27 @@ $(document).ready(function() {
         });
     }
 
+    // jQuery.i18n.properties is required now, wait a bit
+    setTimeout(function () {
+        init()
+    }, 50)
+
+}); // end JQuery document ready
+
+function init() {
+    // check for i18n
+    var i = 0;
+    $.each(jQuery.i18n.map, function() { i++ });
+    if (i < 100) {  // wait for at least 100 elements in this map
+        // wait longer for i18n
+        setTimeout(function () {
+            init()
+        }, 50)
+        return
+    }
+
+    leafletI18n();
+
     $('#showUncheckedTests').on('click', function(e){
         $('.uncheckTestResult').toggle();
     });
@@ -270,7 +291,7 @@ $(document).ready(function() {
     // bind to form "close" button TODO
     $("input#close").on("click", function(e) {
         // close the popup
-    //    $.fancybox.close();
+        //    $.fancybox.close();
         // reset form back to default state
         $('form#issueForm')[0].reset();
         $("#submitSuccess").html("");
@@ -438,7 +459,7 @@ $(document).ready(function() {
 
     });
 
-}); // end JQuery document ready
+}
 
 /**
  * Delete a user assertion

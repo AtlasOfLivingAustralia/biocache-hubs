@@ -44,21 +44,6 @@
             autocompleteUrl: "${grailsApplication.config.getProperty('skin.useAlaBie', Boolean) ? (grailsApplication.config.getProperty('bieService.baseUrl') + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
             autocompleteUseBie: ${grailsApplication.config.getProperty('skin.useAlaBie', Boolean, false)}
         }
-        /* Load Spring i18n messages into JS
-         */
-        jQuery.i18n.properties({
-            cache: true,
-            async: true,
-            name: 'messages',
-            path: BC_CONF.contextPath + '/messages/i18n/',
-            mode: 'map',
-            language: BC_CONF.locale
-        });
-
-        $(document).ready(function() {
-            // Init BS tooltip
-            $('[data-toggle="tooltip"]').tooltip({ html: true, placement: 'right', container: '#content' });
-        });
     </script>
 
 
@@ -91,6 +76,31 @@
                     language: BC_CONF.locale // default is to use browser specified locale
                 });
             }
+
+            // jQuery.i18n.properties is required now, wait a bit
+            setTimeout(function () {
+                init()
+            }, 50)
+
+
+        }); // end $(document).ready()
+
+        function init() {
+            // check for i18n
+            var i = 0;
+            $.each(jQuery.i18n.map, function() { i++ });
+            if (i < 100) {  // wait for at least 100 elements in this map
+                // wait longer for i18n
+                setTimeout(function () {
+                    init()
+                }, 50)
+                return
+            }
+
+            leafletI18n();
+
+            // Init BS tooltip
+            $('[data-toggle="tooltip"]').tooltip({ html: true, placement: 'right', container: '#content' });
 
             var mapInit = false;
             $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
@@ -146,8 +156,7 @@
                     alert("Please paste a valid WKT string"); // TODO i18n this
                 }
             });
-
-        }); // end $(document).ready()
+        }
 
         // extend tooltip with callback
         var tmp = $.fn.tooltip.Constructor.prototype.show;
@@ -216,6 +225,9 @@
 //                }
             });
 
+            MAP_VAR.layers = {}
+            MAP_VAR.layerIdCounter = 0
+
             //add edit drawing toolbar
             // Initialise the FeatureGroup to store editable layers
             MAP_VAR.drawnItems = new L.FeatureGroup();
@@ -256,6 +268,13 @@
             MAP_VAR.map.on('draw:created', function(e) {
                 //setup onclick event for this object
                 var layer = e.layer;
+
+                // track layers
+                if (layer._local_id === undefined) {
+                    layer._local_id = MAP_VAR.layerIdCounter++
+                    MAP_VAR.layers[layer._local_id] = layer;
+                }
+
                 //console.log("layer",layer, layer._latlng.lat);
                 generatePopup(layer, layer._latlng);
                 addClickEventForVector(layer);
@@ -293,23 +312,20 @@
             });
 
             // Hide help tooltip on first click event
-            var once = true;
             MAP_VAR.map.on('click', function(e) {
-                if (once) {
-                    $('.leaflet-draw-toolbar').tooltip('destroy');
-                    once = false;
-                }
+                destroyHelpTooltip()
             });
         }
 
         var once = true;
         function destroyHelpTooltip() {
             if ($('.leaflet-draw-toolbar').length && once) {
-                $('.leaflet-draw-toolbar').tooltip('destroy');
+                // workaround for the .tooltip('destroy') exception
+                $('.leaflet-draw-section .tooltip').remove()
+                $('.leaflet-draw-toolbar-top').attr('data-original-title', null)
                 once = false;
             }
         }
-
     </asset:script>
 </head>
 

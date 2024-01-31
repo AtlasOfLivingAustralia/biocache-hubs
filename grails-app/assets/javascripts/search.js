@@ -29,10 +29,26 @@ $(document).ready(function() {
         });
     }
 
-    // jQuery.i18n.properties was removed, as it already loaded on the seach page via 'biocache-hubs.js' file
-    // which requires jQuery.i18n.properties to be loaded earlier for leaflet plugin. NdR Nov 2018.
+    // jQuery.i18n.properties is required now, wait a bit
+    setTimeout(function () {
+        init()
+    }, 50)
+}); // end JQuery document ready
 
-    //alert("doc is loaded");
+function init() {
+    // check for i18n
+    var i = 0;
+    $.each(jQuery.i18n.map, function() { i++ });
+    if (i < 100) {  // wait for at least 100 elements in this map
+        // wait longer for i18n
+        setTimeout(function () {
+            init()
+        }, 50)
+        return
+    }
+
+    leafletI18n();
+
     // listeners for sort & paging widgets
     var excludeCounts = {};
     $.get(BC_CONF.excludeCountUrl).done(function(data) {
@@ -341,24 +357,24 @@ $(document).ready(function() {
         e.preventDefault();
         window.location.href = BC_CONF.contextPath + "/occurrences/" + $(this).attr("id");
     }).hover(function(){
-            // mouse in
-            $(this).css('cursor','pointer');
-            $(this).css('background-color','#FFF');
-        }, function() {
-            // mouse out
-            $(this).css('cursor','default');
-            $(this).css('background-color','transparent');
+        // mouse in
+        $(this).css('cursor','pointer');
+        $(this).css('background-color','#FFF');
+    }, function() {
+        // mouse out
+        $(this).css('cursor','default');
+        $(this).css('background-color','transparent');
     });
 
     $('.multipleFacetsLink').click(function() {
         var link = this;
         var facetName = link.id.
-            replace("multi-", "").
-            replace("_guid", "").
-            replace("_uid", "_name").
-            replace("data_resource_name", "data_resource_uid").
-            replace("data_provider_name", "data_provider_uid").
-            replace("species_list_name", "species_list_uid").
+        replace("multi-", "").
+        replace("_guid", "").
+        replace("_uid", "_name").
+        replace("data_resource_name", "data_resource_uid").
+        replace("data_provider_name", "data_provider_uid").
+        replace("species_list_name", "species_list_uid").
             //replace(/(_[id])$/, "$1_RNG").
             replace("occurrence_year", "decade");
 
@@ -1387,7 +1403,7 @@ $(document).ready(function() {
         var flagIssueLink = '<a href="RECORD_URL">record.</a>';
         flagIssueLink = flagIssueLink.replace('RECORD_URL', recordUrl);
         attribution += '<br>' + recordLink +
-                       '<br><br>If this image is incorrectly<br>identified please flag an<br>issue on the ' + flagIssueLink +'<br>';
+            '<br><br>If this image is incorrectly<br>identified please flag an<br>issue on the ' + flagIssueLink +'<br>';
         setDialogSize();
         $('#imageDialog').modal('show');
     });
@@ -1449,7 +1465,7 @@ $(document).ready(function() {
             $(el).addClass('fa-caret-down');
         }
     }
-}); // end JQuery document ready
+}
 
 /**
  * Catch sort drop-down and build GET URL manually

@@ -65,11 +65,6 @@
 
         var BC_CONF = OCC_REC; // For compatibility with common JS components which require BC_CONF
 
-        // Google charts
-        if(!OCC_REC.hasGoogleKey) {
-            google.load('maps', '3.5');
-        }
-        //google.load("visualization", "1", {packages:["corechart"]});
         google.charts.load('current', {'packages':['bar', 'corechart', 'table']});
 
     </script>

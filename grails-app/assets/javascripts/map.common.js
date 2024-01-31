@@ -26,9 +26,12 @@ function addClickEventForVector(layer) {
     MAP_VAR.map[name].enable();
 }
 
-function removeLayer(leaflet_id) {
+function removeLayer(leaflet_id, local_id) {
     if (MAP_VAR.map._layers[leaflet_id] !== undefined) {
         var layer = MAP_VAR.map._layers[leaflet_id];
+        MAP_VAR.map.removeLayer(layer);
+    } else if (MAP_VAR.layers[local_id] !== undefined) {
+        var layer = MAP_VAR.layers[local_id];
         MAP_VAR.map.removeLayer(layer);
     }
 }
@@ -101,12 +104,33 @@ function generatePopup(layer, latlng) {
             "<a id='showOnlyTheseRecords' href='" + BC_CONF.contextPath + "/occurrences/search" +
             params + "'>" + jQuery.i18n.prop("search.map.popup.linkText") + "</a><br>" +
             "<a id='removeArea' href='javascript:void(0)' " +
-            "onclick='removeLayer(\"" + layer._leaflet_id + "\");MAP_VAR.map.closePopup()'>" +
+            "onclick='removeLayer(\"" + layer._leaflet_id + "\",\"" + layer._local_id + "\");MAP_VAR.map.closePopup()'>" +
             jQuery.i18n.prop("search.map.popup.removeText") + "</a>")
         .openOn(MAP_VAR.map);
 
     getSpeciesCountInArea(params);
     getOccurrenceCountInArea(params);
+}
+
+var setLaterCounter = {}
+function setLater(elementId, innerHtml, looping) {
+    if (!looping) {
+        setLaterCounter[elementId] = 0
+    } else {
+        if (++setLaterCounter[elementId] > 10) {
+            // exit loop
+            return
+        }
+    }
+    var element = document.getElementById(elementId)
+    if (element === null || element === undefined) {
+
+        setTimeout(function() {
+            setLater(element, innerHtml, true)
+        }, 300);
+    } else {
+        element.innerHTML = innerHtml
+    }
 }
 
 function getSpeciesCountInArea(params) {
@@ -115,9 +139,9 @@ function getSpeciesCountInArea(params) {
         function( data ) {
             if (data && data.length > 0 && data[0].count !== undefined) {
                 var speciesCount = data[0].count;
-                document.getElementById("speciesCountDiv").innerHTML = speciesCount;
+                setLater('speciesCountDiv', speciesCount)
             } else {
-                document.getElementById("speciesCountDiv").innerHTML = 0;
+                setLater('speciesCountDiv', 0)
             }
         });
 }
@@ -128,13 +152,13 @@ function getOccurrenceCountInArea(params) {
         function( data ) {
             if (data && data.totalRecords !== undefined) {
                 var occurrenceCount = data.totalRecords;
-                document.getElementById("occurrenceCountDiv").innerHTML = occurrenceCount;
+                setLater('occurrenceCountDiv', occurrenceCount)
 
                 if (occurrenceCount == "0") {
                     $("#showOnlyTheseRecords").hide()
                 }
             } else {
-                document.getElementById("occurrenceCountDiv").innerHTML = 0;
+                setLater('occurrenceCountDiv', 0)
             }
         });
 }

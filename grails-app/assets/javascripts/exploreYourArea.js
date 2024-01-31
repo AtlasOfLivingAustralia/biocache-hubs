@@ -59,6 +59,26 @@ $(document).ready(function() {
         });
     }
 
+    // jQuery.i18n.properties is required now, wait a bit
+    setTimeout(function () {
+        init()
+    }, 50)
+}); // end onLoad event
+
+function init() {
+    // check for i18n
+    var i = 0;
+    $.each(jQuery.i18n.map, function() { i++ });
+    if (i < 100) {  // wait for at least 100 elements in this map
+        // wait longer for i18n
+        setTimeout(function () {
+            init()
+        }, 50)
+        return
+    }
+
+    leafletI18n();
+
     // initialise Google Geocoder
     geocoder = new google.maps.Geocoder();
 
@@ -247,8 +267,7 @@ $(document).ready(function() {
             geocodeAddress();
         }
     });
-
-}); // end onLoad event
+}
 
 //var proj900913 = new OpenLayers.Projection("EPSG:900913");
 //var proj4326 = new OpenLayers.Projection("EPSG:4326");
