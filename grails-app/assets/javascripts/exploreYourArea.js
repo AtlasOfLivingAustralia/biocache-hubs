@@ -291,7 +291,7 @@ function loadLeafletMap() {
             subdomains: MAP_VAR.mapMinimalSubdomains
         });
 
-        var baseLayers = {
+        MAP_VAR.baseLayers = {
             "Minimal": defaultBaseLayer,
             "Road":  new L.Google('ROADMAP'),
             //"Terrain": new L.Google('TERRAIN'),
@@ -308,10 +308,21 @@ function loadLeafletMap() {
         updateMarkerPosition(latLng);
 
         // add layer control (layerControl is not a leaflet var)
-        MAP_VAR.layerControl = L.control.layers(baseLayers).addTo(MAP_VAR.map);
+        MAP_VAR.layerControl = L.control.layers(MAP_VAR.baseLayers).addTo(MAP_VAR.map);
 
-        // add the default base layer
-        MAP_VAR.map.addLayer(defaultBaseLayer);
+        MAP_VAR.map.on('baselayerchange', function(event) {
+            $.cookie('map.baseLayer', event.name, { path: '/' })
+        });
+
+        // select the user's preferred base layer
+        var userBaseLayer = $.cookie('map.baseLayer')
+        var baseLayer = MAP_VAR.baseLayers[userBaseLayer]
+        if (baseLayer !== undefined) {
+            //add the default base layer
+            MAP_VAR.map.addLayer(baseLayer);
+        } else {
+            MAP_VAR.map.addLayer(defaultBaseLayer);
+        }
 
         // "locate me" button
         L.easyButton( '<i class="fa fa-location-arrow" data-toggle="tooltip" data-placement="right"></i>', function(e){

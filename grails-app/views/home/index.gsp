@@ -290,13 +290,24 @@
                 });
             });
 
-            //add the default base layer
-            MAP_VAR.map.addLayer(defaultBaseLayer);
-
             L.control.coordinates({position:"bottomright", useLatLngOrder: true}).addTo(MAP_VAR.map); // coordinate plugin
 
             MAP_VAR.layerControl = L.control.layers(MAP_VAR.baseLayers, MAP_VAR.overlays, {collapsed:true, position:'topleft'});
             MAP_VAR.layerControl.addTo(MAP_VAR.map);
+
+            MAP_VAR.map.on('baselayerchange', function(event) {
+                jQuery.cookie('map.baseLayer', event.name, { path: '/' })
+            });
+
+            // select the user's preferred base layer
+            var userBaseLayer = jQuery.cookie('map.baseLayer')
+            var baseLayer = MAP_VAR.baseLayers[userBaseLayer]
+            if (baseLayer !== undefined) {
+                //add the default base layer
+                MAP_VAR.map.addLayer(baseLayer);
+            } else {
+                MAP_VAR.map.addLayer(defaultBaseLayer);
+            }
 
             L.Util.requestAnimFrame(MAP_VAR.map.invalidateSize, MAP_VAR.map, !1, MAP_VAR.map._container);
             L.Browser.any3d = false; // FF bug prevents selects working properly

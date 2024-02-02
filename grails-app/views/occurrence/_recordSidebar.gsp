@@ -183,7 +183,20 @@
                     });
 
                     L.control.layers(baseLayers).addTo(map);
-                    map.addLayer(defaultBaseLayer);
+
+                    map.on('baselayerchange', function(event) {
+                        $.cookie('map.baseLayer', event.name, { path: '/' })
+                    });
+
+                    // select the user's preferred base layer
+                    var userBaseLayer = $.cookie('map.baseLayer')
+                    var baseLayer = baseLayers[userBaseLayer]
+                    if (baseLayer !== undefined) {
+                        //add the default base layer
+                        map.addLayer(baseLayer);
+                    } else {
+                        map.addLayer(defaultBaseLayer);
+                    }
 
                     // Fix for asset pipeline confusing Leaflet WRT to path to images
                     L.Icon.Default.imagePath = "${assetPath(src:'/leaflet/images')}";

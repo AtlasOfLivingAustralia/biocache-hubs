@@ -1,6 +1,7 @@
 
 //= require jquery_migration
 //= require jquery.i18n.properties
+//= require jquery.cookie.js
 
 function leafletI18n() {
     L.drawLocal = {
