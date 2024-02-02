@@ -99,8 +99,8 @@ function generatePopup(layer, latlng) {
 
     L.popup()
         .setLatLng([latlng.lat, latlng.lng])
-        .setContent("species count: <b id='speciesCountDiv'>calculating...</b><br>" +
-            "occurrence count: <b id='occurrenceCountDiv'>calculating...</b><br>" +
+        .setContent(jQuery.i18n.prop("advancedsearch.js.map.common.speciescount") + ": <b id='speciesCountDiv'>calculating...</b><br>" +
+            jQuery.i18n.prop("advancedsearch.js.map.common.occurrencecount") + ": <b id='occurrenceCountDiv'>calculating...</b><br>" +
             "<a id='showOnlyTheseRecords' href='" + BC_CONF.contextPath + "/occurrences/search" +
             params + "'>" + jQuery.i18n.prop("search.map.popup.linkText") + "</a><br>" +
             "<a id='removeArea' href='javascript:void(0)' " +
