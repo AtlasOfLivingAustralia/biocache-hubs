@@ -169,11 +169,6 @@
 
 </alatag:occurrenceTableRow>
 <!-- Identified Date -->
-<alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identifierDate"  fieldNameIsMsgCode="true" fieldName="Identified date">
-    ${fieldsMap.put("identifierDate", true)}
-    ${record.raw.identification.dateIdentified}
-</alatag:occurrenceTableRow>
-<!-- Identified Date -->
 <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="identifierRole"  fieldNameIsMsgCode="true" fieldName="Identifier role">
     ${fieldsMap.put("identifierRole", true)}
     ${record.raw.identification.identifierRole}

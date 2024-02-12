@@ -65,11 +65,6 @@
 
         var BC_CONF = OCC_REC; // For compatibility with common JS components which require BC_CONF
 
-        // Google charts
-        if(!OCC_REC.hasGoogleKey) {
-            google.load('maps', '3.5');
-        }
-        //google.load("visualization", "1", {packages:["corechart"]});
         google.charts.load('current', {'packages':['bar', 'corechart', 'table']});
 
     </script>
@@ -720,7 +715,18 @@
                                     <th style="width:35%;"><g:message code="show.processedvsrawview.table.th04" default="Processed Value"/></th>
                                 </tr>
                                 </thead>
-                                <tbody>
+                            </table>
+                            <table class="table table-bordered table-striped table-condensed"
+                                   style="max-height: calc(100vh - 300px);overflow: auto;display: block;">
+                                <thead style="visibility: collapse;">
+                                <tr>
+                                    <th style="width:15%; padding: 0px;"></th>
+                                    <th style="width:15%; padding: 0px;"></th>
+                                    <th style="width:35%; padding: 0px;"></th>
+                                    <th style="width:35%; padding: 0px;"></th>
+                                </tr>
+                                </thead>
+                                <tbody >
                                     <alatag:formatRawVsProcessed map="${compareRecord}"/>
                                 </tbody>
                             </table>

@@ -183,7 +183,20 @@
                     });
 
                     L.control.layers(baseLayers).addTo(map);
-                    map.addLayer(defaultBaseLayer);
+
+                    map.on('baselayerchange', function(event) {
+                        $.cookie('map.baseLayer', event.name, { path: '/' })
+                    });
+
+                    // select the user's preferred base layer
+                    var userBaseLayer = $.cookie('map.baseLayer')
+                    var baseLayer = baseLayers[userBaseLayer]
+                    if (baseLayer !== undefined) {
+                        //add the default base layer
+                        map.addLayer(baseLayer);
+                    } else {
+                        map.addLayer(defaultBaseLayer);
+                    }
 
                     // Fix for asset pipeline confusing Leaflet WRT to path to images
                     L.Icon.Default.imagePath = "${assetPath(src:'/leaflet/images')}";
@@ -340,7 +353,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="loginOrFlagLabel"><g:message code="show.loginorflag.title" default="Flag an issue"/></h3>
+                <h3 id="loginOrFlagLabel"><g:message code="show.loginorflag.title" default="Flag an issue"/>
+                    <a href="${grailsApplication.config.getProperty('help.flagIssueUrl')}" target="_blank" style="font-size: 14px;margin-left: 10px;">
+                        <i class="glyphicon glyphicon-question-sign"></i>
+                    </a>
+                </h3>
             </div>
             <div class="modal-body">
                 <g:if test="${!userId}">

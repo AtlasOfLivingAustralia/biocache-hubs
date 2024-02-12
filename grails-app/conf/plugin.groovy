@@ -75,6 +75,8 @@ images.baseUrl = "https://images.ala.org.au"
 images.viewerUrl = "https://images.ala.org.au/image/viewer?imageId="
 images.metadataUrl = "https://images.ala.org.au/image/details?imageId="
 
+help.flagIssueUrl = "https://support.ala.org.au/support/solutions/articles/6000262125-flagging-an-issue-with-a-record"
+
 dataResourceUuid.alaSightings = "dr364"
 dataResourceUuid.iNaturalist = "dr1411"
 dataResourceUuid.flickr = "dr360"

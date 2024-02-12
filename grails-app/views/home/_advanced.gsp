@@ -50,21 +50,24 @@
             <select class="institution_uid collection_uid form-control" name="institution_collection" id="institution_collection">
                 <option value=""><g:message code="advancedsearch.table05col01.option01.label" default="-- select an institution or collection --"/></option>
                 <g:each var="inst" in="${request.getAttribute("institution_uid")}">
-                    <optgroup label="${inst.value}">
-                        <option value="${inst.key}"><g:message code="advancedsearch.table05col01.option02.label" default="All records from"/> ${inst.value}</option>
-                        <g:each var="coll" in="${request.getAttribute("collection_uid")}">
-                            <g:if test="${inst.key == 'in13' && StringUtils.startsWith(coll.value, inst.value)}">
-                                <option value="${coll.key}">${StringUtils.replace(StringUtils.replace(coll.value, inst.value, ""), " - " ,"")} <g:message code="advancedsearch.table05col01.option03.label" default="Collection"/></option>
-                            </g:if>
-                            <g:elseif test="${inst.key == 'in6' && StringUtils.startsWith(coll.value, 'Australian National')}">
-                            <%-- <option value="${coll.key}">${fn:replace(coll.value,"Australian National ", "")}</option> --%>
-                                <option value="${coll.key}">${coll.value}</option>
-                            </g:elseif>
-                            <g:elseif test="${StringUtils.startsWith(coll.value, inst.value)}">
-                                <option value="${coll.key}">${StringUtils.replace(coll.value, inst.value, "")}</option>
-                            </g:elseif>
-                        </g:each>
-                    </optgroup>
+                    %{-- Stops 'Not Supplied' institution from being rendered --}%
+                    <g:if test="${inst.key != "*"}">
+                        <optgroup label="${inst.value}">
+                            <option value="${inst.key}"><g:message code="advancedsearch.table05col01.option02.label" default="All records from"/> ${inst.value}</option>
+                            <g:each var="coll" in="${request.getAttribute("collection_uid")}">
+                                <g:if test="${inst.key == 'in13' && StringUtils.startsWith(coll.value, inst.value)}">
+                                    <option value="${coll.key}">${StringUtils.replace(StringUtils.replace(coll.value, inst.value, ""), " - " ,"")} <g:message code="advancedsearch.table05col01.option03.label" default="Collection"/></option>
+                                </g:if>
+                                <g:elseif test="${inst.key == 'in6' && StringUtils.startsWith(coll.value, 'Australian National')}">
+                                <%-- <option value="${coll.key}">${fn:replace(coll.value,"Australian National ", "")}</option> --%>
+                                    <option value="${coll.key}">${coll.value}</option>
+                                </g:elseif>
+                                <g:elseif test="${StringUtils.startsWith(coll.value, inst.value)}">
+                                    <option value="${coll.key}">${StringUtils.replace(coll.value, inst.value, "")}</option>
+                                </g:elseif>
+                            </g:each>
+                        </optgroup>
+                    </g:if>
                 </g:each>
             </select>
         </div>
