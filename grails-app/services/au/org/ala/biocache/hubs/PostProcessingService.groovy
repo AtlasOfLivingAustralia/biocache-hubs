@@ -422,23 +422,12 @@ class PostProcessingService {
         //log.debug "record = ${record as JSON}"
         String stateProvince = ""
         String stateKey = ""
-        Map statesListsPaths = grailsApplication.config.getProperty('stateConservationListPath', Map, [:])
         // conservation list is state based, so first we need to know the state
         modifiedRecord.get("Location")?.each {
             if (it.name == "stateProvince") {
                 stateProvince = it.processed ?: it.raw
                 // converts to camel case, e.g. "new south wales" to "NewSouthWales"
                 stateKey = WordUtils.capitalizeFully(stateProvince).replaceAll("\\s+", "")
-            }
-        }
-        modifiedRecord.get("Occurrence")?.each {
-            if (it.name == "stateConservation" && stateProvince && statesListsPaths.containsKey(stateKey)) {
-                String statusValue = it.processed ?: it.raw
-                List statusValues = statusValue.tokenize(",").unique( false ) // remove duplicate values
-                statusValue = (statusValues.size() == 2) ? statusValues[1] : statusValues.join(", ") // only show 'sourceStatus' if 2 values are present
-
-                String specieslistUrl = "${grailsApplication.config.getProperty('speciesList.baseURL')}${statesListsPaths[stateKey]}"
-                it.processed = "<a href=\"${specieslistUrl}\" target=\"_lists\">${stateProvince}: ${statusValue}</a>"
             }
         }
 
