@@ -747,6 +747,9 @@ class WebServicesService {
                 }
             } catch (Exception e) {
                 log.error "getStates failed to get states of " + countryName + ", error = " + e.getMessage()
+
+                // throw exception so that the bad result is not cached
+                throw e
             }
             matchingStates
         }
