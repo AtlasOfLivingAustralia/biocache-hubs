@@ -26,6 +26,9 @@
             <li><a href="#soundsHeader"><g:message code="show.soundsheader.title" default="Sounds"/></a></li>
         </g:if>
         <li><a href="#userAnnotationsDiv" id="userAnnotationsNav" style="display:none;"><g:message code="show.userannotationsdiv.title" default="User flagged issues"/></a></li>
+        <g:if test="${record.referencedPublications}">
+            <li><a href="#referencedPublications"><g:message code="show.referencedPublications.title" default="Referenced in publications"/> (${record.referencedPublications.size()})</a></li>
+        </g:if>
         <g:if test="${record.systemAssertions && record.processed.attribution.provenance != 'Draft'}">
             <li><a href="#dataQuality"><g:message code="show.dataquality.title" default="Data quality tests"/>
             (${record.systemAssertions.failed?.size()?:0} <i class="fa fa-times-circle tooltips" style="color:red;" title="<g:message code="assertions.failed" default="failed"/>"></i>,
@@ -34,9 +37,6 @@
             ${record.systemAssertions.missing?.size()?:0} <i class="fa fa-question-circle tooltips" style="color:gray;" title="<g:message code="assertions.missing" default="missing"/>"></i>,
             ${record.systemAssertions.unchecked?.size()?:0} <i class="fa fa-ban tooltips" style="color:gray;" title="<g:message code="assertions.unchecked" default="unchecked"/>"></i>)
             </a></li>
-        </g:if>
-        <g:if test="${record.referencedPublications}">
-            <li><a href="#referencedPublications"><g:message code="show.referencedPublications.title" default="Referenced in publications"/> (${record.referencedPublications.size()})</a></li>
         </g:if>
         <g:if test="${record.processed.occurrence.outlierForLayers}">
             <li><a href="#outlierInformation"><g:message code="show.outlierinformation.title" default="Outlier information"/></a></li>
@@ -51,96 +51,6 @@
             <li><a href="#environmentalSampleInfo"><g:message code="show.outlierinformation.02.title02" default="Environmental sampling for this location"/></a></li>
         </g:if>
     </ul>
-    <g:if test="${false && record.processed.attribution.provenance != 'Draft'}">
-        <div class="sidebar">
-            <div id="warnings">
-                <div id="systemAssertionsContainer" <g:if test="${!record.systemAssertions}">style="display:none"</g:if>>
-                    <h3><g:message code="show.systemassertioncontainer.title" default="Data quality tests"/></h3>
-
-                    <span id="systemAssertions">
-                        <li class="failedTestCount">
-                            <g:message code="assertions.failed" default="failed"/>: ${record.systemAssertions.failed?.size()?:0}
-                        </li>
-                        <li class="warningsTestCount">
-                            <g:message code="assertions.warnings" default="warnings"/>: ${record.systemAssertions.warning?.size()?:0}
-                        </li>
-                        <li class="passedTestCount">
-                            <g:message code="assertions.passed" default="passed"/>: ${record.systemAssertions.passed?.size()?:0}
-                        </li>
-                        <li class="missingTestCount">
-                            <g:message code="assertions.missing" default="missing"/>: ${record.systemAssertions.missing?.size()?:0}
-                        </li>
-                        <li class="uncheckedTestCount">
-                            <g:message code="assertions.unchecked" default="unchecked"/>: ${record.systemAssertions.unchecked?.size()?:0}
-                        </li>
-
-                        <li id="dataQualityFurtherDetails">
-                            <i class="icon-hand-right"></i>&nbsp;
-                            <a id="dataQualityReportLink" href="#dataQualityReport">
-                                <g:message code="show.dataqualityreportlink.navigator" default="View full data quality report"/>
-                            </a>
-                        </li>
-
-                        <g:set var="hasExpertDistribution" value="${false}"/>
-                        <g:each var="systemAssertion" in="${record.systemAssertions.failed}">
-                            <g:if test="${systemAssertion.code == 26}">
-                                <g:set var="hasExpertDistribution" value="${true}"/>
-                            </g:if>
-                        </g:each>
-
-                        <g:set var="isDuplicate" value="${false}"/>
-                        <g:if test="${record.processed.occurrence.duplicationStatus}">
-                            <g:set var="isDuplicate" value="${true}"/>
-                        </g:if>
-
-                        <g:if test="${isDuplicate}">
-                            <li><i class="icon-hand-right"></i>&nbsp;
-                                <a id="duplicateLink" href="#inferredOccurrenceDetails">
-                                    <g:message code="show.duplicatelink.navigator" default="Potential duplicate record - view details"/>
-                                </a>
-                            </li>
-                        </g:if>
-
-                        <g:if test="${hasExpertDistribution}">
-                            <li><i class="icon-hand-right"></i>&nbsp;
-                                <a id="expertRangeLink" href="#expertReport">
-                                    <g:message code="show.expertrangelink.navigator" default="Outside expert range - view details"/>
-                                </a>
-                            </li>
-                        </g:if>
-
-                        <g:if test="${record.processed.occurrence.outlierForLayers}">
-                            <li><i class="icon-hand-right"></i>&nbsp;
-                                <a id="outlierReportLink" href="#outlierReport">
-                                    <g:message code="show.outlierreportlink.navigator" default="Environmental outlier - view details"/>
-                                </a>
-                            </li>
-                        </g:if>
-                    </span>
-
-                    <!--<p class="half-padding-bottom">Data validation tools identified the following possible issues:</p>-->
-                    <g:set var="recordIsVerified" value="false"/>
-
-                    <g:each in="${record.userAssertions}" var="userAssertion">
-                        <g:if test="${userAssertion.name == 'userVerified'}"><g:set var="recordIsVerified" value="true"/></g:if>
-                    </g:each>
-                </div>
-
-                <div id="userAssertionsContainer" <g:if test="${!record.userAssertions && !queryAssertions}">style="display:none"</g:if>>
-                    <h3><g:message code="show.userassertionscontainer.title" default="User flagged issues"/></h3>
-                    <ul id="userAssertions">
-                        <!--<p class="half-padding-bottom">Users have highlighted the following possible issues:</p>-->
-                        <alatag:groupedAssertions groupedAssertions="${groupedAssertions}" />
-                    </ul>
-                    <div id="userAssertionsDetailsLink">
-                        <a id="showUserFlaggedIssues" href="#userAnnotations">
-                            <g:message code="show.showuserflaggedissues.navigator" default="View issue list &amp; comments"/>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </g:if>
 
     <g:if test="${record.processed.attribution.provenance && record.processed.attribution.provenance == 'Draft'}">
         <div class="sidebar">
