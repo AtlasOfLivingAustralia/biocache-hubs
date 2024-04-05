@@ -640,11 +640,17 @@ function addAddressToPage(response) {
 var speciesJson
 var globalSortOrder
 var globalOffset
+var currentGroup
+var dataRequest
 
 /**
  * Species group was clicked
  */
 function groupClicked(el) {
+    if (dataRequest) {
+        dataRequest.abort();
+    }
+
     speciesJson = []
 
     // Change the global var speciesGroup
@@ -680,7 +686,7 @@ function groupClicked(el) {
 
     $('#spinnerRow').show();
     $("div#rightList").data("sort", sortField); // save 'sort' value to the DOM
-    $.getJSON(uri, params, function(data) {
+    dataRequest = $.getJSON(uri, params, function(data) {
         $('#spinnerRow').hide();
 
         // global store

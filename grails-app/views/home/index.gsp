@@ -41,7 +41,7 @@
             contextPath: "${request.contextPath}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             queryContext: "${grailsApplication.config.getProperty('biocache.queryContext')}",
-            autocompleteUrl: "${grailsApplication.config.getProperty('skin.useAlaBie', Boolean) ? (grailsApplication.config.getProperty('bieService.baseUrl') + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
+            autocompleteUrl: "${grailsApplication.config.getProperty('skin.useAlaBie', Boolean) ? (grailsApplication.config.getProperty('bieService.baseUrl') + '/search/auto') : biocacheServiceUrl + '/autocomplete/search'}",
             autocompleteUseBie: ${grailsApplication.config.getProperty('skin.useAlaBie', Boolean, false)}
         }
     </script>
