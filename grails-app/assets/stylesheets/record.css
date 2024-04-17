@@ -1,4 +1,4 @@
-/* 
+/*
     Document   : record
     Created on : Feb 16, 2011, 4:40:59 PM
     Author     : "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
@@ -6,7 +6,7 @@
         Purpose of the stylesheet follows.
 */
 
-/* 
+/*
    TODO customize this sample style
    Syntax recommendation http://www.w3.org/TR/REC-CSS2/
 */
@@ -61,7 +61,7 @@ div#occurrenceMap {
 }
 .originalValue {
     padding-left: 12px;
-    font-style: italic; 
+    font-style: italic;
 }
 table.occurrenceTable {
     /*border-bottom: 0px !important;*/
@@ -176,7 +176,8 @@ h1 span#recordId {
 
 #processedVsRawView table {
     width: 100%;
-    /*border: none;*/
+    border: none;
+    border-top: 1px solid #999;
     margin-bottom: 0;
 }
 

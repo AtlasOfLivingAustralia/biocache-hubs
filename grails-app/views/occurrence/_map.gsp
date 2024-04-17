@@ -99,14 +99,6 @@
     <a href="#"><g:message code="map.recordpopup" default="View records at this point"/></a>
 </div>
 
-<g:if test="${grailsApplication.config.getProperty('google.apikey')}">
-    <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}"
-            type="text/javascript"></script>
-</g:if>
-<g:else>
-    <script src="https://maps.google.com/maps/api/js" type="text/javascript"></script>
-</g:else>
-
 <asset:script type="text/javascript">
     //var mbAttr = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, imagery &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
 	//var mbUrl = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png';
@@ -254,9 +246,6 @@
             addClickEventForVector(layer);
         });
 
-        //add the default base layer
-        MAP_VAR.map.addLayer(defaultBaseLayer);
-
         L.control.coordinates({position:"bottomright", useLatLngOrder: true}).addTo(MAP_VAR.map); // coordinate plugin
 
         MAP_VAR.layerControl = L.control.layers(MAP_VAR.baseLayers, MAP_VAR.overlays, {collapsed:true, position:'topleft'});
@@ -269,6 +258,20 @@
 
         L.Util.requestAnimFrame(MAP_VAR.map.invalidateSize, MAP_VAR.map, !1, MAP_VAR.map._container);
         L.Browser.any3d = false; // FF bug prevents selects working properly
+
+        MAP_VAR.map.on('baselayerchange', function(event) {
+            $.cookie('map.baseLayer', event.name, { path: '/' })
+        });
+
+        // select the user's preferred base layer
+        var userBaseLayer = $.cookie('map.baseLayer')
+        var baseLayer = MAP_VAR.baseLayers[userBaseLayer]
+        if (baseLayer !== undefined) {
+            //add the default base layer
+            MAP_VAR.map.addLayer(baseLayer);
+        } else {
+            MAP_VAR.map.addLayer(defaultBaseLayer);
+        }
 
         $('.colour-by-control').click(function(e){
 
@@ -865,10 +868,10 @@
                         <label for="baseMap" class="col-md-5 control-label"><g:message code="map.downloadmap.field09.label" default="Base layer"/></label>
                         <div class="col-md-6">
                             <select name="baseMap" id="baseMap" class="form-control">
-                                <g:each in="${grailsApplication.config.getProperty('mapdownloads.baseMaps')}" var="baseMap">
+                                <g:each in="${grailsApplication.config.getProperty('mapdownloads.baseMaps', Map, [:])}" var="baseMap">
                                     <option value="basemap.${baseMap.value.name}"><g:message code="${baseMap.value.i18nCode}" default="${baseMap.value.displayName}"/></option>
                                 </g:each>
-                                <g:each in="${grailsApplication.config.getProperty('mapdownloads.baseLayers')}" var="baseLayer">
+                                <g:each in="${grailsApplication.config.getProperty('mapdownloads.baseLayers', Map, [:])}" var="baseLayer">
                                     <option value="baselayer.${baseLayer.value.name}"><g:message code="${baseLayer.value.i18nCode}" default="${baseLayer.value.displayName}"/></option>
                                 </g:each>
                             </select>

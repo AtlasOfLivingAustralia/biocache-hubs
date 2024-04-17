@@ -157,6 +157,9 @@
                 </table>
             </div>
             <div id="rightList" class="tableContainer">
+                <div id="spinnerRow" style="position:absolute;margin-top:40px;margin-left:40px">
+                    <span style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></span>
+                </div>
                 <table>
                     <thead class="fixedHeader">
                     <tr>

@@ -80,7 +80,6 @@
         };
 </script>
 
-<asset:javascript src="biocache-hubs.js"/>
 <asset:javascript src="ala/images-client.js"/>
 <asset:javascript src="leafletPlugins.js"/>
 <asset:javascript src="listThirdParty.js"/>
@@ -101,7 +100,7 @@
 <asset:javascript src="autocomplete.js"/>
 <asset:script type="text/javascript">
     <g:if test="${!grailsApplication.config.getProperty('google.apikey')}">
-        google.load('maps','3.5',{ other_params: "sensor=false" });
+        google.load('maps','3.5');
     </g:if>
 </asset:script>
 

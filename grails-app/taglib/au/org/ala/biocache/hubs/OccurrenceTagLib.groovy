@@ -159,6 +159,12 @@ class OccurrenceTagLib {
         out << name
     }
 
+    def paramsHasFilterItem(fq) {
+        def fqList = params.list('fq')
+        def idx = fqList.findIndexOf { it == fq}
+        return idx >= 0
+    }
+
     /**
      * Generate HTML for current filters
      *
@@ -189,13 +195,22 @@ class OccurrenceTagLib {
             fqLabel = fqLabel.replaceAll(facetKey, i18nLabel)
         }
 
-        String hrefValue = currentFilterItemLink(attrs, facetValue)
+        String hrefValue
+        String title
+        String fqHiddenInQidClass
+        if (paramsHasFilterItem(facetValue)) {
+            hrefValue = currentFilterItemLink(attrs, facetValue)
+            title = (attrs.title != null ? "${attrs.title}<br><br>" : "") + alatag.message(code:"title.filter.remove", default:"Click to remove this filter")
+        } else {
+            attrs.addCheckBox = false
+            attrs.addCloseBtn = false
+            fqHiddenInQidClass = "disabled"
+        }
         String color = attrs.cssColor != null ? "color:${attrs.cssColor}" : ""
-        String title = (attrs.title != null ? "${attrs.title}<br><br>" : "") + alatag.message(code:"title.filter.remove", default:"Click to remove this filter")
 
         def mb = new MarkupBuilder(out)
         mb.a(   href: hrefValue,
-                class: "${attrs.cssClass} tooltips activeFilter",
+                class: "${attrs.cssClass} tooltips activeFilter ${fqHiddenInQidClass}",
                 style: color,
                 title: title
             ) {
@@ -247,8 +262,11 @@ class OccurrenceTagLib {
             newFqList = []
         } else {
             def idx = fqList.findIndexOf { it == facet }
-            newFqList = new ArrayList<>(fqList)
-            newFqList.remove(idx)
+            // Some facets are hidden in qids and cannot be removed.
+            if (idx >= 0) {
+                newFqList = new ArrayList<>(fqList)
+                newFqList.remove(idx)
+            }
         }
 
         GrailsParameterMap newParams = params.clone()
@@ -672,12 +690,14 @@ class OccurrenceTagLib {
         def exclude = attrs.exclude?:''
         def output = ""
 
+        def excludeList = exclude.toString().toLowerCase().split(",")
+
         compareRecord.get(group).each { cr ->
             def key = cr.name
             def label = message(code:key, default:"") ?: camelCaseToHuman(text: key) ?: StringUtils.capitalize(key)
 
             // only output fields not already included (by checking fieldsMap Map) && not in excluded list
-            if (!fieldsMap.containsKey(key) && !StringUtils.containsIgnoreCase(exclude, key)) {
+            if (!fieldsMap.containsKey(key) && !excludeList.contains(key.toLowerCase())) {
                 //def mb = new MarkupBuilder(out)
                 def tagBody
 

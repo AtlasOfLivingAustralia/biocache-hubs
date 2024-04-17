@@ -16,6 +16,7 @@ package au.org.ala.biocache.hubs
 
 import groovy.util.logging.Slf4j
 import grails.databinding.converters.ValueConverter
+import org.springframework.core.annotation.Order
 
 import java.text.NumberFormat
 
@@ -26,6 +27,7 @@ import java.text.NumberFormat
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 @Slf4j
+@Order(value = -1)
 class EnglishValueConverter implements ValueConverter {
     NumberFormat fmt
 
