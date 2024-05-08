@@ -147,6 +147,10 @@ alwaysshow.imagetab = false
 
 facets.defaultSelected = "data_resource_uid,taxon_name,year,multimedia"
 
+// User properties are stored by "userdetails" or "biocache".
+// This is required when using AWS Cognito with userdetails (more or less).
+userproperties.provider="userdetails"
+
 mapdownloads {
     baseLayers {
         default_layer {
