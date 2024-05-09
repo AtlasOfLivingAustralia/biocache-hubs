@@ -38,10 +38,13 @@ class UserDataService {
                     url = grailsApplication.config.getProperty('biocache.baseUrl') + '/user/property'
                 }
                 if (url) {
-                    def resp = webService.get( url + "?alaId=${userId}&name=${URLEncoder.encode(grailsApplication.config.getProperty('info.app.name') + '.' + type, "UTF-8")}")
+                    def resp = webService.get( url + "?alaId=${userId}&name=${URLEncoder.encode(grailsApplication.config.getProperty('info.app.name') + '.' + type, "UTF-8")}", [:], ContentType.APPLICATION_JSON, true, false)
 
                     if (resp?.resp && resp?.resp[0]?.value && resp?.resp[0]?.value) {
                         data = JSON.parse(resp?.resp[0]?.value)
+                    } else if (resp?.resp) {
+                        // for the new format
+                        data = resp?.resp
                     }
                 }
             } catch (err) {
