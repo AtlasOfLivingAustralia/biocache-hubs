@@ -702,13 +702,13 @@ class OccurrenceTagLib {
                 def tagBody
 
                 if (cr.processed && cr.raw && cr.processed == cr.raw) {
-                    tagBody = cr.processed
+                    tagBody = pipeWhitespace(cr.processed)
                 } else if (!cr.raw && cr.processed) {
-                    tagBody = cr.processed
+                    tagBody = pipeWhitespace(cr.processed)
                 } else if (cr.raw && !cr.processed) {
-                    tagBody = cr.raw
+                    tagBody = pipeWhitespace(cr.raw)
                 } else {
-                    tagBody = "${cr.processed} <br/><span class='originalValue'>${alatag.message(code:"alatag.supplied.as")} ${cr.raw}</span>"
+                    tagBody = "${pipeWhitespace(cr.processed)} <br/><span class='originalValue'>${alatag.message(code:"alatag.supplied.as")} ${cr.raw}</span>"
                 }
                 output += occurrenceTableRow(annotate:"true", section:"dataset", fieldCode:"${key}", fieldName:"${label}") {
                     tagBody
@@ -716,6 +716,11 @@ class OccurrenceTagLib {
             }
         }
         out << output
+    }
+
+    def pipeWhitespace(str) {
+        // inject whitespace around pipe
+        str.replaceAll("(?<=\\S)\\|(?=\\S)", " | ")
     }
 
     def formatDynamicLabel(str){
@@ -1048,9 +1053,24 @@ class OccurrenceTagLib {
      * @return output sanitized HTML String
      */
     String sanitizeBodyText(String input, Boolean openInNewWindow = true) {
+        // input can be concatenated values, so we need to split it, but only when it is not escaped HTML
+//        if (input.contains("|")) {
+//            String output = ""
+//            String [] inputParts = input.split("\\|")
+//            for (String part : inputParts) {
+//                // retain the separator with whitespace
+//                if (output.size() > 0) {
+//                    output += "&nbsp;|&nbsp;"
+//                }
+//                output += sanitizeBodyText(part.trim(), openInNewWindow)
+//            }
+//            return output
+//        }
+
         // text with HTML tags will be escaped, so first we need to unescape it
         String unescapedHtml =  StringEscapeUtils.unescapeHtml(input)
         // Sanitize the HTML and only allow links with valid URLs, span and br tags
+        log.error(unescapedHtml)
         PolicyFactory policy = new HtmlPolicyBuilder()
                 .allowElements("a")
                 .allowElements("br")
@@ -1065,6 +1085,7 @@ class OccurrenceTagLib {
                 .allowAttributes("id").onElements("span")
                 .toFactory()
         String sanitizedHtml = policy.sanitize(unescapedHtml)
+        log.error(sanitizedHtml)
 
         if (openInNewWindow) {
             // hack to force links to be opened in new window/tab
