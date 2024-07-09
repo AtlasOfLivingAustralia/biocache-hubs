@@ -640,8 +640,8 @@ function addAddressToPage(response) {
 var speciesJson
 var globalSortOrder
 var globalOffset
-var currentGroup
 var dataRequest
+var lastParameters
 
 /**
  * Species group was clicked
@@ -681,11 +681,22 @@ function groupClicked(el) {
         pageSize: -1
     };
 
+    // clone params and speciesGroup
+    var allParameters = $.extend({speciesGroup: speciesGroup}, params)
+
+    // debounce to fix location.hash trigger issue
+    if (lastParameters && JSON.stringify(allParameters) === JSON.stringify(lastParameters)) {
+        return
+    } else {
+        lastParameters = allParameters
+    }
+
     $('#rightList tbody').empty();
     $(".scrollContent").scrollTop(0);
 
     $('#spinnerRow').show();
     $("div#rightList").data("sort", sortField); // save 'sort' value to the DOM
+    var currentGroup = speciesGroup
     dataRequest = $.getJSON(uri, params, function(data) {
         $('#spinnerRow').hide();
 
@@ -696,16 +707,18 @@ function groupClicked(el) {
         sortSpeciesJson()
 
         // process JSON data from request
-        if (data) processSpeciesJsonData(data);
+        if (data) processSpeciesJsonData(data, currentGroup);
     });
 }
 
 /**
  * Process the JSON data from an Species list AJAX request (species in area)
  */
-function processSpeciesJsonData(data) {
+function processSpeciesJsonData(data, currentGroup) {
     var offset = globalOffset
     var pageSize = 50;
+
+    var contents = ""
 
     // process JSON data
     if (data.length > 0) {
@@ -746,7 +759,7 @@ function processSpeciesJsonData(data) {
             // add number of records
             tr = tr + '</td><td class="rightCounts">' + data[i].count + ' </td></tr>';
             // write list item to page
-            $('#rightList tbody').append(tr);
+            contents += tr
         }
 
         $('#loadMoreSpecies').remove();
@@ -754,16 +767,24 @@ function processSpeciesJsonData(data) {
         if (offset + pageSize < data.length) {
             // add load more link
             var sortOrder = $("div#rightList").data("sort") ? $("div#rightList").data("sort") : "index";
-            $('#rightList tbody').append('<tr id="loadMoreSpecies"><td>&nbsp;</td><td colspan="2"><a ' +
-                'data-sort="'+sortOrder+'" data-offset="' + (offset + pageSize) + '">Show more species</a></td></tr>');
+            contents += '<tr id="loadMoreSpecies"><td>&nbsp;</td><td colspan="2"><a ' +
+                'data-sort="'+sortOrder+'" data-offset="' + (offset + pageSize) + '">Show more species</a></td></tr>';
         }
 
         globalOffset += pageSize
     } else {
         // no spceies were found (either via paging or clicking on taxon group
         var text = '<tr><td></td><td colspan="2">[no species found]</td></tr>';
-        $('#rightList tbody').append(text);
+        contents += text;
     }
+
+    // only add to page if the group has not changed
+    if (currentGroup !== undefined && currentGroup !== speciesGroup) {
+        return
+    }
+
+    console.log('setting contents for ' + currentGroup)
+    $('#rightList tbody').append(contents);
 
     // Register clicks for the list of species links so that map changes
     $('#rightList tbody tr').unbind('click.specieslink')
@@ -915,7 +936,8 @@ function loadStateFromHash(encodedHash) {
     if (hashParts.length == 3) {
         bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], null);
     } else if (hashParts.length == 4) {
-        bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], hashParts[3]);
+        // not sure what is going on with the selected species group encoding, but this works
+        bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], decodeURIComponent(decodeURIComponent(hashParts[3])));
     } else {
         attemptGeolocation();
     }
