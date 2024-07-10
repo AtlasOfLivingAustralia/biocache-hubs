@@ -1053,24 +1053,9 @@ class OccurrenceTagLib {
      * @return output sanitized HTML String
      */
     String sanitizeBodyText(String input, Boolean openInNewWindow = true) {
-        // input can be concatenated values, so we need to split it, but only when it is not escaped HTML
-//        if (input.contains("|")) {
-//            String output = ""
-//            String [] inputParts = input.split("\\|")
-//            for (String part : inputParts) {
-//                // retain the separator with whitespace
-//                if (output.size() > 0) {
-//                    output += "&nbsp;|&nbsp;"
-//                }
-//                output += sanitizeBodyText(part.trim(), openInNewWindow)
-//            }
-//            return output
-//        }
-
         // text with HTML tags will be escaped, so first we need to unescape it
         String unescapedHtml =  StringEscapeUtils.unescapeHtml(input)
         // Sanitize the HTML and only allow links with valid URLs, span and br tags
-        log.error(unescapedHtml)
         PolicyFactory policy = new HtmlPolicyBuilder()
                 .allowElements("a")
                 .allowElements("br")
@@ -1085,7 +1070,6 @@ class OccurrenceTagLib {
                 .allowAttributes("id").onElements("span")
                 .toFactory()
         String sanitizedHtml = policy.sanitize(unescapedHtml)
-        log.error(sanitizedHtml)
 
         if (openInNewWindow) {
             // hack to force links to be opened in new window/tab
