@@ -44,7 +44,7 @@ class UserDataService {
                         data = JSON.parse(resp?.resp[0]?.value)
                     } else if (resp?.resp) {
                         // for the new format
-                        data = resp?.resp
+                        data = JSON.parse(resp?.resp.values().first())
                     }
                 }
             } catch (err) {
