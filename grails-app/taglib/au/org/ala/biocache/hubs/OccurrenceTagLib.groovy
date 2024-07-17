@@ -702,13 +702,13 @@ class OccurrenceTagLib {
                 def tagBody
 
                 if (cr.processed && cr.raw && cr.processed == cr.raw) {
-                    tagBody = cr.processed
+                    tagBody = pipeWhitespace(cr.processed)
                 } else if (!cr.raw && cr.processed) {
-                    tagBody = cr.processed
+                    tagBody = pipeWhitespace(cr.processed)
                 } else if (cr.raw && !cr.processed) {
-                    tagBody = cr.raw
+                    tagBody = pipeWhitespace(cr.raw)
                 } else {
-                    tagBody = "${cr.processed} <br/><span class='originalValue'>${alatag.message(code:"alatag.supplied.as")} ${cr.raw}</span>"
+                    tagBody = "${pipeWhitespace(cr.processed)} <br/><span class='originalValue'>${alatag.message(code:"alatag.supplied.as")} ${cr.raw}</span>"
                 }
                 output += occurrenceTableRow(annotate:"true", section:"dataset", fieldCode:"${key}", fieldName:"${label}") {
                     tagBody
@@ -716,6 +716,11 @@ class OccurrenceTagLib {
             }
         }
         out << output
+    }
+
+    def pipeWhitespace(str) {
+        // inject whitespace around pipe
+        str.replaceAll("(?<=\\S)\\|(?=\\S)", " | ")
     }
 
     def formatDynamicLabel(str){

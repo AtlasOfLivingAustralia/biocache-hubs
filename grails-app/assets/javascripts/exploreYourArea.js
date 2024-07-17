@@ -171,7 +171,6 @@ function init() {
         // update map state from URL hash
         loadStateFromHash(encodedHash);
     } else {
-        //console.log("defaultParam not set, geolocating...");
         attemptGeolocation();
     }
 
@@ -183,7 +182,6 @@ function init() {
     // catch the link for "View all records"
     $('#viewAllRecords').on("click", function(e) {
         e.preventDefault();
-        //var params = "q=taxon_name:*|"+$('#latitude').val()+"|"+$('#longitude').val()+"|"+$('#radius').val();
         var params = "q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=spatiallyValid:true";
         if (speciesGroup != "ALL_SPECIES") {
             params += "&fq=species_group:" + speciesGroup;
@@ -192,10 +190,8 @@ function init() {
     });
 
     // catch the link for "Download"
-    // ?searchParams=${sr?.urlParameters?.encodeAsURL()}&targetUri=${(request.forwardURI)}&totalRecords=${sr.totalRecords}
     $('#downloadData').on("click", function(e) {
         e.preventDefault();
-        //var params = "q=taxon_name:*|"+$('#latitude').val()+"|"+$('#longitude').val()+"|"+$('#radius').val();
         var params = "?q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=spatiallyValid:true";
         if (speciesGroup != "ALL_SPECIES") {
             params += "&fq=species_group:" + speciesGroup;
@@ -266,12 +262,8 @@ function init() {
     });
 }
 
-//var proj900913 = new OpenLayers.Projection("EPSG:900913");
-//var proj4326 = new OpenLayers.Projection("EPSG:4326");
-
 // pointer fn
 function initialize() {
-    //loadMap();
     loadLeafletMap();
     loadGroups();
 }
@@ -299,7 +291,6 @@ function loadLeafletMap() {
             center: latLng,
             zoom: MAP_VAR.zoom,
             scrollWheelZoom: false
-            //layerControl: null
         });
 
         updateMarkerPosition(latLng);
@@ -365,7 +356,6 @@ function loadLeafletMap() {
         zIndex: -10
     }
 
-    // console.log("circlProps", circlProps, latLng, radius);
     circle = L.circle(latLng, radius, circlProps).addTo(MAP_VAR.map);
 
     // detect click event and trigger record info popup
@@ -386,9 +376,8 @@ function loadLeafletMap() {
         updateMarkerAddress('Drag ended');
         updateMarkerPosition(newLatLng);
         geocodePosition(newLatLng);
-        //LoadTaxaGroupCounts();
         loadGroups();
-        //loadRecordsLayer();
+
         // adjust map view for new location
         MAP_VAR.map.setView(latLng, MAP_VAR.zoom);
         MAP_VAR.layerControl.removeLayer(marker); // prevent duplicate controls
@@ -412,7 +401,6 @@ function geocodePosition(pos) {
         latLng: gLatLng
     }, function(responses) {
         if (responses && responses.length > 0) {
-            // console.log("geocoded position", responses[0]);
             var address = responses[0].formatted_address;
             updateMarkerAddress(address);
             // update the info window for marker icon
@@ -437,13 +425,11 @@ function updateMarkerAddress(str) {
  * Update the lat & lon hidden input elements
  */
 function updateMarkerPosition(latLng) {
-    // console.log("updateMarkerPosition", latLng, latLng.lat);
     var lat = latLng.lat.toFixed(coordinatePrecision);
     var lng = latLng.lng.toFixed(coordinatePrecision);
     // store values in hidden fields
     $('#latitude').val(lat);
     $('#longitude').val(lng);
-    //console.log("updating hash lat", lat, $('#latitude').val());
     $('#dialog-confirm #rad').html(MAP_VAR.radius);
     MAP_VAR.query = "?q=*%3A*&lat=" + lat + "&lon=" + lng + "&radius=" + MAP_VAR.radius;
 }
@@ -455,10 +441,8 @@ function loadRecordsLayer(retry) {
     if (!MAP_VAR.map && !retry) {
         // in case a callback calls this function before map has initialised
         setTimeout(function() {if (!points || points.length == 0) {loadRecordsLayer(true)}}, 2000);
-        //console.log('retry triggered');
         return;
     } else if (!MAP_VAR.map) {
-        //console.log('retry failed');
         return;
     }
 
@@ -473,7 +457,6 @@ function loadRecordsLayer(retry) {
     }
 
     // URL for GeoJSON web service
-    //var geoJsonUrl = MAP_VAR.biocacheServiceUrl + "/geojson/radius-points";
     var speciesGroupParam = "species_group:" + (speciesGroup == "ALL_SPECIES" ? "*" : speciesGroup);
     var alaParams = jQuery.param({
         q: (taxon) ? "taxon_name:\"" + taxon + "\"" : "*:*",
@@ -484,12 +467,10 @@ function loadRecordsLayer(retry) {
               speciesGroupParam
         ],
         qc: MAP_VAR.queryContext
-        //zoom: (map && map.getZoom()) ? map.getZoom() : 12
     }, true);
 
     // records popups need to know the species group
     MAP_VAR.removeFqs = "&fq=species_group:" + (speciesGroup === "ALL_SPECIES" ? "*" : speciesGroup) + "&fq=taxon_name:" + (taxon ? ("\"" + taxon + "\""): "*");
-    // console.log("alaParams = ", alaParams, speciesGroupParam);
 
     var alaMapUrl = MAP_VAR.biocacheServiceUrl + "/ogc/wms/reflect?" + alaParams;
     var wmsParams = {
@@ -501,13 +482,10 @@ function loadRecordsLayer(retry) {
         outline:"false",
         GRIDDETAIL: 32, // 64 || 32
         ENV: "color:DF4A21;name:circle;size:4;opacity:0.7",
-        //ENV: "colormode:grid;name:square;size:3;opacity:0.7",
         uppercase: true
     };
 
-    //console.log('About to call $.get', map);
     // JQuery AJAX call
-    //$.getJSON(alaMaprUrl, params, loadNewGeoJsonData);
     alaWmsLayer = L.tileLayer.wms(alaMapUrl, wmsParams).addTo(MAP_VAR.map);
     MAP_VAR.layerControl.addOverlay(alaWmsLayer, 'Records');
 
@@ -523,13 +501,8 @@ function loadRecordsLayer(retry) {
 function attemptGeolocation() {
     // HTML5 GeoLocation
     if (navigator && navigator.geolocation) {
-        // console.log("trying to get coords with navigator.geolocation...");  
         function getMyPostion(position) {
-            //alert('coords: '+position.coords.latitude+','+position.coords.longitude);
-            // console.log('geolocation "navigator" request accepted');
-            //$('#mapCanvas').empty();
             updateMarkerPosition(L.latLng(position.coords.latitude, position.coords.longitude));
-            //LoadTaxaGroupCounts();
             initialize();
         }
 
@@ -545,25 +518,15 @@ function attemptGeolocation() {
             initialize();
         }
 
-        // Add message to browser - FF needs this as it is not easy to see
-        //var msg = 'Waiting for confirmation to use your current location (see browser message at top of window)'+
-        //    '<br/><a href="#" onClick="initialize(); return false;">Click here to load map</a>';
-        //$('#mapCanvas').html(msg).css('color','red').css('font-size','14px');
-        //map.remove;
-        //map = null;
         navigator.geolocation.getCurrentPosition(getMyPostion, positionWasDeclined);
-        //console.log("line after navigator.geolocation.getCurrentPosition...");  
+
         // Neither functions gets called for some reason, so I've added a delay to initalize map anyway
         setTimeout(function() {if (!MAP_VAR.map) positionWasDeclined();}, 9000);
     } else if (google.loader && google.loader.ClientLocation) {
         // Google AJAX API fallback GeoLocation
-        // console.log("getting coords using google geolocation", google.loader.ClientLocation);
         updateMarkerPosition(L.latLng(google.loader.ClientLocation.latitude, google.loader.ClientLocation.longitude));
-        //LoadTaxaGroupCounts();
         initialize();
     } else {
-        //alert("Client geolocation failed");
-        //geocodeAddress();
         MAP_VAR.zoom = 12;
         initialize();
     }
@@ -581,14 +544,12 @@ function geocodeAddress(reverseGeocode) {
         var parts = address.split(",");
         var lat = magellan(parts[0].trim()).latitude(); //.toDD();
         var lng = magellan(parts[1].trim()).longitude(); //.toDD();
-        //console.log("magellan", parts, lat, lng);
 
         if (lat && lng) {
             latLng = L.latLng(lat.toDD(), lng.toDD());
             updateMarkerAddress("GPS coordinates: " + lat.toDD() + ", " + lng.toDD());
             updateMarkerPosition(latLng);
             // reload map pin, etc
-            //console.log("geocodeAddress() calling loadRecordsLayer()");
             initialize();
             loadRecordsLayer();
         }
@@ -596,21 +557,16 @@ function geocodeAddress(reverseGeocode) {
     }
 
     if (!latLng && geocoder && address) {
-        //geocoder.getLocations(address, addAddressToPage);
-        // console.log("geocodeAddress with address string");
         geocoder.geocode( {'address': address, region: MAP_VAR.geocodeRegion}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 // geocode was successful
-                //console.log('geocodeAddress results', results);
                 updateMarkerAddress(results[0].formatted_address);
                 var gLatLng = results[0].geometry.location;
-                // console.log("gLatLng", gLatLng.lat(), gLatLng.lng());
                 var latLng = L.latLng(gLatLng.lat(), gLatLng.lng());
                 updateMarkerPosition(latLng);
                 // reload map pin, etc
                 initialize();
                 loadRecordsLayer();
-                //LoadTaxaGroupCounts();
             } else {
                 alert("Geocode was not successful for the following reason: " + status);
             }
@@ -624,7 +580,6 @@ function geocodeAddress(reverseGeocode) {
  * Geocode location via Google Maps API
  */
 function addAddressToPage(response) {
-    //map.clearOverlays();
     if (!response || response.Status.code != 200) {
         alert("Sorry, we were unable to geocode that address");
     } else {
@@ -640,8 +595,8 @@ function addAddressToPage(response) {
 var speciesJson
 var globalSortOrder
 var globalOffset
-var currentGroup
 var dataRequest
+var lastParameters
 
 /**
  * Species group was clicked
@@ -681,11 +636,22 @@ function groupClicked(el) {
         pageSize: -1
     };
 
+    // clone params and speciesGroup
+    var allParameters = $.extend({speciesGroup: speciesGroup}, params)
+
+    // debounce to fix location.hash trigger issue
+    if (lastParameters && JSON.stringify(allParameters) === JSON.stringify(lastParameters)) {
+        return
+    } else {
+        lastParameters = allParameters
+    }
+
     $('#rightList tbody').empty();
     $(".scrollContent").scrollTop(0);
 
     $('#spinnerRow').show();
     $("div#rightList").data("sort", sortField); // save 'sort' value to the DOM
+    var currentGroup = speciesGroup
     dataRequest = $.getJSON(uri, params, function(data) {
         $('#spinnerRow').hide();
 
@@ -696,16 +662,18 @@ function groupClicked(el) {
         sortSpeciesJson()
 
         // process JSON data from request
-        if (data) processSpeciesJsonData(data);
+        if (data) processSpeciesJsonData(data, currentGroup);
     });
 }
 
 /**
  * Process the JSON data from an Species list AJAX request (species in area)
  */
-function processSpeciesJsonData(data) {
+function processSpeciesJsonData(data, currentGroup) {
     var offset = globalOffset
     var pageSize = 50;
+
+    var contents = ""
 
     // process JSON data
     if (data.length > 0) {
@@ -746,7 +714,7 @@ function processSpeciesJsonData(data) {
             // add number of records
             tr = tr + '</td><td class="rightCounts">' + data[i].count + ' </td></tr>';
             // write list item to page
-            $('#rightList tbody').append(tr);
+            contents += tr
         }
 
         $('#loadMoreSpecies').remove();
@@ -754,16 +722,23 @@ function processSpeciesJsonData(data) {
         if (offset + pageSize < data.length) {
             // add load more link
             var sortOrder = $("div#rightList").data("sort") ? $("div#rightList").data("sort") : "index";
-            $('#rightList tbody').append('<tr id="loadMoreSpecies"><td>&nbsp;</td><td colspan="2"><a ' +
-                'data-sort="'+sortOrder+'" data-offset="' + (offset + pageSize) + '">Show more species</a></td></tr>');
+            contents += '<tr id="loadMoreSpecies"><td>&nbsp;</td><td colspan="2"><a ' +
+                'data-sort="'+sortOrder+'" data-offset="' + (offset + pageSize) + '">Show more species</a></td></tr>';
         }
 
         globalOffset += pageSize
     } else {
         // no spceies were found (either via paging or clicking on taxon group
         var text = '<tr><td></td><td colspan="2">[no species found]</td></tr>';
-        $('#rightList tbody').append(text);
+        contents += text;
     }
+
+    // only add to page if the group has not changed
+    if (currentGroup !== undefined && currentGroup !== speciesGroup) {
+        return
+    }
+
+    $('#rightList tbody').append(contents);
 
     // Register clicks for the list of species links so that map changes
     $('#rightList tbody tr').unbind('click.specieslink')
@@ -851,7 +826,6 @@ function sortSpeciesJson() {
 function loadGroups() {
     var url = MAP_VAR.biocacheServiceUrl +"/explore/groups";
     var params = {
-        //"group": $(this).attr('title'),
         lat: $('#latitude').val(),
         lon: $('#longitude').val(),
         radius: $('#radius').val(),
@@ -890,14 +864,13 @@ function populateSpeciesGroups(data) {
         if (group == "ALL_SPECIES") label = "all.species";
         var rc = (group == speciesGroup) ? " class='activeRow'" : ""; // highlight active group
         var i18nLabel = jQuery.i18n.prop(label);
-        // console.log("i18n check", label, i18nLabel);
+
         var h = "<tr"+rc+" title='click to view group on map'><td class='indent"+indent+"'><a href='#' id='"+group+"' class='taxonBrowse' title='click to view group on map'>"+i18nLabel+"</a></td><td>"+count+"</td></tr>";
         $("#taxa-level-0 tbody").append(h);
     }
 }
 
 function bookmarkedSearch(lat, lng, zoom1, group) {
-    // console.log("bookmarkedSearch", lat, lng, zoom1, group);
     MAP_VAR.radius = radiusForZoom[zoom1];  // set global var
     MAP_VAR.zoom = parseInt(zoom1);
     $('select#radius').val(MAP_VAR.radius); // update drop-down widget
@@ -915,7 +888,8 @@ function loadStateFromHash(encodedHash) {
     if (hashParts.length == 3) {
         bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], null);
     } else if (hashParts.length == 4) {
-        bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], hashParts[3]);
+        // not sure what is going on with the selected species group encoding, but this works
+        bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], decodeURIComponent(decodeURIComponent(hashParts[3])));
     } else {
         attemptGeolocation();
     }
