@@ -602,10 +602,6 @@ var lastParameters
  * Species group was clicked
  */
 function groupClicked(el) {
-    if (dataRequest) {
-        dataRequest.abort();
-    }
-
     speciesJson = []
 
     // Change the global var speciesGroup
@@ -652,6 +648,10 @@ function groupClicked(el) {
     $('#spinnerRow').show();
     $("div#rightList").data("sort", sortField); // save 'sort' value to the DOM
     var currentGroup = speciesGroup
+
+    if (dataRequest) {
+        dataRequest.abort();
+    }
     dataRequest = $.getJSON(uri, params, function(data) {
         $('#spinnerRow').hide();
 
