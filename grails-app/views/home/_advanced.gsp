@@ -221,7 +221,7 @@
         </div>
     </div>
 
-    <g:if test="grailsApplication.config.getProperty('advancedSearchShowHabitat', Boolean, false)}">
+    <g:if test="${grailsApplication.config.getProperty('advancedSearchShowHabitat', Boolean, false)}">
         <div class="form-group">
             <label class="col-md-2 control-label" for="habitat"><g:message code="advancedsearch.table11col01.title" default="Habitat"/></label>
 
