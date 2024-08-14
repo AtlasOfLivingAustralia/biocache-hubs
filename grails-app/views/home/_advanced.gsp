@@ -163,8 +163,8 @@
         </div>
     </g:if>
 
-    <g:if test="${request.getAttribute("collector_text") && request.getAttribute("collector_text").size() > 1}">
-        <div class="form-group">
+    <g:if test="${request.getAttribute('collector_text') || grailsApplication.config.getProperty('advancedSearchShowCollector', Boolean, false)}">
+       <div class="form-group">
             <label class="col-md-2 control-label" for="collector_text"><g:message code="advancedsearch.collector_text.title" default="Collector"/></label>
             <div class="col-md-6">
                 <input type="text" name="collector_text" id="collector_text" class="dataset form-control" placeholder="" value=""/>
@@ -220,6 +220,16 @@
             <span class="small"><g:message code="advancedsearch.table10col02.des" default="(YYYY-MM-DD) leave blank for most recent record date"/> </span>
         </div>
     </div>
+
+    <g:if test="${grailsApplication.config.getProperty('advancedSearchShowHabitat', Boolean, false)}">
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="habitat"><g:message code="advancedsearch.table11col01.title" default="Habitat"/></label>
+
+            <div class="col-md-6">
+                <input type="text" name="habitat" id="habitat" class="dataset form-control" placeholder="" value=""/>
+            </div>
+        </div>
+    </g:if>
 
     <input type="submit" value="<g:message code="advancedsearch.button.submit" default="Search"/>" class="btn btn-primary" />
     &nbsp;&nbsp;
