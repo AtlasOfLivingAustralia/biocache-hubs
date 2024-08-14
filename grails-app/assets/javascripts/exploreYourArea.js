@@ -87,7 +87,7 @@ function init() {
     // Register events for the species_group column
     $('#taxa-level-0').on("mouseover mouseout", "tbody tr",  function() {
         // mouse hover on groups
-        if ( event.type == "mouseover" ) {
+        if ( event.type === "mouseover" ) {
             $(this).addClass('hoverRow');
         } else {
             $(this).removeClass('hoverRow');
@@ -146,19 +146,19 @@ function init() {
         var radiusInMetres = $.url().param('radius') * 1000; // assume radius is in km (SOLR radius param)
         var radius = zoomForRadius[radiusInMetres];
         var species_group;
-        var fqs = $.url().param('fq'); // can be array or string
+        var fqs = $.url().param('fq'); // can be an array or string
 
         if (Array.isArray(fqs)) {
             // multiple fq params
             fqs.forEach(function(fq) {
                 var parts = fq.split(":"); // e.g. speciesGroup:Insects
-                if (parts[0] == "species_group") {
+                if (parts[0] === "species_group") {
                     species_group = parts[1];
                 }
             });
         } else if (fqs) {
             var parts = fqs.split(":");
-            if (parts[0] == "species_group") {
+            if (parts[0] === "species_group") {
                 species_group = parts[1];
             }
         }
@@ -183,7 +183,7 @@ function init() {
     $('#viewAllRecords').on("click", function(e) {
         e.preventDefault();
         var params = "q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=spatiallyValid:true";
-        if (speciesGroup != "ALL_SPECIES") {
+        if (speciesGroup !== "ALL_SPECIES") {
             params += "&fq=species_group:" + speciesGroup;
         }
         document.location.href = MAP_VAR.contextPath +'/occurrences/search?' + params;
@@ -193,7 +193,7 @@ function init() {
     $('#downloadData').on("click", function(e) {
         e.preventDefault();
         var params = "?q=*:*&lat="+$('#latitude').val()+"&lon="+$('#longitude').val()+"&radius="+$('#radius').val()+"&fq=spatiallyValid:true";
-        if (speciesGroup != "ALL_SPECIES") {
+        if (speciesGroup !== "ALL_SPECIES") {
             params += "&fq=species_group:" + speciesGroup;
         }
         var searchParams = encodeURIComponent(params);
@@ -255,7 +255,7 @@ function init() {
 
     // Catch enter key press on form
     $("#searchForm").bind("keypress", function(e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             e.preventDefault();
             geocodeAddress();
         }
@@ -345,7 +345,7 @@ function loadLeafletMap() {
 
     // Add a Circle overlay to the map.
     radius = parseInt($('select#radius').val()) * 1010;
-    var circlProps = {
+    var circleProps = {
         //radius: radius, leaflet 1+ uses this syntax
         stroke: true,
         weight: 2,
@@ -356,7 +356,7 @@ function loadLeafletMap() {
         zIndex: -10
     }
 
-    circle = L.circle(latLng, radius, circlProps).addTo(MAP_VAR.map);
+    circle = L.circle(latLng, radius, circleProps).addTo(MAP_VAR.map);
 
     // detect click event and trigger record info popup
     circle.on("click", function (event) {
@@ -371,8 +371,8 @@ function loadLeafletMap() {
         var newLatLng = L.latLng(lat, lon);
         MAP_VAR.map.panTo({lon:lon,lat:lat})
         MAP_VAR.map.removeLayer(circle);
-        circlProps.radius = radius;
-        circle = L.circle([lat, lon], radius, circlProps).addTo(MAP_VAR.map);
+        circleProps.radius = radius;
+        circle = L.circle([lat, lon], radius, circleProps).addTo(MAP_VAR.map);
         updateMarkerAddress('Drag ended');
         updateMarkerPosition(newLatLng);
         geocodePosition(newLatLng);
@@ -395,7 +395,7 @@ function loadLeafletMap() {
  * Google geocode function
  */
 function geocodePosition(pos) {
-    var gLatLng = new google.maps.LatLng(pos.lat, pos.lng); // convert leaflet Latlng to Google Latlng
+    var gLatLng = new google.maps.LatLng(pos.lat, pos.lng); // convert leaflet LatLng to Google LatLng
 
     geocoder.geocode({
         latLng: gLatLng
@@ -440,7 +440,7 @@ function updateMarkerPosition(latLng) {
 function loadRecordsLayer(retry) {
     if (!MAP_VAR.map && !retry) {
         // in case a callback calls this function before map has initialised
-        setTimeout(function() {if (!points || points.length == 0) {loadRecordsLayer(true)}}, 2000);
+        setTimeout(function() {if (!points || points.length === 0) {loadRecordsLayer(true)}}, 2000);
         return;
     } else if (!MAP_VAR.map) {
         return;
@@ -457,7 +457,7 @@ function loadRecordsLayer(retry) {
     }
 
     // URL for GeoJSON web service
-    var speciesGroupParam = "species_group:" + (speciesGroup == "ALL_SPECIES" ? "*" : speciesGroup);
+    var speciesGroupParam = "species_group:" + (speciesGroup === "ALL_SPECIES" ? "*" : speciesGroup);
     var alaParams = jQuery.param({
         q: (taxon) ? "taxon_name:\"" + taxon + "\"" : "*:*",
         lat: $('#latitude').val(),
@@ -490,7 +490,7 @@ function loadRecordsLayer(retry) {
     MAP_VAR.layerControl.addOverlay(alaWmsLayer, 'Records');
 
     alaWmsLayer.on('tileload', function(te){
-        // populate points array so we can tell if data is loaded - legacy from geoJson version
+        // populate points array, so we can tell if data is loaded - legacy from geoJson version
         points.push(te.url);
     });
 }
@@ -501,7 +501,7 @@ function loadRecordsLayer(retry) {
 function attemptGeolocation() {
     // HTML5 GeoLocation
     if (navigator && navigator.geolocation) {
-        function getMyPostion(position) {
+        function getMyPosition(position) {
             updateMarkerPosition(L.latLng(position.coords.latitude, position.coords.longitude));
             initialize();
         }
@@ -518,9 +518,9 @@ function attemptGeolocation() {
             initialize();
         }
 
-        navigator.geolocation.getCurrentPosition(getMyPostion, positionWasDeclined);
+        navigator.geolocation.getCurrentPosition(getMyPosition, positionWasDeclined);
 
-        // Neither functions gets called for some reason, so I've added a delay to initalize map anyway
+        // Neither functions gets called for some reason, so I've added a delay to initialize map anyway
         setTimeout(function() {if (!MAP_VAR.map) positionWasDeclined();}, 9000);
     } else if (google.loader && google.loader.ClientLocation) {
         // Google AJAX API fallback GeoLocation
@@ -558,7 +558,7 @@ function geocodeAddress(reverseGeocode) {
 
     if (!latLng && geocoder && address) {
         geocoder.geocode( {'address': address, region: MAP_VAR.geocodeRegion}, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
+            if (status === google.maps.GeocoderStatus.OK) {
                 // geocode was successful
                 updateMarkerAddress(results[0].formatted_address);
                 var gLatLng = results[0].geometry.location;
@@ -580,13 +580,13 @@ function geocodeAddress(reverseGeocode) {
  * Geocode location via Google Maps API
  */
 function addAddressToPage(response) {
-    if (!response || response.Status.code != 200) {
+    if (!response || response.Status.code !== 200) {
         alert("Sorry, we were unable to geocode that address");
     } else {
         var location = response.Placemark[0];
         var lat = location.Point.coordinates[1]
         var lon = location.Point.coordinates[0];
-        var locationStr = response.Placemark[0].address;
+        var locationStr = location.address;
         updateMarkerAddress(locationStr);
         updateMarkerPosition(L.latLng(lat, lon));
     }
@@ -602,7 +602,6 @@ var lastParameters
  * Species group was clicked
  */
 function groupClicked(el) {
-    speciesJson = []
 
     // Change the global var speciesGroup
     speciesGroup = $(el).find('a.taxonBrowse').attr('id');
@@ -612,7 +611,7 @@ function groupClicked(el) {
     $(el).addClass("activeRow");
     $('#taxa-level-1 tbody tr').addClass("activeRow");
     // update records page link text
-    if (speciesGroup == "ALL_SPECIES") {
+    if (speciesGroup === "ALL_SPECIES") {
         $("#recordsGroupText").text("all");
     } else {
         $("#recordsGroupText").text("selected");
@@ -640,6 +639,7 @@ function groupClicked(el) {
         return
     } else {
         lastParameters = allParameters
+        speciesJson = [] // flow continues, so clear out old data for AJAX call below
     }
 
     $('#rightList tbody').empty();
@@ -667,7 +667,7 @@ function groupClicked(el) {
 }
 
 /**
- * Process the JSON data from an Species list AJAX request (species in area)
+ * Process the JSON data from a species list AJAX request (species in area)
  */
 function processSpeciesJsonData(data, currentGroup) {
     var offset = globalOffset
@@ -687,25 +687,28 @@ function processSpeciesJsonData(data, currentGroup) {
             var count = i;
             // add count
             var tr = '<tr><td class="speciesIndex">'+(count+1)+'.</td>';
+            const sciName = data[i].name;
+            const commonName = data[i].commonName;
+            const taxonGuid = data[i].guid;
             // add common name
-            if (data[i].commonName) {
-                tr = tr + '<td class="sciName">' + data[i].commonName +'</td>';
+            if (commonName) {
+                tr = tr + '<td class="sciName">' + commonName +'</td>';
             } else {
                 tr = tr + ' <td class="sciName"> [Not supplied] </td>';
             }
             // add scientific name
-            tr = tr + '<td class="sciName"><a id="' + data[i].guid + '" class="taxonBrowse2" title="'+linkTitle+'" href="'+ // id=taxon_name
-                data[i].name+'"><i>'+data[i].name+'</i></a>';
+            tr = tr + '<td class="sciName"><a id="' + taxonGuid + '" class="taxonBrowse2" title="'+linkTitle+'" href="'+ // id=taxon_name
+                sciName+'"><i>'+sciName+'</i></a>';
 
             // add links to species page and occurrence search (inside hidden div)
             if(MAP_VAR.speciesPageUrl) {
                 var speciesInfo = '<div class="speciesInfo">';
-                if (data[i].guid) {
-                    speciesInfo = speciesInfo + '<a class="speciesPageLink" title="' + infoTitle + '" href="' + MAP_VAR.speciesPageUrl + data[i].guid +
+                if (taxonGuid) {
+                    speciesInfo = speciesInfo + '<a class="speciesPageLink" title="' + infoTitle + '" href="' + MAP_VAR.speciesPageUrl + taxonGuid +
                         '"><img src="' + MAP_VAR.imagesUrlPrefix + '/page_white_go.png" alt="species page icon" style="margin-bottom:-3px;" class="no-rounding"/>' +
                         ' species profile</a> | ';
                 }
-                speciesInfo = speciesInfo + '<a href="' + MAP_VAR.contextPath + '/occurrences/search?q=taxon_name:%22' + data[i].name +
+                speciesInfo = speciesInfo + '<a href="' + MAP_VAR.contextPath + '/occurrences/search?q=taxon_name:%22' + sciName +
                     '%22&lat=' + $('input#latitude').val() + '&lon=' + $('input#longitude').val() + '&radius=' + $('select#radius').val() + '" title="' +
                     recsTitle + '"><img src="' + MAP_VAR.imagesUrlPrefix + '/database_go.png" ' +
                     'alt="search list icon" style="margin-bottom:-3px;" class="no-rounding"/> list of records</a></div>';
@@ -728,7 +731,7 @@ function processSpeciesJsonData(data, currentGroup) {
 
         globalOffset += pageSize
     } else {
-        // no spceies were found (either via paging or clicking on taxon group
+        // no species were found (either via paging or clicking on taxon group
         var text = '<tr><td></td><td colspan="2">[no species found]</td></tr>';
         contents += text;
     }
@@ -800,7 +803,7 @@ function processSpeciesJsonData(data, currentGroup) {
 }
 
 function sortSpeciesJson() {
-    if (globalSortOrder == "common") {
+    if (globalSortOrder === "common") {
         speciesJson.sort(function (a,b) {
             if (a.commonName === b.commonName) return 0
 
@@ -809,13 +812,13 @@ function sortSpeciesJson() {
             if (b.commonName === '') return -1
             return (a.commonName < b.commonName ? -1 : 1)
         })
-    } else if (globalSortOrder == "taxa") {
+    } else if (globalSortOrder === "taxa") {
         speciesJson.sort(function (a,b) {
-            return (a.name == b.name) ? 0 : (a.name < b.name ? -1 : 1)
+            return (a.name === b.name) ? 0 : (a.name < b.name ? -1 : 1)
         })
     } else {
         speciesJson.sort(function (a,b) {
-            return (a.count == b.count) ? 0 : (a.count < b.count ? 1 : -1)
+            return (a.count === b.count) ? 0 : (a.count < b.count ? 1 : -1)
         })
     }
 }
@@ -860,14 +863,24 @@ function populateSpeciesGroups(data) {
     }
 
     function addGroupRow(group, count, indent) {
-        var label = group;
-        if (group == "ALL_SPECIES") label = "all.species";
-        var rc = (group == speciesGroup) ? " class='activeRow'" : ""; // highlight active group
+        var label = camelCase(group);
+        if (group === "ALL_SPECIES") label = "all.species";
+        var rc = (group === speciesGroup) ? " class='activeRow'" : ""; // highlight active group
         var i18nLabel = jQuery.i18n.prop(label);
 
-        var h = "<tr"+rc+" title='click to view group on map'><td class='indent"+indent+"'><a href='#' id='"+group+"' class='taxonBrowse' title='click to view group on map'>"+i18nLabel+"</a></td><td>"+count+"</td></tr>";
+        var h = "<tr"+rc+" title='click to view group on map'><td class='indent"+indent+"'><a href='#' id='"+group+"' " +
+            "class='taxonBrowse' title='click to view group on map'>"+i18nLabel+"</a></td><td>"+count+"</td></tr>";
         $("#taxa-level-0 tbody").append(h);
     }
+}
+
+// Function to convert into camel Case
+function camelCase(str) {
+    // Using replace method with regEx
+    const word = str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+        return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    }).replace(/\s+/g, '');
+    return word[0].toUpperCase() + word.substring(1);
 }
 
 function bookmarkedSearch(lat, lng, zoom1, group) {
@@ -885,9 +898,9 @@ function loadStateFromHash(encodedHash) {
     // update map state from URL hash
     // e.g. #-35.2512|149.1630|12|ALL_SPECIES
     var hashParts = encodedHash.split("%7C"); // note escaped version of |
-    if (hashParts.length == 3) {
+    if (hashParts.length === 3) {
         bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], null);
-    } else if (hashParts.length == 4) {
+    } else if (hashParts.length === 4) {
         // not sure what is going on with the selected species group encoding, but this works
         bookmarkedSearch(hashParts[0], hashParts[1], hashParts[2], decodeURIComponent(decodeURIComponent(hashParts[3])));
     } else {
@@ -900,7 +913,7 @@ function getEncodedHash() {
     var hash = window.location.hash.replace( /^#/, '');
     var encodedHash;
 
-    if (hash.indexOf("%7C") != -1) {
+    if (hash.indexOf("%7C") !== -1) {
         // already escaped
         encodedHash = hash;
     } else {
