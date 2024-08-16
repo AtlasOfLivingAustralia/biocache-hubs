@@ -197,8 +197,6 @@
 </div><!-- .row -->
 
 <g:render template="mapPopup"/>
-<g:render template="download"/>
-
 <g:if test="${!grailsApplication.config.getProperty('useDownloadPlugin', Boolean)}">
     <g:render template="download"/>
 </g:if>

@@ -896,7 +896,12 @@ class OccurrenceTagLib {
      * at top of taglib
      */
     def getLoggerReasons = { attrs ->
-        webServicesService.getLoggerReasons()
+        try {
+            return webServicesService.getLoggerReasons()
+        } catch (Exception e) {
+            log.error("Failed to get logger reasons: ${e.message}", e)
+            return [[id: "-1", name: "Error. Failed to retrieve logger reasons codes, see logs for details."]]
+        }
     }
 
     /**
@@ -904,11 +909,15 @@ class OccurrenceTagLib {
      */
     def getSourceId = { attrs ->
         def skin = grailsApplication.config.getProperty('skin.layout')?.toUpperCase()
-        def sources = webServicesService.getLoggerSources()
-        sources.each {
-            if (it.name == skin) {
-                out << it.id
+        try {
+            def sources = webServicesService.getLoggerSources()
+            sources.each {
+                if (it.name == skin) {
+                    out << it.id
+                }
             }
+        } catch (Exception e) {
+            log.error("Failed to get logger sources: ${e.message}", e)
         }
     }
 
