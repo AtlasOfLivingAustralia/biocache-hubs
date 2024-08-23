@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>Page Not Found</title>
-        <meta name="layout" content="${grailsApplication.config.getProperty('skin.name')}">
+        <meta name="layout" content="${grailsApplication.config.getProperty('skin.layout')}">
         <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
     </head>
     <body>
