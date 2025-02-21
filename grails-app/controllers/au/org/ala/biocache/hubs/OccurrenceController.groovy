@@ -483,7 +483,7 @@ class OccurrenceController {
             flash.message = "${ex.message}"
 
             if (ex.getMessage() && ex.getMessage().contains("HTTP 404")) {
-                render view: '../notFound'
+                render view: '../occurrenceNotFound'
             } else {
                 render view: '../error'
             }
