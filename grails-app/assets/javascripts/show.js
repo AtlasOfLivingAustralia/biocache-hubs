@@ -459,6 +459,19 @@ function init() {
 
     });
 
+    $('#issueFormSubmit').click(function(event) {
+        var comment = $('#issueComment').val().trim();
+        if (comment === '') {
+            event.preventDefault();
+
+            $('#issueComment').css('border', '2px solid red');
+
+            alert(jQuery.i18n.prop('show.issueform.label02.mandatory'));
+        } else {
+            $('#issueComment').css('border', '');
+        }
+    });
+
 }
 
 /**
