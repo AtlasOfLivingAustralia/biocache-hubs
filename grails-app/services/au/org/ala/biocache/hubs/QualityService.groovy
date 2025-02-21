@@ -87,6 +87,7 @@ class QualityService {
 
     }
 
+    @Cacheable(value = 'qualityShortTermCache', key = { profileName })
     List<QualityCategory> findAllEnabledCategories(String profileName) {
         if (dataQualityEnabled) {
             return responseOrThrow(api.findAllEnabledCategories(profileName))
@@ -95,6 +96,7 @@ class QualityService {
         }
     }
 
+    @Cacheable(value = 'qualityShortTermCache', key = { profileName })
     QualityProfile activeProfile(String profileName) {
         if (dataQualityEnabled) {
             return responseOrThrow(api.activeProfile(profileName))
@@ -119,6 +121,7 @@ class QualityService {
         }
     }
 
+    @Cacheable(value = 'qualityShortTermCache', key = { profile.name })
     Map<String, String> getAllInverseCategoryFiltersForProfile(QualityProfile profile) {
         if (dataQualityEnabled) {
             return responseOrThrow(api.getAllInverseCategoryFiltersForProfile(profile.id?.toInteger()))
@@ -127,6 +130,7 @@ class QualityService {
         }
     }
 
+    @Cacheable(value = 'qualityShortTermCache', key = { enabled })
     List<QualityProfile> findAllEnabledProfiles(boolean enabled) {
         if (dataQualityEnabled) {
             return responseOrThrow(dataProfilesApi.dataProfiles(null, null, null, null, enabled, null, null))
@@ -162,7 +166,7 @@ class QualityService {
 
     private Long countRecordsExcludedByLabel(List<String> otherLabels, SpatialSearchRequestParams requestParams) {
         def srp = requestParams.clone().with {
-            it.pageSize = 0
+            it.pageSize = 1 // when it is 0 it will return 20 records
             it.start = 0
             it.flimit = 0
             it.facet = false
@@ -178,7 +182,7 @@ class QualityService {
     Long countTotalRecords(SpatialSearchRequestParams requestParams) {
         if (dataQualityEnabled) {
             def srp = requestParams.clone().with {
-                it.pageSize = 0
+                it.pageSize = 1 // when it is 0 it will return 20 records
                 it.start = 0
                 it.flimit = 0
                 it.facet = false
@@ -205,7 +209,7 @@ class QualityService {
                 def otherLabels = (labels - it.label) as List
                 [(it.label): totalRecords - countRecordsExcludedByLabel(otherLabels, requestParams)]
             }
-            log.error("Quality Category facet counts took {}", sw)
+            log.debug("Quality Category facet counts took {}", sw)
             return response
         } else {
             return [:]
