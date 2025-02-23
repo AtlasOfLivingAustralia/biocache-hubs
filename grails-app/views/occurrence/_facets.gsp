@@ -37,13 +37,13 @@
         <alatag:ifDataQualityEnabled>
             <g:if test="${!searchRequestParams.disableAllQualityFilters && qualityCategories}">
                 <div class="facetGroupName" id="heading_data_quality">
-                    <a href="#" class="showHideFacetGroup" data-name="data_quality"><span class="caret right-caret"></span> <g:message code="quality.filters.group.title" default="Quality filters"/></a>
+                    <a href="#" class="showHideFacetGroup" data-name="data_quality" id="showHideDQFilter"><span class="caret right-caret"></span> <g:message code="quality.filters.group.title" default="Quality filters"/></a>
                 </div>
                 <div class="facetsGroup" id="group_data_quality" style="display:none;">
 
                     <h4><span class="FieldName"><alatag:message code="dq.selectmultiple.categorytable.header.categories" default="Categories" /></span></h4>
-                    <div class="subnavlist nano" style="clear:left">
-                        <ul class="facets nano-content dq-categories">
+                    <div class="subnavlist" style="clear:left">
+                        <ul class="facets dq-categories">
                             <g:each var="qualityCategory" in="${qualityCategories}">
                                 <li>
                                     <g:set var="qcDisabled" value="${searchRequestParams.disableQualityFilter.contains(qualityCategory.label)}" />
@@ -78,7 +78,7 @@
             </g:if>
         </alatag:ifDataQualityEnabled>
         <g:set var="facetMax" value="${10}"/><g:set var="i" value="${1}"/>
-        <g:each var="group" in="${groupedFacets}">
+        <g:each var="group" in="${groupedFacetsRequested}">
             <g:set var="keyCamelCase" value="${group.key.replaceAll(/\s+/,'')}"/>
             <div class="facetGroupName" id="heading_${keyCamelCase}">
                 <a href="#" class="showHideFacetGroup" data-name="${keyCamelCase}"><span class="caret right-caret"></span> <g:message code="facet.group.${group.key}" default="${group.key}"/></a>
@@ -92,16 +92,15 @@
                     <g:if test="${facetResult && ! sr.activeFacetMap?.containsKey(facetResult.fieldName ) }">
                         <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
                         <h4><span class="FieldName">${fieldDisplayName?:facetResult.fieldName}</span></h4>
-                        <div class="subnavlist nano" style="clear:left">
-                            <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}" fieldDisplayName="${fieldDisplayName}"/>
-                        </div>
-                        %{--<div class="fadeout"></div>--}%
-                        <g:if test="${facetResult.fieldResult.length() > 1}">
-                            <div class="showHide">
-                                <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-target="#multipleFacets" data-displayname="${fieldDisplayName}"
-                                   title="<g:message code="search.facets.see.more.options"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span> <g:message code="facets.facetfromgroup.link" default="choose more"/>...</a>
+                        <div class="subnavlist" style="clear:left" id="facet_${facetResult.fieldName}">
+                            <div id="spinner_${facetResult.fieldName}" class="spinner" >
+                                <asset:image src="spinner.gif" id="spinner" class="spinner" alt="spinner icon"/>
                             </div>
-                        </g:if>
+                        </div>
+                        <div class="showHide" id="more_${facetResult.fieldName}" style="display:none">
+                            <a href="#multipleFacets" class="multipleFacetsLink" id="multi-${facetResult.fieldName}" role="button" data-toggle="modal" data-target="#multipleFacets" data-displayname="${fieldDisplayName}"
+                               title="<g:message code="search.facets.see.more.options"/>"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span> <g:message code="facets.facetfromgroup.link" default="choose more"/>...</a>
+                        </div>
                     </g:if>
                 </g:each>
             </div>
@@ -175,12 +174,6 @@
         </div>
     </div>
 </div>
-<asset:script type="text/javascript">
-    var dynamicFacets = new Array();
-    <g:each in="${dynamicFacets}" var="dynamicFacet">
-        dynamicFacets.push('${dynamicFacet.name}');
-    </g:each>
-</asset:script>
 <g:if test="${params.benchmarks}">
     <g:set var="endTime" value="${System.currentTimeMillis()}"/>
     ${alatag.logMsg(msg:"End of facets.gsp - " + endTime + " => " + (endTime - startTime))}

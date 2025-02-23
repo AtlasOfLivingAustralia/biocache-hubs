@@ -1,4 +1,4 @@
-/* 
+/*
     Document   : search
     Created on : Feb 10, 2011, 4:23:15 PM
     Author     : "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
@@ -9,7 +9,7 @@
  *= require_self
 */
 
-/* 
+/*
    TODO customize this sample style
    Syntax recommendation http://www.w3.org/TR/REC-CSS2/
 */
@@ -356,7 +356,7 @@ span.activeFq, span.facet-item {
     vertical-align: top;
     display: inline-block;
     width: 90%;
-    margin-left: -4px;
+    /*margin-left: -4px;*/
     text-indent: 0px;
     /*font-weight: bold;*/
 }
@@ -845,6 +845,8 @@ ul.facets {
     padding-left:0;
     margin-left:0;
     list-style:none;
+    overflow-y: scroll;
+    max-height: 91px;
 }
 
 ul.facets li {

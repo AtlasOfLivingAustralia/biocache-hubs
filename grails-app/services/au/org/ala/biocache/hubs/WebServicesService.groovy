@@ -429,24 +429,6 @@ class WebServicesService {
     }
 
     /**
-     * Get list of dynamic facets for a given query (Sandbox)
-     *
-     * @param query
-     * @return
-     */
-//    List getDynamicFacets(String query) {
-//        def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/upload/dynamicFacets?q=${query}"
-//        JSONArray facets = getJsonElements(url)
-//        def dfs = []
-//        facets.each {
-//            if (it.name && it.displayName) {
-//                dfs.add([name: it.name, displayName: it.displayName])
-//            } // reduce to List of Maps
-//        }
-//        dfs
-//    }
-
-    /**
      * Use HTTP HEAD to determine the file size of a URL (image)
      *
      * @param imageURL
