@@ -724,6 +724,12 @@ function updateVerificationEvents(assertionId) {
     $('#userAnnotation_' + assertionId + ' .verifyAnnotation').off("click");
     $('#userAnnotation_' + assertionId + ' .verifyAnnotation').on("click", function(e){
         e.preventDefault();
+
+        // reset the form on open
+        $("#verifyComment").val("");
+        $("#userAssertionStatusSelection").val("50001");
+        $(".verifyAsk").show();
+        $(".verifyDone").hide();
         $("#verifySpinner").hide();
         updateConfirmVerificationEvents(OCC_REC.recordUuid, assertionId, OCC_REC.userDisplayName);
     });
