@@ -790,14 +790,21 @@
                     </g:link>
                 </p>
                 <p class="comment"></p>
+                <p class="hide issueCode"></p>
+                <p class="hide issueComment"></p>
                 <p class="hide userDisplayName"></p>
                 <p class="created small"></p>
                 <p class="viewMore" style="display:none;">
                    <a class="viewMoreLink" href="#"><g:message code="show.userannotationtemplate.p01.navigator" default="View more with this annotation"/></a>
                 </p>
                 <p class="deleteAnnotation" style="display:block;">
+                    <a class="editAnnotationButton btn btn-danger" href="#">
+                        <g:message code="show.userannotationtemplate.p05.navigator" default="Edit"/>
+                        <span class="editAssertionSubmitProgress" style="display:none;">
+                            <asset:image src="indicator.gif" alt="indicator icon"/>
+                        </span>
+                    </a>
                     <a class="deleteAnnotationButton btn btn-danger" href="#">
-                        <i class="glyphicon glyphicon-remove"> </i> &nbsp;
                         <g:message code="show.userannotationtemplate.p02.navigator" default="Delete this annotation"/>
                         <span class="deleteAssertionSubmitProgress" style="display:none;">
                             <asset:image src="indicator.gif" alt="indicator icon"/>
@@ -838,9 +845,12 @@
                 <td class="created"></td>
                 <td class="deleteVerification">
                     <g:if test="${isCollectionAdmin}">
-                    <a class="deleteVerificationButton btn btn-danger" style="text-align: right" href="#">
-                        <g:message code="show.userannotationtemplate.p04.navigator" default="Delete this verification"/>
-                    </a>
+                        <a class="editVerificationButton btn btn-danger" style="text-align: right" href="#">
+                            <g:message code="show.userannotationtemplate.p06.navigator" default="Edit"/>
+                        </a>
+                        <a class="deleteVerificationButton btn btn-danger" style="text-align: right" href="#">
+                            <g:message code="show.userannotationtemplate.p04.navigator" default="Delete this verification"/>
+                        </a>
                     </g:if>
                 </td>
             </tr>
