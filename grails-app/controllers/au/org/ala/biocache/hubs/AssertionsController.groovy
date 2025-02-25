@@ -53,6 +53,7 @@ class AssertionsController {
         String assertionUuid = params.assertionUuid ?: ""
         String relatedRecordId = params.relatedRecordId ?: ''
         String relatedRecordReason = params.relatedRecordReason ?: ''
+        String updateId = params.updateId ?: ''
         UserDetails userDetails = authService?.userDetails() // will return null if not available/not logged in
 
         if (recordUuid && code && userDetails) {
@@ -66,7 +67,7 @@ class AssertionsController {
             }
 
             log.info("Adding assertion to UUID: ${recordUuid}, code: ${code}, comment: ${comment}, userAssertionStatus: ${userAssertionStatus}, userId: ${userDetails.userId}, userEmail: ${userDetails.email}")
-            Map postResponse = webServicesService.addAssertion(recordUuid, code, comment, userDetails.userId, userDetails.displayName, userAssertionStatus, assertionUuid, relatedRecordId, relatedRecordReason)
+            Map postResponse = webServicesService.addAssertion(recordUuid, code, comment, userDetails.userId, userDetails.displayName, userAssertionStatus, assertionUuid, relatedRecordId, relatedRecordReason, updateId)
 
             if (postResponse.statusCode == 201) {
                 log.info("Called REST service. Assertion should be added")

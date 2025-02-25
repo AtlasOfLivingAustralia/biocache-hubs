@@ -216,7 +216,7 @@ class WebServicesService {
      */
     Map addAssertion(String recordUuid, String code, String comment, String userId, String userDisplayName,
                      String userAssertionStatus, String assertionUuid, String relatedRecordId,
-                     String relatedRecordReason) {
+                     String relatedRecordReason, String updateId) {
         Map postBody = [
                 recordUuid         : recordUuid,
                 code               : code,
@@ -226,7 +226,8 @@ class WebServicesService {
                 relatedRecordId    : relatedRecordId,
                 relatedRecordReason: relatedRecordReason,
                 userId             : userId,
-                userDisplayName    : userDisplayName
+                userDisplayName    : userDisplayName,
+                updateId           : updateId
         ]
 
         postFormData(grailsApplication.config.getProperty('biocache.baseUrl') + "/occurrences/assertions/add", postBody, true, true)
