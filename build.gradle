@@ -12,6 +12,7 @@ plugins {
     id "com.bertramlabs.asset-pipeline"
     id "eclipse"
     id "maven-publish"
+    id "com.gorylenko.gradle-git-properties" version "1.4.17"
 }
 
 repositories {
