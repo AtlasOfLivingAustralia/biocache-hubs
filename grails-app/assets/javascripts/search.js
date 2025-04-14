@@ -2065,8 +2065,8 @@ function loadFacet(facet) {
         var spinnerNode = $('#spinner_' + facet);
         var moreNode = $('#more_' + facet);
         var queryString = getParamList().join('&');
-
-        var url = BC_CONF.biocacheServiceUrl + '/occurrences/search?' + queryString + '&facets=' + facet;
+        var queryContextParam = (BC_CONF.queryContext) ? "&qc=" + BC_CONF.queryContext : "";
+        var url = BC_CONF.biocacheServiceUrl + '/occurrences/search?' + queryString + '&facets=' + facet + queryContextParam;
 
         $.ajax({
             url: url,
