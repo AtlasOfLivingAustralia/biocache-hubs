@@ -1486,6 +1486,9 @@ function getParamList(paramName, paramValue) {
 
     // add query param
     if (q != null) {
+        if (q === '') {
+            q = '*:*';
+        }
         paramList.push("q=" + encodeURIComponent(q));
     }
     // add filter query param
