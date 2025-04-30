@@ -35,6 +35,9 @@ $(document).ready(function() {
     }, 50)
 }); // end JQuery document ready
 
+var inFacetsLoop = false;
+var loadFacetsQueue = [];
+
 function init() {
     // check for i18n
     var i = 0;
@@ -51,21 +54,8 @@ function init() {
 
     // listeners for sort & paging widgets
     var excludeCounts = {};
-    $.get(BC_CONF.excludeCountUrl).done(function(data) {
-        $('.exclude-loader').hide();
-        for (var key in data) {
-            var categoryEnabled = $('.exclude-count-label[data-category='+key+']').data('enabled')
-            data[key] = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : '0';
-            $('.exclude-count-label[data-category='+key+']').text(data[key]).show();
+    var excludeCountsStarted = false;
 
-            if (data[key] === '0') {
-                $('.exclude-count-facet[data-category=' + key + ']').text('(' + data[key] + ')').show();
-            } else {
-                $('.exclude-count-facet[data-category=' + key + ']').text('(-' + data[key] + ')').show();
-            }
-        }
-        excludeCounts = data;
-    });
     $("select#sort").change(function() {
         var val = $("option:selected", this).val();
         reloadWithParam('sort',val);
@@ -366,7 +356,7 @@ function init() {
         replace("data_resource_name", "data_resource_uid").
         replace("data_provider_name", "data_provider_uid").
         replace("species_list_name", "species_list_uid").
-            replace("occurrence_year", "decade");
+        replace("occurrence_year", "decade");
 
         var displayName = $(link).data("displayname");
         loadMoreFacets(facetName, displayName, 'index');
@@ -909,6 +899,7 @@ function init() {
             $(el).addClass('fa-caret-right');
             $.cookie(BC_CONF.expandKey, {expand: false});
         }
+        getExcludedCounts();
     });
 
     // when dlg pops, load and init status, set checkall status
@@ -1328,10 +1319,18 @@ function init() {
         e.preventDefault();
         var name = $(this).data('name');
         $(this).find('span').toggleClass('right-caret');
-        $('#group_' + name).slideToggle(600, function() {
-            if ($('#group_' + name).is(":visible") ) {
-                $('#group_' + name).find(".nano").nanoScroller({ preventPageScrolling: true });
+        var group = $('#group_' + name);
+        group.slideToggle(600, function() {
+            if (group.is(":visible") ) {
                 amplify.store('search-facets-state-' + name, true);
+
+                // load all facets in this group
+                var facets = BC_CONF.groupedFacetsRequested[name];
+                if (facets) { // dq and custom will be undefined
+                    for (facet in facets) {
+                        loadFacet(facets[facet]);
+                    }
+                }
             } else {
                 amplify.store('search-facets-state-' + name, null);
             }
@@ -1342,15 +1341,12 @@ function init() {
     $('.facetsGroup').each(function(i, el) {
         var name = $(el).attr('id').replace(/^group_/, '');
         var wasShown = amplify.store('search-facets-state-' + name);
-        if ($.trim($(el).html()) == '') {
+        if ($.trim($(el).html()) == '' && !BC_CONF.groupedFacetsRequested[name]) {
             $('#heading_' + name).hide();
         } else if (wasShown) {
             $(el).prev().find('a').click();
         }
     });
-
-    // scroll bars on facet values
-    $(".nano").nanoScroller({ preventPageScrolling: true});
 
     // store last search in local storage for a "back button" on record pages
     amplify.store('lastSearch', $.url().attr('relative'));
@@ -1435,14 +1431,45 @@ function init() {
             $(el).removeClass('fa-caret-right');
             $(el).addClass('fa-caret-down');
         }
+
     }
+
+    function getExcludedCounts() {
+        // run only once
+        if (excludeCountsStarted) return;
+        excludeCountsStarted = true;
+
+        $.get(BC_CONF.excludeCountUrl).done(function(data) {
+            $('.exclude-loader').hide();
+            for (var key in data) {
+                var categoryEnabled = $('.exclude-count-label[data-category='+key+']').data('enabled')
+                data[key] = categoryEnabled ? (new Intl.NumberFormat()).format(parseInt(data[key])) : '0';
+                $('.exclude-count-label[data-category='+key+']').text(data[key]).show();
+
+                if (data[key] === '0') {
+                    $('.exclude-count-facet[data-category=' + key + ']').text('(' + data[key] + ')').show();
+                } else {
+                    $('.exclude-count-facet[data-category=' + key + ']').text('(-' + data[key] + ')').show();
+                }
+            }
+            excludeCounts = data;
+        });
+    }
+
+    // get excluded counts if either of the dq sections are open
+    if ($('.dq-filters-collapse').attr('aria-expanded') === 'true' || !$('#group_data_quality').is(':hidden')) {
+        getExcludedCounts();
+    }
+
+    $('#showHideDQFilter').on('click', function() {
+        getExcludedCounts();
+    });
 }
 
-/**
- * Catch sort drop-down and build GET URL manually
- */
-function reloadWithParam(paramName, paramValue) {
-    var paramList = [];
+/** get list of encoded query params, excluding the one provided */
+function getParamList(paramName, paramValue) {
+    var paramList = []
+
     var q = $.url().param('q'); //$.query.get('q')[0];
     var fqList = $.url().param('fq'); //$.query.get('fq');
     var sort = $.url().param('sort');
@@ -1459,7 +1486,10 @@ function reloadWithParam(paramName, paramValue) {
 
     // add query param
     if (q != null) {
-        paramList.push("q=" + q);
+        if (q === '') {
+            q = '*:*';
+        }
+        paramList.push("q=" + encodeURIComponent(q));
     }
     // add filter query param
     if (fqList && typeof fqList === "string") {
@@ -1469,7 +1499,7 @@ function reloadWithParam(paramName, paramValue) {
     }
 
     if (fqList) {
-        paramList.push("fq=" + fqList.join("&fq="));
+        paramList.push("fq=" + fqList.map(encodeURIComponent).join("&fq="));
     }
 
     // add sort/dir/pageSize params if already set (different to default)
@@ -1496,7 +1526,7 @@ function reloadWithParam(paramName, paramValue) {
     }
 
     if (taxa) {
-        paramList.push("taxa=" + taxa);
+        paramList.push("taxa=" + encodeURIComponent(taxa));
     }
 
     if (wkt){
@@ -1520,8 +1550,15 @@ function reloadWithParam(paramName, paramValue) {
         paramList.push('disableAllQualityFilters=' + disableAllQualityFilters);
     }
 
-    //alert("params = "+paramList.join("&"));
-    //alert("url = "+window.location.pathname);
+    return paramList;
+}
+
+/**
+ * Catch sort drop-down and build GET URL manually
+ */
+function reloadWithParam(paramName, paramValue) {
+    var paramList = getParamList(paramName, paramValue);
+
     window.location.href = window.location.pathname + '?' + paramList.join('&');
 }
 
@@ -1529,31 +1566,7 @@ function reloadWithParam(paramName, paramValue) {
  * Load the default charts
  */
 function loadDefaultCharts() {
-    if (dynamicFacets && dynamicFacets.length > 0) {
-        var chartsConfigUri = BC_CONF.biocacheServiceUrl + "/upload/charts/" + BC_CONF.selectedDataResource + ".json";
-        $.getJSON(chartsConfigUri, function (chartsConfig) {
-
-            var conf = {}
-
-            $.each(chartsConfig, function (index, config) {
-                if (config.visible) {
-                    var type = 'bar'
-                    if (config.format == 'pie') type = 'doughnut'
-                    conf[config.field] = {
-                        chartType: type,
-                        emptyValueMsg: '',
-                        hideEmptyValues: true,
-                        title: config.field
-                    }
-                }
-            });
-            chartConfig.charts = conf;
-
-            var charts = ALA.BiocacheCharts('charts', chartConfig);
-        });
-    } else {
-        var charts = ALA.BiocacheCharts('charts', chartConfig);
-    }
+    var charts = ALA.BiocacheCharts('charts', chartConfig);
 }
 
 /**
@@ -1568,8 +1581,8 @@ function loadUserCharts() {
             url: BC_CONF.serverName + "/user/chart",
             success: function(data) {
                 if ($.map(data, function (n, i) {
-                        return i;
-                    }).length > 3) {
+                    return i;
+                }).length > 3) {
                     //do not display user charts by default
                     $.map(data.charts, function (value, key) {
                         value.hideOnce = true;
@@ -1630,68 +1643,68 @@ function loadImagesInTab() {
 
 function loadImages(start) {
 
-        start = (start) ? start : 0;
-        var imagesJsonUri = BC_CONF.biocacheServiceUrl + "/occurrences/search" + BC_CONF.searchString +
-            "&fq=multimedia:Image&facet=false&pageSize=20&start=" + start + "&sort=identification_qualifier_s&dir=asc";
-        $.getJSON(imagesJsonUri, function (data) {
-            if (data.occurrences && data.occurrences.length > 0) {
-                //var htmlUl = "";
-                if (start == 0) {
-                    $("#imagesGrid").html("");
-                }
-                var count = 0;
-                $.each(data.occurrences, function (i, el) {
-                    count++;
-                    var sciNameRawOrMatched = (el.raw_scientificName === undefined? el.scientificName : el.raw_scientificName); //e.g. if data submitted using species ID's instead of scientific names
-                    // clone template div & populate with metadata
-                    var $ImgConTmpl = $('.imgConTmpl').clone();
-                    $ImgConTmpl.removeClass('imgConTmpl').removeClass('hide');
-                    var link = $ImgConTmpl.find('a.cbLink');
-                    //link.attr('id','thumb_' + category + i);
-                    link.addClass('thumbImage tooltips');
-                    link.attr('href', BC_CONF.contextPath + "/occurrences/" + el.uuid);
-                    link.attr('title', 'click to enlarge');
-                    link.attr('data-occurrenceuid', el.uuid);
-                    link.attr('data-image-id', el.image);
-                    link.attr('data-scientific-name', sciNameRawOrMatched);
-
-                    $ImgConTmpl.find('img').attr('src', el.smallImageUrl);
-                    // brief metadata
-                    var briefHtml = sciNameRawOrMatched;
-                    var br = "<br>";
-                    if (el.typeStatus) briefHtml += br + el.typeStatus;
-                    if (el.institutionName) briefHtml += ((el.typeStatus) ? ' | ' : br) + el.institutionName;
-                    $ImgConTmpl.find('.brief').html(briefHtml);
-                    // detail metadata
-                    var detailHtml = sciNameRawOrMatched;
-                    if (el.typeStatus) detailHtml += br + 'Type: ' + el.typeStatus;
-                    if (el.collector) detailHtml += br + 'By: ' + el.collector;
-                    if (el.eventDate) detailHtml += br + 'Date: ' + moment(el.eventDate).format('YYYY-MM-DD');
-                    if (el.institutionName) {
-                        detailHtml += br + el.institutionName;
-                    } else {
-                        detailHtml += br + el.dataResourceName;
-                    }
-                    $ImgConTmpl.find('.detail').html(detailHtml);
-
-                    // write to DOM
-                    $("#imagesGrid").append($ImgConTmpl.html());
-                });
-
-                if (count + start < data.totalRecords) {
-                    $('#imagesGrid').data('count', count + start);
-                    $("#loadMoreImages").show();
-                    $("#loadMoreImages .btn").removeClass('disabled');
-                } else {
-                    $("#loadMoreImages").hide();
-                }
-
-            } else {
-                $('#imagesGrid').html('<p>' + jQuery.i18n.prop('list.noimages.available') + '</p>');
+    start = (start) ? start : 0;
+    var imagesJsonUri = BC_CONF.biocacheServiceUrl + "/occurrences/search" + BC_CONF.searchString +
+        "&fq=multimedia:Image&facet=false&pageSize=20&start=" + start + "&sort=identification_qualifier_s&dir=asc";
+    $.getJSON(imagesJsonUri, function (data) {
+        if (data.occurrences && data.occurrences.length > 0) {
+            //var htmlUl = "";
+            if (start == 0) {
+                $("#imagesGrid").html("");
             }
-        }).always(function () {
-            $("#loadMoreImages img").hide();
-        });
+            var count = 0;
+            $.each(data.occurrences, function (i, el) {
+                count++;
+                var sciNameRawOrMatched = (el.raw_scientificName === undefined? el.scientificName : el.raw_scientificName); //e.g. if data submitted using species ID's instead of scientific names
+                // clone template div & populate with metadata
+                var $ImgConTmpl = $('.imgConTmpl').clone();
+                $ImgConTmpl.removeClass('imgConTmpl').removeClass('hide');
+                var link = $ImgConTmpl.find('a.cbLink');
+                //link.attr('id','thumb_' + category + i);
+                link.addClass('thumbImage tooltips');
+                link.attr('href', BC_CONF.contextPath + "/occurrences/" + el.uuid);
+                link.attr('title', 'click to enlarge');
+                link.attr('data-occurrenceuid', el.uuid);
+                link.attr('data-image-id', el.image);
+                link.attr('data-scientific-name', sciNameRawOrMatched);
+
+                $ImgConTmpl.find('img').attr('src', el.smallImageUrl);
+                // brief metadata
+                var briefHtml = sciNameRawOrMatched;
+                var br = "<br>";
+                if (el.typeStatus) briefHtml += br + el.typeStatus;
+                if (el.institutionName) briefHtml += ((el.typeStatus) ? ' | ' : br) + el.institutionName;
+                $ImgConTmpl.find('.brief').html(briefHtml);
+                // detail metadata
+                var detailHtml = sciNameRawOrMatched;
+                if (el.typeStatus) detailHtml += br + 'Type: ' + el.typeStatus;
+                if (el.collector) detailHtml += br + 'By: ' + el.collector;
+                if (el.eventDate) detailHtml += br + 'Date: ' + moment(el.eventDate).format('YYYY-MM-DD');
+                if (el.institutionName) {
+                    detailHtml += br + el.institutionName;
+                } else {
+                    detailHtml += br + el.dataResourceName;
+                }
+                $ImgConTmpl.find('.detail').html(detailHtml);
+
+                // write to DOM
+                $("#imagesGrid").append($ImgConTmpl.html());
+            });
+
+            if (count + start < data.totalRecords) {
+                $('#imagesGrid').data('count', count + start);
+                $("#loadMoreImages").show();
+                $("#loadMoreImages .btn").removeClass('disabled');
+            } else {
+                $("#loadMoreImages").hide();
+            }
+
+        } else {
+            $('#imagesGrid').html('<p>' + jQuery.i18n.prop('list.noimages.available') + '</p>');
+        }
+    }).always(function () {
+        $("#loadMoreImages img").hide();
+    });
 }
 
 /**
@@ -1751,7 +1764,7 @@ function loadSpeciesInTab(start, sortField, group) {
     }
 
     var speciesJsonUrl = BC_CONF.contextPath + "/proxy/exploreGroupWithGallery" + BC_CONF.searchString + // TODO fix proxy
-            "&group=" + group + "&pageSize=" + pageSize + "&start=" + start + sortExtras;
+        "&group=" + group + "&pageSize=" + pageSize + "&start=" + start + sortExtras;
 
     $.getJSON(speciesJsonUrl, function(data) {
         if (data.length > 0) {
@@ -1790,10 +1803,10 @@ function loadSpeciesInTab(start, sortField, group) {
 
         }
     }).error(function (request, status, error) {
-            alert(request.responseText);
+        alert(request.responseText);
     }).complete(function() {
-            $("#loadingSpecies").remove();
-            $("#loadMoreSpecies img").hide();
+        $("#loadingSpecies").remove();
+        $("#loadMoreSpecies img").hide();
     });
 }
 
@@ -1979,29 +1992,9 @@ function addFacetItems(facetName, fsort, facetLimit, foffset, replaceFacets, res
             var fqEsc = ((el.label.indexOf(" ") != -1 || el.label.indexOf(",") != -1 || el.label.indexOf("lsid") != -1) && el.label.indexOf("[") != 0)
                 ? "\"" + el.label + "\""
                 : el.label; // .replace(/:/g,"\\:")
-            var label = (el.displayLabel) ? el.displayLabel : el.label ;
+            var label = formatFieldValue(facetName, el);
             var encodeFq = true;
-            if (label.indexOf("@") != -1) {
-                label = label.substring(0,label.indexOf("@"));
-            } else if (jQuery.i18n.prop(el.i18nCode).indexOf("[") == -1) {
-                // i18n substitution
-                label = jQuery.i18n.prop(el.i18nCode);
-            } else if (facetName.indexOf("outlier_layer") != -1 || /^el\d+/.test(label)) {
-                label = jQuery.i18n.prop("layer." + label);
-            } else if (facetName.indexOf("user_assertions") != -1 || /^el\d+/.test(label)) {
-                label = jQuery.i18n.prop("user_assertions." + label);
-            } else if (facetName.indexOf("duplicate_type") != -1 || /^el\d+/.test(label)) {
-                label = jQuery.i18n.prop("duplication." + label);
-            } else if (facetName.indexOf("taxonomic_issue") != -1 || /^el\d+/.test(label)) {
-                label = jQuery.i18n.prop(label);
-            } else if (!label && el.i18nCode.indexOf("novalue") != -1) {
-                label = "[no value]";
-            } else {
-                var code = facetName + "." + label;
-                var i18nLabel = jQuery.i18n.prop(code);
-                var newLabel = (i18nLabel.indexOf("[") == -1) ? i18nLabel : (jQuery.i18n.prop(label));
-                label = (newLabel.indexOf("[") == -1) ? newLabel : label;
-            }
+
             facetName = facetName.replace(/_RNG$/,""); // remove range version if present
             var fqParam = (el.fq) ? encodeURIComponent(el.fq) : facetName + ":" + ((encodeFq) ? encodeURIComponent(fqEsc) : fqEsc) ;
 
@@ -2049,4 +2042,162 @@ function sortFacetList(fsort) {
             return a.label === b.label ? 0 : (a.label < b.label ? -1 : 1)
         })
     }
+}
+
+function processLoadFacetQueue() {
+    if (loadFacetsQueue.length > 0 && !inFacetsLoop) {
+        inFacetsLoop = true;
+        var proc = loadFacetsQueue.shift();
+        proc();
+    }
+}
+
+// load facets, one at a time
+function loadFacet(facet) {
+    loadFacetsQueue.push(function () {
+        console.log("loadFacet", facet)
+        var parentNode = $('#facet_' + facet);
+
+        // skip if already loaded or not visible
+        if (parentNode.length === 0 || parentNode.is(':hidden') || parentNode.find('ul').length > 0) {
+            inFacetsLoop = false;
+            processLoadFacetQueue();
+            return;
+        }
+
+        var spinnerNode = $('#spinner_' + facet);
+        var moreNode = $('#more_' + facet);
+        var queryString = getParamList().join('&');
+        var queryContextParam = (BC_CONF.queryContext) ? "&qc=" + BC_CONF.queryContext : "";
+        var url = BC_CONF.biocacheServiceUrl + '/occurrences/search?' + queryString + '&facets=' + facet + queryContextParam;
+
+        $.ajax({
+            url: url,
+            success: function (data) {
+                if (data.facetResults.length === 0 || data.facetResults[0].fieldResult.length === 0) {
+                    // remove if there are no results
+                    parentNode.prev().remove();
+                    parentNode.remove();
+                } else {
+                    var fieldDisplayName = formatFieldName(facet);
+                    var list = createFacetLinkList(data.facetResults[0], queryString, fieldDisplayName);
+
+                    spinnerNode.remove();
+
+                    if (data.facetResults[0].fieldResult.length > 1) {
+                        moreNode.show();
+                    }
+
+                    parentNode.append(list);
+                }
+
+                inFacetsLoop = false;
+                processLoadFacetQueue();
+            },
+            error: function () {
+                // remove the facet label if there is an error
+                parentNode.prev().remove();
+                parentNode.remove();
+
+                inFacetsLoop = false;
+                processLoadFacetQueue();
+            }
+        });
+    });
+
+    processLoadFacetQueue();
+}
+
+function createFacetLinkList(facetResult, queryString, fieldDisplayName) {
+    const ul = document.createElement('ul');
+    ul.classList.add('facets');
+
+    // Define the link title
+    const linkTitle = jQuery.i18n.prop('alatag.filter.results.by') + ` ${fieldDisplayName ? fieldDisplayName.toLowerCase() : facetResult.fieldName}`;
+
+    // Function to add counts to the facet item
+    function addCounts(count) {
+        const span = document.createElement('span');
+        span.classList.add('facetCount');
+        span.innerHTML = ` (${count.toLocaleString()})`;
+        return span;
+    }
+
+    // Move the "before" element to the front if it exists
+    const lastEl = facetResult.fieldResult[facetResult.fieldResult.length - 1];
+    if (lastEl.label === 'before') {
+        facetResult.fieldResult.pop();
+        facetResult.fieldResult.unshift(lastEl);
+    }
+
+    // Iterate over the field results and create list items
+    facetResult.fieldResult.forEach(fieldResult => {
+        if (fieldResult.count > 0) {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = `?${queryString}&fq=${encodeURIComponent(fieldResult.fq || `${facetResult.fieldName}:"${fieldResult.label}"`)}`;
+            a.classList.add('tooltips');
+            a.title = linkTitle;
+
+            const spanIcon = document.createElement('span');
+            spanIcon.classList.add('fa', 'fa-square-o');
+            spanIcon.innerHTML = '&nbsp;';
+            a.appendChild(spanIcon);
+
+            const spanItem = document.createElement('span');
+            spanItem.classList.add('facet-item');
+            spanItem.textContent = formatFieldValue(facetResult.fieldName, fieldResult);
+            spanItem.appendChild(addCounts(fieldResult.count));
+            a.appendChild(spanItem);
+
+            li.appendChild(a);
+            ul.appendChild(li);
+        }
+    });
+
+    return ul;
+}
+
+function formatFieldName(fieldName){
+    var output
+    if (fieldName.endsWith('_s') || fieldName.endsWith('_i') || fieldName.endsWith('_d')) {
+        var temp = fieldName.slice(0, -2).replaceAll("_", " ");
+        output = jQuery.i18n.prop('facet.' + fieldName);
+        if (output.indexOf("[") == 0) {
+            output = temp;
+        }
+    } else if (fieldName.endsWith('_RNG')) {
+        output = fieldName.slice(0, -4).replaceAll("_", " ") + " (range)";
+    } else {
+        var label = jQuery.i18n.prop('facet.' + fieldName);
+        if (!label){
+            // try without "facet."
+            label = jQuery.i18n.prop(fieldName);
+        }
+
+        label = label || fieldName;
+        output = label;
+    }
+    return output;
+}
+
+function formatFieldValue(facetName, item) {
+    // surround with quotes: fq value if contains spaces but not for range queries
+    var label = (item.displayLabel) ? item.displayLabel : item.label ;
+    if (label.indexOf("@") != -1) {
+        label = label.substring(0,label.indexOf("@"));
+    } else if (jQuery.i18n.prop(item.i18nCode).indexOf("[") == -1) {
+        // i18n substitution
+        label = jQuery.i18n.prop(item.i18nCode);
+    } else if (!label && el.i18nCode.indexOf("novalue") != -1) {
+        label = "[no value]";
+    } else {
+        var code = facetName + "." + label;
+        var i18nLabel = jQuery.i18n.prop(code);
+
+        var newLabel = (i18nLabel.indexOf("[") == -1) ? i18nLabel : (jQuery.i18n.prop(label));
+        label = (newLabel.indexOf("[") == -1) ? newLabel : label;
+    }
+
+    return label;
 }

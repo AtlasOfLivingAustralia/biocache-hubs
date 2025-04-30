@@ -104,7 +104,6 @@ exploreYourArea.lng = "149.0"
 exploreYourArea.location = "Canberra, ACT"
 exploreYourArea.zoomLevels = [ 1: 14, 5: 12, 10: 11, 50: 9 ]
 
-facets.includeDynamicFacets = false // sandbox
 facets.limit = "100"
 facets.max = "40"
 facets.customOrder = ""

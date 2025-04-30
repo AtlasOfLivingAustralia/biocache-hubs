@@ -76,7 +76,10 @@
             prefKey: "${(grailsApplication.config.getProperty("dataquality.prefkey", String, "dqUserProfile"))}",
             expandKey: "${(grailsApplication.config.getProperty("dataquality.expandKey", String, "dqDetailExpand"))}",
             autocompleteUrl: "${grailsApplication.config.getProperty('skin.useAlaBie', Boolean) ? (grailsApplication.config.getProperty('bieService.baseUrl') + '/search/auto.json') : biocacheServiceUrl + '/autocomplete/search'}",
-            autocompleteUseBie: ${grailsApplication.config.getProperty('skin.useAlaBie', Boolean)}
+            autocompleteUseBie: ${grailsApplication.config.getProperty('skin.useAlaBie', Boolean)},
+            groupedFacets: ${(groupedFacets as grails.converters.JSON).toString().encodeAsRaw()},
+            groupedFacetsRequested: ${(groupedFacetsRequested as grails.converters.JSON).toString().encodeAsRaw()},
+            groupedFacetsMap: ${(groupedFacetsMap as grails.converters.JSON).toString().encodeAsRaw()}
         };
 </script>
 

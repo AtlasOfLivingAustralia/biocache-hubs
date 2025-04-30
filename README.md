@@ -7,6 +7,7 @@ This application/plugin provides a web UI for a back-end service called [**bioca
 An example Grails application that uses this plugin, is the [**generic-hub**](https://github.com/AtlasOfLivingAustralia/generic-hub) app. There are other implementations listed in the [ALA Github repository](https://github.com/AtlasOfLivingAustralia?query=-hub) (all implementations have a suffix '-hub').
 
 ## Updates
+8.x support Grails 6.2.3 and Java 17
 5.x support OIDC authentication
 
 ## Versions

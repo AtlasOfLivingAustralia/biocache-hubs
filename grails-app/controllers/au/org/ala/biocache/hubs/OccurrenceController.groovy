@@ -101,19 +101,10 @@ class OccurrenceController {
                 }
             }
 
-//            List dynamicFacets = []
-
             String[] requestedFacets = userFacets ?: filteredFacets
 
-//            if (grailsApplication.config.getProperty('facets.includeDynamicFacets', Boolean, false)) {
-//                // Sandbox only...
-//                time("sandbox only facets") {
-//                    dynamicFacets = webServicesService.getDynamicFacets(requestParams.q)
-//                    requestedFacets = postProcessingService.mergeRequestedFacets(requestedFacets as List, dynamicFacets)
-//                }
-//            }
-
-            requestParams.facets = requestedFacets
+            // Disable the biocache-service request for facets. They are new retrieved dynamically by the client
+            requestParams.facets = null
 
             def wsStart = System.currentTimeMillis()
             JSONObject searchResults = time("full text search") { webServicesService.fullTextSearch(requestParams) }
@@ -125,10 +116,13 @@ class OccurrenceController {
             }
 
             //create a facet lookup map
-            Map groupedFacetsMap = postProcessingService.getMapOfFacetResults(searchResults.facetResults)
+            Map groupedFacetsMap = postProcessingService.getMapOfFacetResults(requestedFacets)
 
             //grouped facets
-            Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, searchResults.facetResults, [])
+            Map groupedFacets = postProcessingService.getAllGroupedFacets(configuredGroupedFacets, groupedFacetsMap)
+
+            //grouped facets, but only those requested and not in the activeFacetMap
+            Map groupedFacetsRequested = postProcessingService.getRequestedGroupedFacets(configuredGroupedFacets, groupedFacetsMap, requestedFacets, searchResults?.activeFacetMap)
 
             //remove qc from active facet map
             if (params?.qc) {
@@ -183,8 +177,8 @@ class OccurrenceController {
                             searchRequestParams : requestParams,
                             defaultFacets       : defaultFacets,
                             groupedFacets       : groupedFacets,
+                            groupedFacetsRequested: groupedFacetsRequested,
                             groupedFacetsMap    : groupedFacetsMap,
-                            dynamicFacets       : [],
                             selectedDataResource: getSelectedResource(requestParams.q),
                             hasImages           : hasImages,
                             showSpeciesImages   : false,
@@ -481,7 +475,12 @@ class OccurrenceController {
         } catch (Exception ex) {
             log.warn "Error getting record details: $ex.message", ex
             flash.message = "${ex.message}"
-            render view: '../error'
+
+            if (ex.getMessage() && ex.getMessage().contains("HTTP 404")) {
+                render view: '../occurrenceNotFound'
+            } else {
+                render view: '../error'
+            }
         }
     }
 

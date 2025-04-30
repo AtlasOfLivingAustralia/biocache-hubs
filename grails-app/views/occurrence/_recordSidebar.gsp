@@ -279,6 +279,8 @@
                     <div>
                         <g:message code="show.loginorflag.div02.label" default="You are logged in as"/>  <strong>${userDisplayName} (${alatag.loggedInUserEmail()})</strong>.
                         <form id="issueForm">
+                            <input type="hidden" name="assertionId" id="assertionId" value=""/>
+                            <input type="hidden" name="editMode" id="editMode" value="false"/>
                             <p style="margin-top:20px;">
                                 <label for="issue"><g:message code="show.issueform.label01" default="Issue type:"/></label>
                                 <select name="issue" id="issue" autocomplete="off">
@@ -335,7 +337,7 @@
                                 </select>
                             </p>
                             <p style="margin-top:30px;">
-                                <label for="issueComment" style="vertical-align:top;"><g:message code="show.issueform.label02" default="Comment:"/></label>
+                                <label for="issueComment" style="vertical-align:top;"><g:message code="show.issueform.label02" default="Comment:"/><span style="color: red;">*</span></label>
                                 <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
                             </p>
 

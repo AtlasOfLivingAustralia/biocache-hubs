@@ -1,5 +1,5 @@
 buildscript {
-    version "7.1.1"
+    version "8.0.0-SNAPSHOT"
     group "au.org.ala.plugins.grails"
 }
 
@@ -12,6 +12,7 @@ plugins {
     id "com.bertramlabs.asset-pipeline"
     id "eclipse"
     id "maven-publish"
+    id "com.gorylenko.gradle-git-properties" version "1.4.17"
 }
 
 repositories {

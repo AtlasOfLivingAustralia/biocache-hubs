@@ -178,7 +178,7 @@ class PostProcessingService {
      * @param finalFacetsMap
      * @return
      */
-    def String[] getFilteredFacets(LinkedHashMap<String, Boolean> finalFacetsMap) {
+    String[] getFilteredFacets(LinkedHashMap<String, Boolean> finalFacetsMap) {
         List finalFacets = []
 
         for (String key : finalFacetsMap.keySet()) {
@@ -188,7 +188,6 @@ class PostProcessingService {
             }
         }
 
-        //log.debug("FinalFacets = " + StringUtils.join(finalFacets, "|"));
         String[] filteredFacets = finalFacets.toArray(new String[finalFacets.size()]);
 
         return filteredFacets
@@ -326,17 +325,17 @@ class PostProcessingService {
      * @param facetResults
      * @return
      */
-    def Map getMapOfFacetResults(JSONArray facetResults) {
+    Map getMapOfFacetResults(String[] requestedFacets) {
         Map facetMap = [:]
 
-        facetResults.each { fr ->
-            def facet = fr.fieldName
+        requestedFacets.each { fn ->
+            def facet = fn
 
             if (facet == "occurrence_year") {
                 facet = "decade"
             }
 
-            facetMap.put(facet, fr)
+            facetMap.put(facet, [fieldName: fn]) // data for this key will be populated by the client
         }
 
         facetMap
@@ -350,19 +349,47 @@ class PostProcessingService {
      * @param ungroupedFacetsList
      * @return
      */
-    def Map getAllGroupedFacets(Map groupedFacets, def facetResults, dynamicFacets) {
-        List ungroupedFacetsList = getUngroupedFacetsList(groupedFacets, getMapOfFacetResults(facetResults))
+    Map getAllGroupedFacets(Map groupedFacets, Map groupedFacetsMap) {
+        List ungroupedFacetsList = getUngroupedFacetsList(groupedFacets, groupedFacetsMap)
         def finalGroupedFacets = groupedFacets.clone()
-        def dynamicFacetNames = dynamicFacets.collect { it.name }
         finalGroupedFacets.put("Ungrouped", [])
         ungroupedFacetsList.each { facet ->
-            if (dynamicFacetNames.contains(facet)) {
-                finalGroupedFacets.get("Custom").add(facet)
-            } else {
-                finalGroupedFacets.get("Ungrouped").add(facet)
-            }
+            finalGroupedFacets.get("Ungrouped").add(facet)
         }
         finalGroupedFacets
+    }
+
+    /**
+     * Add only the requested ungrouped facets from search results to the groupedFacetsMap
+     * used to construct the facets column in search results.
+     *
+     * @param groupedFacets
+     * @param ungroupedFacetsList
+     * @return
+     */
+    Map getRequestedGroupedFacets(Map groupedFacets, Map groupedFacetsMap, String[] requestedFacets, Map activeFacetMap) {
+        List ungroupedFacetsList = getUngroupedFacetsList(groupedFacets, groupedFacetsMap)
+        def finalGroupedFacets = groupedFacets.clone()
+        finalGroupedFacets.put("Ungrouped", [])
+        ungroupedFacetsList.each { facet ->
+            finalGroupedFacets.get("Ungrouped").add(facet)
+        }
+
+        def requestedFacetsSet = requestedFacets.sort() as Set
+        def requestedGroupedFacets = [:]
+        finalGroupedFacets.each { key, list ->
+            def requestedList = []
+            for (String item : list) {
+                if (requestedFacetsSet.contains(item) && !activeFacetMap.containsKey(item)) {
+                    requestedList.add(item)
+                }
+            }
+            if (requestedList.size() > 0) {
+                requestedGroupedFacets.put(key, requestedList)
+            }
+        }
+
+        requestedGroupedFacets
     }
 
     /**

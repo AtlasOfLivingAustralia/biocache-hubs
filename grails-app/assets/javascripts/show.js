@@ -196,6 +196,7 @@ function init() {
         var relatedRecordReason = $('#relatedRecordReason').val();
         var userDisplayName = OCC_REC.userDisplayName //'${userDisplayName}';
         var recordUuid = OCC_REC.recordUuid //'${ala:escapeJS(record.raw.rowKey)}';
+        var assertionId = $('#assertionId').val();
         if(code!=""){
             $('#assertionSubmitProgress').css({'display':'block'});
 
@@ -234,6 +235,7 @@ function init() {
                             userDisplayName: userDisplayName,
                             relatedRecordId: relatedRecordId,
                             relatedRecordReason: relatedRecordReason,
+                            updateId: assertionId
                         },
                         function (data) {
                             // when add assertion succeeds, we update alert settings (only when myannotation is enabled)
@@ -459,6 +461,39 @@ function init() {
 
     });
 
+    $('#issueFormSubmit').click(function(event) {
+        var comment = $('#issueComment').val().trim();
+        if (comment === '') {
+            event.preventDefault();
+
+            $('#issueComment').css('border', '2px solid red');
+
+            alert(jQuery.i18n.prop('show.issueform.label02.mandatory'));
+        } else {
+            $('#issueComment').css('border', '');
+        }
+    });
+
+    $('#loginOrFlag').on('show.bs.modal', function (event) {
+        var editMode = $('#editMode').val();
+        if (editMode === 'true') {
+            // alter form for edit mode
+            $('#loginOrFlag').find('#loginOrFlagLabel').text(jQuery.i18n.prop('show.loginorflag.title.edit'));
+            $('#loginOrFlag').find('#issue').prop('disabled', true);
+
+            // the assertionId, issue code and comment are set elsewhere
+        } else {
+            // reset form to default state for creating a new issue, probably not required as the page does a reload
+            $('#loginOrFlag').find('#loginOrFlagLabel').text(jQuery.i18n.prop('show.loginorflag.title'));
+            $('#loginOrFlag').find('#issue').prop('disabled', false);
+
+            var code = $('#loginOrFlag').find('#issue').children().first().val();
+            $('#loginOrFlag').find('#issue').val(code);
+            $('#loginOrFlag').find('#issueComment').val("");
+            $('#loginOrFlag').find('#assertionId').val("");
+        }
+    });
+
 }
 
 /**
@@ -539,6 +574,8 @@ function refreshUserAnnotations(){
             if (userAssertion.code != 50000) {
                 $clone.prop('id', "userAnnotation_" + userAssertion.uuid);
                 $clone.find('.issue').text(jQuery.i18n.prop(userAssertion.name)).attr('i18nkey', userAssertion.name);
+                $clone.find('.issueCode').text(userAssertion.code);
+                $clone.find('.issueComment').text(userAssertion.comment);
                 $clone.find('.user').text(userAssertion.userDisplayName);
                 if (userAssertion.hasOwnProperty('comment')) {
                     $clone.find('.comment').text('Comment: ' + userAssertion.comment);
@@ -600,7 +637,7 @@ function refreshUserAnnotations(){
                     $clone.find('.userEntity').text(', ' + userAssertion.userEntityName);
                 }
 
-                //if the current user is the author of the annotation, they can delete
+                //if the current user is the author of the annotation, they can delete and edit
                 if(OCC_REC.userId == userAssertion.userId){
                     $clone.find('.deleteAnnotation').css({display:'block'});
                     $clone.find('.deleteAnnotation').attr('id', userAssertion.uuid);
@@ -661,7 +698,7 @@ function refreshUserAnnotations(){
             }
         }
 
-        updateDeleteEvents(enableDelete, disableDelete);
+        updateEditDeleteEvents(enableDelete, disableDelete);
     });
 }
 
@@ -674,6 +711,28 @@ function updateDeleteVerificationEvents(relatedAssertionId) {
             deleteAssertion(OCC_REC.recordUuid, this.parentElement.parentElement.id.split('_').pop());
         }
     });
+
+    $('#userAnnotation_' + relatedAssertionId + ' .editVerificationButton').off("click");
+    $('#userAnnotation_' + relatedAssertionId + ' .editVerificationButton').on("click", function (e) {
+        e.preventDefault();
+
+        var element = $(this.parentElement.parentElement);
+
+        // reset the form on open
+        var assertionId = this.parentElement.parentElement.id.split('_').pop();
+        var code = element.find('.qaStatus').attr('i18nkey').split('.').pop();
+        var comment = element.find('.comment').text();
+        $("#verifyComment").val(comment);
+        $("#userAssertionStatusSelection").val(code);
+        $(".verifyAsk").show();
+        $(".verifyDone").hide();
+        $("#verifySpinner").hide();
+        updateConfirmVerificationEvents(OCC_REC.recordUuid, relatedAssertionId, OCC_REC.userDisplayName, assertionId);
+
+        $("#userAssertionStatusSelection").attr('disabled', 'disabled')
+
+        $('#verifyRecordModal').modal('show');
+    });
 }
 
 function deleteAssertionPrompt(event) {
@@ -685,23 +744,47 @@ function deleteAssertionPrompt(event) {
     }
 }
 
-function updateDeleteEvents(enableDelete, disableDelete){
+function updateEditDeleteEvents(enableDelete, disableDelete){
 
     for(var i = 0; i < enableDelete.length; i++){
-        $('#userAnnotation_' + enableDelete[i] + ' .deleteAnnotation').off("click");
-        $('#userAnnotation_' + enableDelete[i] + ' .deleteAnnotation').click({rec_uuid: OCC_REC.recordUuid, qa_uuid: enableDelete[i]}, deleteAssertionPrompt);
+        $('#userAnnotation_' + enableDelete[i] + ' .deleteAnnotationButton').off("click");
+        $('#userAnnotation_' + enableDelete[i] + ' .deleteAnnotationButton').click({rec_uuid: OCC_REC.recordUuid, qa_uuid: enableDelete[i]}, deleteAssertionPrompt);
+
+        $('#userAnnotation_' + enableDelete[i] + ' .editAnnotationButton').off("click");
+        $('#userAnnotation_' + enableDelete[i] + ' .editAnnotationButton').attr('annotationId', enableDelete[i]);
+        $('#userAnnotation_' + enableDelete[i] + ' .editAnnotationButton').on("click", function(e){
+            e.preventDefault();
+
+            // update loginOrFlag modal state
+            var annotationId = $(this).attr('annotationId');
+            var code = $('#userAnnotation_' +annotationId + ' .issueCode').text();
+            var comment = $('#userAnnotation_' + annotationId + ' .issueComment').text();
+            $('#loginOrFlag').find('#issue').val(code);
+            $('#loginOrFlag').find('#editMode').val('true');
+            $('#loginOrFlag').find('#assertionId').val(annotationId);
+            $('#loginOrFlag').find('#issueComment').val(comment);
+
+            $('#loginOrFlag').modal('show');
+        });
+
         updateVerificationEvents(enableDelete[i]);
     }
 
     for(var i = 0; i < disableDelete.length; i++){
-        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotationButton').attr('disabled', 'disabled');
-        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotationButton').attr('title', 'Unable to delete, as this assertion has a verification');
-
-
-        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotation').off("click");
-        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotation').on("click", function (e) {
+        $('#userAnnotation_' + disableDelete[i] + ' .editAnnotationButton').attr('disabled', 'disabled');
+        $('#userAnnotation_' + disableDelete[i] + ' .editAnnotationButton').attr('title', 'Unable to edit, as this assertion has a verification');
+        $('#userAnnotation_' + disableDelete[i] + ' .editAnnotationButton').off("click");
+        $('#userAnnotation_' + disableDelete[i] + ' .editAnnotationButton').on("click", function (e) {
             e.preventDefault();
         });
+
+        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotationButton').attr('disabled', 'disabled');
+        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotationButton').attr('title', 'Unable to delete, as this assertion has a verification');
+        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotationButton').off("click");
+        $('#userAnnotation_' + disableDelete[i] + ' .deleteAnnotationButton').on("click", function (e) {
+            e.preventDefault();
+        });
+
         updateVerificationEvents(disableDelete[i]);
     }
 
@@ -711,12 +794,19 @@ function updateVerificationEvents(assertionId) {
     $('#userAnnotation_' + assertionId + ' .verifyAnnotation').off("click");
     $('#userAnnotation_' + assertionId + ' .verifyAnnotation').on("click", function(e){
         e.preventDefault();
+
+        // reset the form on open
+        $("#verifyComment").val("");
+        $("#userAssertionStatusSelection").val("50001");
+        $(".verifyAsk").show();
+        $(".verifyDone").hide();
         $("#verifySpinner").hide();
         updateConfirmVerificationEvents(OCC_REC.recordUuid, assertionId, OCC_REC.userDisplayName);
     });
 }
 
-function updateConfirmVerificationEvents(occUuid, assertionUuid, userDisplayName){
+// provide assertionId when editing a verification, do not provide when creating a verification
+function updateConfirmVerificationEvents(occUuid, assertionUuid, userDisplayName, updateId){
 
     $('.closeVerify').on("click", function(e){
         e.preventDefault();
@@ -746,7 +836,8 @@ function updateConfirmVerificationEvents(occUuid, assertionUuid, userDisplayName
                 userAssertionStatus: userAssertionStatus,
                 assertionUuid: assertionUuid,
                 userId: OCC_REC.userId,
-                userDisplayName: userDisplayName},
+                userDisplayName: userDisplayName,
+                updateId: updateId },
             function(data) {
                 // service simply returns status or OK or FORBIDDEN, so assume it worked...
                 $(".verifyAsk").fadeOut();

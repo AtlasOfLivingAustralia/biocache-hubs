@@ -119,7 +119,7 @@
         defaultLongitude : "${grailsApplication.config.getProperty('map.defaultLongitude', String, '133.6')}",
         defaultZoom : "${grailsApplication.config.getProperty('map.defaultZoom', String, '4')}",
         overlays : {
-            <g:if test="${grailsApplication.config.getProperty("map.overlay.url") && overlayList?.size > 0}">
+            <g:if test="${grailsApplication.config.getProperty("map.overlay.url") && overlayList}">
                 <g:each in="${overlayList}" var="layer">
                     "${layer.layerDisplayName?.encodeAsJs()?:'overlay'}" : L.tileLayer.wms("${grailsApplication.config.getProperty("map.overlay.url")}", {
                     layers: 'ALA:${layer.layerName}',

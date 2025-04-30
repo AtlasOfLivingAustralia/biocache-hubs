@@ -28,4 +28,13 @@
             <heap unit="entries">100000</heap>
         </resources>
     </cache>
+
+    <cache alias="qualityShortTermCache">
+        <expiry>
+            <ttl unit="hours">1</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">10000</heap>
+        </resources>
+    </cache>
 </config>
