@@ -41,17 +41,19 @@
                         <option value=""><g:message code="map.maplayercontrols.tr01td01.option01" default="Points - default colour"/></option>
                         <option value="grid" ${(defaultColourBy == 'grid')?'selected=\"selected\"':''}><g:message code="map.maplayercontrols.tr01td01.option02" default="Record density grid"/></option>
                         <option disabled role="separator">————————————</option>
-                        <g:each var="facetResult" in="${facets}">
-                            <g:set var="Defaultselected">
-                                <g:if test="${defaultColourBy && facetResult.fieldName == defaultColourBy}">selected="selected"</g:if>
-                            </g:set>
-                            <g:if test="${facetResult.fieldName == 'occurrence_year'}">${facetResult.fieldName = 'decade'}</g:if>
-                            <g:if test="${facetResult.fieldName == 'uncertainty'}">${facetResult.fieldName = 'coordinate_uncertainty'}</g:if>
-                            <g:if test="${facetResult.fieldResult.size() > 1}">
-                                <option value="${facetResult.fieldName}" ${Defaultselected}>
-                                    <alatag:formatDynamicFacetName fieldName="${facetResult.fieldName}"/>
-                                </option>
-                            </g:if>
+                        <g:each var="group" in="${groupedFacetsRequested}">
+                            <g:each var="fieldName" in="${group.value}">
+                                <g:if test="${fieldName}">
+                                    <g:set var="Defaultselected">
+                                        <g:if test="${defaultColourBy && fieldName == defaultColourBy}">selected="selected"</g:if>
+                                    </g:set>
+                                    <g:if test="${fieldName == 'occurrence_year'}">${fieldName = 'decade'}</g:if>
+                                    <g:if test="${fieldName == 'uncertainty'}">${fieldName = 'coordinate_uncertainty'}</g:if>
+                                    <option value="${fieldName}" ${Defaultselected}>
+                                        <alatag:formatDynamicFacetName fieldName="${fieldName}"/>
+                                    </option>
+                                </g:if>
+                            </g:each>
                         </g:each>
                     </select>
                 </div>
