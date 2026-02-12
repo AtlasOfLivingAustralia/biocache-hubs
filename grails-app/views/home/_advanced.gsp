@@ -204,20 +204,20 @@
     <div class="form-group">
         <label class="col-md-2 control-label" for="startDate"><g:message code="advancedsearch.table10col01.title" default="Begin Date"/></label>
         <div class="col-md-2 ">
-            <input type="text" name="start_date" id="startDate" class="occurrence_date form-control" placeholder="" value=""/>
+            <input type="date" name="start_date" id="startDate" class="occurrence_date form-control" value=""/>
         </div>
-        <div class="col-md-6">
-            <span class="small"><g:message code="advancedsearch.table10col01.des" default="(YYYY-MM-DD) leave blank for earliest record date"/></span>
+        <div class="col-md-6 control-label" style="text-align: left;">
+            <span id="startDateInstruction"><g:message code="advancedsearch.table10col01.des" default="leave blank for earliest record date"/></span>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-md-2 control-label" for="endDate"><g:message code="advancedsearch.table10col02.title" default="End Date"/></label>
         <div class="col-md-2 ">
-            <input type="text" name="end_date" id="endDate" class="occurrence_date form-control" placeholder="" value=""/>
+            <input type="date" name="end_date" id="endDate" class="occurrence_date form-control" value=""/>
         </div>
-        <div class="col-md-6">
-            <span class="small"><g:message code="advancedsearch.table10col02.des" default="(YYYY-MM-DD) leave blank for most recent record date"/> </span>
+        <div class="col-md-6 control-label" style="text-align: left;">
+            <span id="endDateInstruction"><g:message code="advancedsearch.table10col02.des" default="leave blank for most recent record date"/> </span>
         </div>
     </div>
 
