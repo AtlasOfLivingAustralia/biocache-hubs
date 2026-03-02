@@ -273,7 +273,7 @@ class AdvancedSearchParams implements Validateable {
      * @return
      */
     private String quoteText(String text) {
-        if (StringUtils.contains(text, " ")) {
+        if (StringUtils.contains(text, " ") || StringUtils.contains(text, ":")) {
             text = QUOTE + text + QUOTE
         }
 
