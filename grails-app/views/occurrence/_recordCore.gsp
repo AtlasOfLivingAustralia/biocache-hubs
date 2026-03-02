@@ -775,8 +775,13 @@
 <!-- Habitat -->
 <alatag:occurrenceTableRow annotate="true" section="geospatial" fieldCode="habitat" fieldName="Habitat">
     ${fieldsMap.put("habitat", true)}
-    ${record.processed.location.habitat}
-    <g:if test="${record.raw.location.habitat && record.raw.location.habitat != record.processed.location.habitat}">
+    <g:if test="${record.processed.location.habitat}">
+        ${record.processed.location.habitat}
+    </g:if>
+    <g:if test="${!record.processed.location.habitat && record.raw.location.habitat}">
+        ${record.raw.location.habitat}
+    </g:if>
+    <g:if test="${record.processed.location.habitat && record.raw.location.habitat && (record.processed.location.habitat.toLowerCase() != record.raw.location.habitat.toLowerCase())}">
         <br/><span class="originalValue"><g:message code="recordcore.span03" default="Supplied as"/> "${record.raw.location.habitat}"</span>
     </g:if>
 </alatag:occurrenceTableRow>
@@ -956,3 +961,4 @@
         </table>
     </div>
 </g:if>
+

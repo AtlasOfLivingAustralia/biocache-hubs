@@ -79,7 +79,8 @@
             autocompleteUseBie: ${grailsApplication.config.getProperty('skin.useAlaBie', Boolean)},
             groupedFacets: ${(groupedFacets as grails.converters.JSON).toString().encodeAsRaw()},
             groupedFacetsRequested: ${(groupedFacetsRequested as grails.converters.JSON).toString().encodeAsRaw()},
-            groupedFacetsMap: ${(groupedFacetsMap as grails.converters.JSON).toString().encodeAsRaw()}
+            groupedFacetsMap: ${(groupedFacetsMap as grails.converters.JSON).toString().encodeAsRaw()},
+            facetListMax: ${grailsApplication.config.getProperty('biocache.facetListMax', Integer, 5000)}
         };
 </script>
 
@@ -327,10 +328,17 @@
                 <div id="resultsReturned">
                     <g:render template="sandboxUploadSourceLinks" model="[dataResourceUid: selectedDataResource]"/>
                     <alatag:resultCount totalRecords="${sr.totalRecords}" qualityTotalCount="${qualityTotalCount}" />
-                    <span class="queryDisplay"><strong>
-                        <g:set var="queryToShow"><alatag:sanitizeContent>${raw(queryDisplay)}</alatag:sanitizeContent></g:set>
-                        ${raw(queryToShow) ?: params.taxa ?: params.q}
-                    </strong></span>&nbsp;&nbsp;
+                    <span class="queryDisplay" id="queryDisplayContainer">
+                        <strong>
+                            <g:set var="queryToShow"><alatag:sanitizeContent>${raw(queryDisplay)}</alatag:sanitizeContent></g:set>
+                            <span id="queryDisplayText" class="query-text-truncated">
+                                ${raw(queryToShow) ?: params.taxa ?: params.q}
+                            </span>
+                        </strong>
+                    </span>
+                    <a href="#" id="queryDisplayToggle" class="query-toggle" style="display:none;">
+                        <i class="fa fa-caret-right"></i> <span class="toggle-text"><g:message code="list.query.showmore" default="Show more"/></span>
+                    </a>&nbsp;&nbsp;
                     <g:if test="${params.taxa && queryDisplay.startsWith("text:")}">
                         %{--Fallback taxa search to "text:", so provide feedback to user about this--}%
                         (<g:message code="list.taxa.notfound" args="${[params.taxa]}" default="(Note: no matched taxon name found for {0})"/>)

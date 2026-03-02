@@ -74,6 +74,16 @@ form {
     font-weight: normal;
 }
 
+/* Ensure dropdown menu maintains styling when repositioned to body */
+body > .dropdown-menu {
+    padding: 10px 12px;
+    width: 450px;
+    font-weight: normal;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.15);
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+}
+
 #resultsReturned > span {
     vertical-align:middle;
 }
@@ -676,6 +686,37 @@ span.queryDisplay {
 
 span.queryDisplay a:hover {
     text-decoration: none;
+}
+
+.query-text-truncated {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 4.5em;
+    line-height: 1.5em;
+}
+
+.query-text-expanded {
+    display: block;
+    max-height: none;
+}
+
+.query-toggle {
+    cursor: pointer;
+    white-space: nowrap;
+    margin-left: 5px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.query-toggle:hover {
+    text-decoration: none;
+}
+
+.query-toggle i {
+    transition: transform 0.2s ease;
 }
 
 .searchError .queryDisplay {

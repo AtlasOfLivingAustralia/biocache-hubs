@@ -239,8 +239,7 @@ class OccurrenceController {
             resultData
         } catch (Exception ex) {
             log.warn "Error getting search results: $ex.message", ex
-            flash.message = "${ex.message}"
-            render view: '../error'
+            render(view: '../error', model: [flash: [message: ex.message]])
         }
     }
 
@@ -468,18 +467,18 @@ class OccurrenceController {
                         ])
             } else {
                 if (record?.message == 'Unrecognised UID') {
-                    flash.message = "No record found with id: ${id}"
+                    render(view: '../error', model:  [flash: [message: "No record found with id: ${id}"]])
+                } else {
+                    render view: '../error'
                 }
-                render view: '../error'
             }
         } catch (Exception ex) {
             log.warn "Error getting record details: $ex.message", ex
-            flash.message = "${ex.message}"
 
             if (ex.getMessage() && ex.getMessage().contains("HTTP 404")) {
-                render view: '../occurrenceNotFound'
+                render(view: '../occurrenceNotFound', model: [flash: [message: ex.message]])
             } else {
-                render view: '../error'
+                render(view: '../error', model: [flash: [message: ex.message]])
             }
         }
     }
@@ -579,12 +578,10 @@ class OccurrenceController {
                  compareRecord: compareRecord
                 ]
             } else {
-                flash.message = "No record found for id: ${id}"
-                render view: '../error'
+                render(view: '../error', model: [flash: [message: "No record found for id: ${id}"]])
             }
         } catch (Exception ex) {
-            flash.message = "${ex.message}"
-            render view: '../error'
+            render(view: '../error', model: [flash: [message: ex.message]])
         }
     }
 
@@ -654,8 +651,7 @@ class OccurrenceController {
         }
 
         if (fg.guids.isEmpty()) {
-            flash.message = "Error: No species were found for the requested search (${requestParams.toString()})."
-            render view: '../error'
+            render(view: '../error', model: [flash: [message: "Error: No species were found for the requested search (${requestParams.toString()})."]])
             return
         }
 
@@ -674,13 +670,11 @@ class OccurrenceController {
             if (fgPostObj.fileId) {
                 response.sendRedirect(grailsApplication.config.getProperty('fieldguide.url') + "/guide/" + fgPostObj.fileId)
             } else {
-                flash.message = "No field guide found for requested taxa."
-                render view: '../error'
+                render(view: '../error', model: [flash: [message: "No field guide found for requested taxa."]])
             }
         } catch (Exception ex) {
-            flash.message = "Error generating field guide PDF. ${ex}"
             log.error ex.message, ex
-            render view: '../error'
+            render(view: '../error', model: [flash: [message: "Error generating field guide PDF. ${ex}"]])
         }
     }
 

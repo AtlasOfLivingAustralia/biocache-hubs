@@ -234,7 +234,9 @@ function init() {
             "&facets=raw_taxon_name&pageSize=0&flimit=" + maxFacets + queryContextParam;
 
         var $clone = $('#resultsReturned #template').clone();
-        $clone.attr("id",""); // remove the ID
+        let thisId = "resultsReturnedTemplate_" + i
+        $clone.attr("id",thisId); // set id for later use
+        $clone.find(".dropdown-menu").attr("id", "dropdown_" + thisId);
         $clone.find(".taxaMenuContent").addClass("stopProp");
         // add unique IDs to some elements
         $clone.find("form.raw_taxon_search").attr("id","rawTaxonSearch_" + i);
@@ -251,27 +253,27 @@ function init() {
             $clone.find('.nameString').text(nameString);
             $clone.find('.speciesPageLink').html(speciesPageLink);
 
-            var synListSize = 0;
-            var synList1 = "";
-            $.each(data.facetResults, function(k, el) {
-                if (el.fieldName == "raw_taxon_name") {
-                    $.each(el.fieldResult, function(j, el1) {
-                        synListSize++;
-                        synList1 += "<input type='checkbox' name='raw_taxon_guid' id='rawTaxon_" + index + "_" + j +
-                            "' class='rawTaxonCheckBox' value='" + el1.label + "'/>&nbsp;" +
-                            "<a href=\"" + BC_CONF.contextPath + "/occurrences/search?q=raw_taxon_name:%22" + encodeURIComponent(el1.label) +
-                            "%22\">" + el1.label + "</a> (" + el1.count + ")<br/>";
-                    });
+                var synListSize = 0;
+                var synList1 = "";
+                $.each(data.facetResults, function (k, el) {
+                    if (el.fieldName == "raw_taxon_name") {
+                        $.each(el.fieldResult, function (j, el1) {
+                            synListSize++;
+                            synList1 += "<input type='checkbox' name='raw_taxon_guid' id='rawTaxon_" + index + "_" + j +
+                                "' class='rawTaxonCheckBox' value='" + el1.label + "'/>&nbsp;" +
+                                "<a href=\"" + BC_CONF.contextPath + "/occurrences/search?q=raw_taxon_name:%22" + encodeURIComponent(el1.label) +
+                                "%22\">" + el1.label + "</a> (" + el1.count + ")<br/>";
+                        });
+                    }
+                });
+
+                if (synListSize == 0) {
+                    synList1 += "[no records found]";
                 }
-            });
 
-            if (synListSize == 0) {
-                synList1 += "[no records found]";
-            }
-
-            if (synListSize >= maxFacets) {
-                synList1 += "<div><br>Only showing the first " + maxFacets + " names<br>See the \"Scientific name (unprocessed)\" section in the \"Refine results\" column on the left for a complete list</div>";
-            }
+                if (synListSize >= maxFacets) {
+                    synList1 += "<div><br>Only showing the first " + maxFacets + " names<br>See the \"Scientific name (unprocessed)\" section in the \"Refine results\" column on the left for a complete list</div>";
+                }
 
             $clone.find('div.rawTaxaList').html(synList1);
             $clone.removeClass("hide");
@@ -280,9 +282,103 @@ function init() {
                 e.stopPropagation();
             });
 
+            $(el).html($clone);
         });
 
-        $(el).html($clone);
+        // Move dropdown to body when shown and restore when hidden
+        $clone.on('shown.bs.dropdown', function() {
+            var $btnGroup = $(this);
+            var $dropdownMenu = $btnGroup.find('.dropdown-menu');
+
+            // Store original parent and position info
+            $dropdownMenu.data('original-parent', $btnGroup);
+            $dropdownMenu.data('btn-group', $btnGroup);
+
+            // Calculate and set position
+            var offset = $btnGroup.offset();
+            var height = $btnGroup.outerHeight();
+
+            // Move to body and position absolutely
+            $dropdownMenu.appendTo('body').css({
+                position: 'absolute',
+                top: offset.top + height,
+                left: offset.left,
+                display: 'block',
+                zIndex: 1050
+            });
+
+            // Update position on window resize/scroll
+            var repositionDropdown = function() {
+                if ($btnGroup.hasClass('open')) {
+                    var newOffset = $btnGroup.offset();
+                    var newHeight = $btnGroup.outerHeight();
+                    $dropdownMenu.css({
+                        top: newOffset.top + newHeight,
+                        left: newOffset.left
+                    });
+                }
+            };
+
+            $(window).on('resize.dropdown scroll.dropdown', repositionDropdown);
+            $dropdownMenu.data('reposition-handler', repositionDropdown);
+
+            // Handle click outside to close dropdown
+            var closeDropdown = function(e) {
+                var $target = $(e.target);
+                // Check if click is outside both the dropdown menu and the button group
+                if (!$target.closest($dropdownMenu).length && !$target.closest($btnGroup).length) {
+                    $btnGroup.removeClass('open');
+                    $btnGroup.trigger('hide.bs.dropdown');
+                }
+            };
+
+            // Use timeout to avoid immediate triggering from the same click that opened it
+            setTimeout(function() {
+                $(document).on('click.dropdown-outside', closeDropdown);
+            }, 10);
+
+            $dropdownMenu.data('close-handler', closeDropdown);
+        });
+
+        // Handle cleanup when dropdown is closed
+        $clone.on('hide.bs.dropdown', function() {
+            console.log("Dropdown hide event triggered");
+            let thisId = $(this).attr("id");
+            var $dropdownMenu = $('#dropdown_' + thisId);
+            var $originalParent = $dropdownMenu.data('original-parent');
+            var repositionHandler = $dropdownMenu.data('reposition-handler');
+            var closeHandler = $dropdownMenu.data('close-handler');
+
+            // Remove all event handlers
+            if (repositionHandler) {
+                $(window).off('resize.dropdown scroll.dropdown', repositionHandler);
+            }
+            if (closeHandler) {
+                $(document).off('click.dropdown-outside', closeHandler);
+            }
+
+            if ($originalParent && $dropdownMenu.parent().is('body')) {
+                // Move dropdown back to original parent and reset styles
+                $dropdownMenu.appendTo($originalParent).attr('style', '');
+                $dropdownMenu.removeData('original-parent btn-group reposition-handler close-handler');
+            }
+        });
+
+        // Ensure toggle button properly triggers Bootstrap dropdown
+        $clone.find('.dropdown-toggle').on('click', function(e) {
+            console.log("Dropdown toggle clicked");
+            e.preventDefault();
+            e.stopPropagation();
+            var $btnGroup = $(this).closest('.btn-group');
+
+            if ($btnGroup.hasClass('open')) {
+                $btnGroup.removeClass('open');
+                $btnGroup.trigger('hide.bs.dropdown');
+            } else {
+                $btnGroup.addClass('open');
+                $btnGroup.trigger('shown.bs.dropdown');
+            }
+        });
     });
 
     // form validation for raw_taxon_name popup div with checkboxes
@@ -900,6 +996,36 @@ function init() {
             $.cookie(BC_CONF.expandKey, {expand: false});
         }
         getExcludedCounts();
+    });
+
+    // Query display toggle functionality
+    var $queryContainer = $('#queryDisplayContainer');
+    var $queryText = $('#queryDisplayText');
+    var $queryToggle = $('#queryDisplayToggle');
+
+    // Check if text is truncated on page load
+    if ($queryText.length > 0 && $queryText[0].scrollHeight > $queryText[0].clientHeight) {
+        $queryToggle.show();
+    }
+
+    // Handle toggle click
+    $queryToggle.on('click', function(e) {
+        e.preventDefault();
+        var $icon = $(this).find('i');
+        var $toggleText = $(this).find('.toggle-text');
+
+        if ($queryText.hasClass('query-text-truncated')) {
+            $queryText.removeClass('query-text-truncated').addClass('query-text-expanded');
+            $icon.removeClass('fa-caret-right').addClass('fa-caret-up');
+            $toggleText.text('Show less');
+        } else {
+            $queryText.removeClass('query-text-expanded').addClass('query-text-truncated');
+            $icon.removeClass('fa-caret-up').addClass('fa-caret-right');
+            $toggleText.text('Show more');
+
+            // scroll back to the top of the query text when collapsing
+            $queryContainer.animate({ scrollTop: 0 }, 'fast');
+        }
     });
 
     // when dlg pops, load and init status, set checkall status
@@ -1941,16 +2067,16 @@ var facetList = []
 
 function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets, reSort) {
     var jsonUri = BC_CONF.serverName + "/occurrences/facets" + BC_CONF.searchString +
-        "&facets=" + facetName + "&flimit=-1&pageSize=0";
+        "&facets=" + facetName + "&flimit=" + BC_CONF.facetListMax + "&pageSize=0&fsort=" + fsort;
 
-    if (reSort) {
+    if (reSort && (BC_CONF.facetListMax > 0 && facetList.length < BC_CONF.facetListMax)) {
         // remove any facet values in table
         $("table#fullFacets tr").not("tr.tableHead").not("#spinnerRow").remove();
 
         sortFacetList(fsort)
     }
 
-    if (!replaceFacets || reSort) {
+    if (!replaceFacets && !reSort) {
         $("tr#loadingRow").remove(); // remove the loading message
         $("tr#loadMore").remove(); // remove the load more records link
 
@@ -1958,6 +2084,9 @@ function loadFacetsContent(facetName, fsort, foffset, facetLimit, replaceFacets,
         return
     }
     $('#spinnerRow').show();
+
+    // remove any facet values in table
+    $("table#fullFacets tr").not("tr.tableHead").not("#spinnerRow").remove();
 
     $.getJSON(jsonUri, function (data) {
         if (data.totalRecords && data.totalRecords > 0) {
@@ -2022,6 +2151,9 @@ function addFacetItems(facetName, fsort, facetLimit, foffset, replaceFacets, res
             fsort + "' data-foffset='" + (offsetInt + flimitInt) +
             "'>Loading " + facetLimit + " more values...</a></td></tr>";
         $("table#fullFacets tbody").append(loadMore);
+    } else if (facetList.length == BC_CONF.facetListMax) {
+        var limitReached = "<tr><td colspan='3'>" + jQuery.i18n.prop('facets.limitReached', "More items not shown") + "</td></tr>";
+        $("table#fullFacets tbody").append(limitReached);
     }
 
     var tableHeight = $("#fullFacets tbody").height();

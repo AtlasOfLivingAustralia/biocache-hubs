@@ -57,6 +57,9 @@ class WebServicesService {
     @Value('${dataquality.enabled}')
     boolean dataQualityEnabled
 
+    @Value('${userdetails.timeout:10000}')
+    int userDetailsTimeout
+
     Map cachedGroupedFacets = [:] // keep a copy in case method throws an exception and then blats the saved version
 
     @PostConstruct
@@ -459,12 +462,17 @@ class WebServicesService {
      * @param url
      * @param wsAuth true to include the service's API Key in the request headers (uses property 'service.apiKey').  If using JWTs, instead sends a JWT Bearer tokens Default = false
      * @param includeUser true to include the userId and email in the request headers and the ALA-Auth cookie.  If using JWTs sends the current user's access token, if false only sends a ClientCredentials grant token for this apps client id Default = false.
+     * @param timeout timeout in milliseconds for the connection and read operations, default is -1 which means no timeout
      * @return the object we request or an JSON object containing error info in case of error
      */
-    JSONElement getJsonElements(String url, Boolean wsAuth = false, Boolean includeUser = false) {
+    JSONElement getJsonElements(String url, Boolean wsAuth = false, Boolean includeUser = false, int timeout = -1) {
 
         log.debug "(internal) getJson URL = " + url
         def conn = new URL(url).openConnection()
+        if (timeout >= 0) {
+            conn.setConnectTimeout(timeout)
+            conn.setReadTimeout(timeout)
+        }
         if (conn instanceof HttpURLConnection) {
             Map result = webService.get(url, [:], ContentType.APPLICATION_JSON, wsAuth, includeUser)
 
@@ -700,7 +708,7 @@ class WebServicesService {
         @Cacheable('longTermCache')
         def getCountryNameMap() {
             def countryUrl = "${grailsApplication.config.getProperty('userdetails.baseUrl')}/ws/registration/countries.json"
-            def countries = getJsonElements(countryUrl)
+            def countries = getJsonElements(countryUrl, false, false, userDetailsTimeout)
             return countries?.findAll { it -> beAValidCountryOrState(it as JSONObject) }?.collectEntries { [(String) it.get("name"), (String) it.get("isoCode")] }
         }
 
@@ -714,15 +722,17 @@ class WebServicesService {
          *
          * @param countryName
          * @return a list of String representing the names of states of that country
+         * @throws Exception if the web service call fails so that the bad result is not cached
          */
         @Cacheable('longTermCache')
-        List<String> getStates(String countryName) {
+        List<String> getStates(String countryName) throws Exception {
             List<String> matchingStates = []
             try {
+                // wrap webServicesService to use of the cache of getCountryNameMap
                 Map countryNameMap = grailsApplication.mainContext.getBean('webServicesService').getCountryNameMap()
                 // if a known country name
                 if (countryNameMap?.containsKey(countryName)) {
-                    def states = getJsonElements("${grailsApplication.config.getProperty('userdetails.baseUrl')}/ws/registration/states.json?country=" + countryNameMap.get(countryName))
+                    def states = getJsonElements("${grailsApplication.config.getProperty('userdetails.baseUrl')}/ws/registration/states.json?country=" + countryNameMap.get(countryName), false, false, userDetailsTimeout)
                     if (states) {
                         // only return valid states
                         matchingStates = states.findAll { it -> beAValidCountryOrState(it as JSONObject) }.collect { it -> (String) it.get("name") }
