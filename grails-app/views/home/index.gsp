@@ -114,9 +114,10 @@
                 }
             });
             // catch hash URIs and trigger tabs
-            if (location.hash !== '') {
-                $('.nav-tabs a[href="' + location.hash.replace('tab_','') + '"]').tab('show');
-                //$('.nav-tabs li a[href="' + location.hash.replace('tab_','') + '"]').click();
+            var rawHash = location.hash || '';
+            var hashMatch = rawHash.match(/^#(?:tab_)?([A-Za-z0-9_-]+)$/);
+            if (hashMatch) {
+                $('.nav-tabs a[href="#' + hashMatch[1] + '"]').tab('show');
             } else {
                 $('.nav-tabs a:first').tab('show');
             }

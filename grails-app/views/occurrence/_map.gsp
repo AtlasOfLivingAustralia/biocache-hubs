@@ -345,10 +345,10 @@
             objRight = wkt.toObject({color: '#bada55', translate: {x: 360} });
         } else if (isSpatialRadiusSearch()) {
             // draw circle onto map
-            obj = L.circle([$.url().param('lat'), $.url().param('lon')], ($.url().param('radius') * 1000), {color: '#bada55'});
+            obj = L.circle([getUrlParam('lat'), getUrlParam('lon')], (getUrlParam('radius') * 1000), {color: '#bada55'});
             // following lines were causing error in leaflet, so removed them. NdR Jan 2018.
-            // objLeft  = L.circle([$.url().param('lat'), $.url().param('lon')] - 360, ($.url().param('radius') * 1000), {color: '#bada55'});
-            // objRight = L.circle([$.url().param('lat'), $.url().param('lon')] + 360, ($.url().param('radius') * 1000), {color: '#bada55'});
+            // objLeft  = L.circle([getUrlParam('lat'), getUrlParam('lon')] - 360, (getUrlParam('radius') * 1000), {color: '#bada55'});
+            // objRight = L.circle([getUrlParam('lat'), getUrlParam('lon')] + 360, (getUrlParam('radius') * 1000), {color: '#bada55'});
         }
         if (obj) {
             MAP_VAR.map.addHandler('paramArea', L.PointClickHandler.extend({obj: obj}));
@@ -678,16 +678,13 @@
     /**
      * Spatial searches from Explore Your Area - draw a circle representing
      * the radius boundary for the search.
-     *
-     * Note: this function has a dependency on purl.js:
-     * https://github.com/allmarkedup/purl
      */
     function drawCircleRadius() {
         if (isSpatialRadiusSearch()) {
             // spatial search from EYA
-            var lat = $.url().param('lat');
-            var lng = $.url().param('lon');
-            var radius = $.url().param('radius');
+            var lat = getUrlParam('lat');
+            var lng = getUrlParam('lon');
+            var radius = getUrlParam('radius');
             var latLng = L.latLng(lat, lng);
             var circleOpts = {
                 weight: 1,
@@ -714,9 +711,9 @@
      */
     function isSpatialRadiusSearch() {
         var returnBool = false;
-        var lat = $.url().param('lat');
-        var lng = $.url().param('lon');
-        var radius = $.url().param('radius');
+        var lat = getUrlParam('lat');
+        var lng = getUrlParam('lon');
+        var radius = getUrlParam('radius');
 
         if (lat && lng && radius) {
             returnBool = true;
