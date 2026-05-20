@@ -101,6 +101,7 @@
     <a href="#"><g:message code="map.recordpopup" default="View records at this point"/></a>
 </div>
 
+<alatag:hubDecoder/> <!-- injects window.__hubDecode -->
 <asset:script type="text/javascript">
     //var mbAttr = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, imagery &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
 	//var mbUrl = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png';
@@ -114,8 +115,8 @@
     var MAP_VAR = {
         map : null,
         mappingUrl : "${mappingUrl}", // e.g. "https://biocache.ala.org.au/ws"
-        query : "${searchString}", // e.g. "?q=*%3A*&lat=-34.266296&lon=145.3838&radius=154.8"
-        queryDisplayString : "${queryDisplayString}", // e.g. "[all records] - within 154.8 km of point(-34.266, 145.384)"
+        query : window.__hubDecode("<alatag:b64 value="${searchString}"/>"), // e.g. "?q=*%3A*&lat=-34.266296&lon=145.3838&radius=154.8"
+        queryDisplayString : window.__hubDecode("<alatag:b64 value="${queryDisplayString}"/>"), // e.g. "[all records] - within 154.8 km of point(-34.266, 145.384)"
         center: [-23.6,133.6],
         defaultLatitude : "${grailsApplication.config.getProperty('map.defaultLatitude', String, '-23.6')}",
         defaultLongitude : "${grailsApplication.config.getProperty('map.defaultLongitude', String, '133.6')}",
@@ -936,7 +937,7 @@
         }
 
         var downloadUrl =  $('#mapDownloadUrl').val() +
-                '${raw(sr.urlParameters)}' +
+                window.__hubDecode("<alatag:b64 value="${sr?.urlParameters}"/>") +
                 '&extents=' + extents +  //need to retrieve the
                 '&format=' + $('#format').val() +
                 '&dpi=' + $('#dpi').val() +

@@ -64,6 +64,7 @@
 
     <asset:javascript src="autocomplete.js"/>
 
+    <alatag:hubDecoder/> <!-- injects window.__hubDecode -->
     <asset:script type="text/javascript">
         $(document).ready(function() {
             if (typeof BC_CONF != 'undefined' && BC_CONF.hasOwnProperty('contextPath')) {
@@ -179,8 +180,8 @@
         var MAP_VAR = {
             map : null,
             mappingUrl : "${mappingUrl}",
-            query : "${searchString}",
-            queryDisplayString : "${queryDisplayString}",
+            query : window.__hubDecode("<alatag:b64 value="${searchString}"/>"),
+            queryDisplayString : window.__hubDecode("<alatag:b64 value="${queryDisplayString}"/>"),
             //center: [-30.0,133.6],
             defaultLatitude : "${grailsApplication.config.getProperty('map.defaultLatitude', String, '-25.4')}",
             defaultLongitude : "${grailsApplication.config.getProperty('map.defaultLongitude', String, '133.6')}",

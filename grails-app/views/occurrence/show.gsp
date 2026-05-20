@@ -43,16 +43,17 @@
     </g:else>
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <alatag:hubDecoder/> <!-- injects window.__hubDecode -->
     <script type="text/javascript">
         // Global var OCC_REC to pass GSP data to external JS file
         var OCC_REC = {
-            userId: "${userId}",
-            userDisplayName: "${userDisplayName}",
+            userId:           window.__hubDecode("<alatag:b64 value="${userId}"/>"),
+            userDisplayName:  window.__hubDecode("<alatag:b64 value="${userDisplayName}"/>"),
             contextPath: "${request.contextPath}",
-            searchOffset: "${searchOffset}",
-            recordUuid: "${record.raw.rowKey}",
-            taxonRank: "${record.processed.classification.taxonRank}",
-            taxonConceptID: "${record.processed.classification.taxonConceptID}",
+            searchOffset:     window.__hubDecode("<alatag:b64 value="${searchOffset}"/>"),
+            recordUuid:       window.__hubDecode("<alatag:b64 value="${record?.raw?.rowKey}"/>"),
+            taxonRank:        window.__hubDecode("<alatag:b64 value="${record?.processed?.classification?.taxonRank}"/>"),
+            taxonConceptID:   window.__hubDecode("<alatag:b64 value="${record?.processed?.classification?.taxonConceptID}"/>"),
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",
             sensitiveDatasets: {
                 <g:each var="sds" in="${sensitiveDatasets}"
@@ -199,7 +200,7 @@
                                         <div>&nbsp;</div>
                                         <div class="col-sm-12 input-group">
                                             <g:set var="jsonurl" value="${alatag.getBiocacheAjaxUrl()}/occurrences/${uuid}"/>
-                                            <input type="text" class="form-control" value=${jsonurl} id="al4rcode" readonly/>
+                                            <input type="text" class="form-control" value="${jsonurl?.encodeAsHTML()}" id="al4rcode" readonly/>
                                             <span class="input-group-btn">
                                                 <button class="form-control btn btn-default tooltips" id="copy-al4r" data-toggle="tooltip" data-placement="bottom" title="${g.message(code:'list.copylinks.tooltip.copytoclipboard')}">
                                                     <alatag:message code="list.copylinks.dlg.copybutton.text" default="Copy URL"/>

@@ -893,16 +893,10 @@ function init() {
         }
 
         // fqs contains current fqs in url, it could be expanded or user specified
-        var fqList = getUrlParam('fq');
+        var fqList = getUrlParamAll('fq');
         var fqs = [];
-        if (fqList !== undefined) {
-            if (typeof fqList === "object") {
-                for (var i = 0; i < fqList.length; i++) {
-                    fqs.push(fqList[i]);
-                }
-            } else if (typeof fqList === "string") {
-                fqs.push(fqList);
-            }
+        for (var i = 0; i < fqList.length; i++) {
+            fqs.push(fqList[i]);
         }
 
         // 4. remove fqs from URL
@@ -1087,24 +1081,16 @@ function init() {
     function ifExpanded(categoryName, filters) {
         // get all disabled categories from the url
         var disableQualityFilterSet = new Set();
-        var disabledFilter = getUrlParam('disableQualityFilter');
-        if (typeof disabledFilter === "object") {
-            disableQualityFilterSet = new Set(disabledFilter);
-        } else if (typeof disabledFilter === "string") {
-            disableQualityFilterSet.add(disabledFilter);
-        }
+        var disabledFilter = getUrlParamAll('disableQualityFilter');
+        disableQualityFilterSet = new Set(disabledFilter);
 
         // if not disabled it can't be expanded
         if (!disableQualityFilterSet.has(categoryName)) return false;
 
         var fqSet = new Set();
 
-        var fqs = getUrlParam('fq');
-        if (typeof fqs === "object") {
-            fqSet = new Set(fqs);
-        } else if (typeof fqs === "string") {
-            fqSet.add(fqs);
-        }
+        var fqs = getUrlParamAll('fq');
+        fqSet = new Set(fqs);
 
         var len = filters.length;
         if ((len > 0) && filters.startsWith('[') && filters.endsWith(']')) {
@@ -1171,12 +1157,8 @@ function init() {
         // get all disabled categories from the url
         // we don't care disableall param
         var disableQualityFilterSet = new Set();
-        var disabledFilter = getUrlParam('disableQualityFilter');
-        if (typeof disabledFilter === "object") {
-            disableQualityFilterSet = new Set(disabledFilter);
-        } else if (typeof disabledFilter === "string") {
-            disableQualityFilterSet.add(disabledFilter);
-        }
+        var disabledFilter = getUrlParamAll('disableQualityFilter');
+        disableQualityFilterSet = new Set(disabledFilter);
 
         // get current url
         var url = $(location).attr('href');
@@ -1415,7 +1397,7 @@ function init() {
     var alertsUrlPrefix = BC_CONF.alertsUrl || "https://alerts.ala.org.au";
     $("a#alertNewRecords, a#alertNewAnnotations").click(function(e) {
         e.preventDefault();
-        var query = $("<p>"+BC_CONF.queryString+"</p>").text(); // strips <span> from string
+        var query = $("<p>").text(BC_CONF.queryString).text(); // strips tags from string safely
         var fqArray = decodeURIComponent(BC_CONF.facetQueries).split('&fq=').filter(function(e){ return e === 0 || e }); // remove empty elements
         if (fqArray) {
             var fqueryString = fqArray.join("; ");
@@ -1596,7 +1578,7 @@ function getParamList(paramName, paramValue) {
     var paramList = []
 
     var q = getUrlParam('q'); //$.query.get('q')[0];
-    var fqList = getUrlParam('fq'); //$.query.get('fq');
+    var fqList = getUrlParamAll('fq'); //$.query.get('fq');
     var sort = getUrlParam('sort');
     var dir = getUrlParam('dir') || getUrlParam('order'); // solr || grails (via pagination taglib)
     var wkt = getUrlParam('wkt');
@@ -1606,7 +1588,7 @@ function getParamList(paramName, paramValue) {
     var rad = getUrlParam('radius');
     var taxa = getUrlParam('taxa');
     var qualityProfile = getUrlParam('qualityProfile');
-    var disableQualityFilter = getUrlParam('disableQualityFilter');
+    var disableQualityFilter = getUrlParamAll('disableQualityFilter');
     var disableAllQualityFilters = getUrlParam('disableAllQualityFilters');
 
     // add query param
@@ -2197,7 +2179,7 @@ function loadFacet(facet) {
         var moreNode = $('#more_' + facet);
         var queryString = getParamList().join('&');
         var queryContextParam = (BC_CONF.queryContext) ? "&qc=" + BC_CONF.queryContext : "";
-        var url = BC_CONF.biocacheServiceUrl + '/occurrences/search?' + queryString + '&facets=' + facet + queryContextParam;
+        var url = BC_CONF.biocacheServiceUrl + '/occurrences/search?' + queryString + '&facets=' + facet + queryContextParam + "&pageSize=0";
 
         $.ajax({
             url: url,
