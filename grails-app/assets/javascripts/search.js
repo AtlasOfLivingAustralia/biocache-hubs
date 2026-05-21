@@ -2294,7 +2294,14 @@ function formatFieldName(fieldName){
 function formatFieldValue(facetName, item) {
     // surround with quotes: fq value if contains spaces but not for range queries
     var label = (item.displayLabel) ? item.displayLabel : item.label ;
-    if (label.indexOf("@") != -1) {
+    let skipFormatting = [
+        "dataResourceName", "dataResourceUid", "data_resource", "data_resource_uid",
+        "collectionName", "collectionUid", "collection_name", "collection_uid",
+        "institutionName", "institutionUid", "institution_name", "institution_uid",
+        "dataProviderName", "dataProviderUid", "data_provider", "data_provider_uid"].includes(facetName);
+    if (skipFormatting) {
+        return label;
+    } else if (label.indexOf("@") != -1) {
         label = label.substring(0,label.indexOf("@"));
     } else if (jQuery.i18n.prop(item.i18nCode).indexOf("[") == -1) {
         // i18n substitution

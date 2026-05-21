@@ -751,6 +751,17 @@ class OccurrenceTagLib {
             }
         }
 
+        def outputResultsLabelNotCapitalized = { cssClass, label, value, test ->
+            if (test) {
+                mb.span(class:'resultValue ' + cssClass, style: 'text-transform: none') {
+                    span(class:'resultsLabel') {
+                        mkp.yieldUnescaped(label + ": ")
+                    }
+                    mkp.yieldUnescaped(value)
+                }
+            }
+        }
+
         def outputDynamicResultsLabel = { label, value, test ->
             if (test) {
                 mb.span(class:'resultValue ' + label) {
@@ -823,9 +834,9 @@ class OccurrenceTagLib {
             }
 
             p(class:'rowB') {
-                outputResultsLabel('institutionName', alatag.message(code:"record.institutionName.label"), alatag.message(code:occurrence.institutionName), occurrence.institutionName)
-                outputResultsLabel('collectionName', alatag.message(code:"record.collectionName.label"), alatag.message(code:occurrence.collectionName), occurrence.collectionName)
-                outputResultsLabel('dataResourceName', alatag.message(code:"record.dataResourceName.label"), alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
+                outputResultsLabelNotCapitalized('institutionName', alatag.message(code:"record.institutionName.label"), alatag.message(code:occurrence.institutionName), occurrence.institutionName)
+                outputResultsLabelNotCapitalized('collectionName', alatag.message(code:"record.collectionName.label"), alatag.message(code:occurrence.collectionName), occurrence.collectionName)
+                outputResultsLabelNotCapitalized('dataResourceName', alatag.message(code:"record.dataResourceName.label"), alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
                 outputResultsLabel('basisofrecord', alatag.message(code:"record.basisofrecord.label"), alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
                 outputResultsLabel('catalognumber', alatag.message(code:"record.catalogNumber.label"), "${occurrence.raw_collectionCode ? occurrence.raw_collectionCode + ':' : ''}${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber)
                 a(
