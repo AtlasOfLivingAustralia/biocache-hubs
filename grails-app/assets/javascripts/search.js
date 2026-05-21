@@ -139,7 +139,7 @@ function init() {
     // remove *:* query from search bar
     //var q = getUrlParam('q');
     var q =  getUrlParam('q');
-    if (q && q[0] == "*:*") {
+    if (q && q == "*:*") {
         $(":input#solrQuery").val("");
     }
 
