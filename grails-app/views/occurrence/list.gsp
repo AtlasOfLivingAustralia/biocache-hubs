@@ -28,6 +28,7 @@
 </g:if>
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<alatag:hubDecoder/> <!-- injects window.__hubDecode -->
 <script type="text/javascript">
     // single global var for app conf settings
     <g:set var="fqParams" value="${(params.fq) ? "&fq=" + params.list('fq')?.join('&fq=') : ''}"/>
@@ -36,12 +37,12 @@
     var BC_CONF = {
         contextPath: "${request.contextPath}",
             serverName: "<g:createLink absolute="true" uri="" />",
-            searchString: "${searchString}", //  JSTL var can contain double quotes // .encodeAsJavaScript()
-            searchRequestParams: "${searchRequestParams.encodeAsURL()}",
-            facetQueries: "${fqParams.encodeAsURL()}",
-            facetDownloadQuery: "${searchString}",
+            searchString:        window.__hubDecode("<alatag:b64 value="${searchString}"/>"),
+            searchRequestParams: window.__hubDecode("<alatag:b64 value="${searchRequestParams?.encodeAsURL()}"/>"),
+            facetQueries:        window.__hubDecode("<alatag:b64 value="${fqParams?.encodeAsURL()}"/>"),
+            facetDownloadQuery:  window.__hubDecode("<alatag:b64 value="${searchString}"/>"),
             maxFacets: "${grailsApplication.config.getProperty('facets.max', String, '4')}",
-            queryString: "${queryDisplay.encodeAsJavaScript()}",
+            queryString:         window.__hubDecode("<alatag:b64 value="${queryDisplay}"/>"),
             bieWebappUrl: "${grailsApplication.config.getProperty('bie.baseUrl')}",
             bieWebServiceUrl: "${grailsApplication.config.getProperty('bieService.baseUrl')}",
             biocacheServiceUrl: "${biocacheServiceUrl}",
@@ -70,7 +71,7 @@
 ' Image does not support the identification of the species, subject is unclear and identifying features are difficult to see or not visible.<br/></div>',
             savePreferredSpeciesListUrl: "${createLink(controller: 'imageClient', action: 'saveImageToSpeciesList')}",
             getPreferredSpeciesListUrl:  "${createLink(controller: 'imageClient', action: 'getPreferredSpeciesImageList')}",
-            excludeCountUrl: "${createLink(controller: 'occurrence', action: 'dataQualityExcludeCounts', params: params.clone()).encodeAsJavaScript()}",
+            excludeCountUrl: window.__hubDecode("<alatag:b64 value="${createLink(controller: 'occurrence', action: 'dataQualityExcludeCounts', params: params.clone())}"/>"),
             expandProfileDetails: ${grailsApplication.config.getProperty('dataquality.enabled', Boolean, false) ? expandProfileDetails : true},
             userId: "${userId}",
             prefKey: "${(grailsApplication.config.getProperty("dataquality.prefkey", String, "dqUserProfile"))}",
@@ -173,8 +174,8 @@
                 </p>
                 %{-- Provide a sensible alternative query that may return results --}%
                 <p><g:message code="list.02.p03.01" default="Trying search for"/>
-                   <a href="?q=text:${params.taxa?:params.q}"><g:message code="list.02.p03.02"
-                          default="text"/>:${params.taxa?:params.q}</a>
+                   <a href="?q=text:${(params.taxa?:params.q)?.encodeAsURL()}"><g:message code="list.02.p03.02"
+                          default="text"/>:${(params.taxa?:params.q)?.encodeAsHTML()}</a>
                 </p>
             </g:if>
             %{-- queryDisplay starts with "text:" and contains multiple terms (and no OR operator) --}%
@@ -193,7 +194,7 @@
             %{-- fall-back for remaining searches --}%
             <g:else>
                 <p><g:message code="list.03.p03" default="No records found for"/>
-                    <span class="queryDisplay"> ${queryDisplay ?: params.q ?: params.taxa}</span>
+                    <span class="queryDisplay"> ${queryDisplay ?: params.q?.encodeAsHTML() ?: params.taxa?.encodeAsHTML()}</span>
                     <g:if test="${params.fq}">
                         <g:message code="list.03.p04" default="with filters: "/>
                         <g:each var="fq" in="${params.list('fq')}" status="i">
@@ -312,7 +313,7 @@
                                     <div class="modal-body">
                                         <div class="col-sm-12 input-group">
                                             <g:set var="jsonurl" value="${biocacheServiceUrl}/occurrences/search${searchString}"/>
-                                            <input type="text" class="form-control" value=${jsonurl} id="al4rcode" readonly/>
+                                            <input type="text" class="form-control" value="${jsonurl?.encodeAsHTML()}" id="al4rcode" readonly/>
                                             <span class="input-group-btn">
                                                 <button class="form-control btn" id="copy-al4r">
                                                     <alatag:message code="list.copylinks.dlg.copybutton.text" default="{JSON}"/>
@@ -332,7 +333,7 @@
                         <strong>
                             <g:set var="queryToShow"><alatag:sanitizeContent>${raw(queryDisplay)}</alatag:sanitizeContent></g:set>
                             <span id="queryDisplayText" class="query-text-truncated">
-                                ${raw(queryToShow) ?: params.taxa ?: params.q}
+                                ${raw(queryToShow) ?: params.taxa?.encodeAsHTML() ?: params.q?.encodeAsHTML()}
                             </span>
                         </strong>
                     </span>
@@ -455,7 +456,7 @@
                                             </div>
                                             <div class="modal-body">
                                                 <div id="dynamic" class="tableContainer">
-                                                    <form name="filterRefineForm" id="filterRefineForm" data-profile="${params.qualityProfile}">
+                                                    <form name="filterRefineForm" id="filterRefineForm" data-profile="${params.qualityProfile?.encodeAsHTML()}">
                                                         <table class="table table-bordered table-condensed table-striped scrollTable">
                                                             <thead class="fixedHeader">
                                                             <tr class="tableHead">
@@ -608,7 +609,7 @@
                                                     <p id="excluded"><i class="fa fa-circle-o-notch fa-spin exclude-loader"></i><span class="exclude-count-label"></span> <g:message code="dq.excluded.count" default="records are excluded by this category"/></p>
                                                     <a id="view-excluded" class="btn btn-link" href="#view-excluded" target="_blank"><g:message code="dq.view.excluded" default="View excluded records"/></a>
                                                     <p id="filter-value"></p>
-                                                    <button id='expandfilters' class="btn btn-link tooltips" data-dismiss="modal" data-profile=${params.qualityProfile} title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Expand and edit filters"/></button>
+                                                    <button id='expandfilters' class="btn btn-link tooltips" data-dismiss="modal" data-profile="${params.qualityProfile?.encodeAsHTML()}" title="<g:message code="dq.pop.out" default="Convert this data quality filter into separate filter queries you can include/exclude individually"></g:message>"><g:message code="dq.categoryinfo.dlg.expandbutton.text" default="Expand and edit filters"/></button>
 
                                                     <table class="table table-bordered table-condensed table-striped scrollTable" id="DQDetailsTable">
                                                         <thead class="fixedHeader">
