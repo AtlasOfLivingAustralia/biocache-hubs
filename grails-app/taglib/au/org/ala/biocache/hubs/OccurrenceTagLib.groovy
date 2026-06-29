@@ -751,6 +751,17 @@ class OccurrenceTagLib {
             }
         }
 
+        def outputResultsLabelNotCapitalized = { cssClass, label, value, test ->
+            if (test) {
+                mb.span(class:'resultValue ' + cssClass, style: 'text-transform: none') {
+                    span(class:'resultsLabel') {
+                        mkp.yieldUnescaped(label + ": ")
+                    }
+                    mkp.yieldUnescaped(value)
+                }
+            }
+        }
+
         def outputDynamicResultsLabel = { label, value, test ->
             if (test) {
                 mb.span(class:'resultValue ' + label) {
@@ -823,9 +834,9 @@ class OccurrenceTagLib {
             }
 
             p(class:'rowB') {
-                outputResultsLabel('institutionName', alatag.message(code:"record.institutionName.label"), alatag.message(code:occurrence.institutionName), occurrence.institutionName)
-                outputResultsLabel('collectionName', alatag.message(code:"record.collectionName.label"), alatag.message(code:occurrence.collectionName), occurrence.collectionName)
-                outputResultsLabel('dataResourceName', alatag.message(code:"record.dataResourceName.label"), alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
+                outputResultsLabelNotCapitalized('institutionName', alatag.message(code:"record.institutionName.label"), alatag.message(code:occurrence.institutionName), occurrence.institutionName)
+                outputResultsLabelNotCapitalized('collectionName', alatag.message(code:"record.collectionName.label"), alatag.message(code:occurrence.collectionName), occurrence.collectionName)
+                outputResultsLabelNotCapitalized('dataResourceName', alatag.message(code:"record.dataResourceName.label"), alatag.message(code:occurrence.dataResourceName), !occurrence.collectionName && occurrence.dataResourceName)
                 outputResultsLabel('basisofrecord', alatag.message(code:"record.basisofrecord.label"), alatag.message(code:occurrence.basisOfRecord), occurrence.basisOfRecord)
                 outputResultsLabel('catalognumber', alatag.message(code:"record.catalogNumber.label"), "${occurrence.raw_collectionCode ? occurrence.raw_collectionCode + ':' : ''}${occurrence.raw_catalogNumber}", occurrence.raw_catalogNumber)
                 a(
@@ -1098,7 +1109,7 @@ class OccurrenceTagLib {
         String output = message.replaceAll(/apiKey=[a-z0-9_\-]*/, "")
         log.debug "stripApiKey input = ${message}"
         log.debug "stripApiKey output = ${output}"
-        out << output
+        out << sanitizeBodyText(output)
     }
 
     @Value('${dataquality.enabled}')
@@ -1292,5 +1303,30 @@ class OccurrenceTagLib {
                 span alatag.message(code:"list.resultsreturned.span.returnedtext1", default:'results for')
             }
         }
+    }
+
+    /**
+     * Global js decoder to assist in decoding base64 encoded gsp input
+     */
+    def hubDecoder = { attrs ->
+        out << '<script type="text/javascript">'
+        out << 'window.__hubDecode = window.__hubDecode || function (b64) {'
+        out << '  try {'
+        out << '    var bin = atob(b64);'
+        out << '    var bytes = new Uint8Array(bin.length);'
+        out << '    for (var i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }'
+        out << '    return new TextDecoder("utf-8").decode(bytes);'
+        out << '  } catch (e) { return ""; }'
+        out << '};'
+        out << '</script>'
+    }
+
+    /**
+     * Base64 encode a string for gsp output
+     */
+    def b64 = { attrs ->
+        def v = attrs.value
+        def s = (v == null) ? '' : v.toString()
+        out << s.getBytes('UTF-8').encodeBase64().toString()
     }
 }

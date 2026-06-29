@@ -1,5 +1,5 @@
 buildscript {
-    version "8.2.0"
+    version "8.3.0-SNAPSHOT"
     group "au.org.ala.plugins.grails"
 }
 

@@ -101,6 +101,7 @@
     <a href="#"><g:message code="map.recordpopup" default="View records at this point"/></a>
 </div>
 
+<alatag:hubDecoder/> <!-- injects window.__hubDecode -->
 <asset:script type="text/javascript">
     //var mbAttr = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, imagery &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
 	//var mbUrl = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png';
@@ -114,8 +115,8 @@
     var MAP_VAR = {
         map : null,
         mappingUrl : "${mappingUrl}", // e.g. "https://biocache.ala.org.au/ws"
-        query : "${searchString}", // e.g. "?q=*%3A*&lat=-34.266296&lon=145.3838&radius=154.8"
-        queryDisplayString : "${queryDisplayString}", // e.g. "[all records] - within 154.8 km of point(-34.266, 145.384)"
+        query : window.__hubDecode("<alatag:b64 value="${searchString}"/>"), // e.g. "?q=*%3A*&lat=-34.266296&lon=145.3838&radius=154.8"
+        queryDisplayString : window.__hubDecode("<alatag:b64 value="${queryDisplayString}"/>"), // e.g. "[all records] - within 154.8 km of point(-34.266, 145.384)"
         center: [-23.6,133.6],
         defaultLatitude : "${grailsApplication.config.getProperty('map.defaultLatitude', String, '-23.6')}",
         defaultLongitude : "${grailsApplication.config.getProperty('map.defaultLongitude', String, '133.6')}",
@@ -345,10 +346,10 @@
             objRight = wkt.toObject({color: '#bada55', translate: {x: 360} });
         } else if (isSpatialRadiusSearch()) {
             // draw circle onto map
-            obj = L.circle([$.url().param('lat'), $.url().param('lon')], ($.url().param('radius') * 1000), {color: '#bada55'});
+            obj = L.circle([getUrlParam('lat'), getUrlParam('lon')], (getUrlParam('radius') * 1000), {color: '#bada55'});
             // following lines were causing error in leaflet, so removed them. NdR Jan 2018.
-            // objLeft  = L.circle([$.url().param('lat'), $.url().param('lon')] - 360, ($.url().param('radius') * 1000), {color: '#bada55'});
-            // objRight = L.circle([$.url().param('lat'), $.url().param('lon')] + 360, ($.url().param('radius') * 1000), {color: '#bada55'});
+            // objLeft  = L.circle([getUrlParam('lat'), getUrlParam('lon')] - 360, (getUrlParam('radius') * 1000), {color: '#bada55'});
+            // objRight = L.circle([getUrlParam('lat'), getUrlParam('lon')] + 360, (getUrlParam('radius') * 1000), {color: '#bada55'});
         }
         if (obj) {
             MAP_VAR.map.addHandler('paramArea', L.PointClickHandler.extend({obj: obj}));
@@ -678,16 +679,13 @@
     /**
      * Spatial searches from Explore Your Area - draw a circle representing
      * the radius boundary for the search.
-     *
-     * Note: this function has a dependency on purl.js:
-     * https://github.com/allmarkedup/purl
      */
     function drawCircleRadius() {
         if (isSpatialRadiusSearch()) {
             // spatial search from EYA
-            var lat = $.url().param('lat');
-            var lng = $.url().param('lon');
-            var radius = $.url().param('radius');
+            var lat = getUrlParam('lat');
+            var lng = getUrlParam('lon');
+            var radius = getUrlParam('radius');
             var latLng = L.latLng(lat, lng);
             var circleOpts = {
                 weight: 1,
@@ -714,9 +712,9 @@
      */
     function isSpatialRadiusSearch() {
         var returnBool = false;
-        var lat = $.url().param('lat');
-        var lng = $.url().param('lon');
-        var radius = $.url().param('radius');
+        var lat = getUrlParam('lat');
+        var lng = getUrlParam('lon');
+        var radius = getUrlParam('radius');
 
         if (lat && lng && radius) {
             returnBool = true;
@@ -939,7 +937,7 @@
         }
 
         var downloadUrl =  $('#mapDownloadUrl').val() +
-                '${raw(sr.urlParameters)}' +
+                window.__hubDecode("<alatag:b64 value="${sr?.urlParameters}"/>") +
                 '&extents=' + extents +  //need to retrieve the
                 '&format=' + $('#format').val() +
                 '&dpi=' + $('#dpi').val() +

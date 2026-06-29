@@ -174,7 +174,7 @@ function getParamsForCircle(circle) {
 }
 
 function getExistingParams() {
-    var paramsObj = $.url(MAP_VAR.query).param();
+    var paramsObj = Object.fromEntries(new URLSearchParams(MAP_VAR.query));
     if (!paramsObj.q) {
         paramsObj.q = "*:*";
     }

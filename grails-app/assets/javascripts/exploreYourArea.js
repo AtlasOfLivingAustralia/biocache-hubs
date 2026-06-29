@@ -17,7 +17,7 @@
 /*
  * // require jquery
 //= require jquery_i18n.js
-//= require purl.js
+//= require urlParams.js
 //= require leaflet/leaflet.js
 //= require leaflet-plugins/layer/tile/Google.js
 //= require leaflet-plugins/spin/spin.min.js
@@ -132,36 +132,28 @@ function init() {
 
     // Handle back button and saved URLs
 
-    var defaultParam = $.url().param('default'); // requires JS import: purl.js
+    var defaultParam = getUrlParam('default'); // see urlParams.js
     var encodedHash = getEncodedHash();
 
     if (defaultParam) {
         initialize();
-    } else if ( $.url().param('lat') &&  $.url().param('lon') && $.url().param('radius')) {
+    } else if (getUrlParam('lat') && getUrlParam('lon') && getUrlParam('radius')) {
         // triggered if user has clicked "return to search results" from download confirmation page
         // URL with have params: lat, lon, radius & fq
         // e.g. q=*:*&lat=-35.2509&lon=149.1638&radius=1&fq=spatiallyValid:true&fq=species_group:Insects
-        var lat = $.url().param('lat');
-        var lon = $.url().param('lon');
-        var radiusInMetres = $.url().param('radius') * 1000; // assume radius is in km (SOLR radius param)
+        var lat = getUrlParam('lat');
+        var lon = getUrlParam('lon');
+        var radiusInMetres = getUrlParam('radius') * 1000; // assume radius is in km (SOLR radius param)
         var radius = zoomForRadius[radiusInMetres];
         var species_group;
-        var fqs = $.url().param('fq'); // can be an array or string
+        var fqs = getUrlParamAll('fq'); // always an array (possibly empty)
 
-        if (Array.isArray(fqs)) {
-            // multiple fq params
-            fqs.forEach(function(fq) {
-                var parts = fq.split(":"); // e.g. speciesGroup:Insects
-                if (parts[0] === "species_group") {
-                    species_group = parts[1];
-                }
-            });
-        } else if (fqs) {
-            var parts = fqs.split(":");
+        fqs.forEach(function(fq) {
+            var parts = fq.split(":"); // e.g. speciesGroup:Insects
             if (parts[0] === "species_group") {
                 species_group = parts[1];
             }
-        }
+        });
 
         // strip params from URL
         window.history.replaceState(null, null, window.location.pathname);

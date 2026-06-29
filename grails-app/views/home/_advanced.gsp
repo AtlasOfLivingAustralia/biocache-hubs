@@ -1,14 +1,14 @@
 <%@ page import="au.org.ala.biocache.hubs.FacetsName; org.apache.commons.lang.StringUtils" contentType="text/html;charset=UTF-8" %>
 <g:render template="/layouts/global"/>
 <form class="form-horizontal" name="advancedSearchForm" id="advancedSearchForm" action="${request.contextPath}/advancedSearch" method="POST">
-    <input type="text" id="solrQuery" name="q" style="position:absolute;left:-9999px;" value="${params.q}"/>
+    <input type="text" id="solrQuery" name="q" style="position:absolute;left:-9999px;" value="${params.q?.encodeAsHTML()}"/>
     <input type="hidden" name="nameType" value="${grailsApplication.config.getProperty('advancedTaxaField', String, 'matched_name_children')}"/>
 
     <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.title01" default="Find records that have"/></h4>
     <div class="form-group">
         <label class="col-md-2 control-label" for="text"><g:message code="advancedsearch.table01col01.title" default="ALL of these words (full text)"/></label>
         <div class="col-md-6">
-            <input type="text" name="text" id="text" class="dataset form-control" placeholder="" size="80" value="${params.text}"/>
+            <input type="text" name="text" id="text" class="dataset form-control" placeholder="" size="80" value="${params.text?.encodeAsHTML()}"/>
         </div>
     </div>
 
