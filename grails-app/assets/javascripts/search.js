@@ -189,7 +189,7 @@ function init() {
         if (selectedFacets.length > 0 && selectedFacets.length  <= BC_CONF.maxFacets) {
             // save facets to the user_facets cookie as string
             $.cookie.json = false;
-            $.cookie("user_facets", selectedFacets, { expires: 7 });
+            $.cookie("user_facets", selectedFacets, { expires: 365 });
             // reload page
             document.location.reload(true);
         } else if (selectedFacets.length > BC_CONF.maxFacets) {
@@ -209,6 +209,9 @@ function init() {
     // load stored prefs from cookie
     var userFacets = $.cookie("user_facets");
     if (userFacets) {
+        // re-set the same value to extend expiry to another year
+        $.cookie("user_facets", userFacets, { expires: 365 });
+
         $(":input.facetOpts").removeAttr("checked");
         var facetList = userFacets.split(",");
         for (i in facetList) {
