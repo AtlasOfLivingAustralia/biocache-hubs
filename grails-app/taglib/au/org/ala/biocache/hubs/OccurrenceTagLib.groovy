@@ -730,7 +730,7 @@ class OccurrenceTagLib {
      * 'CC-BY-NC-ND 4.0 (Int)', 'CC-BY 3.0 (Au)', 'CC-BY-NC-Aus', 'CC-BY-SA 4.0 (Int)', etc.).
      */
     private static final Pattern CC_BY_PATTERN = Pattern.compile(
-        /^CC-?BY(-NC-ND|-NC-SA|-NC|-ND|-SA)?[\s-]*(\d+(?:\.\d+)?)?\s*[\(-]?([A-Za-z]+)?\)?$/,
+        /^CC[\s-]?BY(-NC-ND|-NC-SA|-NC|-ND|-SA)?[\s-]*(\d+(?:\.\d+)?)?\s*[\(-]?([A-Za-z]+)?\)?$/,
         Pattern.CASE_INSENSITIVE
     )
 
