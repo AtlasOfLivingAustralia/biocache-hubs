@@ -316,6 +316,26 @@
         </alatag:occurrenceTableRow>
     </g:if>
 </g:if>
+
+<!-- License -->
+<g:if test="${record.processed.attribution.license || record.raw.attribution.license}">
+    <alatag:occurrenceTableRow annotate="true" section="dataset" fieldCode="license" fieldName="License" raw="true">
+        ${fieldsMap.put("license", true)}
+        <g:if test="${record.processed.attribution.license && record.raw.attribution.license && record.processed.attribution.license == record.raw.attribution.license}">
+            <alatag:formatLicense license="${record.processed.attribution.license}"/>
+        </g:if>
+        <g:elseif test="${record.processed.attribution.license}">
+            <alatag:formatLicense license="${record.processed.attribution.license}"/>
+            <g:if test="${record.raw.attribution.license}">
+                <br/><span class="originalValue"><g:message code="alatag.supplied.as" default="Supplied as"/> "${record.raw.attribution.license.encodeAsHTML()}"</span>
+            </g:if>
+        </g:elseif>
+        <g:else>
+            <alatag:formatLicense license="${record.raw.attribution.license}"/>
+        </g:else>
+    </alatag:occurrenceTableRow>
+</g:if>
+
 <!-- output any tags not covered already (excluding those in dwcExcludeFields) -->
 <alatag:formatExtraDwC compareRecord="${compareRecord}" fieldsMap="${fieldsMap}" group="Attribution" exclude="${dwcExcludeFields}"/>
 <alatag:formatExtraDwC compareRecord="${compareRecord}" fieldsMap="${fieldsMap}" group="Occurrence" exclude="${dwcExcludeFields}"/>

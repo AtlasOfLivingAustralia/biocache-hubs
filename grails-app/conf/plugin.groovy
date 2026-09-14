@@ -35,6 +35,38 @@ dataquality.recordCountCacheSpec = 'expireAfterWrite=1d'
 dataquality.prefkey = 'dqUserProfile'
 dataquality.expandKey = 'dqDetailExpand'
 
+// Lookup table for licences. This lookup falls back to OccurrenceTagLib.parseCcByLicense when no match or img is found.
+license.lookup = [
+    [pattern: '^CC0$', label: 'CC0',
+     img: 'https://licensebuttons.net/p/zero/1.0/88x31.png',
+     url: 'https://creativecommons.org/publicdomain/zero/1.0/'],
+    [pattern: '^PDM$', label: 'Public Domain Mark',
+     img: 'https://licensebuttons.net/p/mark/1.0/88x31.png',
+     url: 'https://creativecommons.org/publicdomain/mark/1.0/'],
+    [pattern: '.*', label: '', img: '', url: '']
+]
+
+// Settings used by the generic 'CC-BY...' pattern-matcher (parseCcByLicense) to build
+// licensebuttons.net/creativecommons.org URLs for values not explicitly overridden above.
+// Version used when a value has no version number at all (e.g. 'CC-BY', 'CC-BY-NC').
+license.ccBy.defaultVersion = '4.0'
+// Version assumed when a jurisdiction is given but no version (e.g. 'CC-BY-Aus').
+// Ported (country-specific) legal code has historically only existed for 3.0.
+license.ccBy.portedVersion = '3.0'
+// Aliases for jurisdictions (case-insensitive) to normalise values like 'CC-BY-AU' and 'CC-BY-Australia' to the canonical 'au' used in licensebuttons.net/creativecommons.org URLs.
+license.ccBy.jurisdictions = [
+    au           : 'au',
+    aus          : 'au',
+    australia    : 'au',
+    nz           : 'nz',
+    nzl          : 'nz',
+    newzealand   : 'nz',
+    int          : '',
+    intl         : '',
+    international: '',
+    unported     : ''
+]
+
 // skin settings
 organisation.baseUrl = "https://www.ala.org.au"
 skin.layout = "generic"

@@ -141,3 +141,7 @@ publishing {
         }
     }
 }
+
+test {
+    useJUnitPlatform()
+}

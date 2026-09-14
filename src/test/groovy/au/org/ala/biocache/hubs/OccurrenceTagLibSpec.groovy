@@ -34,6 +34,11 @@ class OccurrenceTagLibSpec extends Specification implements TagLibUnitTest<Occur
         config.dataResourceUuid.alaSightings = "dr364"
         config.dataResourceUuid.iNaturalist = "dr1411"
         config.dataResourceUuid.flickr = "dr360"
+        config.license.lookup = [
+            [pattern: '^CC0$', label: 'CC0', img: 'https://licensebuttons.net/p/zero/1.0/88x31.png', url: 'https://creativecommons.org/publicdomain/zero/1.0/'],
+            [pattern: '^PDM$', label: 'Public Domain Mark', img: 'https://licensebuttons.net/p/mark/1.0/88x31.png', url: 'https://creativecommons.org/publicdomain/mark/1.0/'],
+            [pattern: '.*', label: '', img: '', url: '']
+        ]
     }}
 
     void "test sanitizeBodyText plain text"() {
@@ -161,7 +166,7 @@ class OccurrenceTagLibSpec extends Specification implements TagLibUnitTest<Occur
         given:
             grailsApplication.config.iNaturalist.baseUrl = "https://inaturlist.ala.org.au"
         when:
-            def html = tagLib.getLinkForUserId(userName:"peggydnew", dataResourceUid: "dr1411")
+            def html = tagLib.getLinkForUserId(userName:"peggydnew", userId: "peggydnew", dataResourceUid: "dr1411")
         then:
             html == "<a href=\"https://inaturlist.ala.org.au/people/peggydnew\">peggydnew</a>"
     }
@@ -193,5 +198,154 @@ class OccurrenceTagLibSpec extends Specification implements TagLibUnitTest<Occur
         true    | false   | [fq: ['a:z', 'c:d'], disableQualityFilter: ['qwerty', 'asdf']] | '<a href="/occurrence/search?q=*%3A*&amp;fq=a%3Az&amp;fq=c%3Ad&amp;disableQualityFilter=qwerty" class="tooltips" title="asdf">FOO</a>'
         false   | true    | [fq: ['x:y', 'y:z'], disableQualityFilter: ['qwerty']] | '<a href="/occurrence/search?q=*%3A*&amp;fq=x%3Ay&amp;fq=y%3Az&amp;fq=a%3Ab&amp;fq=c%3Ad&amp;disableQualityFilter=qwerty&amp;disableQualityFilter=asdf" class="tooltips" title="asdf">FOO</a>'
         false   | false   | [fq: ['x:y', 'y:z'], disableQualityFilter: 'qwerty'] | '<a href="/occurrence/search?q=*%3A*&amp;fq=x%3Ay&amp;fq=y%3Az&amp;disableQualityFilter=qwerty&amp;disableQualityFilter=asdf" class="tooltips" title="asdf">FOO</a>'
+    }
+
+    @Unroll
+    void 'test parseCcByLicense recognises "#license"'(String license, String label, String img, String url) {
+        when:
+        def entry = tagLib.parseCcByLicense(license)
+
+        then:
+        entry.label == label
+        entry.img == img
+        entry.url == url
+
+        where:
+        license                    || label            | img                                                              | url
+        'CC-BY'                    || 'CC BY'          | 'https://licensebuttons.net/l/by/4.0/88x31.png'                 | 'https://creativecommons.org/licenses/by/4.0/'
+        'cc-by'                    || 'CC BY'          | 'https://licensebuttons.net/l/by/4.0/88x31.png'                 | 'https://creativecommons.org/licenses/by/4.0/'
+        'CC-BY 3.0 (Au)'           || 'CC BY'          | 'https://licensebuttons.net/l/by/3.0/au/88x31.png'              | 'https://creativecommons.org/licenses/by/3.0/au/'
+        'CC-BY 3.0 (Int)'          || 'CC BY'          | 'https://licensebuttons.net/l/by/3.0/88x31.png'                 | 'https://creativecommons.org/licenses/by/3.0/'
+        'CC-BY 3.0 (NZ)'           || 'CC BY'          | 'https://licensebuttons.net/l/by/3.0/nz/88x31.png'              | 'https://creativecommons.org/licenses/by/3.0/nz/'
+        'CC-BY 4.0 (Au)'           || 'CC BY'          | 'https://licensebuttons.net/l/by/4.0/88x31.png'                 | 'https://creativecommons.org/licenses/by/4.0/'
+        'CC-BY 4.0 (Int)'          || 'CC BY'          | 'https://licensebuttons.net/l/by/4.0/88x31.png'                 | 'https://creativecommons.org/licenses/by/4.0/'
+        'CC-BY-Aus'                || 'CC BY'          | 'https://licensebuttons.net/l/by/3.0/au/88x31.png'              | 'https://creativecommons.org/licenses/by/3.0/au/'
+        'CC-BY-Int'                || 'CC BY'          | 'https://licensebuttons.net/l/by/4.0/88x31.png'                 | 'https://creativecommons.org/licenses/by/4.0/'
+        'CC-BY-NC 2.5 (Int)'       || 'CC BY-NC'       | 'https://licensebuttons.net/l/by-nc/2.5/88x31.png'              | 'https://creativecommons.org/licenses/by-nc/2.5/'
+        'CC-BY-NC 3.0 (Au)'        || 'CC BY-NC'       | 'https://licensebuttons.net/l/by-nc/3.0/au/88x31.png'           | 'https://creativecommons.org/licenses/by-nc/3.0/au/'
+        'CC-BY-NC 3.0 (Aus)'       || 'CC BY-NC'       | 'https://licensebuttons.net/l/by-nc/3.0/au/88x31.png'           | 'https://creativecommons.org/licenses/by-nc/3.0/au/'
+        'CC-BY-NC 3.0 (Int)'       || 'CC BY-NC'       | 'https://licensebuttons.net/l/by-nc/3.0/88x31.png'              | 'https://creativecommons.org/licenses/by-nc/3.0/'
+        'CC-BY-NC 4.0 (Int)'       || 'CC BY-NC'       | 'https://licensebuttons.net/l/by-nc/4.0/88x31.png'              | 'https://creativecommons.org/licenses/by-nc/4.0/'
+        'CC-BY-NC-Aus'             || 'CC BY-NC'       | 'https://licensebuttons.net/l/by-nc/3.0/au/88x31.png'           | 'https://creativecommons.org/licenses/by-nc/3.0/au/'
+        'CC-BY-NC-Int'             || 'CC BY-NC'       | 'https://licensebuttons.net/l/by-nc/4.0/88x31.png'              | 'https://creativecommons.org/licenses/by-nc/4.0/'
+        'CC-BY-NC-ND 4.0 (Int)'    || 'CC BY-NC-ND'    | 'https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png'           | 'https://creativecommons.org/licenses/by-nc-nd/4.0/'
+        'CC-BY-NC-SA 4.0 (Int)'    || 'CC BY-NC-SA'    | 'https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png'           | 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
+        'CC-BY-NC'                 || 'CC BY-NC'       | 'https://licensebuttons.net/l/by-nc/4.0/88x31.png'              | 'https://creativecommons.org/licenses/by-nc/4.0/'
+        'CC-BY-ND 4.0 (Int)'       || 'CC BY-ND'       | 'https://licensebuttons.net/l/by-nd/4.0/88x31.png'              | 'https://creativecommons.org/licenses/by-nd/4.0/'
+        'CC-BY-SA 3.0 (Int)'       || 'CC BY-SA'       | 'https://licensebuttons.net/l/by-sa/3.0/88x31.png'              | 'https://creativecommons.org/licenses/by-sa/3.0/'
+        'CC-BY-SA 4.0 (Int)'       || 'CC BY-SA'       | 'https://licensebuttons.net/l/by-sa/4.0/88x31.png'              | 'https://creativecommons.org/licenses/by-sa/4.0/'
+    }
+
+    @Unroll
+    void 'test parseCcByLicense returns null for non CC-BY value "#license"'(String license) {
+        expect:
+        tagLib.parseCcByLicense(license) == null
+
+        where:
+        license << ['CC0', 'PDM', 'Custom', 'other', 'UNSPECIFIED', 'Creative Commons - license at record level', '']
+    }
+
+    @Unroll
+    void 'test parseCcByLicense treats unrecognised 2-letter jurisdiction token "#license" as a country code'(String license, String img, String url) {
+        when:
+        def entry = tagLib.parseCcByLicense(license)
+
+        then:
+        entry.img == img
+        entry.url == url
+
+        where:
+        license               || img                                                    | url
+        'CC-BY 3.0 (US)'      || 'https://licensebuttons.net/l/by/3.0/us/88x31.png'    | 'https://creativecommons.org/licenses/by/3.0/us/'
+        'CC-BY-NC 3.0 (JP)'   || 'https://licensebuttons.net/l/by-nc/3.0/jp/88x31.png' | 'https://creativecommons.org/licenses/by-nc/3.0/jp/'
+    }
+
+    void "test parseCcByLicense treats unrecognised multi-letter jurisdiction as international (no broken link)"() {
+        when:
+        def entry = tagLib.parseCcByLicense('CC-BY 3.0 (Wonderland)')
+
+        then:
+        entry.img == 'https://licensebuttons.net/l/by/3.0/88x31.png'
+        entry.url == 'https://creativecommons.org/licenses/by/3.0/'
+    }
+
+    void "test parseCcByLicense jurisdiction aliases are configurable/extendable via license.ccBy.jurisdictions config"() {
+        given:
+        grailsApplication.config.license.ccBy.jurisdictions = [germany: 'de']
+
+        when:
+        def entry = tagLib.parseCcByLicense('CC-BY-NC-Germany')
+
+        then:
+        entry.img == 'https://licensebuttons.net/l/by-nc/3.0/de/88x31.png'
+        entry.url == 'https://creativecommons.org/licenses/by-nc/3.0/de/'
+    }
+
+    void "test parseCcByLicense default/ported version are configurable via license.ccBy config"() {
+        given:
+        grailsApplication.config.license.ccBy.defaultVersion = '1.0'
+        grailsApplication.config.license.ccBy.portedVersion = '2.0'
+
+        expect:
+        tagLib.parseCcByLicense('CC-BY').img == 'https://licensebuttons.net/l/by/1.0/88x31.png'
+        tagLib.parseCcByLicense('CC-BY-Aus').img == 'https://licensebuttons.net/l/by/2.0/au/88x31.png'
+    }
+
+    void "test formatLicense renders CC0 badge from config lookup"() {
+        when:
+        def html = applyTemplate('<alatag:formatLicense license="CC0"/>')
+
+        then:
+        html == '<a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="license"><img src="https://licensebuttons.net/p/zero/1.0/88x31.png" alt="CC0" /></a> CC0'
+    }
+
+    void "test formatLicense renders PDM badge from config lookup"() {
+        when:
+        def html = applyTemplate('<alatag:formatLicense license="PDM"/>')
+
+        then:
+        html == '<a href="https://creativecommons.org/publicdomain/mark/1.0/" target="_blank" rel="license"><img src="https://licensebuttons.net/p/mark/1.0/88x31.png" alt="PDM" /></a> PDM'
+    }
+
+    void "test formatLicense renders CC-BY badge via generic pattern matcher"() {
+        when:
+        def html = applyTemplate('<alatag:formatLicense license="CC-BY-NC-ND 4.0 (Int)"/>')
+
+        then:
+        html == '<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="license"><img src="https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png" alt="CC-BY-NC-ND 4.0 (Int)" /></a> CC-BY-NC-ND 4.0 (Int)'
+    }
+
+    void "test formatLicense allows license.lookup config to override the generic CC-BY pattern matcher"() {
+        given:
+        grailsApplication.config.license.lookup = [
+            [pattern: '^CC-BY-NC 3\\.0 \\(Aus\\)$', label: 'Overridden', img: 'https://example.org/custom.png', url: 'https://example.org/custom-legal-code'],
+            *grailsApplication.config.license.lookup
+        ]
+
+        when:
+        def html = applyTemplate('<alatag:formatLicense license="CC-BY-NC 3.0 (Aus)"/>')
+
+        then:
+        html == '<a href="https://example.org/custom-legal-code" target="_blank" rel="license"><img src="https://example.org/custom.png" alt="CC-BY-NC 3.0 (Aus)" /></a> CC-BY-NC 3.0 (Aus)'
+    }
+
+    @Unroll
+    void 'test formatLicense renders raw value as plain text for unrecognised value "#license"'(String license) {
+        when:
+        def html = applyTemplate("<alatag:formatLicense license=\"${license}\"/>")
+
+        then:
+        html == license
+
+        where:
+        license << ['Custom', 'other', 'UNSPECIFIED', 'Creative Commons - license at record level']
+    }
+
+    void "test formatLicense returns nothing for blank license"() {
+        when:
+        def html = applyTemplate('<alatag:formatLicense license="${license}"/>', [license: null])
+
+        then:
+        html == ''
     }
 }
