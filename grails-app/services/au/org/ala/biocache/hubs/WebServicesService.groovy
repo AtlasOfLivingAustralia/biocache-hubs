@@ -80,7 +80,7 @@ class WebServicesService {
 
     def JSONObject getRecord(String id, Boolean hasClubView) {
         def url = "${grailsApplication.config.getProperty('biocache.baseUrl')}/occurrences/${id.encodeAsURL()}?im=true"
-        getJsonElements(url, hasClubView, hasClubView)
+        getJsonElements(url, false, true)
     }
 
     def JSONObject getCompareRecord(String id) {
@@ -465,7 +465,7 @@ class WebServicesService {
      * @param timeout timeout in milliseconds for the connection and read operations, default is -1 which means no timeout
      * @return the object we request or an JSON object containing error info in case of error
      */
-    JSONElement getJsonElements(String url, Boolean wsAuth = false, Boolean includeUser = false, int timeout = -1) {
+    JSONElement getJsonElements(String url, Boolean wsAuth = false, Boolean includeUser = true, int timeout = -1) {
 
         log.debug "(internal) getJson URL = " + url
         def conn = new URL(url).openConnection()
