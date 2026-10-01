@@ -34,19 +34,12 @@
     <meta name="breadcrumb" content="${message(code: "show.title")}: ${recordId} (${scientificName})"/>
     <title><g:message code="show.title" default="Record"/>: ${recordId} | <g:message code="show.occurrenceRecord" default="Occurrence record"/>  | ${hubDisplayName}</title>
 
-
-    <g:if test="${grailsApplication.config.getProperty('google.apikey')}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}" type="text/javascript"></script>
-    </g:if>
-    <g:else>
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    </g:else>
-
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <alatag:hubDecoder/> <!-- injects window.__hubDecode -->
     <script type="text/javascript">
         // Global var OCC_REC to pass GSP data to external JS file
         var OCC_REC = {
+            googleApiKey: "${grailsApplication.config.getProperty('google.apikey', String, '')}",
             userId:           window.__hubDecode("<alatag:b64 value="${userId}"/>"),
             userDisplayName:  window.__hubDecode("<alatag:b64 value="${userDisplayName}"/>"),
             contextPath: "${request.contextPath}",

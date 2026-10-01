@@ -22,11 +22,6 @@
                   default="Search"/>: ${sr?.queryTitle?.replaceAll("<(.|\n)*?>", '')} | <alatag:message
         code="search.heading.list" default="Search results"/> | ${grailsApplication.config.getProperty('skin.orgNameLong')}</title>
 
-<g:if test="${grailsApplication.config.getProperty('google.apikey')}">
-    <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}"
-            type="text/javascript"></script>
-</g:if>
-
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <alatag:hubDecoder/> <!-- injects window.__hubDecode -->
 <script type="text/javascript">
@@ -35,6 +30,7 @@
     <g:set var="searchString" value="${raw(sr?.urlParameters).encodeAsURL()}"/>
     <g:set var="biocacheServiceUrl" value="${alatag.getBiocacheAjaxUrl()}"/>
     var BC_CONF = {
+        googleApiKey: "${grailsApplication.config.getProperty('google.apikey', String, '')}",
         contextPath: "${request.contextPath}",
             serverName: "<g:createLink absolute="true" uri="" />",
             searchString:        window.__hubDecode("<alatag:b64 value="${searchString}"/>"),
@@ -108,11 +104,6 @@
 
 
 <asset:javascript src="autocomplete.js"/>
-<asset:script type="text/javascript">
-    <g:if test="${!grailsApplication.config.getProperty('google.apikey')}">
-        google.load('maps','3.5');
-    </g:if>
-</asset:script>
 
 </head>
 

@@ -271,6 +271,9 @@ function initialize() {
  */
 function loadLeafletMap() {
     var leaflet = (window.L && window.L.maplibreGL) ? window.L : (window.L_mainMap || window.L);
+    if (leaflet.Google && MAP_VAR.googleApiKey) {
+        leaflet.Google.apiKey = MAP_VAR.googleApiKey;
+    }
     var latLng = leaflet.latLng($('#latitude').val(), $('#longitude').val());
 
     if (!MAP_VAR.map) {

@@ -90,6 +90,9 @@
                 $(document).ready(function() {
                     // Leaflet map
                     var leaflet = (window.L && window.L.maplibreGL) ? window.L : (window.L_mainMap || window.L);
+                    if (leaflet.Google) {
+                        leaflet.Google.apiKey = "${grailsApplication.config.getProperty('google.apikey', String, '')}";
+                    }
                     var defaultBaseLayer;
                     if ("${defaultMapVectorTileUrl}" && typeof leaflet.maplibreGL === 'function') {
                         try {

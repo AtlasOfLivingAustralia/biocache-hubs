@@ -37,7 +37,18 @@ L.Google = (L.Layer || L.Class).extend({
 
 		// create a container div for tiles
 		this._initContainer();
-		this._initMapObject();
+
+		if (!this._ready) {
+			var apiKey = this.options.apiKey || L.Google.apiKey || (typeof window !== 'undefined' && (window.GOOGLE_MAPS_API_KEY || (typeof MAP_VAR !== 'undefined' && MAP_VAR.googleApiKey) || (typeof BC_CONF !== 'undefined' && BC_CONF.googleApiKey)));
+			L.Google.loadGoogleMaps(apiKey, L.Util.bind(function() {
+				if (this._map && this._container && !this._google) {
+					this._initMapObject();
+					this._update();
+				}
+			}, this));
+		} else {
+			this._initMapObject();
+		}
 
 		// set up events
 		map.on('viewreset', this._resetCallback, this);
@@ -70,6 +81,7 @@ L.Google = (L.Layer || L.Class).extend({
 		if (map && map._controlCorners && map._controlCorners['bottomright']) {
 			map._controlCorners['bottomright'].style.marginBottom = "0em";
 		}
+		this._map = null;
 		//this._map.off('moveend', this._update, this);
 	},
 
@@ -138,9 +150,11 @@ L.Google = (L.Layer || L.Class).extend({
 		//setting the zoom level on the Google map may result in a different zoom level than the one requested
 		//(it won't go beyond the level for which they have data).
 		// verify and make sure the zoom levels on both Leaflet and Google maps are consistent
-		if (this._google.getZoom() !== this._map.getZoom()) {
-			//zoom levels are out of sync. Set the leaflet zoom level to match the google one
-			this._map.setZoom( this._google.getZoom() );
+		if (this._google && this._map && typeof this._google.getZoom === 'function') {
+			if (this._google.getZoom() !== this._map.getZoom()) {
+				//zoom levels are out of sync. Set the leaflet zoom level to match the google one
+				this._map.setZoom( this._google.getZoom() );
+			}
 		}
 	},
 
@@ -177,6 +191,7 @@ L.Google = (L.Layer || L.Class).extend({
 
 
 	_handleZoomAnim: function (e) {
+		if (!this._google) return;
 		var center = e.center;
 		var _center = new google.maps.LatLng(center.lat, center.lng);
 
@@ -191,17 +206,65 @@ L.Google = (L.Layer || L.Class).extend({
 	}
 });
 
+L.Google.apiKey = "";
 L.Google.asyncWait = [];
+L.Google._loadingScript = false;
+L.Google._loadCallbacks = [];
+
 L.Google.asyncInitialize = function() {
 	var i;
 	for (i = 0; i < L.Google.asyncWait.length; i++) {
 		var o = L.Google.asyncWait[i];
 		o._ready = true;
-		if (o._container) {
+		if (o._container && o._map && !o._google) {
 			o._initMapObject();
 			o._update();
 		}
 	}
 	L.Google.asyncWait = [];
+};
+
+L.Google.loadGoogleMaps = function(apiKey, callback) {
+	if (typeof google !== 'undefined' && typeof google.maps !== 'undefined' && google.maps.Map !== undefined) {
+		if (callback) callback();
+		return;
+	}
+	if (L.Google._loadingScript) {
+		if (callback) L.Google._loadCallbacks.push(callback);
+		return;
+	}
+	L.Google._loadingScript = true;
+	L.Google._loadCallbacks = callback ? [callback] : [];
+
+	window.__initGoogleMapsCallback = function() {
+		L.Google.asyncInitialize();
+		for (var i = 0; i < L.Google._loadCallbacks.length; i++) {
+			try {
+				L.Google._loadCallbacks[i]();
+			} catch (err) {
+				console.error("Error in Google Maps callback:", err);
+			}
+		}
+		L.Google._loadCallbacks = [];
+		try {
+			delete window.__initGoogleMapsCallback;
+		} catch (e) {
+			window.__initGoogleMapsCallback = undefined;
+		}
+	};
+
+	var script = document.createElement('script');
+	var url = 'https://maps.googleapis.com/maps/api/js?loading=async&callback=__initGoogleMapsCallback';
+	if (apiKey) {
+		url += '&key=' + encodeURIComponent(apiKey);
+	}
+	script.src = url;
+	script.async = true;
+	script.defer = true;
+	script.onerror = function(err) {
+		console.error("Failed to load Google Maps API script:", err);
+		L.Google._loadingScript = false;
+	};
+	document.head.appendChild(script);
 };
 //})(window.google, L)

@@ -21,19 +21,12 @@
     <meta name="hideBreadcrumb" content=""/>
     <title><g:message code="home.index.title" default="Search for records"/> | ${hubDisplayName}</title>
 
-    <g:if test="${grailsApplication.config.getProperty('google.apikey')}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}"
-                type="text/javascript"></script>
-    </g:if>
-    <g:else>
-        <script src="https://maps.google.com/maps/api/js" type="text/javascript"></script>
-    </g:else>
-
     <asset:javascript src="jquery_i18n.js" />
 
     <script type="text/javascript">
         // global var for GSP tags/vars to be passed into JS functions
         var BC_CONF = {
+            googleApiKey: "${grailsApplication.config.getProperty('google.apikey', String, '')}",
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
             bieWebappUrl: "${grailsApplication.config.getProperty('bie.baseUrl')}",
             bieWebServiceUrl: "${grailsApplication.config.getProperty('bieService.baseUrl')}",
@@ -186,6 +179,9 @@
             }
         %>
         var leaflet = (window.L && window.L.maplibreGL) ? window.L : (window.L_mainMap || window.L);
+        if (leaflet.Google) {
+            leaflet.Google.apiKey = "${grailsApplication.config.getProperty('google.apikey', String, '')}";
+        }
         var defaultBaseLayer;
         if ("${defaultMapVectorTileUrl}" && typeof leaflet.maplibreGL === 'function') {
             try {

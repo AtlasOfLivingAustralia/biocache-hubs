@@ -30,13 +30,6 @@
     <meta name="breadcrumb" content="Explore your area"/>
     <title><g:message code="eya.title01" default="Explore Your Area"/> | ${grailsApplication.config.getProperty('skin.orgNameLong')} </title>
 
-    <g:if test="${grailsApplication.config.getProperty('google.apikey')}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}" type="text/javascript"></script>
-    </g:if>
-    <g:else>
-        <script src="https://maps.google.com/maps/api/js"></script>
-    </g:else>
-
     <g:render template="/layouts/global"/>
     <asset:javascript src="exploreYourArea.js" asset-defer="true"/>
     <asset:stylesheet src="exploreYourArea.css" />
@@ -70,6 +63,7 @@
             radius: Number(${radius}),
             speciesPageUrl: "${speciesPageUrl}",
             queryContext: "${queryContext}",
+            googleApiKey: "${grailsApplication.config.getProperty('google.apikey', String, '')}",
             mapMinimalVectorTileUrl: "${defaultMapVectorTileUrl}",
             mapMinimalUrl: "${defaultMapUrl}",
             mapMinimalAttribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",

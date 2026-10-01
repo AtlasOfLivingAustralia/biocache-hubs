@@ -120,6 +120,9 @@
 %>
 <asset:script type="text/javascript">
     var leaflet = (window.L && window.L.maplibreGL) ? window.L : (window.L_mainMap || window.L);
+    if (leaflet.Google) {
+        leaflet.Google.apiKey = "${grailsApplication.config.getProperty('google.apikey', String, '')}";
+    }
     var defaultBaseLayer;
     if ("${defaultMapVectorTileUrl}" && typeof leaflet.maplibreGL === 'function') {
         try {
@@ -147,6 +150,7 @@
     }
 
     var MAP_VAR = {
+        googleApiKey : "${grailsApplication.config.getProperty('google.apikey', String, '')}",
         map : null,
         mappingUrl : "${mappingUrl}", // e.g. "https://biocache.ala.org.au/ws"
         query : window.__hubDecode("<alatag:b64 value="${searchString}"/>"), // e.g. "?q=*%3A*&lat=-34.266296&lon=145.3838&radius=154.8"
