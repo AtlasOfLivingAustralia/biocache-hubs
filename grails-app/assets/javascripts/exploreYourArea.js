@@ -19,6 +19,8 @@
 //= require jquery_i18n.js
 //= require urlParams.js
 //= require leaflet/leaflet.js
+//= require maplibre-gl.js
+//= require leaflet-maplibre-gl.js
 //= require leaflet-plugins/layer/tile/Google.js
 //= require leaflet-plugins/spin/spin.min.js
 //= require leaflet-plugins/spin/leaflet.spin.js
@@ -28,6 +30,10 @@
 //= require map.common.js
 //= require_self
  */
+
+if (typeof window !== 'undefined' && window.L) {
+    window.L_mainMap = window.L;
+}
 
 
 var geocoder, marker, circle, markerInfowindow, lastInfoWindow, taxon, taxonGuid, alaWmsLayer, radius;
@@ -264,13 +270,32 @@ function initialize() {
  * Initiate Leaflet map
  */
 function loadLeafletMap() {
-    var latLng = L.latLng($('#latitude').val(), $('#longitude').val());
+    var leaflet = (window.L && window.L.maplibreGL) ? window.L : (window.L_mainMap || window.L);
+    var latLng = leaflet.latLng($('#latitude').val(), $('#longitude').val());
 
     if (!MAP_VAR.map) {
-        var defaultBaseLayer = L.tileLayer(MAP_VAR.mapMinimalUrl, {
-            attribution: MAP_VAR.mapMinimalAttribution,
-            subdomains: MAP_VAR.mapMinimalSubdomains
-        });
+        var defaultBaseLayer;
+        if (MAP_VAR.mapMinimalVectorTileUrl && typeof leaflet.maplibreGL === 'function') {
+            try {
+                var vectorOptions = {
+                    style: MAP_VAR.mapMinimalVectorTileUrl,
+                    pane: 'tilePane',
+                    zIndex: 0
+                };
+                if (MAP_VAR.mapMinimalAttribution) {
+                    vectorOptions.attributionControl = { customAttribution: MAP_VAR.mapMinimalAttribution };
+                }
+                defaultBaseLayer = leaflet.maplibreGL(vectorOptions);
+            } catch (e) {
+                console.warn("Failed to initialize MapLibre GL layer, falling back to raster tiles:", e);
+            }
+        }
+        if (!defaultBaseLayer) {
+            defaultBaseLayer = leaflet.tileLayer(MAP_VAR.mapMinimalUrl, {
+                attribution: MAP_VAR.mapMinimalAttribution,
+                subdomains: MAP_VAR.mapMinimalSubdomains
+            });
+        }
 
         MAP_VAR.baseLayers = {
             "Minimal": defaultBaseLayer,
@@ -279,7 +304,7 @@ function loadLeafletMap() {
             "Satellite": new L.Google('HYBRID')
         };
 
-        MAP_VAR.map = L.map('mapCanvas', {
+        MAP_VAR.map = leaflet.map('mapCanvas', {
             center: latLng,
             zoom: MAP_VAR.zoom,
             scrollWheelZoom: false
@@ -288,10 +313,16 @@ function loadLeafletMap() {
         updateMarkerPosition(latLng);
 
         // add layer control (layerControl is not a leaflet var)
-        MAP_VAR.layerControl = L.control.layers(MAP_VAR.baseLayers).addTo(MAP_VAR.map);
+        MAP_VAR.layerControl = leaflet.control.layers(MAP_VAR.baseLayers).addTo(MAP_VAR.map);
 
         MAP_VAR.map.on('baselayerchange', function(event) {
-            $.cookie('map.baseLayer', event.name, { path: '/' })
+            $.cookie('map.baseLayer', event.name, { path: '/' });
+            if (event.layer && typeof event.layer.bringToBack === 'function') {
+                event.layer.bringToBack();
+            }
+            if (alaWmsLayer && typeof alaWmsLayer.bringToFront === 'function') {
+                alaWmsLayer.bringToFront();
+            }
         });
 
         // select the user's preferred base layer
@@ -300,12 +331,39 @@ function loadLeafletMap() {
         if (baseLayer !== undefined) {
             //add the default base layer
             MAP_VAR.map.addLayer(baseLayer);
+            if (typeof baseLayer.bringToBack === 'function') {
+                baseLayer.bringToBack();
+            }
         } else {
             MAP_VAR.map.addLayer(defaultBaseLayer);
+            if (typeof defaultBaseLayer.bringToBack === 'function') {
+                defaultBaseLayer.bringToBack();
+            }
+        }
+
+        if (typeof defaultBaseLayer.getMaplibreMap === 'function') {
+            var glMap = defaultBaseLayer.getMaplibreMap();
+            if (glMap) {
+                glMap.once('error', function (err) {
+                    if (MAP_VAR.map && MAP_VAR.map.hasLayer(defaultBaseLayer)) {
+                        console.warn("MapLibre GL error encountered, falling back to raster tiles:", err);
+                        MAP_VAR.map.removeLayer(defaultBaseLayer);
+                        var fallbackLayer = leaflet.tileLayer(MAP_VAR.mapMinimalUrl, {
+                            attribution: MAP_VAR.mapMinimalAttribution,
+                            subdomains: MAP_VAR.mapMinimalSubdomains
+                        });
+                        fallbackLayer.addTo(MAP_VAR.map);
+                        if (typeof fallbackLayer.bringToBack === 'function') {
+                            fallbackLayer.bringToBack();
+                        }
+                        MAP_VAR.baseLayers["Minimal"] = fallbackLayer;
+                    }
+                });
+            }
         }
 
         // "locate me" button
-        L.easyButton( '<i class="fa fa-location-arrow" data-toggle="tooltip" data-placement="right"></i>', function(e){
+        leaflet.easyButton( '<i class="fa fa-location-arrow" data-toggle="tooltip" data-placement="right"></i>', function(e){
             attemptGeolocation();
         },"Use my location").addTo(MAP_VAR.map);
 
@@ -474,11 +532,15 @@ function loadRecordsLayer(retry) {
         outline:"false",
         GRIDDETAIL: 32, // 64 || 32
         ENV: "color:DF4A21;name:circle;size:4;opacity:0.7",
-        uppercase: true
+        uppercase: true,
+        zIndex: 10
     };
 
     // JQuery AJAX call
     alaWmsLayer = L.tileLayer.wms(alaMapUrl, wmsParams).addTo(MAP_VAR.map);
+    if (typeof alaWmsLayer.bringToFront === 'function') {
+        alaWmsLayer.bringToFront();
+    }
     MAP_VAR.layerControl.addOverlay(alaWmsLayer, 'Records');
 
     alaWmsLayer.on('tileload', function(te){

@@ -42,6 +42,22 @@
     <asset:stylesheet src="exploreYourArea.css" />
     <asset:stylesheet src="print-area.css" media="print" />
 
+    <g:set var="defaultMapVectorTileUrl" value="${grailsApplication.config.getProperty('map.minimal.vectorTileUrl', String) ?: grailsApplication.config.getProperty('map.minimal.styleUrl', String) ?: ''}"/>
+    <g:set var="defaultMapUrl" value="${grailsApplication.config.getProperty('map.minimal.url', String) ?: ''}"/>
+    <%
+        if (defaultMapVectorTileUrl && !defaultMapVectorTileUrl.contains('key=')) {
+            def apiKey = grailsApplication.config.getProperty('map.minimal.apiKey', String)
+            if (!apiKey && defaultMapUrl) {
+                def matcher = (defaultMapUrl =~ /[?&]key=([^&#]+)/)
+                if (matcher.find()) {
+                    apiKey = matcher.group(1)
+                }
+            }
+            if (apiKey) {
+                defaultMapVectorTileUrl += (defaultMapVectorTileUrl.contains('?') ? '&' : '?') + "key=${apiKey}"
+            }
+        }
+    %>
     <asset:script type="text/javascript">
         // Global variables for yourAreaMap.js
         var MAP_VAR = {
@@ -54,7 +70,8 @@
             radius: Number(${radius}),
             speciesPageUrl: "${speciesPageUrl}",
             queryContext: "${queryContext}",
-            mapMinimalUrl: "${grailsApplication.config.getProperty('map.minimal.url')}",
+            mapMinimalVectorTileUrl: "${defaultMapVectorTileUrl}",
+            mapMinimalUrl: "${defaultMapUrl}",
             mapMinimalAttribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
             mapMinimalSubdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",

@@ -69,14 +69,50 @@
                 ${record.processed.location.decimalLatitude}, ${record.processed.location.decimalLongitude}
             </g:else>
         </g:set>
+        <g:set var="defaultMapVectorTileUrl" value="${grailsApplication.config.getProperty('map.minimal.vectorTileUrl', String) ?: grailsApplication.config.getProperty('map.minimal.styleUrl', String) ?: ''}"/>
+        <g:set var="defaultMapUrl" value="${grailsApplication.config.getProperty('map.minimal.url', String) ?: ''}"/>
+        <%
+            if (defaultMapVectorTileUrl && !defaultMapVectorTileUrl.contains('key=')) {
+                def apiKey = grailsApplication.config.getProperty('map.minimal.apiKey', String)
+                if (!apiKey && defaultMapUrl) {
+                    def matcher = (defaultMapUrl =~ /[?&]key=([^&#]+)/)
+                    if (matcher.find()) {
+                        apiKey = matcher.group(1)
+                    }
+                }
+                if (apiKey) {
+                    defaultMapVectorTileUrl += (defaultMapVectorTileUrl.contains('?') ? '&' : '?') + "key=${apiKey}"
+                }
+            }
+        %>
         <div class="sidebar">
             <asset:script type="text/javascript">
                 $(document).ready(function() {
                     // Leaflet map
-                    var defaultBaseLayer = L.tileLayer("${grailsApplication.config.getProperty('map.minimal.url')}", {
-                        attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
-                        subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}"
-                    });
+                    var leaflet = (window.L && window.L.maplibreGL) ? window.L : (window.L_mainMap || window.L);
+                    var defaultBaseLayer;
+                    if ("${defaultMapVectorTileUrl}" && typeof leaflet.maplibreGL === 'function') {
+                        try {
+                            var vectorOptions = {
+                                style: "${defaultMapVectorTileUrl}",
+                                pane: 'tilePane',
+                                zIndex: 0
+                            };
+                            var attr = "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}";
+                            if (attr) {
+                                vectorOptions.attributionControl = { customAttribution: attr };
+                            }
+                            defaultBaseLayer = leaflet.maplibreGL(vectorOptions);
+                        } catch (e) {
+                            console.warn("Failed to initialize MapLibre GL layer, falling back to raster tiles:", e);
+                        }
+                    }
+                    if (!defaultBaseLayer) {
+                        defaultBaseLayer = leaflet.tileLayer("${defaultMapUrl}", {
+                            attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
+                            subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}"
+                        });
+                    }
 
                     var baseLayers = {
                         "Minimal": defaultBaseLayer,
@@ -85,17 +121,20 @@
                         "Satellite": new L.Google('HYBRID')
                     };
 
-                    var latLng = L.latLng(${latLngStr.trim()});
-                    var map = L.map('occurrenceMap', {
+                    var latLng = leaflet.latLng(${latLngStr.trim()});
+                    var map = leaflet.map('occurrenceMap', {
                         center: latLng,
                         zoom: 5,
                         scrollWheelZoom: false
                     });
 
-                    L.control.layers(baseLayers).addTo(map);
+                    leaflet.control.layers(baseLayers).addTo(map);
 
                     map.on('baselayerchange', function(event) {
-                        $.cookie('map.baseLayer', event.name, { path: '/' })
+                        $.cookie('map.baseLayer', event.name, { path: '/' });
+                        if (event.layer && typeof event.layer.bringToBack === 'function') {
+                            event.layer.bringToBack();
+                        }
                     });
 
                     // select the user's preferred base layer
@@ -104,15 +143,42 @@
                     if (baseLayer !== undefined) {
                         //add the default base layer
                         map.addLayer(baseLayer);
+                        if (typeof baseLayer.bringToBack === 'function') {
+                            baseLayer.bringToBack();
+                        }
                     } else {
                         map.addLayer(defaultBaseLayer);
+                        if (typeof defaultBaseLayer.bringToBack === 'function') {
+                            defaultBaseLayer.bringToBack();
+                        }
+                    }
+
+                    if (typeof defaultBaseLayer.getMaplibreMap === 'function') {
+                        var glMap = defaultBaseLayer.getMaplibreMap();
+                        if (glMap) {
+                            glMap.once('error', function (err) {
+                                if (map && map.hasLayer(defaultBaseLayer)) {
+                                    console.warn("MapLibre GL error encountered, falling back to raster tiles:", err);
+                                    map.removeLayer(defaultBaseLayer);
+                                    var fallbackLayer = leaflet.tileLayer("${defaultMapUrl}", {
+                                        attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
+                                        subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}"
+                                    });
+                                    fallbackLayer.addTo(map);
+                                    if (typeof fallbackLayer.bringToBack === 'function') {
+                                        fallbackLayer.bringToBack();
+                                    }
+                                    baseLayers["Minimal"] = fallbackLayer;
+                                }
+                            });
+                        }
                     }
 
                     // Fix for asset pipeline confusing Leaflet WRT to path to images
-                    L.Icon.Default.imagePath = "${assetPath(src:'/leaflet/images')}";
+                    leaflet.Icon.Default.imagePath = "${assetPath(src:'/leaflet/images')}";
 
                     // Add marker
-                    L.marker(latLng, {
+                    leaflet.marker(latLng, {
                         title: 'Occurrence location',
                         draggable: false
                     }).addTo(map);

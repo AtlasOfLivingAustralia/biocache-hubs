@@ -1485,8 +1485,18 @@ function init() {
         $('#imageDialog').modal('show');
     });
 
+    $('#imageDialog').on('show.bs.modal', function () {
+        if (window.L_imagesClient) {
+            window.L_mainMap = window.L;
+            window.L = window.L_imagesClient;
+        }
+    });
+
     // show image only after modal dialog is shown. otherwise, image position will be off the viewing area.
     $('#imageDialog').on('shown.bs.modal',function () {
+        if (window.L_imagesClient) {
+            window.L = window.L_imagesClient;
+        }
 
         if($("#viewerContainerId").width() == 0){
             //this is a workaround for #viewContainerId having width of zero, which results in the
@@ -1512,6 +1522,12 @@ function init() {
             savePreferredSpeciesListUrl: BC_CONF.savePreferredSpeciesListUrl + '?id=' + imageId + '&scientificName=' + scientificName,
             getPreferredSpeciesListUrl: BC_CONF.getPreferredSpeciesListUrl
         });
+    });
+
+    $('#imageDialog').on('hidden.bs.modal', function () {
+        if (window.L_mainMap) {
+            window.L = window.L_mainMap;
+        }
     });
 
     // set size of modal dialog during a resize

@@ -86,6 +86,11 @@
 </script>
 
 <asset:javascript src="ala/images-client.js"/>
+<script type="text/javascript">
+    if (window.L) {
+        window.L_imagesClient = window.L;
+    }
+</script>
 <asset:javascript src="leafletPlugins.js"/>
 <asset:javascript src="listThirdParty.js"/>
 <asset:javascript src="search.js"/>

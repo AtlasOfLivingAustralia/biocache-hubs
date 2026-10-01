@@ -3,8 +3,8 @@
  */
 //(function (google, L) {
 
-L.Google = L.Class.extend({
-	includes: L.Mixin.Events,
+L.Google = (L.Layer || L.Class).extend({
+	includes: (L.Mixin && L.Mixin.Events) ? L.Mixin.Events : {},
 
 	options: {
 		minZoom: 0,
@@ -25,7 +25,7 @@ L.Google = L.Class.extend({
 	initialize: function(type, options) {
 		L.Util.setOptions(this, options);
 
-		this._ready = google.maps.Map != undefined;
+		this._ready = typeof google !== 'undefined' && typeof google.maps !== 'undefined' && google.maps.Map != undefined;
 		if (!this._ready) L.Google.asyncWait.push(this);
 
 		this._type = type || 'SATELLITE';
@@ -42,21 +42,24 @@ L.Google = L.Class.extend({
 		// set up events
 		map.on('viewreset', this._resetCallback, this);
 
-		this._limitedUpdate = L.Util.limitExecByInterval(this._update, 150, this);
+		this._limitedUpdate = (L.Util.throttle || L.Util.limitExecByInterval)(this._update, 150, this);
 		map.on('move', this._update, this);
 
 		map.on('zoomanim', this._handleZoomAnim, this);
 
 		//20px instead of 1em to avoid a slight overlap with google's attribution
-		map._controlCorners['bottomright'].style.marginBottom = "20px";
+		if (map && map._controlCorners && map._controlCorners['bottomright']) {
+			map._controlCorners['bottomright'].style.marginBottom = "20px";
+		}
 
 		this._reset();
 		this._update();
 	},
 
 	onRemove: function(map) {
-		this._map._container.removeChild(this._container);
-		//this._container = null;
+		if (this._container && this._container.parentNode) {
+			this._container.parentNode.removeChild(this._container);
+		}
 
 		this._map.off('viewreset', this._resetCallback, this);
 
@@ -64,7 +67,9 @@ L.Google = L.Class.extend({
 
 		this._map.off('zoomanim', this._handleZoomAnim, this);
 
-		map._controlCorners['bottomright'].style.marginBottom = "0em";
+		if (map && map._controlCorners && map._controlCorners['bottomright']) {
+			map._controlCorners['bottomright'].style.marginBottom = "0em";
+		}
 		//this._map.off('moveend', this._update, this);
 	},
 
@@ -94,7 +99,9 @@ L.Google = L.Class.extend({
 			this._container.style.zIndex = "auto";
 		}
 
-		tilePane.insertBefore(this._container, first);
+		if (this._container.parentNode !== tilePane) {
+			tilePane.insertBefore(this._container, first);
+		}
 
 		this.setOpacity(this.options.opacity);
 		this.setElementSize(this._container, this._map.getSize());
