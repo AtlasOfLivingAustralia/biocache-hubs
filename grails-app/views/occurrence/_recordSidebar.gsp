@@ -131,14 +131,47 @@
                         scrollWheelZoom: false
                     });
 
-                    leaflet.control.layers(baseLayers).addTo(map);
+                    var layerControl = leaflet.control.layers(baseLayers).addTo(map);
 
                     map.on('baselayerchange', function(event) {
                         $.cookie('map.baseLayer', event.name, { path: '/' });
                         if (event.layer && typeof event.layer.bringToBack === 'function') {
                             event.layer.bringToBack();
                         }
+                        if (event.name === 'Minimal' && event.layer === defaultBaseLayer && typeof defaultBaseLayer.getMaplibreMap === 'function') {
+                            var glMap = defaultBaseLayer.getMaplibreMap();
+                            if (glMap) {
+                                glMap.once('error', handleVectorFallback);
+                            }
+                        }
                     });
+
+                    function handleVectorFallback(err) {
+                        console.warn("MapLibre GL error encountered, falling back to raster tiles:", err);
+                        var wasActive = map && map.hasLayer(defaultBaseLayer);
+                        if (wasActive) {
+                            map.removeLayer(defaultBaseLayer);
+                        }
+                        var fallbackLayer = leaflet.tileLayer("${defaultMapUrl}", {
+                            attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
+                            subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}"
+                        });
+                        if (wasActive) {
+                            fallbackLayer.addTo(map);
+                            if (typeof fallbackLayer.bringToBack === 'function') {
+                                fallbackLayer.bringToBack();
+                            }
+                        }
+                        baseLayers["Minimal"] = fallbackLayer;
+                        if (layerControl) {
+                            layerControl.removeLayer(defaultBaseLayer);
+                            layerControl.addBaseLayer(fallbackLayer, "Minimal");
+                        }
+                    }
+
+                    if (typeof defaultBaseLayer.once === 'function') {
+                        defaultBaseLayer.once('error', handleVectorFallback);
+                    }
 
                     // select the user's preferred base layer
                     var userBaseLayer = $.cookie('map.baseLayer')
@@ -159,21 +192,7 @@
                     if (typeof defaultBaseLayer.getMaplibreMap === 'function') {
                         var glMap = defaultBaseLayer.getMaplibreMap();
                         if (glMap) {
-                            glMap.once('error', function (err) {
-                                if (map && map.hasLayer(defaultBaseLayer)) {
-                                    console.warn("MapLibre GL error encountered, falling back to raster tiles:", err);
-                                    map.removeLayer(defaultBaseLayer);
-                                    var fallbackLayer = leaflet.tileLayer("${defaultMapUrl}", {
-                                        attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
-                                        subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}"
-                                    });
-                                    fallbackLayer.addTo(map);
-                                    if (typeof fallbackLayer.bringToBack === 'function') {
-                                        fallbackLayer.bringToBack();
-                                    }
-                                    baseLayers["Minimal"] = fallbackLayer;
-                                }
-                            });
+                            glMap.once('error', handleVectorFallback);
                         }
                     }
 

@@ -335,7 +335,42 @@
                 if (event.layer && typeof event.layer.bringToBack === 'function') {
                     event.layer.bringToBack();
                 }
+                if (event.name === 'Minimal' && event.layer === defaultBaseLayer && typeof defaultBaseLayer.getMaplibreMap === 'function') {
+                    var glMap = defaultBaseLayer.getMaplibreMap();
+                    if (glMap) {
+                        glMap.once('error', handleVectorFallback);
+                    }
+                }
             });
+
+            function handleVectorFallback(err) {
+                console.warn("MapLibre GL error encountered, falling back to raster tiles:", err);
+                var wasActive = MAP_VAR.map && MAP_VAR.map.hasLayer(defaultBaseLayer);
+                if (wasActive) {
+                    MAP_VAR.map.removeLayer(defaultBaseLayer);
+                }
+                var fallbackLayer = leaflet.tileLayer("${defaultMapUrl}", {
+                    attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
+                    subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains', String, '')}",
+                    mapid: "${grailsApplication.config.getProperty('map.mapbox.id', String, '')}",
+                    token: "${grailsApplication.config.getProperty('map.mapbox.token', String, '')}"
+                });
+                if (wasActive) {
+                    fallbackLayer.addTo(MAP_VAR.map);
+                    if (typeof fallbackLayer.bringToBack === 'function') {
+                        fallbackLayer.bringToBack();
+                    }
+                }
+                MAP_VAR.baseLayers["Minimal"] = fallbackLayer;
+                if (MAP_VAR.layerControl) {
+                    MAP_VAR.layerControl.removeLayer(defaultBaseLayer);
+                    MAP_VAR.layerControl.addBaseLayer(fallbackLayer, "Minimal");
+                }
+            }
+
+            if (typeof defaultBaseLayer.once === 'function') {
+                defaultBaseLayer.once('error', handleVectorFallback);
+            }
 
             // select the user's preferred base layer
             var userBaseLayer = jQuery.cookie('map.baseLayer')
@@ -356,23 +391,7 @@
             if (typeof defaultBaseLayer.getMaplibreMap === 'function') {
                 var glMap = defaultBaseLayer.getMaplibreMap();
                 if (glMap) {
-                    glMap.once('error', function (err) {
-                        if (MAP_VAR.map && MAP_VAR.map.hasLayer(defaultBaseLayer)) {
-                            console.warn("MapLibre GL error encountered, falling back to raster tiles:", err);
-                            MAP_VAR.map.removeLayer(defaultBaseLayer);
-                            var fallbackLayer = leaflet.tileLayer("${defaultMapUrl}", {
-                                attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
-                                subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains', String, '')}",
-                                mapid: "${grailsApplication.config.getProperty('map.mapbox.id', String, '')}",
-                                token: "${grailsApplication.config.getProperty('map.mapbox.token', String, '')}"
-                            });
-                            fallbackLayer.addTo(MAP_VAR.map);
-                            if (typeof fallbackLayer.bringToBack === 'function') {
-                                fallbackLayer.bringToBack();
-                            }
-                            MAP_VAR.baseLayers["Minimal"] = fallbackLayer;
-                        }
-                    });
+                    glMap.once('error', handleVectorFallback);
                 }
             }
 

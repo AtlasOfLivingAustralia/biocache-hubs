@@ -166,6 +166,9 @@
 				attributionControl: false
 			});
 			this._glMap = new maplibre_gl.Map(options);
+			this._glMap.on("error", L.Util.bind(function(err) {
+				this.fire("error", err);
+			}, this));
 			var _map = this._map;
 			var _currentAttribution = this.getAttribution();
 			var _getAttribution = this.getAttribution.bind(this);
