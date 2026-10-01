@@ -30,18 +30,27 @@
     <meta name="breadcrumb" content="Explore your area"/>
     <title><g:message code="eya.title01" default="Explore Your Area"/> | ${grailsApplication.config.getProperty('skin.orgNameLong')} </title>
 
-    <g:if test="${grailsApplication.config.getProperty('google.apikey')}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}" type="text/javascript"></script>
-    </g:if>
-    <g:else>
-        <script src="https://maps.google.com/maps/api/js"></script>
-    </g:else>
-
     <g:render template="/layouts/global"/>
     <asset:javascript src="exploreYourArea.js" asset-defer="true"/>
     <asset:stylesheet src="exploreYourArea.css" />
     <asset:stylesheet src="print-area.css" media="print" />
 
+    <g:set var="defaultMapVectorTileUrl" value="${grailsApplication.config.getProperty('map.minimal.vectorTileUrl', String) ?: grailsApplication.config.getProperty('map.minimal.styleUrl', String) ?: ''}"/>
+    <g:set var="defaultMapUrl" value="${grailsApplication.config.getProperty('map.minimal.url', String) ?: ''}"/>
+    <%
+        if (defaultMapVectorTileUrl && !defaultMapVectorTileUrl.contains('key=')) {
+            def apiKey = grailsApplication.config.getProperty('map.minimal.apiKey', String)
+            if (!apiKey && defaultMapUrl) {
+                def matcher = (defaultMapUrl =~ /[?&]key=([^&#]+)/)
+                if (matcher.find()) {
+                    apiKey = matcher.group(1)
+                }
+            }
+            if (apiKey) {
+                defaultMapVectorTileUrl += (defaultMapVectorTileUrl.contains('?') ? '&' : '?') + "key=${apiKey}"
+            }
+        }
+    %>
     <asset:script type="text/javascript">
         // Global variables for yourAreaMap.js
         var MAP_VAR = {
@@ -54,7 +63,9 @@
             radius: Number(${radius}),
             speciesPageUrl: "${speciesPageUrl}",
             queryContext: "${queryContext}",
-            mapMinimalUrl: "${grailsApplication.config.getProperty('map.minimal.url')}",
+            googleApiKey: "${grailsApplication.config.getProperty('google.apikey', String, '')}",
+            mapMinimalVectorTileUrl: "${defaultMapVectorTileUrl}",
+            mapMinimalUrl: "${defaultMapUrl}",
             mapMinimalAttribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
             mapMinimalSubdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}",
             locale: "${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}",

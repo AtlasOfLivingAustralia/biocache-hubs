@@ -102,17 +102,55 @@
 </div>
 
 <alatag:hubDecoder/> <!-- injects window.__hubDecode -->
+<g:set var="defaultMapVectorTileUrl" value="${grailsApplication.config.getProperty('map.minimal.vectorTileUrl', String) ?: grailsApplication.config.getProperty('map.minimal.styleUrl', String) ?: ''}"/>
+<g:set var="defaultMapUrl" value="${grailsApplication.config.getProperty('map.minimal.url', String) ?: ''}"/>
+<%
+    if (defaultMapVectorTileUrl && !defaultMapVectorTileUrl.contains('key=')) {
+        def apiKey = grailsApplication.config.getProperty('map.minimal.apiKey', String)
+        if (!apiKey && defaultMapUrl) {
+            def matcher = (defaultMapUrl =~ /[?&]key=([^&#]+)/)
+            if (matcher.find()) {
+                apiKey = matcher.group(1)
+            }
+        }
+        if (apiKey) {
+            defaultMapVectorTileUrl += (defaultMapVectorTileUrl.contains('?') ? '&' : '?') + "key=${apiKey}"
+        }
+    }
+%>
 <asset:script type="text/javascript">
-    //var mbAttr = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, imagery &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
-	//var mbUrl = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png';
-    var defaultBaseLayer = L.tileLayer("${grailsApplication.config.getProperty('map.minimal.url')}", {
+    var leaflet = (window.L && window.L.maplibreGL) ? window.L : (window.L_mainMap || window.L);
+    if (leaflet.Google) {
+        leaflet.Google.apiKey = "${grailsApplication.config.getProperty('google.apikey', String, '')}";
+    }
+    var defaultBaseLayer;
+    if ("${defaultMapVectorTileUrl}" && typeof leaflet.maplibreGL === 'function') {
+        try {
+            var vectorOptions = {
+                style: "${defaultMapVectorTileUrl}",
+                pane: 'tilePane',
+                zIndex: 0
+            };
+            var attr = "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}";
+            if (attr) {
+                vectorOptions.attributionControl = { customAttribution: attr };
+            }
+            defaultBaseLayer = leaflet.maplibreGL(vectorOptions);
+        } catch (e) {
+            console.warn("Failed to initialize MapLibre GL layer, falling back to raster tiles:", e);
+        }
+    }
+    if (!defaultBaseLayer) {
+        defaultBaseLayer = leaflet.tileLayer("${defaultMapUrl}", {
             attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
             subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}",
             mapid: "${grailsApplication.config.getProperty('map.mapbox.id', String, '')}",
             token: "${grailsApplication.config.getProperty('map.mapbox.token', String, '')}"
         });
+    }
 
     var MAP_VAR = {
+        googleApiKey : "${grailsApplication.config.getProperty('google.apikey', String, '')}",
         map : null,
         mappingUrl : "${mappingUrl}", // e.g. "https://biocache.ala.org.au/ws"
         query : window.__hubDecode("<alatag:b64 value="${searchString}"/>"), // e.g. "?q=*%3A*&lat=-34.266296&lon=145.3838&radius=154.8"
@@ -129,7 +167,8 @@
                     format: 'image/png',
                     transparent: true,
                     opacity: ${grailsApplication.config.getProperty("map.overlay.opacity","0.5")},
-                    attribution: "${layer.source}"
+                    attribution: "${layer.source}",
+                    zIndex: 5
                 }),
                 </g:each>
             </g:if>
@@ -263,8 +302,51 @@
         L.Browser.any3d = false; // FF bug prevents selects working properly
 
         MAP_VAR.map.on('baselayerchange', function(event) {
-            $.cookie('map.baseLayer', event.name, { path: '/' })
+            $.cookie('map.baseLayer', event.name, { path: '/' });
+            if (event.layer && typeof event.layer.bringToBack === 'function') {
+                event.layer.bringToBack();
+            }
+            if (event.name === 'Minimal' && event.layer === defaultBaseLayer && typeof defaultBaseLayer.getMaplibreMap === 'function') {
+                var glMap = defaultBaseLayer.getMaplibreMap();
+                if (glMap) {
+                    glMap.once('error', handleVectorFallback);
+                }
+            }
+            $.each(MAP_VAR.currentLayers, function(index, value){
+                if (typeof value.bringToFront === 'function') {
+                    value.bringToFront();
+                }
+            });
         });
+
+        function handleVectorFallback(err) {
+            console.warn("MapLibre GL error encountered, falling back to raster tiles:", err);
+            var wasActive = MAP_VAR.map && MAP_VAR.map.hasLayer(defaultBaseLayer);
+            if (wasActive) {
+                MAP_VAR.map.removeLayer(defaultBaseLayer);
+            }
+            var fallbackLayer = leaflet.tileLayer("${defaultMapUrl}", {
+                attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
+                subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}",
+                mapid: "${grailsApplication.config.getProperty('map.mapbox.id', String, '')}",
+                token: "${grailsApplication.config.getProperty('map.mapbox.token', String, '')}"
+            });
+            if (wasActive) {
+                fallbackLayer.addTo(MAP_VAR.map);
+                if (typeof fallbackLayer.bringToBack === 'function') {
+                    fallbackLayer.bringToBack();
+                }
+            }
+            MAP_VAR.baseLayers["Minimal"] = fallbackLayer;
+            if (MAP_VAR.layerControl) {
+                MAP_VAR.layerControl.removeLayer(defaultBaseLayer);
+                MAP_VAR.layerControl.addBaseLayer(fallbackLayer, "Minimal");
+            }
+        }
+
+        if (typeof defaultBaseLayer.once === 'function') {
+            defaultBaseLayer.once('error', handleVectorFallback);
+        }
 
         // select the user's preferred base layer
         var userBaseLayer = $.cookie('map.baseLayer')
@@ -272,8 +354,21 @@
         if (baseLayer !== undefined) {
             //add the default base layer
             MAP_VAR.map.addLayer(baseLayer);
+            if (typeof baseLayer.bringToBack === 'function') {
+                baseLayer.bringToBack();
+            }
         } else {
             MAP_VAR.map.addLayer(defaultBaseLayer);
+            if (typeof defaultBaseLayer.bringToBack === 'function') {
+                defaultBaseLayer.bringToBack();
+            }
+        }
+
+        if (typeof defaultBaseLayer.getMaplibreMap === 'function') {
+            var glMap = defaultBaseLayer.getMaplibreMap();
+            if (glMap) {
+                glMap.once('error', handleVectorFallback);
+            }
         }
 
         $('.colour-by-control').click(function(e){
@@ -478,7 +573,8 @@
             ENV: envProperty,
             opacity: opacity,
             GRIDDETAIL: gridSizeMap[pointSize],
-            STYLE: "opacity:"+opacity // for grid data
+            STYLE: "opacity:"+opacity, // for grid data
+            zIndex: 10
         });
 
         if(redraw){
@@ -534,10 +630,16 @@
         }
         MAP_VAR.layerControl.addOverlay(layer, 'Occurrences');
         MAP_VAR.map.addLayer(layer);
+        if (typeof layer.bringToFront === 'function') {
+            layer.bringToFront();
+        }
         MAP_VAR.currentLayers.push(layer);
 
         for (let key in MAP_VAR.overlays) {
             MAP_VAR.map.addLayer(MAP_VAR.overlays[key]);
+            if (typeof MAP_VAR.overlays[key].bringToFront === 'function') {
+                MAP_VAR.overlays[key].bringToFront();
+            }
         }
 
         return true;

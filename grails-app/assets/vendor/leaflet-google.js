@@ -2,8 +2,8 @@
  * L.TileLayer is used for standard xyz-numbered tile layers.
  */
 
-L.Google = L.Class.extend({
-	includes: L.Mixin.Events,
+L.Google = (L.Layer || L.Class).extend({
+	includes: (L.Mixin && L.Mixin.Events) ? L.Mixin.Events : {},
 
 	options: {
 		minZoom: 0,

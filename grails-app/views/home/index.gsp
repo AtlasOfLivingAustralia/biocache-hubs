@@ -21,19 +21,12 @@
     <meta name="hideBreadcrumb" content=""/>
     <title><g:message code="home.index.title" default="Search for records"/> | ${hubDisplayName}</title>
 
-    <g:if test="${grailsApplication.config.getProperty('google.apikey')}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.getProperty('google.apikey')}"
-                type="text/javascript"></script>
-    </g:if>
-    <g:else>
-        <script src="https://maps.google.com/maps/api/js" type="text/javascript"></script>
-    </g:else>
-
     <asset:javascript src="jquery_i18n.js" />
 
     <script type="text/javascript">
         // global var for GSP tags/vars to be passed into JS functions
         var BC_CONF = {
+            googleApiKey: "${grailsApplication.config.getProperty('google.apikey', String, '')}",
             biocacheServiceUrl: "${alatag.getBiocacheAjaxUrl()}",
             bieWebappUrl: "${grailsApplication.config.getProperty('bie.baseUrl')}",
             bieWebServiceUrl: "${grailsApplication.config.getProperty('bieService.baseUrl')}",
@@ -169,12 +162,51 @@
             }
         };
 
-        var defaultBaseLayer = L.tileLayer("${grailsApplication.config.getProperty('map.minimal.url')}", {
-            attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
-            subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains', String, '')}",
-            mapid: "${grailsApplication.config.getProperty('map.mapbox.id', String, '')}",
-            token: "${grailsApplication.config.getProperty('map.mapbox.token', String, '')}"
-        });
+        <g:set var="defaultMapVectorTileUrl" value="${grailsApplication.config.getProperty('map.minimal.vectorTileUrl', String) ?: grailsApplication.config.getProperty('map.minimal.styleUrl', String) ?: ''}"/>
+        <g:set var="defaultMapUrl" value="${grailsApplication.config.getProperty('map.minimal.url', String) ?: ''}"/>
+        <%
+            if (defaultMapVectorTileUrl && !defaultMapVectorTileUrl.contains('key=')) {
+                def apiKey = grailsApplication.config.getProperty('map.minimal.apiKey', String)
+                if (!apiKey && defaultMapUrl) {
+                    def matcher = (defaultMapUrl =~ /[?&]key=([^&#]+)/)
+                    if (matcher.find()) {
+                        apiKey = matcher.group(1)
+                    }
+                }
+                if (apiKey) {
+                    defaultMapVectorTileUrl += (defaultMapVectorTileUrl.contains('?') ? '&' : '?') + "key=${apiKey}"
+                }
+            }
+        %>
+        var leaflet = (window.L && window.L.maplibreGL) ? window.L : (window.L_mainMap || window.L);
+        if (leaflet.Google) {
+            leaflet.Google.apiKey = "${grailsApplication.config.getProperty('google.apikey', String, '')}";
+        }
+        var defaultBaseLayer;
+        if ("${defaultMapVectorTileUrl}" && typeof leaflet.maplibreGL === 'function') {
+            try {
+                var vectorOptions = {
+                    style: "${defaultMapVectorTileUrl}",
+                    pane: 'tilePane',
+                    zIndex: 0
+                };
+                var attr = "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}";
+                if (attr) {
+                    vectorOptions.attributionControl = { customAttribution: attr };
+                }
+                defaultBaseLayer = leaflet.maplibreGL(vectorOptions);
+            } catch (e) {
+                console.warn("Failed to initialize MapLibre GL layer, falling back to raster tiles:", e);
+            }
+        }
+        if (!defaultBaseLayer) {
+            defaultBaseLayer = leaflet.tileLayer("${defaultMapUrl}", {
+                attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
+                subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains', String, '')}",
+                mapid: "${grailsApplication.config.getProperty('map.mapbox.id', String, '')}",
+                token: "${grailsApplication.config.getProperty('map.mapbox.token', String, '')}"
+            });
+        }
 
         // Global var to store map config
         var MAP_VAR = {
@@ -192,7 +224,8 @@
                         layers: 'ALA:ucstodas',
                         format: 'image/png',
                         transparent: true,
-                        attribution: "${grailsApplication.config.getProperty('map.overlay.name', String, 'overlay')}"
+                        attribution: "${grailsApplication.config.getProperty('map.overlay.name', String, 'overlay')}",
+                        zIndex: 5
                     })
         </g:if>
         },
@@ -298,8 +331,46 @@
             MAP_VAR.layerControl.addTo(MAP_VAR.map);
 
             MAP_VAR.map.on('baselayerchange', function(event) {
-                jQuery.cookie('map.baseLayer', event.name, { path: '/' })
+                jQuery.cookie('map.baseLayer', event.name, { path: '/' });
+                if (event.layer && typeof event.layer.bringToBack === 'function') {
+                    event.layer.bringToBack();
+                }
+                if (event.name === 'Minimal' && event.layer === defaultBaseLayer && typeof defaultBaseLayer.getMaplibreMap === 'function') {
+                    var glMap = defaultBaseLayer.getMaplibreMap();
+                    if (glMap) {
+                        glMap.once('error', handleVectorFallback);
+                    }
+                }
             });
+
+            function handleVectorFallback(err) {
+                console.warn("MapLibre GL error encountered, falling back to raster tiles:", err);
+                var wasActive = MAP_VAR.map && MAP_VAR.map.hasLayer(defaultBaseLayer);
+                if (wasActive) {
+                    MAP_VAR.map.removeLayer(defaultBaseLayer);
+                }
+                var fallbackLayer = leaflet.tileLayer("${defaultMapUrl}", {
+                    attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
+                    subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains', String, '')}",
+                    mapid: "${grailsApplication.config.getProperty('map.mapbox.id', String, '')}",
+                    token: "${grailsApplication.config.getProperty('map.mapbox.token', String, '')}"
+                });
+                if (wasActive) {
+                    fallbackLayer.addTo(MAP_VAR.map);
+                    if (typeof fallbackLayer.bringToBack === 'function') {
+                        fallbackLayer.bringToBack();
+                    }
+                }
+                MAP_VAR.baseLayers["Minimal"] = fallbackLayer;
+                if (MAP_VAR.layerControl) {
+                    MAP_VAR.layerControl.removeLayer(defaultBaseLayer);
+                    MAP_VAR.layerControl.addBaseLayer(fallbackLayer, "Minimal");
+                }
+            }
+
+            if (typeof defaultBaseLayer.once === 'function') {
+                defaultBaseLayer.once('error', handleVectorFallback);
+            }
 
             // select the user's preferred base layer
             var userBaseLayer = jQuery.cookie('map.baseLayer')
@@ -307,8 +378,21 @@
             if (baseLayer !== undefined) {
                 //add the default base layer
                 MAP_VAR.map.addLayer(baseLayer);
+                if (typeof baseLayer.bringToBack === 'function') {
+                    baseLayer.bringToBack();
+                }
             } else {
                 MAP_VAR.map.addLayer(defaultBaseLayer);
+                if (typeof defaultBaseLayer.bringToBack === 'function') {
+                    defaultBaseLayer.bringToBack();
+                }
+            }
+
+            if (typeof defaultBaseLayer.getMaplibreMap === 'function') {
+                var glMap = defaultBaseLayer.getMaplibreMap();
+                if (glMap) {
+                    glMap.once('error', handleVectorFallback);
+                }
             }
 
             L.Util.requestAnimFrame(MAP_VAR.map.invalidateSize, MAP_VAR.map, !1, MAP_VAR.map._container);

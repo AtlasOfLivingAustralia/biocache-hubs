@@ -25,6 +25,10 @@
     filter:alpha(opacity=80);
 }
 
+.leaflet-control-attribution .carto-logo-link {display: inline-block; vertical-align: middle; margin-right: 4px; line-height: 1;}
+.leaflet-control-attribution .carto-logo {height: 22px; width: auto; vertical-align: middle; margin-top: -1px;}
+.leaflet-gl-layer {z-index: 0;}
+
 .leaflet-control-layers-overlays label {
     font-size: 12px;
     line-height: 18px;

@@ -9,9 +9,14 @@
 //= require linkifyjs/linkify.js
 //= require linkifyjs/linkify-jquery.js
 //= require leaflet/leaflet.js
+//= require maplibre-gl.js
+//= require leaflet-maplibre-gl.js
 //= require leaflet-plugins/layer/tile/Google.js
 //= require_self
  */
+if (typeof window !== 'undefined' && window.L) {
+    window.L_mainMap = window.L;
+}
 /**
  * JQuery on document ready callback
  */
