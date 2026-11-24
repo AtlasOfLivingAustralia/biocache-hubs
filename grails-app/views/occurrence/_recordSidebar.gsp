@@ -197,7 +197,8 @@
                     }
 
                     // Fix for asset pipeline confusing Leaflet WRT to path to images
-                    leaflet.Icon.Default.imagePath = "${assetPath(src:'/leaflet/images')}";
+                    // Leaflet 1.x appends the file name directly, so the path needs a trailing slash
+                    leaflet.Icon.Default.imagePath = "${assetPath(src:'/leaflet/images')}/";
 
                     // Add marker
                     leaflet.marker(latLng, {
