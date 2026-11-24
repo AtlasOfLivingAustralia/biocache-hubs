@@ -797,7 +797,8 @@
                 fillOpacity: 0.2
             }
 
-            L.Icon.Default.imagePath = "${request.contextPath}/static/js/leaflet/images";
+            // Leaflet 1.x appends the file name directly, so the path needs a trailing slash
+            L.Icon.Default.imagePath = "${assetPath(src:'/leaflet/images')}/";
             var popupText = "<g:message code="map.center.spatial.search.radius" args="${[radius]}"/>";
             var circle = L.circle(latLng, radius * 1030, circleOpts);
             circle.addTo(MAP_VAR.map);

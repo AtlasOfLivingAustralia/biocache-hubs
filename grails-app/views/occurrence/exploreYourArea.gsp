@@ -72,7 +72,7 @@
             geocodeRegion: "${grailsApplication.config.getProperty('geocode.region')}",
             hasGoogleKey: ${grailsApplication.config.getProperty('google.apikey') as Boolean},
             removeFqs: '',
-            mapIconUrlPath: "${assetPath(src:'/leaflet/images')}"
+            mapIconUrlPath: "${assetPath(src:'/leaflet/images')}/"
         }
 
         //make the taxa and rank global variable so that they can be used in the download
