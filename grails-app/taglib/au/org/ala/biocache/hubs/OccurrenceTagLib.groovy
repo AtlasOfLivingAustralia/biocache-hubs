@@ -87,6 +87,22 @@ class OccurrenceTagLib {
         output
     }
 
+    def renderTree = { attrs ->
+        renderNode(attrs.hierarchy, out)
+    }
+
+    def renderNode(hierarchy, out){
+        def nodeLabel = hierarchy[0]
+        def nodeClass = hierarchy.size() == 1 ? 'selected' :' '
+        out << """<ul class='tree'>
+                    <li><span class="${nodeClass}">${nodeLabel}</span>
+               """
+        if (hierarchy.size() > 1) {
+            renderNode(hierarchy.subList(1, hierarchy.size()), out)
+        }
+        out << "</li></ul>"
+    }
+
     /**
      * Format scientific name for HTML display
      *
@@ -143,6 +159,12 @@ class OccurrenceTagLib {
         out << name
     }
 
+    def paramsHasFilterItem(fq) {
+        def fqList = params.list('fq')
+        def idx = fqList.findIndexOf { it == fq}
+        return idx >= 0
+    }
+
     /**
      * Generate HTML for current filters
      *
@@ -173,13 +195,22 @@ class OccurrenceTagLib {
             fqLabel = fqLabel.replaceAll(facetKey, i18nLabel)
         }
 
-        String hrefValue = currentFilterItemLink(attrs, facetValue)
+        String hrefValue
+        String title
+        String fqHiddenInQidClass
+        if (paramsHasFilterItem(facetValue)) {
+            hrefValue = currentFilterItemLink(attrs, facetValue)
+            title = (attrs.title != null ? "${attrs.title}<br><br>" : "") + alatag.message(code:"title.filter.remove", default:"Click to remove this filter")
+        } else {
+            attrs.addCheckBox = false
+            attrs.addCloseBtn = false
+            fqHiddenInQidClass = "disabled"
+        }
         String color = attrs.cssColor != null ? "color:${attrs.cssColor}" : ""
-        String title = (attrs.title != null ? "${attrs.title}<br><br>" : "") + alatag.message(code:"title.filter.remove", default:"Click to remove this filter")
 
         def mb = new MarkupBuilder(out)
         mb.a(   href: hrefValue,
-                class: "${attrs.cssClass} tooltips activeFilter",
+                class: "${attrs.cssClass} tooltips activeFilter ${fqHiddenInQidClass}",
                 style: color,
                 title: title
             ) {
@@ -231,8 +262,11 @@ class OccurrenceTagLib {
             newFqList = []
         } else {
             def idx = fqList.findIndexOf { it == facet }
-            newFqList = new ArrayList<>(fqList)
-            newFqList.remove(idx)
+            // Some facets are hidden in qids and cannot be removed.
+            if (idx >= 0) {
+                newFqList = new ArrayList<>(fqList)
+                newFqList.remove(idx)
+            }
         }
 
         GrailsParameterMap newParams = params.clone()
@@ -265,7 +299,7 @@ class OccurrenceTagLib {
         def facetResult = attrs.facetResult
         def queryParam = attrs.queryParam
         def mb = new MarkupBuilder(out)
-        def linkTitle = "${alatag.message(code:"alatag.filter.results.by")} ${attrs.fieldDisplayName ?: facetResult.fieldName}"
+        def linkTitle = "${alatag.message(code:"alatag.filter.results.by")} ${attrs.fieldDisplayName ? attrs.fieldDisplayName.uncapitalize(): facetResult.fieldName}"
 
         def addCounts = { count ->
             mb.span(class:"facetCount") {
@@ -299,7 +333,11 @@ class OccurrenceTagLib {
                                     mkp.yieldUnescaped("&nbsp;")
                                 }
                                 span(class: "facet-item") {
-                                    if (fieldResult.i18nCode) {
+                                    // If we have a translation, we use it, if not we try to use the label translation
+                                    // and if not, directly use the label. If the label is missing, use "unknown"
+                                    // In search.js this is done a bit differently:
+                                    // https://github.com/AtlasOfLivingAustralia/biocache-hubs/blob/00f263640edd802d10a071f5d09d146eaa24af34/grails-app/assets/javascripts/search.js#L1946
+                                    if (fieldResult.i18nCode && alatag.message(code: fieldResult.i18nCode) != fieldResult.i18nCode ) {
                                         mkp.yield(alatag.message(code: fieldResult.i18nCode, default: fieldResult.label))
                                     } else {
                                         mkp.yield(alatag.message(code: fieldResult.label ?: 'unknown', default: fieldResult.label))
@@ -497,7 +535,7 @@ class OccurrenceTagLib {
                     mb.tr() {
                         if (i == 0) {
                             td(class:"noStripe", rowspan:"${group.value.length()}") {
-                                b(group.key)
+                                b(g.message(code: "facet.group.${group.key}", default: "${group.key}"))
                             }
                         }
                         td(alatag.databaseFieldName(text: field.name))
@@ -620,7 +658,7 @@ class OccurrenceTagLib {
                 url = "<a href=\"${grailsApplication.config.getProperty("sightings.baseUrl")}/spotter/${userId.encodeAsURL()}\">${userName}</a>"
             } else if (dataResourceUid == grailsApplication.config.getProperty('dataResourceUuid.iNaturalist', String,'')) {
                 // iNaturalist
-                url = "<a href=\"${grailsApplication.config.getProperty( "iNaturalist.baseUrl", "https://inaturalist.org")}/people/${userName.encodeAsURL()}\">${userName}</a>"
+                url = "<a href=\"${grailsApplication.config.getProperty( "iNaturalist.baseUrl", "https://inaturalist.org")}/people/${userId.encodeAsURL()}\">${userName}</a>"
             } else if (dataResourceUid == grailsApplication.config.getProperty('dataResourceUuid.flickr', String,'') && occurrenceId) {
                 // Flickr
                 // Munge occurrenceId to get the URL, as we don't have the user-name stored in biocache in order to generate it
@@ -652,23 +690,25 @@ class OccurrenceTagLib {
         def exclude = attrs.exclude?:''
         def output = ""
 
+        def excludeList = exclude.toString().toLowerCase().split(",")
+
         compareRecord.get(group).each { cr ->
             def key = cr.name
             def label = message(code:key, default:"") ?: camelCaseToHuman(text: key) ?: StringUtils.capitalize(key)
 
             // only output fields not already included (by checking fieldsMap Map) && not in excluded list
-            if (!fieldsMap.containsKey(key) && !StringUtils.containsIgnoreCase(exclude, key)) {
+            if (!fieldsMap.containsKey(key) && !excludeList.contains(key.toLowerCase())) {
                 //def mb = new MarkupBuilder(out)
                 def tagBody
 
                 if (cr.processed && cr.raw && cr.processed == cr.raw) {
-                    tagBody = cr.processed
+                    tagBody = pipeWhitespace(cr.processed)
                 } else if (!cr.raw && cr.processed) {
-                    tagBody = cr.processed
+                    tagBody = pipeWhitespace(cr.processed)
                 } else if (cr.raw && !cr.processed) {
-                    tagBody = cr.raw
+                    tagBody = pipeWhitespace(cr.raw)
                 } else {
-                    tagBody = "${cr.processed} <br/><span class='originalValue'>${alatag.message(code:"alatag.supplied.as")} ${cr.raw}</span>"
+                    tagBody = "${pipeWhitespace(cr.processed)} <br/><span class='originalValue'>${alatag.message(code:"alatag.supplied.as")} ${cr.raw}</span>"
                 }
                 output += occurrenceTableRow(annotate:"true", section:"dataset", fieldCode:"${key}", fieldName:"${label}") {
                     tagBody
@@ -676,6 +716,11 @@ class OccurrenceTagLib {
             }
         }
         out << output
+    }
+
+    def pipeWhitespace(str) {
+        // inject whitespace around pipe
+        str.replaceAll("(?<=\\S)\\|(?=\\S)", " | ")
     }
 
     def formatDynamicLabel(str){
@@ -731,7 +776,7 @@ class OccurrenceTagLib {
                     span(class:'occurrenceNames', occurrence.raw_scientificName)
                 }
 
-                if (occurrence.vernacularName || occurrence.raw_vernacularName) {
+                if (grailsApplication.config.getProperty('vernacularName.show', Boolean, true) && occurrence.vernacularName || occurrence.raw_vernacularName) {
                     mkp.yieldUnescaped("&nbsp;|&nbsp;")
                     span(class:'occurrenceNames', occurrence.vernacularName?:occurrence.raw_vernacularName)
                 }
@@ -750,7 +795,7 @@ class OccurrenceTagLib {
                 }
 
                 // display dynamic fields
-                if(grailsApplication.config.table.displayDynamicProperties?.toString()?.toBoolean()) {
+                if(grailsApplication.config.getProperty('table.displayDynamicProperties', Boolean, false)) {
                     span(class: 'dynamicValues') {
                         def count = 0
                         occurrence.miscStringProperties.each { key, value ->
@@ -851,19 +896,28 @@ class OccurrenceTagLib {
      * at top of taglib
      */
     def getLoggerReasons = { attrs ->
-        webServicesService.getLoggerReasons()
+        try {
+            return webServicesService.getLoggerReasons()
+        } catch (Exception e) {
+            log.error("Failed to get logger reasons: ${e.message}", e)
+            return [[id: "-1", name: "Error. Failed to retrieve logger reasons codes, see logs for details."]]
+        }
     }
 
     /**
      * Get the appropriate sourceId for the current hub
      */
     def getSourceId = { attrs ->
-        def skin = grailsApplication.config.skin.layout?.toString()?.toUpperCase()
-        def sources = webServicesService.getLoggerSources()
-        sources.each {
-            if (it.name == skin) {
-                out << it.id
+        def skin = grailsApplication.config.getProperty('skin.layout')?.toUpperCase()
+        try {
+            def sources = webServicesService.getLoggerSources()
+            sources.each {
+                if (it.name == skin) {
+                    out << it.id
+                }
             }
+        } catch (Exception e) {
+            log.error("Failed to get logger sources: ${e.message}", e)
         }
     }
 
@@ -892,8 +946,8 @@ class OccurrenceTagLib {
      * biocache.ajax.useProxy config var to see whether or not to use the proxy
      */
     def getBiocacheAjaxUrl = { attrs ->
-        String url = grailsApplication.config.biocache.baseUrl
-        Boolean useProxy = grailsApplication.config.biocache.ajax.useProxy?.toString()?.toBoolean() // will convert String 'true' to boolean true
+        String url = grailsApplication.config.getProperty('biocache.baseUrl')
+        Boolean useProxy = grailsApplication.config.getProperty('biocache.ajax.useProxy', Boolean) // will convert String 'true' to boolean true
         log.debug "useProxy = ${useProxy}"
 
         if (useProxy) {
@@ -1048,7 +1102,7 @@ class OccurrenceTagLib {
     }
 
     @Value('${dataquality.enabled}')
-    boolean dataQualityEnabled
+    Boolean dataQualityEnabled
 
     def ifDataQualityEnabled = { attrs, body ->
         if (dataQualityEnabled) {

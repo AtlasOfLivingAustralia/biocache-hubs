@@ -2,7 +2,7 @@
 <g:render template="/layouts/global"/>
 <form class="form-horizontal" name="advancedSearchForm" id="advancedSearchForm" action="${request.contextPath}/advancedSearch" method="POST">
     <input type="text" id="solrQuery" name="q" style="position:absolute;left:-9999px;" value="${params.q}"/>
-    <input type="hidden" name="nameType" value="${grailsApplication.config.advancedTaxaField?:'matched_name_children'}"/>
+    <input type="hidden" name="nameType" value="${grailsApplication.config.getProperty('advancedTaxaField', String, 'matched_name_children')}"/>
 
     <h4 class="margin-bottom-half-1"><g:message code="advancedsearch.title01" default="Find records that have"/></h4>
     <div class="form-group">
@@ -50,21 +50,24 @@
             <select class="institution_uid collection_uid form-control" name="institution_collection" id="institution_collection">
                 <option value=""><g:message code="advancedsearch.table05col01.option01.label" default="-- select an institution or collection --"/></option>
                 <g:each var="inst" in="${request.getAttribute("institution_uid")}">
-                    <optgroup label="${inst.value}">
-                        <option value="${inst.key}"><g:message code="advancedsearch.table05col01.option02.label" default="All records from"/> ${inst.value}</option>
-                        <g:each var="coll" in="${request.getAttribute("collection_uid")}">
-                            <g:if test="${inst.key == 'in13' && StringUtils.startsWith(coll.value, inst.value)}">
-                                <option value="${coll.key}">${StringUtils.replace(StringUtils.replace(coll.value, inst.value, ""), " - " ,"")} <g:message code="advancedsearch.table05col01.option03.label" default="Collection"/></option>
-                            </g:if>
-                            <g:elseif test="${inst.key == 'in6' && StringUtils.startsWith(coll.value, 'Australian National')}">
-                            <%-- <option value="${coll.key}">${fn:replace(coll.value,"Australian National ", "")}</option> --%>
-                                <option value="${coll.key}">${coll.value}</option>
-                            </g:elseif>
-                            <g:elseif test="${StringUtils.startsWith(coll.value, inst.value)}">
-                                <option value="${coll.key}">${StringUtils.replace(coll.value, inst.value, "")}</option>
-                            </g:elseif>
-                        </g:each>
-                    </optgroup>
+                    %{-- Stops 'Not Supplied' institution from being rendered --}%
+                    <g:if test="${inst.key != "*"}">
+                        <optgroup label="${inst.value}">
+                            <option value="${inst.key}"><g:message code="advancedsearch.table05col01.option02.label" default="All records from"/> ${inst.value}</option>
+                            <g:each var="coll" in="${request.getAttribute("collection_uid")}">
+                                <g:if test="${inst.key == 'in13' && StringUtils.startsWith(coll.value, inst.value)}">
+                                    <option value="${coll.key}">${StringUtils.replace(StringUtils.replace(coll.value, inst.value, ""), " - " ,"")} <g:message code="advancedsearch.table05col01.option03.label" default="Collection"/></option>
+                                </g:if>
+                                <g:elseif test="${inst.key == 'in6' && StringUtils.startsWith(coll.value, 'Australian National')}">
+                                <%-- <option value="${coll.key}">${fn:replace(coll.value,"Australian National ", "")}</option> --%>
+                                    <option value="${coll.key}">${coll.value}</option>
+                                </g:elseif>
+                                <g:elseif test="${StringUtils.startsWith(coll.value, inst.value)}">
+                                    <option value="${coll.key}">${StringUtils.replace(coll.value, inst.value, "")}</option>
+                                </g:elseif>
+                            </g:each>
+                        </optgroup>
+                    </g:if>
                 </g:each>
             </select>
         </div>
@@ -160,8 +163,8 @@
         </div>
     </g:if>
 
-    <g:if test="${request.getAttribute("collector_text") && request.getAttribute("collector_text").size() > 1}">
-        <div class="form-group">
+    <g:if test="${request.getAttribute('collector_text') || grailsApplication.config.getProperty('advancedSearchShowCollector', Boolean, false)}">
+       <div class="form-group">
             <label class="col-md-2 control-label" for="collector_text"><g:message code="advancedsearch.collector_text.title" default="Collector"/></label>
             <div class="col-md-6">
                 <input type="text" name="collector_text" id="collector_text" class="dataset form-control" placeholder="" value=""/>
@@ -218,9 +221,19 @@
         </div>
     </div>
 
-    <input type="submit" value=<g:message code="advancedsearch.button.submit" default="Search"/> class="btn btn-primary" />
+    <g:if test="${grailsApplication.config.getProperty('advancedSearchShowHabitat', Boolean, false)}">
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="habitat"><g:message code="advancedsearch.table11col01.title" default="Habitat"/></label>
+
+            <div class="col-md-6">
+                <input type="text" name="habitat" id="habitat" class="dataset form-control" placeholder="" value=""/>
+            </div>
+        </div>
+    </g:if>
+
+    <input type="submit" value="<g:message code="advancedsearch.button.submit" default="Search"/>" class="btn btn-primary" />
     &nbsp;&nbsp;
-    <input type="reset" value="Clear all" id="clearAll" class="btn btn-default" onclick="$('input#solrQuery').val(''); $('input.clear_taxon').click(); return true;"/>
+    <input type="reset" value="<g:message code="advancedsearch.button.clear.all" default="Clear all"/>" id="clearAll" class="btn btn-default" onclick="$('input#solrQuery').val(''); $('input.clear_taxon').click(); return true;"/>
 </form>
 <asset:script type="text/javascript">
     $(document).ready(function() {

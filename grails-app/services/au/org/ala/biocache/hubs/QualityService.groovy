@@ -54,7 +54,7 @@ class QualityService {
             def apiClient = new ApiClient()
             apiClient.adapterBuilder.baseUrl(dataQualityBaseUrl)
             apiClient.okBuilder.addInterceptor { chain ->
-                def request = chain.request().newBuilder().addHeader('User-Agent', "${grailsApplication.config.info.app.name}/${grailsApplication.config.info.app.version}").build()
+                def request = chain.request().newBuilder().addHeader('User-Agent', "${grailsApplication.config.getProperty('info.app.name')}/${grailsApplication.config.getProperty('info.app.version')}").build()
                 chain.proceed(request)
             }
             api = apiClient.createService(QualityServiceRpcApi)
@@ -140,7 +140,7 @@ class QualityService {
     boolean isProfileEnabled(String profileShortName) {
         if (dataQualityEnabled) {
             def enabledProfiles = findAllEnabledProfiles(true)
-            return enabledProfiles?.any { it.shortName == profileShortName}
+            return enabledProfiles?.any { it.shortName == profileShortName }
         } else {
             return false
         }
@@ -150,12 +150,12 @@ class QualityService {
         return profileName && isProfileEnabled(profileName)
     }
 
-    @CacheEvict(value='excludedCountCache', allEntries=true)
+    @CacheEvict(value = 'excludedCountCache', allEntries = true)
     def clearRecordCountCache() {
         "record count cache cleared\n"
     }
 
-    @Cacheable(value = 'excludedCountCache', key = {requestParams.toString()})
+    @Cacheable(value = 'excludedCountCache', key = { requestParams.toString() })
     def getExcludeCount(SpatialSearchRequestParams requestParams) {
         return webServicesService.fullTextSearch(requestParams)?.totalRecords
     }
@@ -203,7 +203,7 @@ class QualityService {
             def labels = qualityCategories*.label as Set
             def response = qualityCategories.collectEntries {
                 def otherLabels = (labels - it.label) as List
-                [(it.label): totalRecords - countRecordsExcludedByLabel(otherLabels, requestParams) ]
+                [(it.label): totalRecords - countRecordsExcludedByLabel(otherLabels, requestParams)]
             }
             log.error("Quality Category facet counts took {}", sw)
             return response

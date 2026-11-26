@@ -26,16 +26,16 @@
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 <g:set var="hostName" value="${request.requestURL.replaceFirst(request.requestURI, '')}"/>
-<g:set var="fullName" value="${grailsApplication.config.skin.orgNameLong}"/>
-<g:set var="shortName" value="${grailsApplication.config.skin.orgNameShort}"/>
-<g:set var="attribution" value="${grailsApplication.config.skin.attribution}"/>
-<g:set var="jurisdiction" value="${grailsApplication.config.skin.jurisdiction?:'Australia'}"/>
-<g:set var="jurisdictionCode" value="${grailsApplication.config.skin.jurisdictionCode?:'AU'}"/>
+<g:set var="fullName" value="${grailsApplication.config.getProperty('skin.orgNameLong')}"/>
+<g:set var="shortName" value="${grailsApplication.config.getProperty('skin.orgNameShort')}"/>
+<g:set var="attribution" value="${grailsApplication.configgetProperty('skin.attribution')}"/>
+<g:set var="jurisdiction" value="${grailsApplication.config.getProperty('skin.jurisdiction', String, 'Australia')}"/>
+<g:set var="jurisdictionCode" value="${grailsApplication.config.getProperty('skin.jurisdictionCode', String, 'AU')}"/>
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('skin.layout')}"/>
     <meta name="section" content="help"/>
     <title>Terms of use | ${fullName}</title>
     <asset:javascript src="help.js" />

@@ -29,8 +29,8 @@ class AdminInterceptor {
             // old-style AUTH config - bypass
             true
         } else if (!authService?.userInRole(grailsApplication.config.getProperty("auth.admin_role", String, "ROLE_ADMIN"))) {
-            log.debug "User not authorised to access the page: ${params.controller}/${params.action?:''}. Redirecting to index."
-            flash.message = "You are not authorised to access the page: ${params.controller}/${params.action?:''}."
+            log.debug "User not authorised to access the page: ${params.controller}/${params.action ?: ''}. Redirecting to index."
+            flash.message = "You are not authorised to access the page: ${params.controller}/${params.action ?: ''}."
             redirect(controller: "home", action: "index")
             false
         } else {

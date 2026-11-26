@@ -52,7 +52,7 @@ class PostProcessingService {
     /**
      * Get the assertions grouped by assertion code.
      *
-     *  @see <a href="http://code.google.com/p/ala-hubs/source/browse/trunk/hubs-webapp/src/main/java/org/ala/hubs/util/AssertionUtils.java">
+     * @see <a href="http://code.google.com/p/ala-hubs/source/browse/trunk/hubs-webapp/src/main/java/org/ala/hubs/util/AssertionUtils.java">
      *      http://code.google.com/p/ala-hubs/source/browse/trunk/hubs-webapp/src/main/java/org/ala/hubs/util/AssertionUtils.java
      *  </a>
      *
@@ -61,7 +61,7 @@ class PostProcessingService {
      * @param currentUserId
      * @return
      */
-    def List getGroupedAssertions(JSONArray userAssertions, JSONArray queryAssertions, String currentUserId) {
+    def List getGroupedAssertions(JSONArray userAssertions, String currentUserId) {
         Map grouped = [:]
 
         // Closure to call for both user and query assertions
@@ -96,9 +96,9 @@ class PostProcessingService {
             withEachAssertion(it)
         }
 
-        queryAssertions.each {
-            withEachAssertion(it)
-        }
+//        queryAssertions.each {
+//            withEachAssertion(it)
+//        }
 
         List groupedValues = []
         groupedValues.addAll(grouped.values())
@@ -130,22 +130,22 @@ class PostProcessingService {
             }
         }
 
-        return sampleInfo.sort{a,b -> (a.classification1 <=> b.classification1 ?: a.layerDisplayName <=> b.layerDisplayName)}
+        return sampleInfo.sort { a, b -> (a.classification1 <=> b.classification1 ?: a.layerDisplayName <=> b.layerDisplayName) }
     }
 
-   /**
+    /**
      * Build a LinkedHashMap form of the facets to display in the customise drop down div
      *
      * @param defaultFacets
      * @return LinkedHashMap facetsMap
      */
-   def LinkedHashMap getAllFacets(List defaultFacets) {
+    def LinkedHashMap getAllFacets(List defaultFacets) {
         LinkedHashMap<String, Boolean> facetsMap = new LinkedHashMap<String, Boolean>()
         List orderedFacets = []
-        List facetsToInclude = grailsApplication.config.facets?.include?.split(',') ?: []
-        List facetsToExclude = grailsApplication.config.facets?.exclude?.split(',') ?: []
-        List facetsToHide = grailsApplication.config.facets?.hide?.split(',') ?: []
-        List customOrder = grailsApplication.config.facets?.customOrder?.split(',') ?: []
+        List facetsToInclude = grailsApplication.config.getProperty('facets.include', List, [])
+        List facetsToExclude = grailsApplication.config.getProperty('facets.exclude', List, [])
+        List facetsToHide = grailsApplication.config.getProperty('facets.hide', List, [])
+        List customOrder = grailsApplication.config.getProperty('facets.customOrder', List, [])
         List allFacets = new ArrayList(defaultFacets)
         allFacets.addAll(facetsToInclude)
 
@@ -169,7 +169,7 @@ class PostProcessingService {
         }
         log.debug "facetsMap =${facetsMap}"
         return facetsMap
-   }
+    }
 
     /**
      * Filter the Map of all facets to produce a list of only the "active" or selected
@@ -178,7 +178,7 @@ class PostProcessingService {
      * @param finalFacetsMap
      * @return
      */
-   def String[] getFilteredFacets(LinkedHashMap<String, Boolean> finalFacetsMap) {
+    def String[] getFilteredFacets(LinkedHashMap<String, Boolean> finalFacetsMap) {
         List finalFacets = []
 
         for (String key : finalFacetsMap.keySet()) {
@@ -200,7 +200,7 @@ class PostProcessingService {
      * @param request
      * @return
      */
-   def String[] getFacetsFromCookie(HttpServletRequest request) {
+    def String[] getFacetsFromCookie(HttpServletRequest request) {
 
         String userFacets = null
         String[] facets = null
@@ -219,7 +219,7 @@ class PostProcessingService {
         }
 
         return facets
-   }
+    }
 
     /**
      * Utility method for getting a named cookie value from the HttpServletRepsonse cookies array
@@ -310,7 +310,9 @@ class PostProcessingService {
 
         if (record.processed.occurrence.outlierForLayers) {
             record.processed.occurrence.outlierForLayers.each {
-                metdataForOutlierLayers.add(layersMetaData.get(it))
+                if (layersMetaData.containsKey(it)) {
+                    metdataForOutlierLayers.add(layersMetaData.get(it))
+                }
             }
         }
 
@@ -354,7 +356,7 @@ class PostProcessingService {
         def dynamicFacetNames = dynamicFacets.collect { it.name }
         finalGroupedFacets.put("Ungrouped", [])
         ungroupedFacetsList.each { facet ->
-            if(dynamicFacetNames.contains(facet)){
+            if (dynamicFacetNames.contains(facet)) {
                 finalGroupedFacets.get("Custom").add(facet)
             } else {
                 finalGroupedFacets.get("Ungrouped").add(facet)
@@ -420,23 +422,12 @@ class PostProcessingService {
         //log.debug "record = ${record as JSON}"
         String stateProvince = ""
         String stateKey = ""
-        Map statesListsPaths = grailsApplication.config.stateConservationListPath ?: [:]
         // conservation list is state based, so first we need to know the state
         modifiedRecord.get("Location")?.each {
             if (it.name == "stateProvince") {
                 stateProvince = it.processed ?: it.raw
                 // converts to camel case, e.g. "new south wales" to "NewSouthWales"
-                stateKey = WordUtils.capitalizeFully(stateProvince).replaceAll("\\s+","")
-            }
-        }
-        modifiedRecord.get("Occurrence")?.each {
-            if (it.name == "stateConservation" && stateProvince && statesListsPaths.containsKey(stateKey)) {
-                String statusValue = it.processed ?: it.raw
-                List statusValues = statusValue.tokenize(",").unique( false ) // remove duplicate values
-                statusValue = (statusValues.size() == 2) ? statusValues[1] : statusValues.join(", ") // only show 'sourceStatus' if 2 values are present
-
-                String specieslistUrl = "${grailsApplication.config.speciesList.baseURL}${statesListsPaths[stateKey]}"
-                it.processed = "<a href=\"${specieslistUrl}\" target=\"_lists\">${stateProvince}: ${statusValue}</a>"
+                stateKey = WordUtils.capitalizeFully(stateProvince).replaceAll("\\s+", "")
             }
         }
 
@@ -527,7 +518,7 @@ class PostProcessingService {
 
         def profile = qualityService.activeProfile(requestParams.qualityProfile)
         // label to name map
-        def labelToNameMap = profile?.categories?.collectEntries{ [(it.label): it.name] } ?: [:]
+        def labelToNameMap = profile?.categories?.collectEntries { [(it.label): it.name] } ?: [:]
 
         // all used keys by quality filters
         def keys = categoryToKeyMap.values().flatten() as Set
@@ -537,22 +528,22 @@ class PostProcessingService {
 
 
         // find all fqs interact with dq filters
-        def interactingFq = requestParams.fq.findAll {getKeysFromFilter(it).find {keyToCategoryMap.containsKey(it)}}
+        def interactingFq = requestParams.fq.findAll { getKeysFromFilter(it).find { keyToCategoryMap.containsKey(it) } }
         // userfq -> { key : [label, label]}
-        def fqkeyToCategory = interactingFq.collectEntries {fq -> [(fq): getKeysFromFilter(fq).findAll { keyToCategoryMap.containsKey(it) }.collectEntries { [(it): keyToCategoryMap.get(it)]}]}
-        def fqInteract = fqkeyToCategory.collectEntries {fq, dic ->
+        def fqkeyToCategory = interactingFq.collectEntries { fq -> [(fq): getKeysFromFilter(fq).findAll { keyToCategoryMap.containsKey(it) }.collectEntries { [(it): keyToCategoryMap.get(it)] }] }
+        def fqInteract = fqkeyToCategory.collectEntries { fq, dic ->
             [(fq), dic.collect { key, val ->
-                'This filter may conflict with <b>[' + val.collect{labelToNameMap[it]}.join(', ') + ']</b> because they ' + (val.size() == 1? 'both' : 'all') + ' use field: <b>[' + key + ']</b>'
+                'This filter may conflict with <b>[' + val.collect { labelToNameMap[it] }.join(', ') + ']</b> because they ' + (val.size() == 1 ? 'both' : 'all') + ' use field: <b>[' + key + ']</b>'
             }.join('<br><br>')]
         }
 
         // all keys in user fq
-        def alluserkeys = requestParams.fq.collect{ getKeysFromFilter(it) }.flatten()
+        def alluserkeys = requestParams.fq.collect { getKeysFromFilter(it) }.flatten()
         // key -> [userfq, userfq]
-        def keyToUserfq = alluserkeys.collectEntries {key -> [(key): requestParams.fq.findAll {getKeysFromFilter(it).contains(key)}]}
+        def keyToUserfq = alluserkeys.collectEntries { key -> [(key): requestParams.fq.findAll { getKeysFromFilter(it).contains(key) }] }
         // filter it so it only contains dq categories interact with user fqs
-        categoryToKeyMap = categoryToKeyMap.collectEntries {label, keySet -> [(label) : keySet.findAll { alluserkeys.contains(it) }]}.findAll {label, keySet -> keySet.size() > 0}
-        def dqInteract = categoryToKeyMap.collectEntries {label, keySet ->
+        categoryToKeyMap = categoryToKeyMap.collectEntries { label, keySet -> [(label): keySet.findAll { alluserkeys.contains(it) }] }.findAll { label, keySet -> keySet.size() > 0 }
+        def dqInteract = categoryToKeyMap.collectEntries { label, keySet ->
             [(label), keySet.collect { key ->
                 'This category may conflict with <b>[' + keyToUserfq[key].join(', ') + ']</b> because they ' + (keyToUserfq[key].size() == 1 ? 'both' : 'all') + ' use field:<b>[' + key + ']</b>'
             }.join('<br><br>')]
@@ -584,7 +575,7 @@ class PostProcessingService {
         def DQColors = [:]
         def UserFQColors = [:]
 
-        userFqInteractDQCategoryLabel.eachWithIndex {it, index ->
+        userFqInteractDQCategoryLabel.eachWithIndex { it, index ->
             def color = colors[index % colors.size()]
             UserFQColors.put(it.key, color)
             it.value.each { DQColors.put(it, color) }
@@ -620,7 +611,7 @@ class PostProcessingService {
         // the values in the keys can now be "-(xxx", "-xxx", "(xxx"
         // need to remove '-' and '('
         keys = keys.collect {
-            it = it.replace("(",  "")
+            it = it.replace("(", "")
             if (it?.startsWith("-")) it = it.substring(1)
             it
         }

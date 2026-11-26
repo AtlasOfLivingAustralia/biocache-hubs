@@ -28,7 +28,7 @@ class DataQualityController {
     def webServicesService
 
     static responseFormats = [
-            list: ['json']
+        list: ['json']
     ]
 
     def index() {
@@ -38,5 +38,4 @@ class DataQualityController {
     def allCodes() {
         render webServicesService.getAllCodes() as JSON
     }
-
 }

@@ -5,6 +5,7 @@
 --%>
 <!-- download modal form - used for old style downloads -->
 <g:set var="biocacheServiceUrl" value="${alatag.getBiocacheAjaxUrl()}"/>
+<g:set var="orgNameLong" value="${grailsApplication.config.getProperty('skin.orgNameLong')}"/>
 
 <div id="downloadModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="downloadModalLabel">
     <div class="modal-dialog" role="document">
@@ -16,7 +17,7 @@
                 </div>
                 <div class="modal-body">
                     <p id="termsOfUseDownload">
-                        <g:message code="download.termsofusedownload.01" default="By downloading this content you are agreeing to use it in accordance with the Atlas of Living Australia"/>
+                        <g:message code="download.termsofusedownload.01.param" args="${[orgNameLong]}" default="By downloading this content you are agreeing to use it in accordance with the {0}"/>
                         <a href="http://www.ala.org.au/about/terms-of-use/#TOUusingcontent"><g:message code="download.termsofusedownload.02" default="Terms of Use"/></a>
                         <g:message code="download.termsofusedownload.03" default="and any Data Provider Terms associated with the data download."/>
                         <br/><br/>
@@ -71,7 +72,7 @@
 
                     <input type="hidden" name="url" id="downloadChecklistUrl" value="${biocacheServiceUrl}/occurrences/facets/download"/>
                     <input type="hidden" name="url" id="downloadFieldGuideUrl" value="${request.contextPath}/occurrences/fieldguide/download"/>
-                    <input type="hidden" name="extra" id="extraFields" value="${grailsApplication.config.biocache.downloads.extra}"/>
+                    <input type="hidden" name="extra" id="extraFields" value="${grailsApplication.config.getProperty('biocache.downloads.extra')}"/>
                     <input type="hidden" name="sourceTypeId" id="sourceTypeId" value="${alatag.getSourceId()}"/>
                 </div>
                 <div class="modal-footer">

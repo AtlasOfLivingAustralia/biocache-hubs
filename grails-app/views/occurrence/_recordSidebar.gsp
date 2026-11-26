@@ -1,4 +1,4 @@
-<g:if test="${isUnderCas && !isReadOnly}">
+<g:if test="${isUnderAuth}">
     <button class="btn btn-default" id="assertionButton" href="#loginOrFlag" role="button" data-toggle="modal" title="report a problem or suggest a correction for this record">
         <span id="loginOrFlagSpan" title="Flag an issue" class=""><i class="glyphicon glyphicon-flag"></i> <g:message code="show.button.assertionbutton.span" default="Flag an issue"/></span>
     </button>
@@ -26,6 +26,9 @@
             <li><a href="#soundsHeader"><g:message code="show.soundsheader.title" default="Sounds"/></a></li>
         </g:if>
         <li><a href="#userAnnotationsDiv" id="userAnnotationsNav" style="display:none;"><g:message code="show.userannotationsdiv.title" default="User flagged issues"/></a></li>
+        <g:if test="${record.referencedPublications}">
+            <li><a href="#referencedPublications"><g:message code="show.referencedPublications.title" default="Referenced in publications"/> (${record.referencedPublications.size()})</a></li>
+        </g:if>
         <g:if test="${record.systemAssertions && record.processed.attribution.provenance != 'Draft'}">
             <li><a href="#dataQuality"><g:message code="show.dataquality.title" default="Data quality tests"/>
             (${record.systemAssertions.failed?.size()?:0} <i class="fa fa-times-circle tooltips" style="color:red;" title="<g:message code="assertions.failed" default="failed"/>"></i>,
@@ -48,96 +51,6 @@
             <li><a href="#environmentalSampleInfo"><g:message code="show.outlierinformation.02.title02" default="Environmental sampling for this location"/></a></li>
         </g:if>
     </ul>
-    <g:if test="${false && record.processed.attribution.provenance != 'Draft'}">
-        <div class="sidebar">
-            <div id="warnings">
-                <div id="systemAssertionsContainer" <g:if test="${!record.systemAssertions}">style="display:none"</g:if>>
-                    <h3><g:message code="show.systemassertioncontainer.title" default="Data quality tests"/></h3>
-
-                    <span id="systemAssertions">
-                        <li class="failedTestCount">
-                            <g:message code="assertions.failed" default="failed"/>: ${record.systemAssertions.failed?.size()?:0}
-                        </li>
-                        <li class="warningsTestCount">
-                            <g:message code="assertions.warnings" default="warnings"/>: ${record.systemAssertions.warning?.size()?:0}
-                        </li>
-                        <li class="passedTestCount">
-                            <g:message code="assertions.passed" default="passed"/>: ${record.systemAssertions.passed?.size()?:0}
-                        </li>
-                        <li class="missingTestCount">
-                            <g:message code="assertions.missing" default="missing"/>: ${record.systemAssertions.missing?.size()?:0}
-                        </li>
-                        <li class="uncheckedTestCount">
-                            <g:message code="assertions.unchecked" default="unchecked"/>: ${record.systemAssertions.unchecked?.size()?:0}
-                        </li>
-
-                        <li id="dataQualityFurtherDetails">
-                            <i class="icon-hand-right"></i>&nbsp;
-                            <a id="dataQualityReportLink" href="#dataQualityReport">
-                                <g:message code="show.dataqualityreportlink.navigator" default="View full data quality report"/>
-                            </a>
-                        </li>
-
-                        <g:set var="hasExpertDistribution" value="${false}"/>
-                        <g:each var="systemAssertion" in="${record.systemAssertions.failed}">
-                            <g:if test="${systemAssertion.code == 26}">
-                                <g:set var="hasExpertDistribution" value="${true}"/>
-                            </g:if>
-                        </g:each>
-
-                        <g:set var="isDuplicate" value="${false}"/>
-                        <g:if test="${record.processed.occurrence.duplicationStatus}">
-                            <g:set var="isDuplicate" value="${true}"/>
-                        </g:if>
-
-                        <g:if test="${isDuplicate}">
-                            <li><i class="icon-hand-right"></i>&nbsp;
-                                <a id="duplicateLink" href="#inferredOccurrenceDetails">
-                                    <g:message code="show.duplicatelink.navigator" default="Potential duplicate record - view details"/>
-                                </a>
-                            </li>
-                        </g:if>
-
-                        <g:if test="${hasExpertDistribution}">
-                            <li><i class="icon-hand-right"></i>&nbsp;
-                                <a id="expertRangeLink" href="#expertReport">
-                                    <g:message code="show.expertrangelink.navigator" default="Outside expert range - view details"/>
-                                </a>
-                            </li>
-                        </g:if>
-
-                        <g:if test="${record.processed.occurrence.outlierForLayers}">
-                            <li><i class="icon-hand-right"></i>&nbsp;
-                                <a id="outlierReportLink" href="#outlierReport">
-                                    <g:message code="show.outlierreportlink.navigator" default="Environmental outlier - view details"/>
-                                </a>
-                            </li>
-                        </g:if>
-                    </span>
-
-                    <!--<p class="half-padding-bottom">Data validation tools identified the following possible issues:</p>-->
-                    <g:set var="recordIsVerified" value="false"/>
-
-                    <g:each in="${record.userAssertions}" var="userAssertion">
-                        <g:if test="${userAssertion.name == 'userVerified'}"><g:set var="recordIsVerified" value="true"/></g:if>
-                    </g:each>
-                </div>
-
-                <div id="userAssertionsContainer" <g:if test="${!record.userAssertions && !queryAssertions}">style="display:none"</g:if>>
-                    <h3><g:message code="show.userassertionscontainer.title" default="User flagged issues"/></h3>
-                    <ul id="userAssertions">
-                        <!--<p class="half-padding-bottom">Users have highlighted the following possible issues:</p>-->
-                        <alatag:groupedAssertions groupedAssertions="${groupedAssertions}" />
-                    </ul>
-                    <div id="userAssertionsDetailsLink">
-                        <a id="showUserFlaggedIssues" href="#userAnnotations">
-                            <g:message code="show.showuserflaggedissues.navigator" default="View issue list &amp; comments"/>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </g:if>
 
     <g:if test="${record.processed.attribution.provenance && record.processed.attribution.provenance == 'Draft'}">
         <div class="sidebar">
@@ -160,9 +73,9 @@
             <asset:script type="text/javascript">
                 $(document).ready(function() {
                     // Leaflet map
-                    var defaultBaseLayer = L.tileLayer("${grailsApplication.config.map.minimal.url}", {
-                        attribution: "${raw(grailsApplication.config.map.minimal.attr)}",
-                        subdomains: "${grailsApplication.config.map.minimal.subdomains}"
+                    var defaultBaseLayer = L.tileLayer("${grailsApplication.config.getProperty('map.minimal.url')}", {
+                        attribution: "${raw(grailsApplication.config.getProperty('map.minimal.attr'))}",
+                        subdomains: "${grailsApplication.config.getProperty('map.minimal.subdomains')}"
                     });
 
                     var baseLayers = {
@@ -180,7 +93,20 @@
                     });
 
                     L.control.layers(baseLayers).addTo(map);
-                    map.addLayer(defaultBaseLayer);
+
+                    map.on('baselayerchange', function(event) {
+                        $.cookie('map.baseLayer', event.name, { path: '/' })
+                    });
+
+                    // select the user's preferred base layer
+                    var userBaseLayer = $.cookie('map.baseLayer')
+                    var baseLayer = baseLayers[userBaseLayer]
+                    if (baseLayer !== undefined) {
+                        //add the default base layer
+                        map.addLayer(baseLayer);
+                    } else {
+                        map.addLayer(defaultBaseLayer);
+                    }
 
                     // Fix for asset pipeline confusing Leaflet WRT to path to images
                     L.Icon.Default.imagePath = "${assetPath(src:'/leaflet/images')}";
@@ -215,14 +141,34 @@
             <div id="occurrenceMap" class="google-maps"></div>
         </div>
     </g:if>
+
+    <g:if test="${eventHierarchy}">
+        <div id="eventDetailsSideBar" class="well well-sm" style="margin-top: 20px;">
+            <h4><g:message code="record.eventdetails.label"/></h4>
+            <p>
+                <g:message code="record.eventdetails.desc1"/>
+                <div>
+                    <alatag:renderTree hierarchy="${eventHierarchy}"/>
+                </div>
+                <g:message code="record.eventdetails.desc2"/>
+                <br/>
+                <a class="btn-small btn btn-default"
+                   style="margin-top:10px;"
+                   href="${grailsApplication.config.events.eventUrl}${record.raw.event.eventID}">
+                    <g:message code="record.eventdetails.link"/>
+                </a>
+            </p>
+        </div>
+    </g:if>
+
     <g:if test="${record.images}">
         <div class="sidebar">
             <h3 id="images"><g:message code="show.sidebar03.title" default="Images"/></h3>
             <div id="occurrenceImages" style="margin-top:5px;">
                 <g:each in="${record.images}" var="image">
                     <div style="margin-bottom:10px;">
-                        <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
-                            <a href="${grailsApplication.config.images.viewerUrl}${image.filePath}" target="_blank">
+                        <g:if test="${grailsApplication.config.getProperty('skin.useAlaImageService', Boolean)}">
+                            <a href="${grailsApplication.config.getProperty('images.viewerUrl')}${image.filePath}" target="_blank">
                                 <img src="${image.alternativeFormats.smallImageUrl}" style="max-width: 100%;" alt="Click to view this image in a large viewer"/>
                             </a>
                         </g:if>
@@ -253,8 +199,8 @@
                         <g:if test="${record.raw.miscProperties?.DESCRIPTION}">
                                 <cite><b><g:message code="show.sidebar03.caption" default="Caption"/>:</b> <alatag:sanitizeContent>${raw(record.raw.miscProperties.DESCRIPTION)}</alatag:sanitizeContent></cite><br/>
                         </g:if>
-                        <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean()}">
-                            <a href="${grailsApplication.config.images.metadataUrl}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
+                        <g:if test="${grailsApplication.config.getProperty('skin.useAlaImageService', Boolean)}">
+                            <a href="${grailsApplication.config.getProperty('images.metadataUrl')}${image.filePath}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator01" default="View image details"/></a>
                         </g:if>
                         <g:else>
                             <a href="${image.alternativeFormats.imageUrl}" target="_blank"><g:message code="show.sidebardiv.occurrenceimages.navigator02" default="Original image"/></a>
@@ -292,7 +238,7 @@
                         <cite><b><g:message code="show.sidebar03.sound.license" default="License"/>:</b> ${sound?.metadata?.license}</cite><br/>
                     </g:if>
 
-                    <g:if test="${grailsApplication.config.skin.useAlaImageService.toBoolean() && sound?.alternativeFormats?.detailLink}">
+                    <g:if test="${grailsApplication.config.getProperty('skin.useAlaImageService', Boolean) && sound?.alternativeFormats?.detailLink}">
                         <a href="${sound?.alternativeFormats?.detailLink}" target="_blank"><g:message code="show.sidebardiv.occurrencesounds.navigator01" default="View sound details"/></a><br/>
                     </g:if>
                     <br/>
@@ -317,15 +263,19 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="loginOrFlagLabel"><g:message code="show.loginorflag.title" default="Flag an issue"/></h3>
+                <h3 id="loginOrFlagLabel"><g:message code="show.loginorflag.title" default="Flag an issue"/>
+                    <a href="${grailsApplication.config.getProperty('help.flagIssueUrl')}" target="_blank" style="font-size: 14px;margin-left: 10px;">
+                        <i class="glyphicon glyphicon-question-sign"></i>
+                    </a>
+                </h3>
             </div>
             <div class="modal-body">
                 <g:if test="${!userId}">
                     <div style="margin: 20px 0;"><g:message code="show.loginorflag.div01.label" default="Login please:"/>
-                        <a href="${grailsApplication.config.security.cas.casServerLoginUrl}?service=${serverName}${request.contextPath}/occurrences/${record.raw.rowKey}"><g:message code="show.loginorflag.div01.navigator" default="Click here"/></a>
+                        <a href="${request.contextPath}/login?path=/occurrences/${record.raw.rowKey}"><g:message code="show.loginorflag.div01.navigator" default="Click here"/></a>
                     </div>
                 </g:if>
-                <g:else>
+                 <g:else>
                     <div>
                         <g:message code="show.loginorflag.div02.label" default="You are logged in as"/>  <strong>${userDisplayName} (${alatag.loggedInUserEmail()})</strong>.
                         <form id="issueForm">
@@ -337,19 +287,20 @@
                                     </g:each>
                                 </select>
                             </p>
-                            <p id="related-record-p" style="display: none; margin-top:30px;">
+                            <div id="related-record-p" style="display: none; margin-top:30px;">
                                 <label for="relatedRecordId" style="vertical-align:top;"><g:message code="show.issueform.label03" default="Duplicate Record ID:"/><span style="color: red;">*</span></label>
                                 <input type="text" name="relatedRecordId" id="relatedRecordId" placeholder="Paste the duplicate record id here" style="width:380px;"/>
-                                <p class="help-block">
+                                <div class="help-block">
                                     <span style="display: none; color:red;" id="related-record-id-not-found">The record id can't be found.</span>
                                     <span style="display: none;" id="related-record-id-loading"><i class="fa fa-gear fa-spin"></i></span>
-                                    <span style="display: none;" id="related-record-id-found">
+                                    <div style="display: none;" id="related-record-id-found">
                                         <span style="display: none;" id="records_comparison_heading"><g:message code="record.compare_table.heading" default="You are indicating that"/>:</span>
                                         <table style="display: none;" id='records_comparison_table' class="table table-bordered table-condensed table-striped scrollTable">
                                             <tr>
                                                 <th width="35%"><g:message code="record.compare_table.source_record.heading" default="This record"/></th>
                                                 <th rowspan="6" id="col_duplicate_reason"></th>
-                                                <th width="35%"><g:message code="record.compare_table.target_record.heading" default="This record ID provided"/></th></tr>
+                                                <th width="35%"><g:message code="record.compare_table.target_record.heading" default="This record ID provided"/></th>
+                                            </tr>
                                             <tr>
                                                 <td>${record?.processed?.classification?.scientificName ?: record?.raw?.classification?.scientificName ?: ''}</td>
                                                 <td id="t_scientificName"></td>
@@ -371,11 +322,11 @@
                                                 <td id="t_eventDate"></td>
                                             </tr>
                                         </table>
-                                    </span>
-                                </p>
-                            </p>
+                                    </div>
+                                </div>
+                            </div>
                             <p id="related-record-reason-p" style="display: none; margin-top:30px;">
-                                <label for="relatedRecordId" style="vertical-align:top;"><g:message code="show.issueform.label04" default="Duplicate Reason:"/><span style="color: red;">*</span></label>
+                                <label for="relatedRecordReason" style="vertical-align:top;"><g:message code="show.issueform.label04" default="Duplicate Reason:"/><span style="color: red;">*</span></label>
                                 <select name="relatedRecordReason" id="relatedRecordReason" autocomplete="off">
                                     <option value=""><g:message code="related.record.reason.select" default="-- Select a reason --" /></option>
                                     <option value="sameoccurrence"><g:message code="related.record.reason.sameoccurrence" default="Duplicate occurrence"/></option>
@@ -388,9 +339,9 @@
                                 <textarea name="comment" id="issueComment" style="width:380px;height:150px;" placeholder="Please add a comment here..."></textarea>
                             </p>
 
-                            <g:if test="${grailsApplication.config.alerts.myannotation.enabled.toBoolean()}">
+                            <g:if test="${grailsApplication.config.getProperty('alerts.myannotation.enabled', Boolean)}">
                                 <p style="margin-top:30px;">
-                                    <label style="width:100%" id="notifyChange"><input type="checkbox" id="notifyChangeCheckbox" name="notifyChange" value="">&nbsp;<g:message code="show.issueform.notifyme" default="Notify me when records I have annotated are updated"/></label>
+                                    <label style="width:100%" id="notifyChange"><input type="checkbox" id="notifyChangeCheckbox" name="notifyChange" value="" checked>&nbsp;<g:message code="show.issueform.notifyme" default="Notify me when records I have annotated are updated"/></label>
                                 </p>
                             </g:if>
 

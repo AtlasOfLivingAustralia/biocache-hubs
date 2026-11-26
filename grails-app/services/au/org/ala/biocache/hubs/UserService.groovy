@@ -59,7 +59,7 @@ class UserService {
     Map getUserPref(String userId, HttpServletRequest request) {
         def pref = [:]
         if (dataQualityEnabled) {
-            def prefKey = "${grailsApplication.config.dataquality.prefkey}"
+            def prefKey = grailsApplication.config.getProperty('dataquality.prefkey', String, '')
             if (userId != null) { // retrieve data from userdetails
                 pref = userDataService.get(userId, prefKey)
             } else { // use cookie
@@ -78,6 +78,7 @@ class UserService {
             pref.disableAll = pref?.containsKey('disableAll') ? pref.disableAll : disableAllFiltersByDefault
             pref.dataProfile = pref?.containsKey('dataProfile') ? pref.dataProfile : null
             pref.expand = pref?.containsKey('expand') ? pref.expand : expandFiltersByDefault
+            pref.disabledItems = pref?.containsKey('disabledItems') ? pref.disabledItems : null
         }
         pref
     }

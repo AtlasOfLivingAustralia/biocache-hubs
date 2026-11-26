@@ -3,12 +3,6 @@
  (c) 2010-2013, Vladimir Agafonkin
  (c) 2010-2011, CloudMade
 */
-jQuery.i18n.properties({
-    name: 'messages',
-    path: BC_CONF.contextPath + '/messages/i18n/',
-    mode: 'map',
-    language: BC_CONF.locale // default is to use browser specified locale
-});
 (function (window, document, undefined) {
     var oldL = window.L,
         L = {};

@@ -17,7 +17,7 @@ class SpatialSearchRequestParams extends SearchRequestParams implements Validate
     protected Float lon = null;
     protected String wkt ="";
     protected Boolean gk = false; //include only the geospatially kosher records
-    private String[] gkFq = ["geospatial_kosher:true"] // groovy syntax
+    private String[] gkFq = ["spatiallyValid:true"] // groovy syntax
 
     /**
      * Custom toString method to produce a String to be used as the request parameters

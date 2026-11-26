@@ -28,7 +28,7 @@ class MessageSourceCacheService {
     def getMessagesMap(Locale locale) {
 
         if (!locale) {
-            locale = new Locale("en","us")
+            locale = new Locale("en", "us")
         }
 
         def messagesMap = messageSource.listMessageCodes(locale)

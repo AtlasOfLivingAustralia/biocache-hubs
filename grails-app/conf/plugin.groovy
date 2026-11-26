@@ -56,7 +56,7 @@ bieService.baseUrl = "https://bie-ws.ala.org.au/ws"
 collectory.baseUrl = "https://collections.ala.org.au"
 logger.baseUrl = "https://logger.ala.org.au/service"
 biocache.apiKey = "not-your-api-key-to-use"
-biocache.baseUrl = "https://biocache-ws.ala.org.au/ws"
+biocache.baseUrl = "https://api.ala.org.au/occurrences"
 biocache.queryContext = "" // datahub uuid - e.g. ozcam  = " data_hub_uid:dh1 || avh = data_hub_uid:dh2"
 biocache.downloads.extra = "dataResourceUid,dataResourceName.p"
 biocache.ajax.useProxy = false
@@ -75,6 +75,8 @@ images.baseUrl = "https://images.ala.org.au"
 images.viewerUrl = "https://images.ala.org.au/image/viewer?imageId="
 images.metadataUrl = "https://images.ala.org.au/image/details?imageId="
 
+help.flagIssueUrl = "https://support.ala.org.au/support/solutions/articles/6000262125-flagging-an-issue-with-a-record"
+
 dataResourceUuid.alaSightings = "dr364"
 dataResourceUuid.iNaturalist = "dr1411"
 dataResourceUuid.flickr = "dr360"
@@ -90,12 +92,12 @@ test.var = "test"
 // used to link temporary data resources back to an originating sandbox.
 sandbox.uploadSource=''
 advancedTaxaField = "taxa" // used in advanced form for the 4 taxa query inputs
-
+alerts.myannotation.enabled = false
 clubRoleForHub = "ROLE_ADMIN"
 // whether map or list is the default tab to show - empty for list and "mapView" for map
 defaultListView = "" //  'mapView' or 'listView'
 dataQualityChecksUrl = "https://docs.google.com/spreadsheet/pub?key=0AjNtzhUIIHeNdHJOYk1SYWE4dU1BMWZmb2hiTjlYQlE&single=true&gid=0&output=csv"
-dwc.exclude = "dataHubUid,dataProviderUid,institutionUid,year,month,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds"
+dwc.exclude = "dataHubUid,dataProviderUid,institutionUid,year,month,day,modified,left,right,provenance,taxonID,preferredFlag,outlierForLayers,speciesGroups,associatedMedia,images,userQualityAssertion,speciesHabitats,duplicationType,taxonomicIssues,subspeciesID,nameMatchMetric,sounds,datasetName,fieldNumber"
 
 exploreYourArea.lat = "-35.0"
 exploreYourArea.lng = "149.0"
@@ -145,6 +147,10 @@ alwaysshow.imagetab = false
 
 facets.defaultSelected = "data_resource_uid,taxon_name,year,multimedia"
 
+// User properties are stored by "userdetails" or "biocache".
+// This is required when using AWS Cognito with userdetails (more or less).
+userproperties.provider="userdetails"
+
 mapdownloads {
     baseLayers {
         default_layer {
@@ -170,4 +176,10 @@ mapdownloads {
 //            displayName = 'Google Road Map'
 //        }
     }
+}
+
+events {
+    enabled = true
+    graphql = "https://api.test.ala.org.au/event/graphql"
+    eventUrl = "https://events.test.ala.org.au/?view=EVENTS&eventHierarchy="
 }

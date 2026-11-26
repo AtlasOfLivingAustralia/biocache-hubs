@@ -41,7 +41,7 @@
                 </div>
                 <div class="facetsGroup" id="group_data_quality" style="display:none;">
 
-                    <h4><span class="FieldName">Categories</span></h4>
+                    <h4><span class="FieldName"><alatag:message code="dq.selectmultiple.categorytable.header.categories" default="Categories" /></span></h4>
                     <div class="subnavlist nano" style="clear:left">
                         <ul class="facets nano-content dq-categories">
                             <g:each var="qualityCategory" in="${qualityCategories}">
@@ -93,7 +93,7 @@
                         <g:set var="fieldDisplayName" value="${alatag.formatDynamicFacetName(fieldName:"${facetResult.fieldName}")}"/>
                         <h4><span class="FieldName">${fieldDisplayName?:facetResult.fieldName}</span></h4>
                         <div class="subnavlist nano" style="clear:left">
-                            <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}"/>
+                            <alatag:facetLinkList facetResult="${facetResult}" queryParam="${queryParam}" fieldDisplayName="${fieldDisplayName}"/>
                         </div>
                         %{--<div class="fadeout"></div>--}%
                         <g:if test="${facetResult.fieldResult.length() > 1}">
@@ -134,11 +134,11 @@
                                     <td><a href=""></a></td>
                                     <td style="text-align: right; border-right-style: none;"></td>
                                 </tr>
-                                <tr id="spinnerRow">
-                                    <td colspan="3" style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></td>
-                                </tr>
                             </tbody>
                         </table>
+                        <div id="spinnerRow">
+                            <span style="text-align: center;"><g:message code="facets.multiplefacets.tabletr01td01" default="loading data"/>... <asset:image src="spinner.gif" id="spinner2" class="spinner" alt="spinner icon"/></span>
+                        </div>
                     </form>
                 </div>
             </div>

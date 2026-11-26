@@ -6,9 +6,11 @@
 #leafletMap, input {
     margin: 0px;
 }
-.tooltip-inner {
+#content .leaflet-draw-section .tooltip-inner {
     max-width: 350px;
+    /*min-width: 100px;*/
     white-space: nowrap;
+    word-break: normal;
     /* If max-width does not work, try using width instead */
     /*width: 150px;*/
 }
