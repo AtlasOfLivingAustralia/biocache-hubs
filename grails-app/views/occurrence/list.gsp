@@ -284,6 +284,7 @@
                         <alatag:stripApiKey message="${flash.message}"/>
                     </div>
                 </g:if>
+                <g:if test="${request.userPrincipal}">
                 <g:if test="${grailsApplication.config.useDownloadPlugin?.toBoolean()}">
                     <div id="downloads" class="btn btn-primary pull-right">
                         <alatag:download searchResults="${sr}" searchRequestParams="${searchRequestParams}" class="tooltips newDownload" title="${g.message(code:"list.downloads.navigator.title", args:[g.formatNumber(number: sr.totalRecords, format: "#,###,###")])}">
@@ -291,6 +292,7 @@
                             &nbsp;&nbsp;<g:message code="list.downloads.navigator" default="Download"/>
                         </alatag:download>
                     </div>
+                </g:if>
                 </g:if>
                 <div id="resultsReturned">
                     <g:render template="sandboxUploadSourceLinks" model="[dataResourceUid: selectedDataResource]"/>

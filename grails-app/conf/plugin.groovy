@@ -122,7 +122,7 @@ map.outlineDots
 // 3rd part WMS layer to show on maps. TODO: Allow multiple overlays
 map.overlay.url
 map.overlay.name
-map.minimal.url = "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+map.minimal.url = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 map.minimal.attr = "Map data &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>, imagery &copy; <a href='https://cartodb.com/attributions'>CartoDB</a>"
 map.minimal.subdomains = "abcd"
 //map.mapbox.id = "nickdos.kf2g7gpb" // https://mapbox.com/ Registered by Nick - free to use so anyone can create a new one and add it here

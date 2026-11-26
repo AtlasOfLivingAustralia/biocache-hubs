@@ -20,14 +20,6 @@
     <meta name="hideBreadcrumb" content=""/>
     <title><g:message code="home.index.title" default="Search for records"/> | ${hubDisplayName}</title>
 
-    <g:if test="${grailsApplication.config.google.apikey}">
-        <script src="https://maps.googleapis.com/maps/api/js?key=${grailsApplication.config.google.apikey}"
-                type="text/javascript"></script>
-    </g:if>
-    <g:else>
-        <script src="https://maps.google.com/maps/api/js" type="text/javascript"></script>
-    </g:else>
-
     <script type="text/javascript">
         // global var for GSP tags/vars to be passed into JS functions
         var BC_CONF = {
