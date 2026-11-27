@@ -61,7 +61,7 @@ L.Util.extend(Wkt.Wkt.prototype.construct, {
 });
 
 Wkt.Wkt.prototype.deconstruct = function (obj) {
-        var attr, coordsFromLatLngs, features, i, verts, rings, tmp;
+        var attr, closedRing, coordsFromLatLngs, features, i, verts, rings, tmp;
 
         /**
          * Accepts an Array (arr) of LatLngs from which it extracts each one as a
@@ -95,6 +95,25 @@ Wkt.Wkt.prototype.deconstruct = function (obj) {
             }
 
             return Wkt.wrap(coords);
+        };
+
+        /**
+         * Converts a ring of LatLngs to x/y vertices, repeating the first one
+         * for closure (Leaflet leaves rings open).
+         */
+        closedRing = function (latlngs) {
+            var ring = [];
+            for (var r = 0; r < latlngs.length; r += 1) {
+                ring.push({
+                    x: latlngs[r].lng,
+                    y: latlngs[r].lat
+                });
+            }
+            ring.push({
+                x: latlngs[0].lng,
+                y: latlngs[0].lat
+            });
+            return ring;
         };
 
         // L.Marker ////////////////////////////////////////////////////////////////
@@ -174,47 +193,19 @@ Wkt.Wkt.prototype.deconstruct = function (obj) {
             var polygons = Wkt.isArray(tmp[0][0]) ? tmp : [tmp];
 
             for (var p = 0; p < polygons.length; p += 1) {
-                var outer = polygons[p][0];
-                verts = [];
+                var multi_coords = coordsFromLatLngs(closedRing(polygons[p][0]));
 
-                // First, we deal with the boundary points
-                for (i = 0; i < outer.length; i += 1) {
-                    verts.push({
-                        x: outer[i].lng,
-                        y: outer[i].lat
-                    });
+                // Holes are the rings after the outer one. They are kept only
+                // when the outer ring was not split at -180/+180.
+                if (multi_coords.length === 1) {
+                    for (var h = 1; h < polygons[p].length; h += 1) {
+                        multi_coords[0].push(closedRing(polygons[p][h]));
+                    }
                 }
 
-                verts.push({ // Add the first coordinate again for closure
-                    x: outer[0].lng,
-                    y: outer[0].lat
-                });
-
-                var multi_coords = coordsFromLatLngs(verts);
                 for (var j = 0; j < multi_coords.length; j += 1) {
                     if (multi_coords.hasOwnProperty(j)) {
                         rings.push(multi_coords[j]);
-                    }
-                }
-            }
-
-            // Now, any holes
-            if (obj._holes && obj._holes.length > 0) {
-                // Reworked to support holes properly
-                var multi_coords = coordsFromLatLngs(obj._holes);
-                for (var j = 0; j < multi_coords.length; j += 1) {
-                    if (multi_coords.hasOwnProperty(j)) {
-                        var verts = multi_coords[j];
-                        for (i = 0; i < verts.length; i++) {
-                            verts[i].push(verts[i][0]); // Copy the beginning coords again for closure
-
-                            //push interior ring to the appropriate exterior ring
-                            for (var k = 0; k < rings.length; k++) {
-                                if (rings[k].getBounds().intersects(verts[i].getBounds())) {
-                                    rings[k].push(verts[i]);
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -226,12 +217,9 @@ Wkt.Wkt.prototype.deconstruct = function (obj) {
 
         }
 
-        // L.MultiPolyline /////////////////////////////////////////////////////////
-        // L.MultiPolygon //////////////////////////////////////////////////////////
         // L.LayerGroup ////////////////////////////////////////////////////////////
         // L.FeatureGroup //////////////////////////////////////////////////////////
-        if (obj.constructor === L.MultiPolyline || obj.constructor === L.MultiPolygon
-            || obj.constructor === L.LayerGroup || obj.constructor === L.FeatureGroup) {
+        if (obj.constructor === L.LayerGroup || obj.constructor === L.FeatureGroup) {
 
             features = [];
             tmp = obj._layers;
@@ -249,10 +237,6 @@ Wkt.Wkt.prototype.deconstruct = function (obj) {
 
                 type: (function () {
                     switch (obj.constructor) {
-                        case L.MultiPolyline:
-                            return 'multilinestring';
-                        case L.MultiPolygon:
-                            return 'multipolygon';
                         case L.FeatureGroup:
                             return (function () {
                                 var i, mpgon, mpline, mpoint;
