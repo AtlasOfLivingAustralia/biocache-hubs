@@ -1,8 +1,38 @@
 /**
  * Override wicket and wicket-leaflet to split polygons across -180 or +180
+ * and to work with Leaflet 1.x.
  */
 
+L.Util.extend(Wkt.Wkt.prototype, {
+    // Leaflet 1.x's L.GeoJSON.coordsToLatLngs no longer calls this.coordsToLatLng,
+    // so it would read [lng, lat] arrays instead of wicket's {x, y} components.
+    coordsToLatLngs: function (coords, levelsDeep) {
+        var latlngs = [];
+        for (var i = 0; i < coords.length; i += 1) {
+            latlngs.push(levelsDeep ?
+                this.coordsToLatLngs(coords[i], levelsDeep - 1) :
+                this.coordsToLatLng(coords[i]));
+        }
+        return latlngs;
+    },
+
+    // wicket passes a Leaflet 0.7 "noWrap" flag as the third argument, which
+    // Leaflet 1.x reads as the altitude.
+    coordsToLatLng: function (coords) {
+        return L.latLng(coords.y, coords.x);
+    }
+});
+
 L.Util.extend(Wkt.Wkt.prototype.construct, {
+
+    // Leaflet 1.x removed L.multiPolyline/L.multiPolygon: L.polyline and
+    // L.polygon accept the nested arrays instead.
+    multilinestring: function (config) {
+        var coords = this.components,
+            latlngs = this.coordsToLatLngs(coords, 1);
+
+        return L.polyline(latlngs, config);
+    },
 
     multipolygon: function (config) {
         // Truncate the coordinates to remove the closing coordinate
@@ -11,11 +41,9 @@ L.Util.extend(Wkt.Wkt.prototype.construct, {
 
         //translate by x if requested
         if (config && config.translate && config.translate.x) {
-            var copy = Wkt.copyLatLngs(latlngs, config.translate.x);
-            return L.multiPolygon(copy, config);
-        } else {
-            return L.multiPolygon(latlngs, config);
+            latlngs = Wkt.copyLatLngs(latlngs, config.translate.x);
         }
+        return L.polygon(latlngs, config);
     },
 
     polygon: function (config) {
@@ -23,17 +51,12 @@ L.Util.extend(Wkt.Wkt.prototype.construct, {
         var coords = this.trunc(this.components),
             latlngs = this.coordsToLatLngs(coords, 1);
 
-        // latlngs is always a multipolygon
-
         // translate by x if requested
         if (config && config.translate && config.translate.x) {
-            var copy = Wkt.copyLatLngs(latlngs, config.translate.x);
-            return L.multiPolygon(copy, config);
-        } else {
-            return L.multiPolygon(latlngs, config);
+            latlngs = Wkt.copyLatLngs(latlngs, config.translate.x);
         }
-    },
-
+        return L.polygon(latlngs, config);
+    }
 
 });
 
@@ -145,31 +168,33 @@ Wkt.Wkt.prototype.deconstruct = function (obj) {
 
         if (obj.constructor === L.Polygon || obj.constructor === L.polygon) {
             rings = [];
-            verts = [];
+            // Leaflet 1.x returns [outer, hole, ...] rings for a polygon and
+            // [[outer, hole, ...], ...] for a multipolygon.
             tmp = obj.getLatLngs();
-            // Leaflet >= 1.0 returns nested rings ([outer, hole, ...]) instead
-            // of a flat array of LatLngs; use the outer ring.
-            while (tmp.length && Wkt.isArray(tmp[0])) {
-                tmp = tmp[0];
-            }
+            var polygons = Wkt.isArray(tmp[0][0]) ? tmp : [tmp];
 
-            // First, we deal with the boundary points
-            for (i = 0; i < tmp.length; i += 1) {
+            for (var p = 0; p < polygons.length; p += 1) {
+                var outer = polygons[p][0];
+                verts = [];
+
+                // First, we deal with the boundary points
+                for (i = 0; i < outer.length; i += 1) {
+                    verts.push({
+                        x: outer[i].lng,
+                        y: outer[i].lat
+                    });
+                }
+
                 verts.push({ // Add the first coordinate again for closure
-                    x: tmp[i].lng,
-                    y: tmp[i].lat
+                    x: outer[0].lng,
+                    y: outer[0].lat
                 });
-            }
 
-            verts.push({ // Add the first coordinate again for closure
-                x: tmp[0].lng,
-                y: tmp[0].lat
-            });
-
-            var multi_coords = coordsFromLatLngs(verts);
-            for (var j = 0; j < multi_coords.length; j += 1) {
-                if (multi_coords.hasOwnProperty(j)) {
-                    rings.push(multi_coords[j]);
+                var multi_coords = coordsFromLatLngs(verts);
+                for (var j = 0; j < multi_coords.length; j += 1) {
+                    if (multi_coords.hasOwnProperty(j)) {
+                        rings.push(multi_coords[j]);
+                    }
                 }
             }
 

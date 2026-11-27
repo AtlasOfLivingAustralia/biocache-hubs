@@ -193,7 +193,8 @@ function drawWktObj(wktString) {
     var wkt = new Wkt.Wkt();
     wkt.read(wktString);
     var wktObject = wkt.toObject({color: '#bada55'});
-    generatePopup(wktObject.getLayers()[0], null);
+    // Leaflet 1.x builds (multi)polygons as a single L.Polygon instead of a layer group
+    generatePopup(wktObject.getLayers ? wktObject.getLayers()[0] : wktObject, null);
     addClickEventForVector(wktObject);
     MAP_VAR.drawnItems.addLayer(wktObject);
 
