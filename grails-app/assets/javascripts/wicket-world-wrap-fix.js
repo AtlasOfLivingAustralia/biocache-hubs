@@ -147,9 +147,14 @@ Wkt.Wkt.prototype.deconstruct = function (obj) {
             rings = [];
             verts = [];
             tmp = obj.getLatLngs();
+            // Leaflet >= 1.0 returns nested rings ([outer, hole, ...]) instead
+            // of a flat array of LatLngs; use the outer ring.
+            while (tmp.length && Wkt.isArray(tmp[0])) {
+                tmp = tmp[0];
+            }
 
             // First, we deal with the boundary points
-            for (i = 0; i < obj._latlngs.length; i += 1) {
+            for (i = 0; i < tmp.length; i += 1) {
                 verts.push({ // Add the first coordinate again for closure
                     x: tmp[i].lng,
                     y: tmp[i].lat
